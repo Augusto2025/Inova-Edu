@@ -1,11 +1,11 @@
 :root {
-    --primary-Senac:#F7941D;
-    --second-Senac:#FFF;
-    --thridd-
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
 }
 
 body{
-    background-color: var(--primary-Senac);
+    background-color: var(--laranja-Senac);
 }
 
 .card_login{
@@ -14,10 +14,10 @@ body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 947px; 
-    height: 907px;
+    width: 907px; 
+    height: 800px;
     border-radius: 66px;
-    background: var(--second-Senac);
+    background: var(--branco-Senac);
     box-shadow: 52px 4px 43px 0 rgba(0, 0, 0, 0.25);
 }
 
@@ -25,4 +25,44 @@ body{
     width: 240px;
     height: 205px;
     flex-shrink: 0;
+}
+
+h1{
+    color: var(--azul-Senac);
+    text-align: center;
+    font-family: Kadwa;
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+input{
+    width: 400px;
+    height: 67px;
+    font-family: Kadwa;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border-radius: 14px;
+    border-width: 1px;
+    margin: 15px 0px;
+}
+
+button{
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    width: 313px;
+    height: 61px;
+    flex-shrink: 0;
+    color: #FFF;
+    text-align: center;
+    font-family: Kadwa;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 400;
+    border-radius: 54px;
+    line-height: normal;
+    border-width: 0px;
 }
