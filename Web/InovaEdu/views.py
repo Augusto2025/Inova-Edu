@@ -14,3 +14,16 @@ def login(request):
     Senha = request.POST.get('senha')
 
     usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
+
+    if usuario:
+        request.session['usuario_email'] = usuario.email
+        return redirect('home')
+    else:
+        return render(request, 'login.html', {
+            'erro': 'Usuário ou senha inválidos.',
+            'email': Email,
+            'senha': ''
+        })
+    
+def home(request):
+    return render(request, 'test.html')

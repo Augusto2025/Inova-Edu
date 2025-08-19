@@ -3,6 +3,7 @@ from django.urls import path
 from InovaEdu import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.login, name='login'),
+    path('', views.login),
+    path('login.html', views.login, name='login'),
+    path('test.html', views.home, name='home'),
 ]
