@@ -5,11 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
 </head>
 <body>
-    <div class="card-login">
-        
-    </div>
+    <!-- Card do login -->
+    <form class="card_login">
+        <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="logo">
+        <h1>Login</h1>
+        <input type="text" placeholder="Email" >
+        <input type="text" placeholder="Senha">
+        <button>Entrar</button>
+    </form>
 </body>
 </html>

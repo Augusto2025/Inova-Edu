@@ -1,18 +1,28 @@
 :root {
     --primary-Senac:#F7941D;
     --second-Senac:#FFF;
+    --thridd-
 }
 
 body{
     background-color: var(--primary-Senac);
 }
 
-.card-login{
+.card_login{
     justify-self: center;
-    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 947px; 
     height: 907px;
     border-radius: 66px;
     background: var(--second-Senac);
     box-shadow: 52px 4px 43px 0 rgba(0, 0, 0, 0.25);
+}
+
+.logo{
+    width: 240px;
+    height: 205px;
+    flex-shrink: 0;
 }
