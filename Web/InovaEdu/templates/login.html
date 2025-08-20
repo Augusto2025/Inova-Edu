@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <link rel="icon" href="{% static 'img/Ellipse 13.svg' %}" type="image/png">
 </head>
 <body>
     <!-- Card do login -->
@@ -17,7 +18,7 @@
         <input type="password" placeholder="Senha" name="senha" value="{{ senha|default:'' }}">
         <button type="submit">Entrar</button>
         {% if erro %}
-            <p style="color:red;">{{ erro }}</p><br>
+            <p style="color:red;">{{ erro }}</p>
         {% endif %}
     </form>
 </body>
