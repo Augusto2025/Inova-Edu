@@ -4,6 +4,6 @@ from InovaEdu import views
 
 urlpatterns = [
     path('', views.login),
-    path('login.html', views.login, name='login'),
-    path('test.html', views.home, name='home'),
+    path('login', views.login, name='login'),
+    path('home_Aluno', views.home, name='home'),
 ]

@@ -121,3 +121,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# serve para quando eu deslogar eu não posso voltar para a outra tela do navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
