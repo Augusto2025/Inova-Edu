@@ -26,7 +26,7 @@ body{
     flex-shrink: 0; 
 }
 
-.Texto_InovaEdu{
+.texto_InovaEdu{
     margin: 10px;
     color: var(--azul-Senac);
     font-family: Kadwa;
@@ -50,3 +50,6 @@ a{
     color: var(--azul-Senac);
 }
 
+.titulo{
+    display: flex;
+}
