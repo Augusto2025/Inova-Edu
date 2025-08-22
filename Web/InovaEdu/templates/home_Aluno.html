@@ -1,13 +1,13 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}?v=1">
     <link rel="icon" href="{% static 'img/Ellipse 13.svg' %}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Kadwa&display=swap" rel="stylesheet">
     <title>Inova Edu</title>
 </head>
 <body>
@@ -23,8 +23,15 @@
         <a href="">Perfil</a>
     </div>
     <div class="titulo">
-        <p>Repositório</p>
-        <p>aaa</p>
+        <p>Repositórios</p>
+    </div>
+    <div class="aba_pesquisa">
+        <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
+        <input class="pesquisa" type="search" placeholder="Pesquisar">
+        <button class="buscar" type="submit">
+            <img class="pesquisar_icone" src="{% static 'img/Search.svg' %}" alt="pesquisar_icone">
+            <p>Buscar</p>
+        </button>
     </div>
 </body>
 </html>

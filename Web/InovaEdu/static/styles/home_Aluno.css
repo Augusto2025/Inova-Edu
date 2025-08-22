@@ -6,7 +6,9 @@
 }
 
 body{
-    margin: 0%;
+    margin: 0;
+    padding: 0;
+    font-family: Kadwa;
 }
 
 .navbar{
@@ -29,7 +31,6 @@ body{
 .texto_InovaEdu{
     margin: 10px;
     color: var(--azul-Senac);
-    font-family: Kadwa;
     font-size: 30px;
     font-style: normal;
     font-weight: 400;
@@ -43,6 +44,7 @@ body{
     align-items: center;
     justify-content: space-around;
     background-color: var(--cinza-Senac);
+    font-size: 13px;
 }
 
 a{
@@ -51,5 +53,48 @@ a{
 }
 
 .titulo{
+    margin: 5%;
+    width: auto;
+    color: var(--azul-Senac);
+    font-size: 20px;
+}
+
+.titulo p{
+    margin: 0%;
+    width: 100px;
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+}
+
+.aba_pesquisa{
     display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 40px;
+}
+
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.pesquisa{
+    display: flex;
+    text-align: center;
+    height: 30px;
+    width: 60%;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: var(--azul-Senac);
+}
+
+.buscar{
+    color: white;
+    border-radius: 12px;
+    border-style: none;
+    background: var(--azul-Senac);
+}
+
+.pesquisar_icone{
+    
 }
