@@ -17,7 +17,10 @@ def login(request):
 
     if usuario:
         request.session['usuario_email'] = usuario.email
-        return redirect('home')
+        if usuario.tipo == 'Coordenador':
+            return redirect('cadastro_Aluno')  # <--- nome deve bater com urls.py
+        else:
+            return redirect('home')
     else:
         return render(request, 'login.html', {
             'erro': 'Usuário ou senha inválidos.',
@@ -27,3 +30,6 @@ def login(request):
 
 def home(request):
     return render(request, 'home_Aluno.html')
+
+def cadastro_aluno(request):
+    return render(request, 'cadastro_Aluno.html') 
