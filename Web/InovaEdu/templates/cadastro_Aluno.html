@@ -10,5 +10,36 @@
 </head>
 <body>
     
+    <div class="navbar">
+        <img class="logo" src="{% static 'img/logo_azul.png' %}" alt="logo">
+        <p class="InovaEdu">Inova Edu</p>
+    </div>
+
+    <div class="titulo_usuario">
+        <p>Cadastro Usuário</p>
+    </div>
+
+    <form action="/enviar" method="POST">
+        <h2>Formulário</h2>
+        
+        <label for="nome">Primeiro Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="Sobrenome">Sobrenome:</label>
+        <input type="Sobrenome" id="Sobrenome" name="Sobrenome" required>
+
+        <label for="Email">Email:</label>
+        <input type="Email" id="Email" name="Email" required>
+
+        <label for="Senha">Senha:</label>
+        <input type="Senha" id="Senha" name="Senha" required>     
+
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" name="descricao" rows="4"></textarea>
+
+        <button type="submit">Salva</button>
+        <button type="submit">Voltar</button>
+    </form>
+
 </body>
 </html>

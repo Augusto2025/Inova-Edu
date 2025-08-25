@@ -1,3 +1,51 @@
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+}
+
 body{
-    background-color: beige;
+    margin: 0;
+    padding: 0;
+    font-family: Kadwa;
+}
+
+.navbar{
+    width: auto;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0px 20px;
+    border-bottom: solid;
+    border-color: var(--azul-Senac);
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+    flex-shrink: 0; 
+}
+
+.InovaEdu{
+    margin: 10px;
+    color: var(--azul-Senac);
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 400;
+}
+/* --------titulo-------------------- */
+.titulo_usuario{
+    margin: 5%;
+    width: auto;
+    color: var(--azul-Senac);
+    font-size: 20px;
+}
+
+.titulo_usuario p{
+    margin: 0%;
+    width: 150px;
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
 }
