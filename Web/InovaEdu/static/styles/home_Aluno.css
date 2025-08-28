@@ -89,12 +89,17 @@ a{
 }
 
 .buscar{
+    width: 100px;
+    height: 35px;
     color: white;
-    border-radius: 12px;
+    border-radius: 10px;
     border-style: none;
     background: var(--azul-Senac);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.pesquisar_icone{
-    
+button .pesquisar_icone{
+    width: 20px;
 }
