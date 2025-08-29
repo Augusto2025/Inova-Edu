@@ -72,6 +72,7 @@ class AuthUserUserPermissions(models.Model):
 
 class Usuario(models.Model):
     idusuario = models.AutoField(db_column='idUsuario', primary_key=True)
+    imagem = models.ImageField(db_column='imagem_usuario', upload_to='usuarios/', blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=11)
     nome = models.CharField(db_column='Nome', max_length=20)
     sobrenome_usuario = models.CharField(db_column='Sobrenome_usuario', max_length=20)
@@ -86,6 +87,7 @@ class Usuario(models.Model):
 
 class Curso(models.Model):
     idcurso = models.AutoField(db_column='idCurso', primary_key=True)
+    imagem = models.ImageField(db_column='imagem_curso' , upload_to='curso/', blank=True, null= True)
     nome_curso = models.CharField(db_column='Nome_curso', max_length=45)
     descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)
     data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)
