@@ -11,12 +11,12 @@ body{
     font-family: Kadwa;
 }
 
-.navbar{
+header{
     width: auto;
     height: 100px;
     display: flex;
     align-items: center;
-    padding: 0px 20px;
+    padding: 0px 10px;
     border-bottom: solid;
     border-color: var(--laranja-Senac);
 }
@@ -36,7 +36,7 @@ body{
     font-weight: 400;
 }
 
-.navbar_secundaria{
+nav{
     width: auto;
     height: 80px;
     flex-shrink: 0;
@@ -53,17 +53,16 @@ a{
 }
 
 .titulo{
-    margin: 5%;
-    width: auto;
-    color: var(--azul-Senac);
-    font-size: 20px;
-}
-
-.titulo p{
-    margin: 0%;
     width: 100px;
     border-bottom: solid;
     border-color: var(--laranja-Senac);
+    margin: 20px;
+}
+
+.titulo p{
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
 }
 
 .aba_pesquisa{
@@ -74,6 +73,7 @@ a{
 }
 
 .filtro_icone{
+    margin-left: 20px;
     width: 30px;
     flex-shrink: 0;
 }
@@ -89,7 +89,7 @@ a{
 }
 
 .buscar{
-    width: 100px;
+    width: 85px;
     height: 35px;
     color: white;
     border-radius: 10px;
@@ -104,3 +104,41 @@ button .pesquisar_icone{
     width: 20px;
 }
 
+main{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.imagem_curso{
+    width: 300px;
+    border-radius: 23px 23px 0px 0px;
+}
+
+section{
+    width: 300px;
+    height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: #F0F0F0;
+    margin: 30px 0px;
+    border-radius: 23px;
+}
+
+section p{
+    margin: 20px 0px;
+    color: var(--azul-Senac);
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+}
+
+section button{
+    width: 150px;
+    height: 30px;
+    color: var(--branco-Senac);
+    border: none;
+    border-radius: 23px;
+    background: #004A8D;
+}

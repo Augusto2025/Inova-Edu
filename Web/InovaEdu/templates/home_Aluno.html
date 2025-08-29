@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
     <link rel="icon" href="{% static 'img/Ellipse 13.svg' %}" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Kadwa&display=swap" rel="stylesheet">
     <title>Inova Edu</title>
 </head>
 <body>
-    <header class="navbar">
+    <header>
         <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="Logo Inova Edu">
         <p class="texto_InovaEdu">Inova Edu</p>
     </header>
-    <nav class="navbar_secundaria">
+    <nav>
         <a href="">Forum</a>
         <a href="">Suporte</a>
         <a href="">Chat</a>
@@ -33,11 +33,12 @@
             <p>Buscar</p>
         </button>
     </div>
-    <main>
+    <main class="blocos">
         {% for nomes in Curso_test %}
             <section>
-                <img src="{% static 'img/tecnologia.png' %}" alt="">
+                <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso">
                 <p>{{ nomes.nome_curso }}</p>
+                <button>Entrar</button>
             </section>
         {% endfor %}
     </main>
