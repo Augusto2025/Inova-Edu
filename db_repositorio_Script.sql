@@ -15,16 +15,17 @@ USE `db_repositorio` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Usuario` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
+  `imagem_usuario` VARCHAR(100),
   `Tipo` ENUM('Aluno', 'Professor', 'Coordenador') NOT NULL,
   `Nome` VARCHAR(20) NOT NULL,
-  `Sobrenome_usuario` VARCHAR(20) NOT NULL,
+  `Sobrenome` VARCHAR(20) NOT NULL,
   `Email` VARCHAR(100) NOT NULL,
   `Senha` VARCHAR(30) NOT NULL,
   `Descricao` VARCHAR(100),
   PRIMARY KEY (`idUsuario`)
 ) ENGINE=InnoDB;
 
-INSERT INTO Usuario (Tipo, Nome, Sobrenome_usuario, Email, Senha) VALUES 
+INSERT INTO Usuario (Tipo, Nome, Sobrenome, Email, Senha) VALUES 
 ('Aluno', 'Augusto', 'Sousa', 'Augusto@gmail.com', '1234'),
 ('Professor', 'Felipe', 'Monteiro', 'Felip01@gmail.com', '1234'),
 ('Coordenador', 'Jonatanh', 'Costa', 'JonyMal@gmail.com', '1234'),
@@ -50,6 +51,7 @@ INSERT INTO Usuario (Tipo, Nome, Sobrenome_usuario, Email, Senha) VALUES
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Curso` (
   `idCurso` INT NOT NULL AUTO_INCREMENT,
+  `imagem_curso` VARCHAR(100),
   `Nome_curso` VARCHAR(45) NOT NULL,
   `Descricao_curso` VARCHAR(100),
   `Data_inicio` DATE,
@@ -218,16 +220,16 @@ SELECT Nome_curso, Data_inicio
 FROM Curso
 WHERE Data_inicio > '2024-12-31';
 
--- 2) Ver todos os projetos cadastrados em março de 2025
+-- 2) Ver todos os projetos cadastrados em janeiro de 2024
 SELECT Nome_projeto, Data_de_criacao
 FROM Projeto
-WHERE YEAR(Data_de_criacao) = 2025
-  AND MONTH(Data_de_criacao) = 3;
+WHERE YEAR(Data_de_criacao) = 2024
+  AND MONTH(Data_de_criacao) = 1;
 
--- 3) Listar os fóruns criados em 2025, em ordem alfabética
+-- 3) Listar os fóruns criados em 2024, em ordem alfabética
 SELECT Nome, Data_criacao
 FROM Forum
-WHERE YEAR(Data_criacao) = 2025
+WHERE YEAR(Data_criacao) = 2021
 ORDER BY Nome ASC;
 
 -- 4) Mostrar cada projeto com: nome do projeto, turma que pertence, turno da turma, nome do curso
@@ -236,8 +238,8 @@ SELECT p.Nome_projeto,
        t.Turno,
        c.Nome_curso
 FROM Projeto p
-JOIN Turma t ON p.ID_Turma = t.idTurma
-JOIN Curso c ON p.ID_Curso = c.idCurso;
+JOIN Turma t ON p.Turma_idTurma = t.idTurma
+JOIN Curso c ON p.Turma_Curso_idCurso = c.idCurso;
 
 -- 5) Mostrar todos os eventos com: nome do evento, data e hora, endereço, nome do organizador
 SELECT e.Nome_do_evento,
@@ -246,23 +248,63 @@ SELECT e.Nome_do_evento,
        e.Endereco,
        CONCAT(u.Nome, ' ', u.Sobrenome_usuario) AS Nome_organizador
 FROM Eventos e
-JOIN Usuario u ON e.ID_Usuario = u.idUsuario;
+JOIN Usuario u ON e.Usuario_idUsuario = u.idUsuario;
 
 -- 6) Mostrar cada projeto com: nome do projeto, turma que pertence, turno da turma
 SELECT p.Nome_projeto,
        t.Codigo_Turma,
        t.Turno
 FROM Projeto p
-JOIN Turma t ON p.ID_Turma = t.idTurma;
+JOIN Turma t ON p.Turma_idTurma = t.idTurma;
 
 -- 7) Mostrar nome, data e hora do evento, endereço, nome completo do usuário responsável
 SELECT e.Nome_do_evento,
        e.Data_do_evento,
        e.Hora_do_evento,
        e.Endereco,
-       CONCAT(u.Nome, ' ', u.Sobrenome_usuario) AS Nome_responsavel
+       CONCAT(u.Nome, ' ', u.Sobrenome) AS Nome_responsavel
 FROM Eventos e
-JOIN Usuario u ON e.ID_Usuario = u.idUsuario;
+JOIN Usuario u ON e.Usuario_idUsuario = u.idUsuario;
+
+-- -----------------------------------------------------
+-- Procedures
+-- -----------------------------------------------------
+
+ -- Criar um professor
+DELIMITER //
+
+create procedure CriarProfessor(
+	in p_Tipo varchar(20),
+    in p_Nome varchar(100),
+    in p_Sobrenome_usuario varchar(20),
+    in p_Email varchar(50),
+    in p_Senha varchar(50)
+)
+begin
+	INSERT INTO Usuario (Tipo, Nome, Sobrenome, Email, Senha) VALUES 
+	(p_Tipo, p_Nome, p_Sobrenome, p_Email, p_Senha);
+end //
+
+DELIMITER ;
+
+call CriarProfessor('Professor', 'Theodoro', 'Cesar', 'Cesar@gmail.com', '1234');
+
+-- Atualizar Descricao de um usuário
+DELIMITER //
+
+create procedure AtualizarDescricao(
+    in p_idUsuario int,
+    in p_Descricao varchar(100)
+)
+begin
+	update usuario
+    set Descricao = p_Descricao
+    where idUsuario = p_idUsuario;
+end //
+
+DELIMITER ;
+
+call AtualizarDescricao(2, 'Teste de Descrição');
 
 -- -----------------------------------------------------
 -- Restaura variáveis
