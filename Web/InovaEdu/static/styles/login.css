@@ -45,6 +45,7 @@ h1 {
 }
 
 input {
+    /* font-family: kadwa; */
     width: 100%;
     padding: 18px; /* campos maiores */
     margin-bottom: 20px;
@@ -84,84 +85,3 @@ button:hover {
 .senha a:hover {
     text-decoration: underline;
 }
-
-
-
-
-
-
-
-
-
-/* :root {
-    --laranja-Senac:#F7941D;
-    --branco-Senac:#FFF;
-    --azul-Senac: #004A8D;
-}
-
-body{
-    background-color: var(--laranja-Senac);
-}
-
-.card_login{
-    justify-self: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 800px; 
-    height: 800px;
-    border-radius: 66px;
-    background: var(--branco-Senac);
-    box-shadow: 52px 4px 43px 0 rgba(0, 0, 0, 0.25);
-}
-
-.logo{
-    width: 240px;
-    height: 205px;
-    flex-shrink: 0;
-}
-
-h1{
-    color: var(--azul-Senac);
-    text-align: center;
-    font-family: Kadwa;
-    font-size: 60px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-}
-
-input{
-    width: 350px;
-    height: 67px;
-    font-family: Kadwa;
-    font-size: 22px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    border-radius: 14px;
-    border-width: 1px;
-    margin: 15px 0px;
-}
-
-button{
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    width: 200px;
-    height: 55px;
-    flex-shrink: 0;
-    color: #FFF;
-    text-align: center;
-    font-family: Kadwa;
-    font-size: 25px;
-    font-style: normal;
-    font-weight: 400;
-    border-radius: 54px;
-    line-height: normal;
-    border-width: 0px;
-}
-
-.senha{
-   font-size: 20px;
-} */

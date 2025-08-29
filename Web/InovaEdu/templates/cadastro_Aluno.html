@@ -1,43 +1,33 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?v=1">
-    <title>cadastro Aluno</title>
-</head>
-<body>
-    <div class="navbar">
-        <img class="logo" src="{% static 'img/logo_azul.png' %}" alt="logo">
-        <p class="InovaEdu">Inova Edu</p>
-    </div>
 
-    <div class="titulo_usuario">
-        <p>Cadastro Usuário</p>
-    </div>
+<div class="navbar">
+    <img class="logo" src="{% static 'img/logo_azul.png' %}" alt="logo">
+    <p class="InovaEdu">Inova Edu</p>
+</div>
 
-    <form action="/enviar" method="POST">
-        <h2>Formulário</h2>
-        
-        <label for="nome">Primeiro Nome:</label>
-        <input type="text" id="nome" name="nome" required>
+<div class="titulo_usuario">
+    <p>Cadastro Usuário</p>
+</div>
 
-        <label for="Sobrenome">Sobrenome:</label>
-        <input type="Sobrenome" id="Sobrenome" name="Sobrenome" required>
+<form action="/enviar" method="POST">
+    <h2>Formulário</h2>
 
-        <label for="Email">Email:</label>
-        <input type="Email" id="Email" name="Email" required>
+    <label for="nome">Primeiro Nome:</label>
+    <input type="text" id="nome" name="nome" required>
 
-        <label for="Senha">Senha:</label>
-        <input type="Senha" id="Senha" name="Senha" required>     
+    <label for="Sobrenome">Sobrenome:</label>
+    <input type="Sobrenome" id="Sobrenome" name="Sobrenome" required>
 
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" rows="4"></textarea>
+    <label for="Email">Email:</label>
+    <input type="Email" id="Email" name="Email" required>
 
-        <button type="submit">Salva</button>
-        <button type="submit">Voltar</button>
-    </form>
-</body>
-</html>
+    <label for="Senha">Senha:</label>
+    <input type="Senha" id="Senha" name="Senha" required>
+
+    <label for="descricao">Descrição:</label>
+    <textarea id="descricao" name="descricao" rows="4"></textarea>
+
+    <button type="submit">Salva</button>
+    <button type="submit">Voltar</button>
+</form>
