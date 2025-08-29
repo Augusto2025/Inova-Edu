@@ -11,17 +11,17 @@
     <title>Inova Edu</title>
 </head>
 <body>
-    <div class="navbar">
-        <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="logo">
+    <header class="navbar">
+        <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="Logo Inova Edu">
         <p class="texto_InovaEdu">Inova Edu</p>
-    </div>
-    <div class="navbar_secundaria">
+    </header>
+    <nav class="navbar_secundaria">
         <a href="">Forum</a>
         <a href="">Suporte</a>
         <a href="">Chat</a>
         <a href="">Eventos</a>
         <a href="">Perfil</a>
-    </div>
+    </nav>
     <div class="titulo">
         <p>Repositórios</p>
     </div>
@@ -33,10 +33,13 @@
             <p>Buscar</p>
         </button>
     </div>
-    {% for nomes in Curso_test %}
-        <div>
-            <p>{% nomes.nome_curso %}</p>
-        </div>
-    {% endfor %}
+    <main>
+        {% for nomes in Curso_test %}
+            <section>
+                <img src="{% static 'img/tecnologia.png' %}" alt="">
+                <p>{{ nomes.nome_curso }}</p>
+            </section>
+        {% endfor %}
+    </main>
 </body>
 </html>
