@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block content %}
 <div class="navbar">
     <img class="logo" src="{% static 'img/logo_azul.png' %}" alt="logo">
     <p class="InovaEdu">Inova Edu</p>
@@ -11,23 +12,28 @@
 </div>
 
 <form action="/enviar" method="POST">
-    <h2>Formulário</h2>
+    {% csrf_token %}
 
     <label for="nome">Primeiro Nome:</label>
     <input type="text" id="nome" name="nome" required>
 
     <label for="Sobrenome">Sobrenome:</label>
-    <input type="Sobrenome" id="Sobrenome" name="Sobrenome" required>
+    <input type="text" id="Sobrenome" name="Sobrenome" required>
+
+    <label for="imagem">Imagem:</label>
+    <input type="file" id="imagem" name="imagem" accept="image/*">
+
 
     <label for="Email">Email:</label>
-    <input type="Email" id="Email" name="Email" required>
+    <input type="email" id="Email" name="Email" required>
 
     <label for="Senha">Senha:</label>
-    <input type="Senha" id="Senha" name="Senha" required>
+    <input type="password" id="Senha" name="Senha" required>
 
     <label for="descricao">Descrição:</label>
     <textarea id="descricao" name="descricao" rows="4"></textarea>
 
-    <button type="submit">Salva</button>
-    <button type="submit">Voltar</button>
+    <button type="submit">Salvar</button>
+    <button type="button" onclick="window.history.back()">Voltar</button>
 </form>
+{% endblock %}
