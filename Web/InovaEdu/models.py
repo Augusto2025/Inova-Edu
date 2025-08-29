@@ -75,7 +75,7 @@ class Usuario(models.Model):
     imagem = models.ImageField(db_column='imagem_usuario', upload_to='usuarios/', blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=11)
     nome = models.CharField(db_column='Nome', max_length=20)
-    sobrenome_usuario = models.CharField(db_column='Sobrenome_usuario', max_length=20)
+    sobrenome = models.CharField(db_column='Sobrenome', max_length=20)
     email = models.CharField(db_column='Email', max_length=45)
     senha = models.CharField(db_column='Senha', max_length=30)
     descricao = models.CharField(db_column='Descricao', max_length=100, blank=True, null=True)

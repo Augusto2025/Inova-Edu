@@ -20,11 +20,11 @@
 </div>
 <main class="blocos">
     {% for Curso in curso %}
-    <section>
-        <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
-        <p>{{ Curso.nome_curso }}</p>
-        <button>Entrar</button>
-    </section>
+        <section>
+            <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
+            <p>{{ Curso.nome_curso }}</p>
+            <button>Entrar</button>
+        </section>
     {% endfor %}
 </main>
 {% endblock %}

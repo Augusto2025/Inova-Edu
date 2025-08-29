@@ -33,8 +33,8 @@ def login(request):
         })
 
 def home(request):
-    Curso_test = Curso.objects.all()
-    return render(request, 'home_Aluno.html', {'Curso_test': Curso_test})
+    curso = Curso.objects.all()
+    return render(request, 'home_Aluno.html', {'curso': curso})
 
 def cadastro_aluno(request):
     return render(request, 'cadastro_Aluno.html') 
