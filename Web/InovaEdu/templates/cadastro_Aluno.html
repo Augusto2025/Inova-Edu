@@ -11,6 +11,25 @@
     <p>Cadastro Usuário</p>
 </div>
 
+
+
+<div class="opcoes">
+    <p>Escolha abaixo sua opção de cadastro:</p>
+    <label>
+        <input type="radio" name="tipoCadastro" value="professor">
+        Professor
+    </label>
+    <label>
+        <input type="radio" name="tipoCadastro" value="aluno">
+        Aluno
+    </label>
+    <label>
+        <input type="radio" name="tipoCadastro" value="coordenacao">
+        Coordenação
+    </label>
+</div>
+
+
 <form action="/enviar" method="POST">
     {% csrf_token %}
 
@@ -20,8 +39,8 @@
     <label for="Sobrenome">Sobrenome:</label>
     <input type="text" id="Sobrenome" name="Sobrenome" required>
 
-    <label for="imagem">Imagem:</label>
-    <input type="file" id="imagem" name="imagem" accept="image/*">
+    {% comment %} <label for="imagem">Imagem:</label>
+    <input type="file" id="imagem" name="imagem" accept="image/*"> {% endcomment %}
 
 
     <label for="Email">Email:</label>
