@@ -127,7 +127,7 @@ class Projeto(models.Model):
 
 
 class UsuarioDaTurma(models.Model):
-    id = models.BigAutoField(primary_key=True)  # adicionado para PK única
+    id = models.BigAutoField(primary_key=True) 
     id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario')
     id_turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
 
