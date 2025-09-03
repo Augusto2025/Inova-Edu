@@ -92,7 +92,7 @@ class Curso(models.Model):
     descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)
     data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)
     data_final = models.DateField(db_column='Data_final', blank=True, null=True)
-    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='Usuario_idUsuario', blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
         managed = False

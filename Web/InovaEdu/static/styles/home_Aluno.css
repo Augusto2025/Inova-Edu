@@ -73,7 +73,6 @@ a{
 }
 
 .filtro_icone{
-    margin-left: 20px;
     width: 30px;
     flex-shrink: 0;
 }
@@ -108,6 +107,7 @@ main{
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    gap: 30px;
 }
 
 .imagem_curso{
@@ -128,13 +128,18 @@ section{
 }
 
 section p{
-    margin: 20px 0px;
+    margin: 20px 0px 0px 0px;
     color: var(--azul-Senac);
+}
+
+.borda{
+    width: 100px;
+    margin: 10px 0px 20px 0px;
     border-bottom: solid;
     border-color: var(--laranja-Senac);
 }
 
-section button{
+section .Botao_entrar_curso{
     width: 150px;
     height: 30px;
     color: var(--branco-Senac);
