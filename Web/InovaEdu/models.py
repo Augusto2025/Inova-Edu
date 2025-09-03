@@ -92,13 +92,13 @@ class Usuario(models.Model):
 
 
 class Curso(models.Model):
-    idcurso = models.AutoField(db_column='idCurso', primary_key=True)  # Field name made lowercase.
-    imagem_curso = models.CharField(max_length=100, blank=True, null=True)
-    nome_curso = models.CharField(db_column='Nome_curso', max_length=45)  # Field name made lowercase.
-    descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)  # Field name made lowercase.
-    data_final = models.DateField(db_column='Data_final')  # Field name made lowercase.
-    id_usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='ID_Usuario')  # Field name made lowercase.
+    idcurso = models.AutoField(db_column='idCurso', primary_key=True)
+    imagem = models.ImageField(db_column='imagem_curso' , upload_to='curso/', blank=True, null= True)
+    nome_curso = models.CharField(db_column='Nome_curso', max_length=45)
+    descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)
+    data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)
+    data_final = models.DateField(db_column='Data_final', blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='Usuario_idUsuario', blank=True, null=True)
 
     class Meta:
         managed = False
