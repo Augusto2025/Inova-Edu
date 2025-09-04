@@ -53,23 +53,17 @@ a{
 }
 
 .titulo{
-    width: 100px;
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
+    display: flex;
+    justify-content: space-between;
     margin: 20px;
 }
 
 .titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
     color: var(--azul-Senac);
     margin: 0%;
     font-size: 20px;
-}
-
-.aba_pesquisa{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 40px;
 }
 
 .filtro_icone{
@@ -79,28 +73,13 @@ a{
 
 .pesquisa{
     display: flex;
+    justify-self: center;
     text-align: center;
     height: 30px;
-    width: 60%;
+    width: 90%;
     border-radius: 10px;
     border: 2px solid;
     border-color: var(--azul-Senac);
-}
-
-.buscar{
-    width: 85px;
-    height: 35px;
-    color: white;
-    border-radius: 10px;
-    border-style: none;
-    background: var(--azul-Senac);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
-
-button .pesquisar_icone{
-    width: 20px;
 }
 
 main{
