@@ -11,46 +11,6 @@ body{
     font-family: Kadwa;
 }
 
-header{
-    width: auto;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    padding: 0px 10px;
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-}
-
-.logo {
-    width: 80px;
-    height: 80px;
-    margin: 10px;
-    flex-shrink: 0; 
-}
-
-.texto_InovaEdu{
-    margin: 10px;
-    color: var(--azul-Senac);
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 400;
-}
-
-nav{
-    width: auto;
-    height: 80px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    background-color: var(--cinza-Senac);
-    font-size: 13px;
-}
-
-a{
-    text-decoration: none;
-    color: var(--azul-Senac);
-}
 
 .titulo{
     display: flex;
@@ -76,14 +36,17 @@ a{
     justify-self: center;
     text-align: center;
     height: 30px;
-    width: 90%;
+    width: 80%;
+    max-width: 1000px;
     border-radius: 10px;
     border: 2px solid;
     border-color: var(--azul-Senac);
 }
 
 main{
+    justify-self: center;
     display: flex;
+    max-width: 1000px;
     justify-content: center;
     flex-wrap: wrap;
     gap: 30px;

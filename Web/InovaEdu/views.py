@@ -36,5 +36,11 @@ def home(request):
     curso = Curso.objects.all()
     return render(request, 'home_Aluno.html', {'curso': curso})
 
+def repositorio(request):
+    return render(request, 'repositorio_Aluno.html')
+
+def perfil_A(request):
+    return render(request, 'perfil_Aluno.html')
+
 def cadastro_aluno(request):
     return render(request, 'cadastro_Aluno.html') 
