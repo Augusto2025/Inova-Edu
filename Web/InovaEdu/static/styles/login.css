@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
     --laranja-Senac:#F7941D;
     --branco-Senac:#FFF;
@@ -9,10 +11,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    /* font-family: Arial, Helvetica, sans-serif; */
 }
 
 body {
+    font-family: "Roboto", sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,7 +44,7 @@ h1 {
     margin-bottom: 30px;
     color: #333;
     font-size: 32px; /* título maior */
-    font-family: kadwa;
+    /* font-family: kadwa; */
 }
 
 input {
