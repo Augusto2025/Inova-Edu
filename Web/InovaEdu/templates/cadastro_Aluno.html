@@ -11,10 +11,9 @@
         <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1">
     </head>
 
-    <div class="navbar">
-        <img class="logo" src="{% static 'img/logo_azul.png' %}" alt="logo">
-        <p class="InovaEdu">Inova Edu</p>
-    </div>
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
     
     <div class="titulo_usuario">
         <p>Cadastro Usuário</p>

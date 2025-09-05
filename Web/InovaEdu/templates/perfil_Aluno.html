@@ -17,11 +17,17 @@
 
     <div class="titulo">
         <p>Meu Perfil</p>
+        <a href="{% url "login" %}">Deslogar</a>
     </div>
     <main>
         <section>
             <img src="{% static 'img/homem.png' %}" alt="Imagem de Perfil">
-            <p class="Nome_Usuario">Heder Sousa</p>
+            {% if usuario %}
+                <p class="Nome_Usuario">{{ usuario.nome }}</p>
+            {% else %}
+                <p>Usuário não encontrado.</p>
+            {% endif %}
+
             <input type="text" readonly>
         </section>
         <section>

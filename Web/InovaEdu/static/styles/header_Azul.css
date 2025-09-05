@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
     --laranja-Senac:#F7941D;
     --branco-Senac:#FFF;
@@ -8,17 +10,23 @@
 body{
     margin: 0;
     padding: 0;
+    font-family: "Roboto", sans-serif;
 }
 
-.navbar{
+a{
+    display: flex;
+}
+
+header{
     width: auto;
     height: 100px;
     display: flex;
     align-items: center;
-    padding: 0px 20px;
+    padding: 0px 10px;
     border-bottom: solid;
     border-color: var(--azul-Senac);
 }
+
 
 .logo {
     width: 80px;
@@ -27,10 +35,26 @@ body{
     flex-shrink: 0; 
 }
 
-.InovaEdu{
+.texto_InovaEdu{
     margin: 10px;
     color: var(--azul-Senac);
     font-size: 30px;
     font-style: normal;
     font-weight: 400;
+}
+
+nav{
+    width: auto;
+    height: 80px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-color: var(--cinza-Senac);
+    font-size: 13px;
+}
+
+a{
+    text-decoration: none;
+    color: var(--azul-Senac);
 }
