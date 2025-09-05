@@ -1,13 +1,17 @@
 {% load static %}
 
 <header>
-    <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="Logo Inova Edu">
-    <p class="texto_InovaEdu">Inova Edu</p>
+    <a href="{% url "home" %}">
+        <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="Logo Inova Edu">
+    </a>
+    <a href="{% url "home" %}">
+        <p class="texto_InovaEdu">Inova Edu</p>
+    </a>
 </header>
 <nav>
     <a href="">Forum</a>
     <a href="">Suporte</a>
     <a href="">Chat</a>
     <a href="">Eventos</a>
-    <a href="{% url "perfil_Aluno" %}">Perfil</a>
+    <a href="{% url "perfil_A" %}">Perfil</a>
 </nav>

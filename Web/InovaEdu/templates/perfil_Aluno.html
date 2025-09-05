@@ -2,9 +2,31 @@
 {% load static %}
 
 {% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
+    </head>
 
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
+
+    <div class="titulo">
+        <p>Meu Perfil</p>
+    </div>
+    <main>
+        <section>
+            <img src="{% static 'img/homem.png' %}" alt="Imagem de Perfil">
+            <p class="Nome_Usuario">Heder Sousa</p>
+            <input type="text" readonly>
+        </section>
+        <section>
+            <a href="" class="Editar_Perfil">Editar Perfil</a>
+        </section>
+    </main>
 
 {% endblock %}

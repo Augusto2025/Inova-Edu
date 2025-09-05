@@ -1,8 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
     --laranja-Senac:#F7941D;
     --branco-Senac:#FFF;
     --azul-Senac: #004A8D;
     --cinza-Senac: #D9D9D9;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+}
+
+a{
+    display: flex;
 }
 
 header{
@@ -14,6 +26,7 @@ header{
     border-bottom: solid;
     border-color: var(--laranja-Senac);
 }
+
 
 .logo {
     width: 80px;

@@ -8,14 +8,12 @@
 body{
     margin: 0;
     padding: 0;
-    font-family: Kadwa;
 }
-
 
 .titulo{
     display: flex;
     justify-content: space-between;
-    margin: 20px;
+    margin: 30px;
 }
 
 .titulo p{
@@ -35,6 +33,7 @@ body{
     display: flex;
     justify-self: center;
     text-align: center;
+    margin-bottom: 10px;
     height: 30px;
     width: 80%;
     max-width: 1000px;
@@ -84,6 +83,9 @@ section p{
 section .Botao_entrar_curso{
     width: 150px;
     height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: var(--branco-Senac);
     border: none;
     border-radius: 23px;
