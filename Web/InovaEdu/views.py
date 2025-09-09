@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 
 def login(request):
     # ele pega o que tem dentro do form

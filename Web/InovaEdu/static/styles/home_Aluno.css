@@ -13,7 +13,9 @@ body{
 .titulo{
     display: flex;
     justify-content: space-between;
+    justify-self: center;
     margin: 30px;
+    width: 50%;
 }
 
 .titulo p{
@@ -35,8 +37,8 @@ body{
     text-align: center;
     margin-bottom: 10px;
     height: 30px;
-    width: 80%;
-    max-width: 1000px;
+    width: 100%;
+    max-width: 600px;
     border-radius: 10px;
     border: 2px solid;
     border-color: var(--azul-Senac);
@@ -48,7 +50,7 @@ main{
     max-width: 1000px;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 16px;
 }
 
 .imagem_curso{
