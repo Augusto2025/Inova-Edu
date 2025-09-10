@@ -1,5 +1,5 @@
 # essa página serve para distribuir por todo o template essas funções
-from .models import Usuario
+from .models import *
 
 def usuario_tipo(request):
     email = request.GET.get('email')  # ou request.POST.get('email')
