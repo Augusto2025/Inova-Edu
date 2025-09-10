@@ -60,3 +60,23 @@ a{
 nav a{
     margin: 90px;
 }
+
+@media (max-width: 1024px) {
+    header{
+        padding: 0% 1%;
+    }
+
+    nav a{
+        margin: 5%;
+    }
+}
+
+@media (min-width: 1024px) {
+    header{
+        padding: 0% 24%;
+    }
+
+    nav a{
+        margin: 0% 5%;
+    }
+}

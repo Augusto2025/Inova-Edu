@@ -93,3 +93,12 @@ section .Botao_entrar_curso{
     border-radius: 23px;
     background: #004A8D;
 }
+
+@media (max-width: 1024px) {
+    .titulo{
+        width: 90%;
+    }
+    .pesquisa{
+        width: 60%;
+    }
+}

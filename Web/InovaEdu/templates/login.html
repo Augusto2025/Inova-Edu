@@ -13,7 +13,7 @@
     <!-- Card do login -->
     <form class="card_login" action="" method="POST">
         {% csrf_token %}
-        <img class="logo" src="{% static 'img/Ellipse 13.svg' %}" alt="logo">
+        <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="logo">
         <h1>Login</h1>
         <input type="text" placeholder="Email" name="email" value="{{ email|default:'' }}">
         <input type="password" placeholder="Senha" name="senha" value="{{ senha|default:'' }}">
