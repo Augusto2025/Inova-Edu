@@ -51,4 +51,4 @@ def repositorio(request):
     return render(request, 'repositorio_Aluno.html')
 
 def cadastro_aluno(request):
-    return render(request, 'cadastro_Aluno.html') 
+    return render(request, 'cadastro_Aluno.html')
