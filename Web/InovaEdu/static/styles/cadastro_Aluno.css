@@ -1,0 +1,138 @@
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+    --azul_Claro-Senac: #177bda;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: Kadwa;
+    background-color: var(--branco-Senac);
+    
+}
+
+/* --------titulo-------------------- */
+.titulo_usuario{
+    margin: 5px;
+    width: 20%;
+    color: var(--azul-Senac);
+    font-size: 20px;
+   
+}
+
+.titulo_usuario p{
+    margin: 10%;
+    width: 50%;
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+}
+
+/* ---------Opções de cadastros----------- */
+
+.opcoes {
+    display: block;
+    flex-direction:row;
+    text-align: center;
+    gap: 10px; /* espaço entre título e opções */
+    margin-top: 25px;
+    font-family: Arial, sans-serif;
+}
+
+.opcoes p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    font-family: kadwa;
+
+}
+
+.opcoes label {
+    width: 50%;
+    margin: 0 20px ;
+    padding: 12px 30px;
+    background-color:var(--azul-Senac);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: kadwa;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--branco-Senac);
+    display: inline;
+    transition: all 0.3s ease;
+    
+}
+.opcoes label:hover{
+    background-color: var(--azul_Claro-Senac);
+}
+
+
+/* ---------Formulario---------------- */
+form {
+    width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color:var(--branco-Senc);
+    border-radius: 12px;
+    box-shadow: 0 20px 15px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    /* font-weight: bold; */
+    color: black;
+    font-family: kadwa;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="file"],
+form textarea {
+    width: 95%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--azul-Senac);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+
+form button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button[type="submit"] {
+    background-color: var(--azul-Senac);
+    color: #fff;
+}
+
+form button[type="submit"]:hover {
+    background-color: var(--azul_Claro-Senac);
+}
+
+form button[type="button"] {
+    background-color: #ccc;
+}
+
+form button[type="button"]:hover {
+    background-color: var(--cinza-Senac);
+}
+
+form input[type="file"] {
+    padding: 5px 12px;
+    border: 1px solid var(--azul-Senac);
+    border-radius: 8px;
+    
+}

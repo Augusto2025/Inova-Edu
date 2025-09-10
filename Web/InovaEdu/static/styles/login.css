@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* font-family: Arial, Helvetica, sans-serif; */
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--laranja-Senac);
+}
+
+.card_login {
+    background: var(--branco-Senac);
+    padding: 60px 50px; /* ainda maior */
+    border-radius: 16px;
+    box-shadow: 0px 15px 18px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 550px; /* aumentei bem */
+}
+
+.logo {
+    width: 120px; /* logo maior */
+    margin-bottom: 25px;
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 32px; /* título maior */
+    /* font-family: kadwa; */
+}
+
+input {
+    /* font-family: kadwa; */
+    width: 100%;
+    padding: 18px; /* campos maiores */
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 18px; /* fonte maior */
+}
+
+button {
+    width: 100%;
+    padding: 18px; /* botão maior */
+    background: var(--azul-Senac);
+    color: var(--branco-Senac);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 19px; /* texto maior */
+    font-weight: bold;
+}
+
+button:hover {
+    background: #658db6;
+}
+
+.senha {
+    margin-top: 22px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.senha a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.senha a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+    </head>
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="titulo">
+        <p>Repositórios</p>
+        <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
+    </div>
+    <input class="pesquisa" type="search" placeholder="Pesquisar" />
+    <main class="blocos">
+        {% for Curso in curso %}
+            <section>
+                <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
+                <p>{{ Curso.nome_curso }}</p>
+                <div class="borda"></div>
+                <a class="Botao_entrar_curso" href="{% url "repositorio" %}">Entrar</a>
+            </section>
+        {% endfor %}
+    </main>
+{% endblock %}

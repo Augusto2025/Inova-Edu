@@ -1,0 +1,70 @@
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+}
+
+body{
+    margin: 0%;
+    padding: 0%;
+}
+
+.titulo{
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    margin: 30px;
+    width: 50%;
+}
+
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+.titulo a{
+    display: flex;
+    align-items: center;
+    background-color: rgb(176, 0, 0);
+    color: white;
+    padding: 0px 30px;
+    border-radius: 10px;
+}
+
+main{
+    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+img{
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+}
+
+.Nome_Usuario{
+    font-size: x-large;
+}
+
+input{
+    background-color: var(--cinza-Senac);
+    width: 350px;
+    height: 100px;
+    border-style: none;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.Editar_Perfil{
+    padding: 10px 30px;
+    border-radius: 10px;
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+}

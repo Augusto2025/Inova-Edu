@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
+    </head>
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="titulo">
+        <p>Meu Perfil</p>
+        <a href="{% url "login" %}">Sair</a>
+    </div>
+    <main>
+        <section>
+            <img src="{% static 'img/homem.png' %}" alt="Imagem de Perfil">
+            {% if usuario %}
+                <p class="Nome_Usuario">{{ usuario.nome }}</p>
+            {% else %}
+                <p>Usuário não encontrado.</p>
+            {% endif %}
+            <input type="text" readonly>
+        </section>
+        <a href="" class="Editar_Perfil">Editar Perfil</a>
+    </main>
+{% endblock %}

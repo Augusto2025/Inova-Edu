@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <link rel="icon" href="{% static 'img/Ellipse 13.svg' %}" type="image/png">
+    <title>Inova Edu</title>
+</head>
+<body>
+    <!-- Card do login -->
+    <form class="card_login" action="" method="POST">
+        {% csrf_token %}
+        <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="logo">
+        <h1>Login</h1>
+        <input type="text" placeholder="Email" name="email" value="{{ email|default:'' }}">
+        <input type="password" placeholder="Senha" name="senha" value="{{ senha|default:'' }}">
+        <button type="submit">Entrar</button>
+        {% if erro %}
+            <p style="color:red; margin: 20px 0px 0px 0px;">{{ erro }}</p>
+            <style>
+                input{
+                    border-color: red;
+                }
+            </style>
+        {% endif %}
+        <p class="senha">Esqueceu a senha? <br><a href="">Clique aqui</a></p>
+    </form>
+</body>
+</html>
