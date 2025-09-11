@@ -20,24 +20,7 @@
     </div>
     
     
-    
-    <div class="opcoes">
-        <p>Escolha abaixo sua opção de cadastro:</p>
-        <label>
-            <input type="radio" name="tipoCadastro" value="professor">
-            Professor
-        </label>
-        <label>
-            <input type="radio" name="tipoCadastro" value="aluno">
-            Aluno
-        </label>
-        <label>
-            <input type="radio" name="tipoCadastro" value="coordenacao">
-            Coordenação
-        </label>
-    </div>
-    
-    
+
     <form action="/enviar" method="POST">
         {% csrf_token %}
     
@@ -47,10 +30,6 @@
         <label for="Sobrenome">Sobrenome:</label>
         <input type="text" id="Sobrenome" name="Sobrenome" required>
     
-        {% comment %} <label for="imagem">Imagem:</label>
-        <input type="file" id="imagem" name="imagem" accept="image/*"> {% endcomment %}
-    
-    
         <label for="Email">Email:</label>
         <input type="email" id="Email" name="Email" required>
     
@@ -59,8 +38,21 @@
     
         <label for="descricao">Descrição:</label>
         <textarea id="descricao" name="descricao" rows="4"></textarea>
-    
+
+           <label for="imagem">Imagem:</label>
+    <input type="file" id="imagem" name="imagem" accept="image/*">
+
+    <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
+    <select id="tipoCadastro" name="tipoCadastro" required>
+        <option value="" disabled selected>Selecione uma opção</option>
+        <option value="professor">Professor</option>
+        <option value="aluno">Aluno</option>
+        <option value="coordenacao">Coordenação</option>
+    </select>
+
+
         <button type="submit">Salvar</button>
+        <button type="submit">Listar</button>
         <button type="button" onclick="window.history.back()">Voltar</button>
     </form>
 {% endblock %}
