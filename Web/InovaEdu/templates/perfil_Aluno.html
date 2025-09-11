@@ -27,7 +27,9 @@
             {% else %}
                 <p>Usuário não encontrado.</p>
             {% endif %}
-            <input type="text" readonly>
+            <div class="descricao">
+                {{ usuario.descricao }}
+            </div>
         </section>
         <a href="" class="Editar_Perfil">Editar Perfil</a>
     </main>
