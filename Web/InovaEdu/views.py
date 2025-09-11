@@ -41,11 +41,7 @@ def home(request):
     return render(request, 'home_Aluno.html', {'curso': curso})
 
 def perfil_A(request):
-    email = request.session.get('usuario_email')  # pega o email salvo no login
-    usuario = None
-    if email:
-        usuario = Usuario.objects.filter(email__iexact=email).first()
-    return render(request, 'perfil_Aluno.html', {"usuario": usuario})
+    return render(request, 'perfil_Aluno.html')
 
 def repositorio(request):
     return render(request, 'repositorio_Aluno.html')
