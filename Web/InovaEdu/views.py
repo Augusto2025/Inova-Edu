@@ -23,10 +23,8 @@ def login(request):
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
             return redirect('cadastro_Aluno')
-        elif usuario.tipo == 'Aluno':
+        elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
             return redirect('home')
-        elif usuario.tipo == 'Professor':
-            pass
     # se ele não for, ele manda um erro e volta pro login
     else:
         return render(request, 'login.html', {
