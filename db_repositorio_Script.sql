@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
   `Sobrenome` VARCHAR(20) NOT NULL,
   `Email` VARCHAR(100) NOT NULL,
   `Senha` VARCHAR(30) NOT NULL,
-  `Descricao` VARCHAR(100),
+  `Descricao` VARCHAR(300),
   PRIMARY KEY (`idUsuario`)
 ) ENGINE=InnoDB;
 
@@ -238,8 +238,8 @@ SELECT p.Nome_projeto,
        t.Turno,
        c.Nome_curso
 FROM Projeto p
-JOIN Turma t ON p.Turma_idTurma = t.idTurma
-JOIN Curso c ON p.Turma_Curso_idCurso = c.idCurso;
+JOIN Turma t ON p.ID_Turma = t.idTurma
+JOIN Curso c ON p.ID_Curso = c.idCurso;
 
 -- 5) Mostrar todos os eventos com: nome do evento, data e hora, endereço, nome do organizador
 SELECT e.Nome_do_evento,
@@ -248,14 +248,14 @@ SELECT e.Nome_do_evento,
        e.Endereco,
        CONCAT(u.Nome, ' ', u.Sobrenome_usuario) AS Nome_organizador
 FROM Eventos e
-JOIN Usuario u ON e.Usuario_idUsuario = u.idUsuario;
+JOIN Usuario u ON e.ID_Usuario = u.idUsuario;
 
 -- 6) Mostrar cada projeto com: nome do projeto, turma que pertence, turno da turma
 SELECT p.Nome_projeto,
        t.Codigo_Turma,
        t.Turno
 FROM Projeto p
-JOIN Turma t ON p.Turma_idTurma = t.idTurma;
+JOIN Turma t ON p.ID_Turma = t.idTurma;
 
 -- 7) Mostrar nome, data e hora do evento, endereço, nome completo do usuário responsável
 SELECT e.Nome_do_evento,
@@ -264,7 +264,7 @@ SELECT e.Nome_do_evento,
        e.Endereco,
        CONCAT(u.Nome, ' ', u.Sobrenome) AS Nome_responsavel
 FROM Eventos e
-JOIN Usuario u ON e.Usuario_idUsuario = u.idUsuario;
+JOIN Usuario u ON e.ID_Usuario = u.idUsuario;
 
 -- -----------------------------------------------------
 -- Procedures
@@ -276,7 +276,7 @@ DELIMITER //
 create procedure CriarProfessor(
 	in p_Tipo varchar(20),
     in p_Nome varchar(100),
-    in p_Sobrenome_usuario varchar(20),
+    in p_Sobrenome varchar(20),
     in p_Email varchar(50),
     in p_Senha varchar(50)
 )
@@ -305,6 +305,153 @@ end //
 DELIMITER ;
 
 call AtualizarDescricao(2, 'Teste de Descrição');
+
+-- Selecionar todos os professores
+DELIMITER //
+
+create procedure SelecionarProfessores()
+begin
+	select * from usuario
+    where Tipo = 'Professor';
+end //
+
+DELIMITER ;
+
+call SelecionarProfessores();
+
+-- Selecionar todos os alunos
+DELIMITER //
+
+create procedure SelecionarAlunos()
+begin
+	select * from usuario
+    where Tipo = 'Aluno';
+end //
+
+DELIMITER ;
+
+call SelecionarAlunos();
+
+-- Selecionar todos os coordenadores
+DELIMITER //
+
+create procedure SelecionarCoordenadores()
+begin
+	select * from usuario
+    where Tipo = 'Coordenador';
+end //
+
+DELIMITER ;
+
+call SelecionarCoordenadores();
+
+-- Deletar Usuário
+DELIMITER //
+
+create procedure DeletarUsuario(
+	in p_idUsuario int
+)
+begin
+	delete from usuario
+    where idUsuario = p_idUsuario;
+end //
+
+DELIMITER ;
+
+call DeletarUsuario(19);
+
+-- Criar eventos
+DELIMITER //
+
+create procedure CriarEvento(
+	p_Nome_do_evento varchar(30),
+	p_Hora_do_evento time,
+	p_Data_do_evento date,
+	p_Descricao varchar(100), 
+	p_Endereco varchar(30),
+    p_ID_Usuario int
+)
+begin
+	INSERT INTO Eventos (Nome_do_evento, Hora_do_evento, Data_do_evento, Descricao, Endereco, ID_Usuario) VALUES 
+    (p_Nome_do_evento,
+	p_Hora_do_evento,
+	p_Data_do_evento,
+	p_Descricao, 
+	p_Endereco,
+    p_ID_Usuario);
+end //
+
+DELIMITER ;
+
+call CriarEvento('Lojin', '20:15:00', '2025-05-19', 'Um workshop sobre a Lojin', 'Shopping Boulevard', 20);
+
+-- Criar Cursos
+DELIMITER //
+
+create procedure CriarCurso(
+	p_Nome_curso varchar(45),
+	p_Descricao_curso varchar(100),
+	p_Data_inicio date,
+	p_Data_final date,
+	p_ID_Usuario int
+)
+begin
+	INSERT INTO Curso(Nome_curso, Descricao_curso, Data_inicio, Data_final, ID_Usuario) VALUES 
+    (p_Nome_curso,
+	p_Descricao_curso,
+	p_Data_inicio,
+	p_Data_final,
+	p_ID_Usuario);
+end //
+
+DELIMITER ;
+
+call CriarCurso('Databases Diários', 'Descrição', '2025-09-10', '2026-04-10', 7);
+
+-- selecionar projeto pela data
+DELIMITER // 
+
+create procedure SelecionarDataProjeto(
+	in p_Data_de_criacao date
+)
+begin
+	select * from projeto
+    where Data_de_criacao = p_Data_de_criacao;
+end //
+
+DELIMITER ;
+
+call SelecionarDataProjeto('2025-06-10');
+
+-- selecionar os cursos pela sua data de iniciação
+DELIMITER //
+
+create procedure SelecionarDataInicioCurso(
+	in p_Data_inicio date
+)
+begin
+	select * from curso
+    where Data_inicio = p_Data_inicio;
+end //
+
+DELIMITER ;
+
+call SelecionarDataInicioCurso('2025-08-10');
+
+-- selecionar os cursos pela sua data de término
+DELIMITER //
+
+create procedure SelecionarDataFinalCurso(
+	in p_Data_final date
+)
+begin
+	select * from curso
+    where Data_final = p_Data_final;
+end //
+
+DELIMITER ;
+
+call SelecionarDataFinalCurso('2026-04-05');
 
 -- -----------------------------------------------------
 -- Restaura variáveis
