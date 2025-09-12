@@ -143,12 +143,31 @@ class Eventos(models.Model):
     data_do_evento = models.DateField(db_column='Data_do_evento')
     descricao = models.CharField(db_column='Descricao', max_length=100)
     endereco = models.CharField(db_column='Endereco', max_length=30)
-    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='Usuario_idUsuario', blank=True, null=True)
+    
+    STATUS_CHOICES = [
+        ('criado', 'Criado'),
+        ('andamento', 'Em Andamento'),
+        ('finalizado', 'Finalizado'),
+    ]
+    
+    status = models.CharField(
+        db_column='Status',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='criado'
+    )
+
+    usuario = models.ForeignKey(
+        Usuario,
+        models.DO_NOTHING,
+        db_column='ID_Usuario',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         managed = False
         db_table = 'eventos'
-
 
 class Forum(models.Model):
     idforum = models.AutoField(db_column='idForum', primary_key=True)

@@ -23,7 +23,7 @@
         <section>
             <img src="{% static 'img/homem.png' %}" alt="Imagem de Perfil">
             {% if usuario %}
-                <p class="Nome_Usuario">{{ usuario.nome }}</p>
+                <p class="Nome_Usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</p>
             {% else %}
                 <p>Usuário não encontrado.</p>
             {% endif %}

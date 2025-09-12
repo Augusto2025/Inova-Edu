@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="sidebar">
+        <h2>&lt; {{ ano }} &gt;</h2>
+        <ul class="meses">
+            {% for i in meses %}
+                <li class="{% if i == mes %}selected{% endif %}">
+                    <a href="{% url 'calendario' ano i %}" style="color: white; text-decoration: none;">
+                        {{ nomes_meses.i }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="calendar-container">
+        <h1>Calendário de eventos</h1>
+        <table class="calendar">
+            <thead>
+                <tr>
+                    <th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for semana in semanas %}
+                    <tr>
+                        {% for dia in semana %}
+                            <td>
+                                {% if dia.dia != 0 %}
+                                    {% if dia.eventos %}
+                                        <div class="status-{{ dia.eventos.0.status }}">{{ dia.dia }}</div>
+                                    {% else %}
+                                        {{ dia.dia }}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="legenda">
+            <span><span class="status-finalizado"></span> Evento Finalizado</span>
+            <span><span class="status-em-andamento"></span> Evento em Andamento</span>
+            <span><span class="status-criado"></span> Evento Criado</span>
+        </div>
+    </div>
+
+    <div class="eventos-lateral">
+        <h3>Eventos e Horários</h3>
+        {% for evento in eventos %}
+            <div class="evento">
+                <div style="margin-bottom: 5px;">
+                    {% if evento.status == 'finalizado' %}
+                        <span class="status-finalizado"></span>
+                    {% elif evento.status == 'andamento' %}
+                        <span class="status-em-andamento"></span>
+                    {% else %}
+                        <span class="status-criado"></span>
+                    {% endif %}
+                    {{ evento.nome }}
+                </div>
+                <div>{{ evento.data_do_evento|time:"h:i A" }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
