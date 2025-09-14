@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import *
 from datetime import datetime
-import calendar
+import json
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -49,46 +49,17 @@ def repositorio(request):
 def cadastro(request):
     return render(request, 'cadastro_Aluno.html')
 
-def calendario(request, ano=None, mes=None):
-    if not ano or not mes:
-        hoje = datetime.today()
-        ano = hoje.year
-        mes = hoje.month
-
-    eventos = Eventos.objects.filter(data_do_evento__year=ano, data_do_evento__month=mes)
-
-    # Organiza eventos por dia
-    eventos_por_dia = {}
-    for evento in eventos:
-        dia = evento.data_do_evento.day
-        eventos_por_dia.setdefault(dia, []).append(evento)
-
-    cal = calendar.Calendar()
-    semanas_raw = cal.monthdayscalendar(ano, mes)
-
-    semanas = []
-    for semana in semanas_raw:
-        semana_formatada = []
-        for dia in semana:
-            if dia == 0:
-                # dia vazio
-                semana_formatada.append({'dia': 0, 'eventos': []})
-            else:
-                semana_formatada.append({
-                    'dia': dia,
-                    'eventos': eventos_por_dia.get(dia, [])
-                })
-        semanas.append(semana_formatada)
-
-    meses = list(range(1, 13))
-    nomes_meses = calendar.month_name
-
+def calendario(request):
+    eventos = Eventos.objects.all()
+    eventos_json = [
+        {
+            "nome": evento.nome_do_evento,
+            "data": evento.data_do_evento.strftime("%Y-%m-%d"),
+            "status": evento.status
+        }
+        for evento in eventos
+    ]
     context = {
-        'ano': ano,
-        'mes': mes,
-        'semanas': semanas,
-        'meses': meses,
-        'nomes_meses': nomes_meses,
-        'eventos': eventos,
+        'eventos_json': json.dumps(eventos_json)
     }
     return render(request, 'calendario.html', context)
