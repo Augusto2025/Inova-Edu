@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import *
+from datetime import datetime
+import json
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -23,10 +25,8 @@ def login(request):
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
             return redirect('cadastro_Aluno')
-        elif usuario.tipo == 'Aluno':
+        elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
             return redirect('home')
-        elif usuario.tipo == 'Professor':
-            pass
     # se ele não for, ele manda um erro e volta pro login
     else:
         return render(request, 'login.html', {
@@ -38,17 +38,28 @@ def login(request):
 def home(request):
     # seleciona todos os campos do curso
     curso = Curso.objects.all()
-    return render(request, 'home_Aluno.html', {'curso': curso})
+    return render(request, 'home.html', {'curso': curso})
+
+def perfil(request):
+    return render(request, 'perfil.html')
 
 def repositorio(request):
-    return render(request, 'repositorio_Aluno.html')
+    return render(request, 'repositorio.html')
 
-def perfil_A(request):
-    email = request.GET.get('email')
-    usuario = None
-    if email:
-        usuario = Usuario.objects.filter(email__iexact=email).first()
-    return render(request, 'perfil_Aluno.html', {"usuario": usuario})
+def cadastro(request):
+    return render(request, 'cadastro_Aluno.html')
 
-def cadastro_aluno(request):
-    return render(request, 'cadastro_Aluno.html') 
+def calendario(request):
+    eventos = Eventos.objects.all()
+    eventos_json = [
+        {
+            "nome": evento.nome_do_evento,
+            "data": evento.data_do_evento.strftime("%Y-%m-%d"),
+            "status": evento.status
+        }
+        for evento in eventos
+    ]
+    context = {
+        'eventos_json': json.dumps(eventos_json)
+    }
+    return render(request, 'calendario.html', context)

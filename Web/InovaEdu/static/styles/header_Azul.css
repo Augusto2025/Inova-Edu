@@ -44,8 +44,8 @@ header{
 }
 
 nav{
-    height: 80px;
     display: flex;
+    height: 80px;
     align-items: center;
     justify-content: center;
     background-color: var(--cinza-Senac);
