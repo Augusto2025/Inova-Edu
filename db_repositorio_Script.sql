@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS `Eventos` (
   `Data_do_evento` DATE NOT NULL,
   `Descricao` VARCHAR(100) NOT NULL,
   `Endereco` VARCHAR(30) NOT NULL,
+  `status` VARCHAR(50),
   `ID_Usuario` INT NOT NULL,
   PRIMARY KEY (`idEventos`),
   INDEX (`ID_Usuario`),
