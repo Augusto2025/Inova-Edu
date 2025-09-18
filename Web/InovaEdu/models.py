@@ -173,7 +173,7 @@ class Forum(models.Model):
     idforum = models.AutoField(db_column='idForum', primary_key=True)
     nome = models.CharField(db_column='Nome', max_length=30)
     data_criacao = models.DateField(db_column='Data_criacao')
-    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='Usuario_idUsuario', blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
         managed = False

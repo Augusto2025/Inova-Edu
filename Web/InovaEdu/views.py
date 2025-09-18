@@ -63,3 +63,7 @@ def calendario(request):
         'eventos_json': json.dumps(eventos_json)
     }
     return render(request, 'calendario.html', context)
+
+def forum_blocos(request):
+    Foruns = Forum.objects.all()
+    return render(request, 'forum_blocos.html', {'Foruns':Foruns})

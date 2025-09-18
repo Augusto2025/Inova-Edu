@@ -9,5 +9,5 @@ urlpatterns = [
     path("repositorio", views.repositorio, name="repositorio"),
     path("perfil", views.perfil, name="perfil"),
     path("calendario", views.calendario, name="calendario"),
-    path('calendario/<int:ano>/<int:mes>/', views.calendario, name='calendario'),
+    path("forum_blocos", views.forum_blocos, name="forum_blocos"),
 ]
