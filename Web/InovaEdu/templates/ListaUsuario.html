@@ -2,62 +2,101 @@
 {% load static %}
 
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1">
-        <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}?=V1">
-    </head>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}?=V1">
+
+    <title>Lista de Usuários</title>
+</head>
+<body>
 
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
 
+    <main class="container_usuario">
 
+        <!-- Título e filtros -->
+        <div class="titulo_usuario">
+            <p>Lista dos Usuários</p>
+            <input type="text" id="search-bar" name="search" placeholder="Pesquisar...">
+            <button type="submit">Filtrar</button>
+        </div>
 
+        <!-- Lista de usuários -->
+        <section class="lista-completa">
+            <ul>
+                <!-- Cabeçalho -->
+                <li class="cabecalho">
+                    <span>Nome</span>
+                    <span>Sobrenome</span>
+                    <span>Email</span>
+                    <span>Senha</span>
+                    <span>Descrição</span>
+                    <span>Imagem</span>
+                    <span>Tipo Cadastro</span>
+                    <span class="acoes">Ações</span>
+                </li>
 
-<main class="container_usuario">
-    <div class="titulo_usuario">
-        <p>Lista dos Usuários</p>
-        <input type="text" id="search-bar" placeholder="Pesquisar...">
-        <button type="submit">Filtrar</button>
-    </div>
+                <!-- Linha de exemplo 1 -->
+                <li>
+                    <span>Clariane</span>
+                    <span>Torres</span>
+                    <span>clariane.torres@email.com</span>
+                    <span>••••••</span>
+                    <span>Professora de Informática</span>
+                    <span><img src="https://via.placeholder.com/40" alt="Foto" width="40" height="40"></span>
+                    <!-- Select Tipo Cadastro -->
+                    <span>
+                        <form method="POST" action="#">
+                            <select name="tipoCadastro">
+                                <option value="aluno">Aluno</option>
+                                <option value="professor" selected>Professor</option>
+                                <option value="coordenacao">Coordenação</option>
+                            </select>
+                        </form>
+                    </span>
+                    <span class="acoes">
+                        <button type="submit">Editar</button>
+                        <button type="submit">Excluir</button>
+                    </span>
+                </li>
 
-    <section class="lista-completa">
-        <ul>
-            <!-- Cabeçalho da lista -->
-            <li class="cabecalho">
-                <span>Nome</span>
-                <span>Sobrenome</span>
-                <span>Email</span>
-                <span>Descrição</span>
-                <span>Tipo</span>
-                <span class="acoes">Ações</span>
-            </li>
+                <!-- Linha de exemplo 2 -->
+                <li>
+                    <span>João</span>
+                    <span>Pereira</span>
+                    <span>joao.pereira@email.com</span>
+                    <span>••••••</span>
+                    <span>Aluno de Engenharia</span>
+                    <span><img src="https://via.placeholder.com/40" alt="Foto" width="40" height="40"></span>
+                    <span>
+                        <form method="POST" action="#">
+                            <select name="tipoCadastro">
+                                <option value="aluno" selected>Aluno</option>
+                                <option value="professor">Professor</option>
+                                <option value="coordenacao">Coordenação</option>
+                            </select>
+                        </form>
+                    </span>
+                    <span class="acoes">
+                        <button type="submit">Editar</button>
+                        <button type="submit">Excluir</button>
+                    </span>
+                </li>
 
-            <!-- Loop Django -->
-            {% for usuario in usuarios %}
-            <li>
-                <span>{{ usuario.nome }}</span>
-                <span>{{ usuario.sobrenome }}</span>
-                <span>{{ usuario.email }}</span>
-                <span>{{ usuario.descricao|default:"-" }}</span>
-                <span>{{ usuario.tipoCadastro }}</span>
-                <span class="acoes">
-                    <a href="{% url 'editar_usuario' usuario.id %}">Editar</a> |
-                    <a href="{% url 'deletar_usuario' usuario.id %}">Excluir</a>
-                </span>
-            </li>
-            {% empty %}
-            <li>
-                <span colspan="6">Nenhum usuário encontrado.</span>
-            </li>
-            {% endfor %}
-        </ul>
-    </section>
-</main>
+            </ul>
+        </section>
 
+    </main>
+
+</body>
+</html>
 {% endblock %}

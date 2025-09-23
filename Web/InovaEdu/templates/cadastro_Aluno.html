@@ -39,22 +39,26 @@
         <label for="descricao">Descrição:</label>
         <textarea id="descricao" name="descricao" rows="4"></textarea>
 
-           <label for="imagem">Imagem:</label>
-    <input type="file" id="imagem" name="imagem" accept="image/*">
+        <label for="imagem">Imagem:</label>
+        <input type="file" id="imagem" name="imagem" accept="image/*">
 
-    <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
-    <select id="tipoCadastro" name="tipoCadastro" required>
-        <option value="" disabled selected>Selecione uma opção</option>
-        <option value="professor">Professor</option>
-        <option value="aluno">Aluno</option>
-        <option value="coordenacao">Coordenação</option>
-    </select>
+        <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
+        <select id="tipoCadastro" name="tipoCadastro" required>
+            <option value="" disabled selected>Selecione uma opção</option>
+            <option value="professor">Professor</option>
+            <option value="aluno">Aluno</option>
+            <option value="coordenacao">Coordenação</option>
+        </select>
 
 
        
-    <button type="submit">Salvar</button>
-    <button type="button" onclick="window.location.href='{% url 'lista_usuario' %}'">Listar</button>
-    <button type="button" onclick="window.history.back()">Voltar</button>
+        <button type="submit">Salvar</button>
+        <button type="button" onclick="window.location.href='{% url 'lista_usuario' %}'">Listar</button>
+        <button type="button" onclick="window.history.back()">Voltar</button>
 
     </form>
+
+
+
+
 {% endblock %}
