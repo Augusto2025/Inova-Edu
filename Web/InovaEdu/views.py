@@ -55,7 +55,6 @@ def calendario(request):
         {
             "nome": evento.nome_do_evento,
             "data": evento.data_do_evento.strftime("%Y-%m-%d"),
-            "status": evento.status
         }
         for evento in eventos
     ]

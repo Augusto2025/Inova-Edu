@@ -11,12 +11,13 @@ const currentDate = new Date();
 let selectedMonth = currentDate.getMonth();
 let selectedYear = currentDate.getFullYear();
 
+// Web Desktop
 function populateSelects() {
   meses.forEach((mes, index) => {
-    const option = document.createElement("option");
+    const option = document.createElement("button");
     option.value = index;
     option.textContent = mes;
-    if (index === selectedMonth) option.selected = true;
+    if (index === selectedMonth) option.onclick;
     monthSelect.appendChild(option);
   });
 

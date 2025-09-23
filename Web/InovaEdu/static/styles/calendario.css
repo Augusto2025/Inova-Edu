@@ -2,6 +2,10 @@ body {
   height: 100vh;
 }
 
+main{
+  display: flex;
+}
+
 .calendar {
   justify-self: center;
   width: 400px;
@@ -134,4 +138,28 @@ select {
   border: none;
   border-top: 1px solid #ccc;
 }
-    
+
+@media (max-width: 1000px) {
+  .maximo{
+    display: none;
+  }
+}
+
+@media (min-width: 1000px) {
+  .minimo{
+    display: none;
+  }  
+  .meses{
+    display: flex;
+    align-self: center;
+  }
+
+  #month-select{
+    display: flex;
+    flex-direction: column;
+  }
+
+  main{
+    justify-content: space-between;
+  }
+}
