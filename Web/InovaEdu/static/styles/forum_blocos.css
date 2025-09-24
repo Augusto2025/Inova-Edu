@@ -1,0 +1,104 @@
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+}
+
+.titulo{
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    margin: 30px;
+    width: 50%;
+}
+
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.pesquisa{
+    display: flex;
+    justify-self: center;
+    text-align: center;
+    margin-bottom: 10px;
+    height: 30px;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: var(--azul-Senac);
+}
+
+main{
+    justify-self: center;
+    display: flex;
+    max-width: 1000px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.imagem_curso{
+    width: 300px;
+    border-radius: 23px 23px 0px 0px;
+}
+
+section{
+    width: 280px;
+    height: 180px;
+    display: flex;
+    padding: 20px;
+    flex-direction: column;
+    align-items: self-start;
+    text-align: center;
+    background: #F0F0F0;
+    margin: 30px 0px;
+    border-radius: 23px;
+}
+
+section p{
+    margin: 20px 0px 0px 0px;
+    color: var(--azul-Senac);
+}
+
+.borda{
+    width: 100px;
+    margin: 10px 0px 20px 0px;
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+}
+
+section .Botao_entrar_forum{
+    align-self: center;
+    width: 150px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--branco-Senac);
+    border: none;
+    border-radius: 23px;
+    background: #004A8D;
+    margin-top: 20px;
+}
+
+.data_criacao{
+    width: 100%;
+    display: flex;
+    font-size: 15px;
+}
+
+.data_criacao p{
+    color: gray;
+    margin-right: 5px;
+}
