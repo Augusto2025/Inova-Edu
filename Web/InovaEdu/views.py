@@ -59,7 +59,8 @@ def calendario(request):
         for evento in eventos
     ]
     context = {
-        'eventos_json': json.dumps(eventos_json)
+        'eventos_json': json.dumps(eventos_json),
+        'eventos': eventos_json
     }
     return render(request, 'calendario.html', context)
 

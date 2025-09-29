@@ -15,8 +15,8 @@
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
-
-    <!-- <main class="minimo">
+  
+    <!-- <section class="minimo">
         <div class="calendar">
             <header>
             <select id="month-select1"></select>
@@ -27,12 +27,10 @@
             </div>
             <div class="days" id="days"></div>
         </div>
-    </main> -->
+    </section> -->
 
-    <main class="maximo">
-        <div class="meses">
-            <div id="month-select"></div>
-        </div>
+    <section class="maximo">
+        <div id="month-select"></div>
         <div class="calendar">
             <header>
                 <select id="year-select"></select>
@@ -42,12 +40,9 @@
             </div>
             <div class="days" id="days"></div>
         </div>
-        <div>
-            {% for evento in eventos_json %}
-              <p>{{ evento.nome_do_evento }}</p>
-            {% endfor %}
+        <div class="events_mouth">
         </div>
-    </main>
+    </section>
 
     <div id="eventModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
@@ -59,7 +54,7 @@
     </div>
 
     <script>
-        const eventos = JSON.parse('{{ eventos_json|safe }}');
+        const eventos = JSON.parse('{{ eventos_json|escapejs }}');
     </script>
     <script src="{% static 'scripts/calendario.js' %}"></script>
 
