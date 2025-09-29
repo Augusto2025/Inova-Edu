@@ -55,12 +55,12 @@ def calendario(request):
         {
             "nome": evento.nome_do_evento,
             "data": evento.data_do_evento.strftime("%Y-%m-%d"),
-            "status": evento.status
         }
         for evento in eventos
     ]
     context = {
-        'eventos_json': json.dumps(eventos_json)
+        'eventos_json': json.dumps(eventos_json),
+        'eventos': eventos_json
     }
     return render(request, 'calendario.html', context)
 
