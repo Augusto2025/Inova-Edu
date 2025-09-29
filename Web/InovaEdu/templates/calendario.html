@@ -15,17 +15,34 @@
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
-
-    <div class="calendar">
-        <header>
-        <select id="month-select"></select>
-        <select id="year-select"></select>
-        </header>
-        <div class="weekdays">
-        <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+  
+    <!-- <section class="minimo">
+        <div class="calendar">
+            <header>
+            <select id="month-select1"></select>
+            <select id="year-select1"></select>
+            </header>
+            <div class="weekdays">
+            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+            </div>
+            <div class="days" id="days"></div>
         </div>
-        <div class="days" id="days"></div>
-    </div>
+    </section> -->
+
+    <section class="maximo">
+        <div id="month-select"></div>
+        <div class="calendar">
+            <header>
+                <select id="year-select"></select>
+            </header>
+            <div class="weekdays">
+                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+            </div>
+            <div class="days" id="days"></div>
+        </div>
+        <div class="events_mouth">
+        </div>
+    </section>
 
     <div id="eventModal" class="modal-overlay" style="display:none;">
         <div class="modal-content">
@@ -37,7 +54,7 @@
     </div>
 
     <script>
-        const eventos = JSON.parse('{{ eventos_json|safe }}');
+        const eventos = JSON.parse('{{ eventos_json|escapejs }}');
     </script>
     <script src="{% static 'scripts/calendario.js' %}"></script>
 

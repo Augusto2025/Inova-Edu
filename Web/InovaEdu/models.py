@@ -144,19 +144,6 @@ class Eventos(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=100)
     endereco = models.CharField(db_column='Endereco', max_length=30)
     
-    STATUS_CHOICES = [
-        ('criado', 'Criado'),
-        ('andamento', 'Em Andamento'),
-        ('finalizado', 'Finalizado'),
-    ]
-    
-    status = models.CharField(
-        db_column='Status',
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='criado'
-    )
-
     usuario = models.ForeignKey(
         Usuario,
         models.DO_NOTHING,
