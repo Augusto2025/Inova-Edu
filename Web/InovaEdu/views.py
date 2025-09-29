@@ -71,3 +71,4 @@ def lista_usuario(request):
 def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
+

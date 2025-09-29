@@ -11,6 +11,7 @@ urlpatterns = [
     path("calendario", views.calendario, name="calendario"),
     path('lista/', views.lista_usuario, name="lista_usuario"),
     path("forum_blocos", views.forum_blocos, name="forum_blocos"),
+    
 
 
 ]
