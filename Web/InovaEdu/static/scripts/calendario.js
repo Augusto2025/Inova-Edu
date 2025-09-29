@@ -45,6 +45,42 @@ function populateSelects() {
   }
 }
 
+function renderEventsOfMonth(month, year) {
+  const eventsMonthContainer = document.querySelector(".events_mouth");
+  eventsMonthContainer.innerHTML = "";
+
+  const eventosDoMes = eventos.filter(ev => {
+    const dataEv = new Date(ev.data);
+    return dataEv.getMonth() === month && dataEv.getFullYear() === year;
+  });
+
+  if (eventosDoMes.length === 0) {
+    eventsMonthContainer.innerHTML = "<p>Sem eventos este mês.</p>";
+    return;
+  }
+
+  eventosDoMes.forEach(ev => {
+    const evDiv = document.createElement("div");
+    evDiv.classList.add("evento-mes");
+
+  
+    const nomeEl = document.createElement("strong");
+    nomeEl.textContent = ev.nome;
+  
+    const descEl = document.createElement("p");
+    descEl.textContent = ev.descricao;
+
+    const horaEl = document.createElement("p");
+    horaEl.textContent = ev.hora;
+  
+    evDiv.appendChild(nomeEl);
+    evDiv.appendChild(descEl);
+    evDiv.appendChild(horaEl);
+  
+    eventsMonthContainer.appendChild(evDiv);
+  });
+}
+
 function renderCalendar(month, year) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -84,12 +120,13 @@ function renderCalendar(month, year) {
 
         const dataEvento = new Date(ev.data);
 
+        // 🔹 lógica de cor das bolinhas
         if (currentDateStr === todayDateStr) {
-          dot.classList.add('amarelo');
+          dot.classList.add('amarelo');   // evento de hoje
         } else if (dataEvento > today) {
-          dot.classList.add('verde');
+          dot.classList.add('verde');     // evento futuro
         } else {
-          dot.classList.add('vermelho');
+          dot.classList.add('vermelho');  // evento passado
         }
 
         dot.title = ev.nome;
@@ -99,23 +136,18 @@ function renderCalendar(month, year) {
       dayDiv.appendChild(dotsContainer);
     }
 
-    // Clique no dia para abrir modal com o primeiro evento do dia (se houver)
+    // 👇 Clique no dia → abre só o primeiro evento (lógica antiga)
     dayDiv.addEventListener('click', () => {
       if (eventosDoDia.length > 0) {
-        openModal(eventosDoDia[0]);
+        openModal(eventosDoDia[0]); // só o primeiro evento
       }
     });
 
-    if (
-      day === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    ) {
-      dayDiv.classList.add('today');
-    }
-
     daysContainer.appendChild(dayDiv);
   }
+
+  // 👇 além do calendário, renderiza a lista de eventos do mês
+  renderEventsOfMonth(month, year);
 }
 
 function openModal(evento) {
