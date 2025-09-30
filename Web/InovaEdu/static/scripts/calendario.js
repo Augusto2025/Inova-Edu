@@ -153,6 +153,8 @@ function renderCalendar(month, year) {
 function openModal(evento) {
   document.getElementById("modal-nome").textContent = evento.nome;
   document.getElementById("modal-date").textContent = evento.data;
+  document.getElementById("modal-hour").textContent = evento.hora;
+  document.getElementById("modal-descricao").textContent = evento.descricao;
 
   document.getElementById("eventModal").style.display = "flex";
 }
