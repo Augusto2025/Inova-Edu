@@ -30,10 +30,16 @@
     </section> -->
 
     <section class="maximo">
-        <div id="month-select"></div>
+        <div id="month-select">
+            <div id="year-selector" style="display: flex; align-items: center; gap: 10px;">
+                <button id="prev-year">&lt;</button> <!-- Seta esquerda -->
+                <span id="year-display">2025</span>
+                <button id="next-year">&gt;</button> <!-- Seta direita -->
+            </div>
+        </div>
         <div class="calendar">
             <header>
-                <select id="year-select"></select>
+                <h1>Calendario de eventos</h1>
             </header>
             <div class="weekdays">
                 <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
@@ -46,9 +52,9 @@
                     <div class="barras" id="vermelho"></div>
                     <p>Evento Finalizado</p>
                     <div class="barras" id="amarelo"></div>
-                    <p>Evento Finalizado</p>
+                    <p>Evento em andamento</p>
                     <div class="barras" id="verde"></div>
-                    <p>Evento Finalizado</p>
+                    <p>Evento Agendado</p>
                 </ul>
             </div>
         </div>
