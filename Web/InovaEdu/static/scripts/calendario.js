@@ -1,6 +1,6 @@
 const daysContainer = document.getElementById("days");
 const monthSelect = document.getElementById("month-select");
-const yearSelect = document.getElementById("year-select");
+const yearDisplay = document.getElementById("year-display"); // Mudança para exibir o ano
 
 const meses = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -36,13 +36,66 @@ function populateSelects() {
     monthSelect.appendChild(button);
   });
 
-  for (let year = 1900; year <= 2100; year++) {
-    const option = document.createElement("option");
-    option.value = year;
-    option.textContent = year;
-    if (year === selectedYear) option.selected = true;
-    yearSelect.appendChild(option);
+  // Exibe o ano inicial no display
+  yearDisplay.textContent = selectedYear;
+}
+
+// Atualiza o ano exibido
+function updateYearDisplay() {
+  yearDisplay.textContent = selectedYear;
+}
+
+// Função para mudar o ano para o anterior
+function decrementYear() {
+  selectedYear--;
+  updateYearDisplay();
+  renderCalendar(selectedMonth, selectedYear);
+}
+
+// Função para mudar o ano para o próximo
+function incrementYear() {
+  selectedYear++;
+  updateYearDisplay();
+  renderCalendar(selectedMonth, selectedYear);
+}
+
+// Listeners para as setas de navegação de ano
+document.getElementById("prev-year").addEventListener("click", decrementYear);
+document.getElementById("next-year").addEventListener("click", incrementYear);
+
+function renderEventsOfMonth(month, year) {
+  const eventsMonthContainer = document.querySelector(".events_mouth");
+  eventsMonthContainer.innerHTML = "";
+
+  const eventosDoMes = eventos.filter(ev => {
+    const dataEv = new Date(ev.data);
+    return dataEv.getMonth() === month && dataEv.getFullYear() === year;
+  });
+
+  if (eventosDoMes.length === 0) {
+    eventsMonthContainer.innerHTML = "<p>Sem eventos este mês.</p>";
+    return;
   }
+
+  eventosDoMes.forEach(ev => {
+    const evDiv = document.createElement("div");
+    evDiv.classList.add("evento-mes");
+
+    const nomeEl = document.createElement("strong");
+    nomeEl.textContent = ev.nome;
+
+    const descEl = document.createElement("p");
+    descEl.textContent = ev.descricao;
+
+    const horaEl = document.createElement("p");
+    horaEl.textContent = ev.hora;
+
+    evDiv.appendChild(nomeEl);
+    evDiv.appendChild(descEl);
+    evDiv.appendChild(horaEl);
+
+    eventsMonthContainer.appendChild(evDiv);
+  });
 }
 
 function renderCalendar(month, year) {
@@ -84,12 +137,13 @@ function renderCalendar(month, year) {
 
         const dataEvento = new Date(ev.data);
 
+        // 🔹 lógica de cor das bolinhas
         if (currentDateStr === todayDateStr) {
-          dot.classList.add('amarelo');
+          dot.classList.add('amarelo');   // evento de hoje
         } else if (dataEvento > today) {
-          dot.classList.add('verde');
+          dot.classList.add('verde');     // evento futuro
         } else {
-          dot.classList.add('vermelho');
+          dot.classList.add('vermelho');  // evento passado
         }
 
         dot.title = ev.nome;
@@ -99,28 +153,25 @@ function renderCalendar(month, year) {
       dayDiv.appendChild(dotsContainer);
     }
 
-    // Clique no dia para abrir modal com o primeiro evento do dia (se houver)
+    // 👇 Clique no dia → abre só o primeiro evento (lógica antiga)
     dayDiv.addEventListener('click', () => {
       if (eventosDoDia.length > 0) {
-        openModal(eventosDoDia[0]);
+        openModal(eventosDoDia[0]); // só o primeiro evento
       }
     });
 
-    if (
-      day === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    ) {
-      dayDiv.classList.add('today');
-    }
-
     daysContainer.appendChild(dayDiv);
   }
+
+  // 👇 além do calendário, renderiza a lista de eventos do mês
+  renderEventsOfMonth(month, year);
 }
 
 function openModal(evento) {
   document.getElementById("modal-nome").textContent = evento.nome;
   document.getElementById("modal-date").textContent = evento.data;
+  document.getElementById("modal-hour").textContent = evento.hora;
+  document.getElementById("modal-descricao").textContent = evento.descricao;
 
   document.getElementById("eventModal").style.display = "flex";
 }
@@ -128,17 +179,6 @@ function openModal(evento) {
 function closeModal() {
   document.getElementById("eventModal").style.display = "none";
 }
-
-// Listeners de selects
-monthSelect.addEventListener("change", () => {
-  selectedMonth = parseInt(monthSelect.value);
-  renderCalendar(selectedMonth, selectedYear);
-});
-
-yearSelect.addEventListener("change", () => {
-  selectedYear = parseInt(yearSelect.value);
-  renderCalendar(selectedMonth, selectedYear);
-});
 
 // Fechar modal
 document.addEventListener("DOMContentLoaded", () => {

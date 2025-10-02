@@ -30,15 +30,33 @@
     </section> -->
 
     <section class="maximo">
-        <div id="month-select"></div>
+        <div id="month-select">
+            <div id="year-selector" style="display: flex; align-items: center; gap: 10px;">
+                <button id="prev-year">&lt;</button> <!-- Seta esquerda -->
+                <span id="year-display">2025</span>
+                <button id="next-year">&gt;</button> <!-- Seta direita -->
+            </div>
+        </div>
         <div class="calendar">
             <header>
-                <select id="year-select"></select>
+                <h1>Calendario de eventos</h1>
             </header>
             <div class="weekdays">
                 <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
             </div>
-            <div class="days" id="days"></div>
+            <div class="days" id="days">
+            </div>
+            <div class="informacoes_eventos">
+                <p>Status dos eventos</p>
+                <ul>
+                    <div class="barras" id="vermelho"></div>
+                    <p>Evento Finalizado</p>
+                    <div class="barras" id="amarelo"></div>
+                    <p>Evento em andamento</p>
+                    <div class="barras" id="verde"></div>
+                    <p>Evento Agendado</p>
+                </ul>
+            </div>
         </div>
         <div class="events_mouth">
         </div>
@@ -50,9 +68,12 @@
             <h2>Informações do Evento</h2>
             <p><strong>Nome:</strong> <span id="modal-nome"></span></p>
             <p><strong>Data:</strong> <span id="modal-date"></span></p>
+            <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
+            <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
         </div>
     </div>
 
+    
     <script>
         const eventos = JSON.parse('{{ eventos_json|escapejs }}');
     </script>
