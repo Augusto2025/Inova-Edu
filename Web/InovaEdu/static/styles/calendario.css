@@ -205,6 +205,7 @@ ul {
 
   h1{
     width: 100%;
+    color: var(--azul-Senac);
   }
 
   #month-select {
@@ -253,16 +254,16 @@ ul {
 
   #year-selector {
   display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 10px;
   }
 
   #year-selector button {
-    padding: 5px 15px;
     font-size: 20px;
     background-color: transparent;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
+    margin: 0%;
   }
 
   #year-display {
@@ -281,6 +282,8 @@ ul {
 
   #month-select #prev-year, #month-select #next-year{
     text-align: center;
+    padding: 0%;
+    width: 10%;
   }
 
   #month-select #prev-year:hover, #month-select #next-year:hover{
