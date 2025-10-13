@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles/cadastroCurso.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?v=1">
+</head>
+
+{% block header %}
+    {% include "partials/header.html" %}
+{% endblock %}
+
+<div class="titulo_usuario">
+    <p>Cadastro Curso</p>
+</div>
+
+<form action="#" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label for="nome">Nome do Curso:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="data_inicio">Data do Início:</label>
+    <input type="date" id="data_inicio" name="data_inicio">
+
+    <label for="data_termino">Data do Término:</label>
+    <input type="date" id="data_termino" name="data_termino">
+
+    <label for="imagem">Imagem:</label>
+    <input type="file" id="imagem" name="imagem" accept="image/*">
+
+    <label for="descricao">Descrição:</label>
+    <textarea id="descricao" name="descricao" rows="4"></textarea>
+
+    <button type="submit">Salvar</button>
+    <button type="button" onclick="window.location.href='{% url 'lista_curso' %}'">Listar</button>
+    <button type="button" onclick="window.history.back()">Voltar</button>
+</form>
+
+</html>
+{% endblock %}

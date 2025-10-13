@@ -24,7 +24,7 @@ def login(request):
         # pegando pelo email
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
-            return redirect('cadastro_Aluno')
+            return redirect('home_Coordenacao')
         elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
             return redirect('home')
     # se ele não for, ele manda um erro e volta pro login
@@ -34,6 +34,10 @@ def login(request):
             'email': Email,
             'senha': ''
         })
+    
+
+def home_Coordenacao(request):
+    return render (request, 'home_Coordenacao.html')
 
 def home(request):
     # seleciona todos os campos do curso
@@ -71,3 +75,9 @@ def lista_usuario(request):
 def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
+
+def cadastroCurso(request):
+    return render(request, 'cadastroCurso.html')
+
+def listacurso(request):
+    return render(request, 'ListaCurso.html')
