@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from datetime import datetime
 import json
@@ -73,3 +73,10 @@ def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
 
+def turmas(request, curso_id):
+    curso = get_object_or_404(Curso, idcurso=curso_id)
+    turmas = Turma.objects.filter(curso=curso)
+    return render(request, 'turmas.html', {
+        'curso': curso,
+        'turmas': turmas
+    })
