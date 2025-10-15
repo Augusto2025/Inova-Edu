@@ -10,10 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- CSS -->
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}?=V1">
+    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}">
 
-    <title>Lista de Usuários</title>
+    
 </head>
 <body>
 
@@ -24,11 +23,11 @@
     <main class="container_usuario">
 
         <!-- Título e filtros -->
-        <div class="titulo_usuario">
-            <p>Lista dos Usuários</p>
-            <input type="text" id="search-bar" name="search" placeholder="Pesquisar...">
-            <button type="submit">Filtrar</button>
+        <div class="titulo">
+            <p>Lista usuário</p>
+            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
         </div>
+        <input class="pesquisa" type="search" placeholder="Pesquisar" />
 
         <!-- Lista de usuários -->
         <section class="lista-completa">

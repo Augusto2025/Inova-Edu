@@ -27,17 +27,38 @@ body {
 }
 
 /* TÍTULO E FILTROS */
-.titulo_usuario {
-    margin: 20px auto;
-    text-align: center;
-    color: var(--azul-Senac);
-    font-size: 24px;
+.titulo{
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    margin: 30px;
+    width: 50%;
 }
 
-.titulo_usuario p {
-    display: inline-block;
-    padding-bottom: 5px;
-    border-bottom: 3px solid var(--laranja-Senac);
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.pesquisa{
+    display: flex;
+    justify-self: center;
+    text-align: center;
+    margin-bottom: 10px;
+    height: 30px;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: var(--azul-Senac);
 }
 
 

@@ -81,3 +81,9 @@ def cadastroCurso(request):
 
 def listacurso(request):
     return render(request, 'ListaCurso.html')
+
+def cadastroTurma(request):
+    return render(request, 'cadastroTurma.html'),
+
+# def listaturma(request):
+#     return render(request, 'ListaTurma.html')

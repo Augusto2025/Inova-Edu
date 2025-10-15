@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1">
+    </head>
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+    
+    <div class="titulo_usuario">
+        <p>Cadastro Turma</p>
+    </div>
+
+
+    <form action="/enviar" method="POST" enctype="multipart/form-data">
+        {% csrf_token%}
+
+        <label for="nome">Turma</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="Sobrenome">Lista dos Alunos:</label>
+        <input type="text" id="Sobrenome" name="Sobrenome" required>
+
+        <label for="tipoCadastro">Turno:</label>
+        <select id="tipoCadastro" name="tipoCadastro" required>
+            <option value="" disabled selected>Selecione uma opção</option>
+            <option value="professor">Manhã</option>
+            <option value="aluno">Tarde</option>
+            <option value="coordenacao">Noite</option>
+        </select>
+
+        <button type="submit">Salvar</button>
+        {% comment %} <button type="button" onclick="window.location.href='{% url 'listaturma' %}'">Listar</button> {% endcomment %}
+        <button type="button" onclick="window.history.back()">Voltar</button>
+    </form>
+    
+
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'styles/ListaCurso.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}">
+</head>
+<body>
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <main class="container_usuario">
+
+        <!-- Título e filtros -->
+        <div class="titulo">
+            <p>Lista Curso</p>
+            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
+        </div>
+        <input class="pesquisa" type="search" placeholder="Pesquisar" />
+
+        <!-- Lista de cursos -->
+        <section class="lista-completa">
+            <ul>
+                <!-- Cabeçalho -->
+                <li class="cabecalho">
+                    <span>Nome</span>
+                    <span>Data de Início</span>
+                    <span>Data de Término</span>
+                    <span>Descrição</span>
+                    <span class="acoes">Ações</span>
+                </li>
+
+                <!-- Linha de exemplo 1 -->
+                <li>
+                    <span>Clariane Torres</span>
+                    <span>2025-10-01</span>
+                    <span>2025-10-31</span>
+                    <span>Curso de Informática</span>
+                    <span class="acoes">
+                        <button type="submit">Editar</button>
+                        <button type="submit">Excluir</button>
+                    </span>
+                </li>
+
+                <!-- Linha de exemplo 2 -->
+                <li>
+                    <span>João Pereira</span>
+                    <span>2025-11-01</span>
+                    <span>2025-11-30</span>
+                    <span>Curso de Engenharia</span>
+                    <span class="acoes">
+                        <button type="submit">Editar</button>
+                        <button type="submit">Excluir</button>
+                    </span>
+                </li>
+            </ul>
+        </section>
+
+    
+
+    </main>
+
+</body>
+</html>
+{% endblock %}
