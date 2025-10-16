@@ -84,6 +84,7 @@ def turmas(request, curso_id):
         'curso': curso,
         'turmas': turmas
     })
+
 def cadastroCurso(request):
     return render(request, 'cadastroCurso.html')
 
