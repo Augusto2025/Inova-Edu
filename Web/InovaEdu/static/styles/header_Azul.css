@@ -23,8 +23,7 @@ header{
     display: flex;
     align-items: center;
     padding-left: 450px;
-    border-bottom: solid;
-    border-color: var(--azul-Senac);
+    background-color: var(--azul-Senac);
 }
 
 
@@ -37,7 +36,7 @@ header{
 
 .texto_InovaEdu{
     margin: 10px;
-    color: var(--azul-Senac);
+    color: var(--branco-Senac);
     font-size: 30px;
     font-style: normal;
     font-weight: 400;
@@ -49,7 +48,7 @@ nav{
     align-items: center;
     justify-content: center;
     background-color: var(--cinza-Senac);
-    font-size: 13px;
+    font-size: 16px;
 }
 
 a{
