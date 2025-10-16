@@ -15,7 +15,7 @@ urlpatterns = [
     path('cadastroCurso/', views.cadastroCurso, name='cadastroCurso'),
     path('ListaCurso/', views.listacurso, name='lista_curso'),
     path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
-    # path('listaturma/', views.listaturma, name='listaturma'),
+    path('listaturma/', views.listaturma, name='listaturma'),
 
 
 
