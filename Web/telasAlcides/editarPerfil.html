@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="editarPerfil.css">
+</head>
+
+<body>
+    
+    <header>
+        <div class="logo">
+            <img src="Ellipse 13.svg" alt="Logo">
+            <h1>Inova Edu</h1>
+        </div>
+    </header>
+
+   
+    <main>
+        <h2>Editar Perfil</h2>
+        <div class="linha"></div>
+
+        
+        <div class="foto-perfil">
+            <img src="foto gato.jpg" alt="Foto de perfil">
+        </div>
+
+        
+        <form>
+            <div class="linha-form">
+                <div class="campo">
+                    <label>Nome</label>
+                    <input type="text" value="Heder">
+                </div>
+                <div class="campo">
+                    <label>Sobrenome</label>
+                    <input type="text" value="Sousa">
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Email</label>
+                <div class="input-com-icone">
+                    <input type="email" value="TestDeEmaillala@gmail.com">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Curso Atual</label>
+                <div class="input-com-icone">
+                    <input type="text" value="Técnico de desenvolvimento de sistemas">
+                    <i class="fa-solid fa-folder"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Senha</label>
+                <div class="input-com-icone">
+                    <input type="password" id="senha" value="bela2010">
+                    
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>Descrição</label>
+                <div class="input-com-icone">
+                    <textarea
+                        rows="3">Sou uma pessoa Socialmente Intuitiva e quero fazer novos amigos e ter experiências novas</textarea>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+            </div>
+
+            <div class="botoes">
+                <button type="submit" class="salvar">Salvar</button>
+                <button type="button" class="cancelar">Cancelar</button>
+            </div>
+        </form>
+    </main>
+
+    
+    <script>
+        const toggleSenha = document.getElementById('toggleSenha');
+        const inputSenha = document.getElementById('senha');
+
+        toggleSenha.addEventListener('click', () => {
+            const tipo = inputSenha.getAttribute('type');
+            if (tipo === 'password') {
+                inputSenha.setAttribute('type', 'text');
+                toggleSenha.classList.remove('fa-eye');
+                toggleSenha.classList.add('fa-eye-slash');
+            } else {
+                inputSenha.setAttribute('type', 'password');
+                toggleSenha.classList.remove('fa-eye-slash');
+                toggleSenha.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+header {
+    width: auto;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0px 10px;
+    border-bottom: solid #F7941D;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin-right: 300px;
+}
+
+.logo img {
+    width: 50px;
+    margin-right: 300px;
+}
+
+.logo h1 {
+    color: #1c4e80;
+    font-size: 22px;
+}
+
+
+main {
+    max-width: 500px;
+    margin: 30px auto;
+    text-align: center;
+    
+}
+
+main h2 {
+    color: #1c4e80;
+    margin-bottom: 5px;
+}
+
+.linha {
+    width: 80px;
+    height: 3px;
+    background: #e0902a;
+    margin: 0 auto 20px;
+    border-radius: 2px;
+    
+}
+
+
+.foto-perfil img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+
+form {
+    text-align: left;
+    
+}
+
+.campo {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #f2f2f2;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+
+}
+
+textarea {
+    resize: none;
+}
+
+.linha-form {
+    display: flex;
+    gap: 10px;
+}
+
+.linha-form .campo {
+    flex: 1;
+}
+
+
+.input-com-icone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-com-icone input,
+.input-com-icone textarea {
+    flex: 1;
+}
+
+.input-com-icone i {
+    color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+
+.input-com-icone i:hover {
+    color: #1c4e80;
+}
+
+
+.botoes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.salvar {
+    background: #1c4e80;
+    color: white;
+}
+
+.salvar:hover {
+    background: #163b5f;
+}
+
+.cancelar {
+    background: #ddd;
+    color: #333;
+}
+
+.cancelar:hover {
+    background: #bbb;
+}
