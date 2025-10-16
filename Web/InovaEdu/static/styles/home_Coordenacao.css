@@ -1,0 +1,178 @@
+:root {
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+    --azul_Claro-Senac: #177bda;
+    --fonte-principal: "Kadwa", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--branco-Senac);
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+}
+
+.header h1 {
+    font-size: 24px;
+}
+
+.header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.header nav ul li a {
+    color: var(--branco-Senac);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.header nav ul li a:hover {
+    color: var(--laranja-Senac);
+}
+
+/* PARALLAX HERO */
+.parallax.hero {
+    height: 400px;
+    background-image: url('parallax1.jpg');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--branco-Senac);
+    position: relative;
+}
+
+.conteudo-parallax {
+    background-color: rgba(0,0,0,0.5);
+    padding: 30px 50px;
+    border-radius: 12px;
+}
+
+/* CARDS HOME */
+.cards-home {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 50px 20px;
+    background-color: var(--cinza-Senac);
+}
+
+.card {
+    background-color: var(--branco-Senac);
+    width: 250px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 50%;
+}
+
+.card h3 {
+    color: var(--azul-Senac);
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.botao-card {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.botao-card:hover {
+    background-color: var(--azul_Claro-Senac);
+}
+
+/* PARALLAX SEÇÃO 2 */
+.parallax.parallax2 {
+    height: 300px;
+    background-image: url('parallax2.jpg');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--branco-Senac);
+    text-align: center;
+}
+
+.parallax.parallax2 .conteudo-parallax {
+    background-color: rgba(0,0,0,0.4);
+    padding: 20px 40px;
+    border-radius: 12px;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .cards-home {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .parallax.hero,
+    .parallax.parallax2 {
+        height: 250px;
+    }
+}

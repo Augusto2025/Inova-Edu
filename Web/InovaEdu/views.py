@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from datetime import datetime
 import json
@@ -24,7 +24,7 @@ def login(request):
         # pegando pelo email
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
-            return redirect('cadastro_Aluno')
+            return redirect('home_Coordenacao')
         elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
             return redirect('home')
     # se ele não for, ele manda um erro e volta pro login
@@ -34,6 +34,10 @@ def login(request):
             'email': Email,
             'senha': ''
         })
+    
+
+def home_Coordenacao(request):
+    return render (request, 'home_Coordenacao.html')
 
 def home(request):
     # seleciona todos os campos do curso
@@ -73,3 +77,24 @@ def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
 
+<<<<<<< HEAD
+def turmas(request, curso_id):
+    curso = get_object_or_404(Curso, idcurso=curso_id)
+    turmas = Turma.objects.filter(curso=curso)
+    return render(request, 'turmas.html', {
+        'curso': curso,
+        'turmas': turmas
+    })
+=======
+def cadastroCurso(request):
+    return render(request, 'cadastroCurso.html')
+
+def listacurso(request):
+    return render(request, 'ListaCurso.html')
+
+def cadastroTurma(request):
+    return render(request, 'cadastroTurma.html')
+
+def listaturma(request):
+    return render(request, 'ListaTurma.html')
+>>>>>>> CriarTelaTurma

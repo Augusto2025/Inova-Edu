@@ -11,7 +11,17 @@ urlpatterns = [
     path("calendario", views.calendario, name="calendario"),
     path('lista/', views.lista_usuario, name="lista_usuario"),
     path("forum_blocos", views.forum_blocos, name="forum_blocos"),
-    
+<<<<<<< HEAD
+    path("curso/<int:curso_id>/turmas", views.turmas, name="turmas"),
+=======
+    path('home_Coordenacao', views.home_Coordenacao, name="home_Coordenacao"),
+    path('cadastroCurso/', views.cadastroCurso, name='cadastroCurso'),
+    path('ListaCurso/', views.listacurso, name='lista_curso'),
+    path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
+    path('listaturma/', views.listaturma, name='listaturma'),
 
 
+
+
+>>>>>>> CriarTelaTurma
 ]

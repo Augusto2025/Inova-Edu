@@ -37,14 +37,12 @@ body {
 
 .logo {
     width: 120px; /* logo maior */
-    margin-bottom: 25px;
 }
 
 h1 {
     margin-bottom: 30px;
     color: #333;
     font-size: 32px; /* título maior */
-    /* font-family: kadwa; */
 }
 
 input {

@@ -27,6 +27,84 @@ body {
 
 /* TÍTULO E FILTROS */
 .titulo{
+<<<<<<< HEAD
+=======
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    margin: 30px;
+    width: 50%;
+}
+
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.pesquisa{
+    display: flex;
+    justify-self: center;
+    text-align: center;
+    margin-bottom: 10px;
+    height: 30px;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: var(--azul-Senac);
+}
+
+
+/* Barra de pesquisa */
+.titulo_usuario input[type="text"] {
+    padding: 10px 15px;
+    width: 30%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+/* Botão */
+.titulo_usuario button {
+    padding: 10px 20px;
+    background-color: var(--azul-Senac);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.titulo_usuario button:hover {
+    background-color: var(--azul_Claro-Senac);
+}
+
+/* Lista de usuários */
+.lista_usuarios {
+    display: flex;           
+    flex-wrap: wrap;         
+    justify-content: center;
+    gap: 15px;         
+    margin-top: 20px;
+    padding: 0;
+}
+/* LISTA PEQUENA ABAIXO DO TÍTULO */
+.lista-pequena {
+    margin: 10px 0 20px 0;
+}
+
+.lista-pequena ul {
+    list-style: none;
+>>>>>>> CriarTelaTurma
     display: flex;
     justify-content: space-between;
     justify-self: center;

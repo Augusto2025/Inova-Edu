@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - coordenação</title>
+    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>Plataforma Senac</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Cursos</a></li>
+                <li><a href="#">Turmas</a></li>
+                <li><a href="#">Alunos</a></li>
+                <li><a href="#">Usuario</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    
+    <section class="parallax hero">
+        <div class="conteudo-parallax">
+            <h2>Bem-vinda à coordenação</h2>
+            <p>Aqui você vai cadastrar Usuários, cursos, turmas e alunos de forma rápida e fácil</p>
+        </div>
+    </section>
+
+    <!-- Seções cards -->
+    <section class="cards-home">
+
+        <div class="card">
+            <img src="{% static 'img/curso.jpg' %}" alt="Cursos">
+            <h3>Cursos</h3>
+            <p>Veja a lista de cursos disponíveis</p>
+            <a href="{% url 'cadastroCurso' %}" class="botao-card">Acessar</a>
+        </div>
+        
+        <div class="card">
+            <img src="{% static 'img/turma.jpg' %}" alt="Turmas">
+            <h3>Turmas</h3>
+            <p>Gerencie suas turmas e horários</p>
+            <a href="{% url 'cadastroTurma' %}" class="botao-card">Acessar</a>
+        </div>
+    
+        <div class="card">
+            <img src="{% static 'img/usuario.jpg' %}" alt="Usuario">
+            <h3>Usuario</h3>
+            <p>Adicione novos usuários à plataforma</p>
+            <a href="{% url 'cadastro_Aluno' %}" class="botao-card">Acessar</a>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Plataforma Senac - Todos os direitos reservados</p>
+    </footer>
+</body>
+</html>

@@ -8,7 +8,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+        <link rel="stylesheet" href="{% static 'styles/turmas.css' %}">
     </head>
 
     {% block header %}
@@ -16,17 +16,17 @@
     {% endblock %}
 
     <div class="titulo">
-        <p>Cursos</p>
+        <p>Turmas</p>
         <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
     </div>
     <input class="pesquisa" type="search" placeholder="Pesquisar" />
     <main class="blocos">
-        {% for Curso in curso %}
+        {% for Turma in turmas %}
             <section>
-                <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
-                <p>{{ Curso.nome_curso }}</p>
+                <p>Código da Turma: {{ Turma.codigo_turma }}</p>
                 <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+                <i>Turno: {{ Turma.codigo_turma }}</i>
+                <a class="Botao_entrar_curso" href="">Entrar</a>
             </section>
         {% endfor %}
     </main>
