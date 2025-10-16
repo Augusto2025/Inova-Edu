@@ -77,7 +77,6 @@ def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
 
-<<<<<<< HEAD
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
     turmas = Turma.objects.filter(curso=curso)
@@ -85,7 +84,6 @@ def turmas(request, curso_id):
         'curso': curso,
         'turmas': turmas
     })
-=======
 def cadastroCurso(request):
     return render(request, 'cadastroCurso.html')
 
@@ -97,4 +95,3 @@ def cadastroTurma(request):
 
 def listaturma(request):
     return render(request, 'ListaTurma.html')
->>>>>>> CriarTelaTurma
