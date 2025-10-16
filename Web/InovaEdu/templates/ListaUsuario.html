@@ -11,8 +11,7 @@
 
     <!-- CSS -->
     {% comment %} <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}?=V1">
-    
+    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}">
 
     <title>Lista de Usuários</title>
 </head>
@@ -33,6 +32,13 @@
 
 
     <main class="container_usuario">
+
+        <!-- Título e filtros -->
+        <div class="titulo_usuario">
+            <p>Lista dos Usuários</p>
+            <input type="text" id="search-bar" name="search" placeholder="Pesquisar...">
+            <button type="submit">Filtrar</button>
+        </div>
 
         <!-- Lista de usuários -->
         <section class="lista-completa">
