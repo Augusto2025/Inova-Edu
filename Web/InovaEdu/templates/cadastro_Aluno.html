@@ -21,7 +21,7 @@
     
     
 
-    <form action="/enviar" method="POST">
+    <form action="{% url 'enviar' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
     
         <label for="nome">Primeiro Nome:</label>
