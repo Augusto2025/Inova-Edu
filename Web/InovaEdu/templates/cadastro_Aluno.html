@@ -25,19 +25,19 @@
         {% csrf_token %}
     
         <label for="nome">Primeiro Nome:</label>
-        <input type="text" id="nome" name="nome" required>
+        <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
     
         <label for="Sobrenome">Sobrenome:</label>
-        <input type="text" id="Sobrenome" name="Sobrenome" required>
+        <input type="text" id="Sobrenome" name="Sobrenome" required placeholder="Digite seu sobrenome">
     
         <label for="Email">Email:</label>
-        <input type="email" id="Email" name="Email" required>
+        <input type="email" id="Email" name="Email" required placeholder="exemplo@gmail.com">
     
         <label for="Senha">Senha:</label>
-        <input type="password" id="Senha" name="Senha" required>
+        <input type="password" id="Senha" name="Senha" required placeholder="***********">
     
         <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" rows="4"></textarea>
+        <textarea id="descricao" name="descricao" rows="4" placeholder="Lorem ipsum dolor sit amet...."></textarea>
 
         <label for="imagem">Imagem:</label>
         <input type="file" id="imagem" name="imagem" accept="image/*">
