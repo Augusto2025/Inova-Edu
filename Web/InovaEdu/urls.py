@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.login),
@@ -17,4 +18,6 @@ urlpatterns = [
     path('ListaCurso/', views.listacurso, name='lista_curso'),
     path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
     path('listaturma/', views.listaturma, name='listaturma'),
-]
+    path('enviar/',views.enviarUsuario,name='enviar'),
+    path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
+] 

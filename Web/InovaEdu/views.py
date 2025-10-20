@@ -70,7 +70,9 @@ def calendario(request):
     return render(request, 'calendario.html', context)
 
 def lista_usuario(request):
-    return render(request, "ListaUsuario.html")
+    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
+    return render(request, "ListaUsuario.html", {'usuarios':usuarios})
+
 
 
 def forum_blocos(request):
@@ -96,3 +98,36 @@ def cadastroTurma(request):
 
 def listaturma(request):
     return render(request, 'ListaTurma.html')
+
+def enviarUsuario(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        sobrenome = request.POST.get('Sobrenome')
+        email = request.POST.get('Email')
+        senha = request.POST.get('Senha')
+        descricao = request.POST.get('descricao')
+        tipo = request.POST.get('tipoCadastro')
+        imagem = request.FILES.get('imagem')
+
+        # Criar e salva o usuario
+
+        usuario = Usuario(
+            nome = nome,
+            sobrenome = sobrenome,
+            email = email,
+            senha = senha,
+            descricao = descricao,
+            tipo = tipo,
+            imagem = imagem
+        )
+
+        usuario.save()
+        
+        return redirect('lista_usuario') #redireciona para pagina de listagem
+
+    return render(request, 'cadastro_usuario.html')
+
+def excluir_usuario(request, idusuario):
+    usuario = get_object_or_404(Usuario, pk=idusuario)
+    usuario.delete()
+    return redirect('lista_usuario')

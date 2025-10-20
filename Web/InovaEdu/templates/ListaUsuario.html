@@ -1,97 +1,109 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- CSS -->
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/cadastro_Aluno.css' %}?=V1"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}">
+    {% comment %}
+    <link
+      rel="stylesheet"
+      href="{% static 'styles/cadastro_Aluno.css' %}?=V1"
+    />
+    {% endcomment %}
+    <link rel="stylesheet" href="{% static 'styles/ListaUsuario.css' %}" />
 
     <title>Lista de Usuários</title>
-</head>
-<body>
+  </head>
+  <body>
+    {% block header %} {% include "partials/header.html" %} {% endblock %}
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
-
-       <!-- Título e filtros -->
-       <div class="titulo">
-        <p>Lista Usuário</p>
-        <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
+    <!-- Título e filtros -->
+    <div class="titulo">
+      <p>Lista Usuário</p>
+      <img
+        class="filtro_icone"
+        src="{% static 'img/famicons_filter.svg' %}"
+        alt="filtro"
+      />
     </div>
     <input class="pesquisa" type="search" placeholder="Pesquisar" />
 
-
-
-
     <main class="container_usuario">
+      <!-- Lista de usuários -->
+      <section class="lista-completa">
+        <ul>
+          <!-- Cabeçalho -->
+          <li class="cabecalho">
+            <span>Nome</span>
+            <span>Sobrenome</span>
+            <span>Email</span>
+            <span>Senha</span>
+            <span>Descrição</span>
+            <span>Imagem</span>
+            <span>Tipo de Usuário</span>
+            <span class="acoes">Ações</span>
+          </li>
 
-        <!-- Título e filtros -->
-        <div class="titulo_usuario">
-            <p>Lista dos Usuários</p>
-            <input type="text" id="search-bar" name="search" placeholder="Pesquisar...">
-            <button type="submit">Filtrar</button>
-        </div>
+          <!-- Loop dos usuários do banco -->
+          {% for usuario in usuarios %}
+          <li>
+            <span>{{ usuario.nome }}</span>
+            <span>{{ usuario.sobrenome }}</span>
+            <span>{{ usuario.email }}</span>
+            <span>••••••</span>
+            <span>{{ usuario.descricao }}</span>
 
-        <!-- Lista de usuários -->
-        <section class="lista-completa">
-            <ul>
-                <!-- Cabeçalho -->
-                <li class="cabecalho">
-                    <span>Nome</span>
-                    <span>Sobrenome</span>
-                    <span>Email</span>
-                    <span>Senha</span>
-                    <span>Descrição</span>
-                    <span>Imagem</span>
-                    <span>Tipo de Usuário</span>
-                    <span class="acoes">Ações</span>
-                </li>
+            {% if usuario.imagem %}
+            <span
+              ><img
+                src="{{ usuario.imagem.url }}"
+                alt="Foto"
+                width="40"
+                height="40"
+            /></span>
+            {% else %}
+            <span
+              ><img
+                src="{% static 'img/default_user.png' %}"
+                alt="Sem foto"
+                width="40"
+                height="40"
+            /></span>
+            {% endif %}
 
-                <!-- Linha de exemplo 1 -->
-                <li>
-                    <span>Clariane</span>
-                    <span>Torres</span>
-                    <span>clariane.torres@email.com</span>
-                    <span>••••••</span>
-                    <span>Professora de Informática</span>
-                    <span><img src="../static/img/navioccc.jpg" alt="Foto" width="40" height="40"></span>
-                    <span>Aluno</span>
-                    <span class="acoes">
-                        <button type="submit">Editar</button>
-                        <button type="submit">Excluir</button>
-                    </span>
-                </li>
+            <span>{{ usuario.tipo }}</span>
 
-                <!-- Linha de exemplo 2 -->
-                <li>
-                    <span>João</span>
-                    <span>Pereira</span>
-                    <span>joao.pereira@email.com</span>
-                    <span>••••••</span>
-                    <span>Aluno de Engenharia</span>
-                    <span><img src="../static/img/joao.webp" alt="Foto" width="40" height="40"></span>
-                    <span>Professor</span>
-                    <span class="acoes">
-                        <button type="submit">Editar</button>
-                        <button type="submit">Excluir</button>
-                    </span>
-                </li>
-
-            </ul>
-        </section>
-
+            <span class="acoes">
+                <button type="button">Editar</button>
+            
+                <form action="{% url 'excluir_usuario' usuario.idusuario %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="botao-excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                        Excluir
+                    </button>
+                </form>
+            </span>
+            
+          </li>
+          {% empty %}
+          <li>
+            <span>Nenhum usuário cadastrado ainda.</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
     </main>
 
     <button class="button_salvar" type="submit">Salvar</button>
     <button class="button_salvar" type="button" onclick="window.history.back()">Voltar</button>
+
+
+
+
+
 
 
 </body>
