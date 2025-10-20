@@ -94,6 +94,107 @@ section .Botao_entrar_curso{
     background: #004A8D;
 }
 
+.chatbot-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 25px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    animation: pulse 1s infinite;
+}
+
+
+.chatbox {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 300px;
+    background: #fff;
+    border: 1px solid #c8c8c8;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    
+}
+
+
+.chat-header {
+    background: #f3f6fa;
+    color: #0a66c2;
+    font-weight: bold;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.bot-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+
+.chat-body {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-message {
+    background: #f0f2f5;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.chat-footer {
+    border-top: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+.chat-footer input {
+    flex: 1;
+    border: none;
+    padding: 8px;
+    outline: none;
+}
+
+.chat-footer button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-icon {
+    width: 22px;
+    height: 24px;
+    object-fit: contain;
+    transition: transform 0.2s;
+}
+
+.chat-footer button:hover .send-icon {
+    transform: scale(1.1);
+}
+.chatbot-img {
+    width: 70%;
+    animation: pulse 1s infinite;
+}
+
 @media (max-width: 1024px) {
     .titulo{
         width: 90%;
@@ -102,3 +203,4 @@ section .Botao_entrar_curso{
         width: 60%;
     }
 }
+
