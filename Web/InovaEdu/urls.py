@@ -10,4 +10,5 @@ urlpatterns = [
     path("perfil", views.perfil, name="perfil"),
     path("calendario", views.calendario, name="calendario"),
     path("forum_blocos", views.forum_blocos, name="forum_blocos"),
+    path("editar_perfil", views.editar_perfil, name="editar_perfil"),
 ]

@@ -67,3 +67,6 @@ def calendario(request):
 def forum_blocos(request):
     Foruns = Forum.objects.all()
     return render(request, 'forum_blocos.html', {'Foruns':Foruns})
+
+def editar_perfil(request):
+    return render(request, 'editarPerfil.html')
