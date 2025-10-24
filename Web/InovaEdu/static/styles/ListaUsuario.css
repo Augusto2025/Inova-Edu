@@ -27,8 +27,6 @@ body {
 
 /* TÍTULO E FILTROS */
 .titulo{
-<<<<<<< HEAD
-=======
     display: flex;
     justify-content: space-between;
     justify-self: center;
@@ -61,6 +59,7 @@ body {
     border: 2px solid;
     border-color: var(--azul-Senac);
 }
+
 
 
 /* Barra de pesquisa */
@@ -104,7 +103,6 @@ body {
 
 .lista-pequena ul {
     list-style: none;
->>>>>>> CriarTelaTurma
     display: flex;
     justify-content: space-between;
     justify-self: center;
