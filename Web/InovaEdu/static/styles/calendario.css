@@ -13,7 +13,7 @@ section {
   margin-top: 70px;
 }
 
-.calendar {
+.calendar, .calendario {
   justify-self: center;
   width: 400px;
   height: 550px;
@@ -186,6 +186,48 @@ ul {
 @media (max-width: 1000px) {
   .maximo {
     display: none;
+  }
+    
+  .minimo header {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .minimo select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #f8f8f8;
+    cursor: pointer;
+  }
+
+  .minimo .dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .minimo .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .minimo .day, .minimo .empty {
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+  }
+
+  .minimo .day:hover {
+    background: #007bff;
+    color: #fff;
+    cursor: pointer;
   }
 }
 
