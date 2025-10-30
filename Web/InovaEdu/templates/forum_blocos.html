@@ -28,7 +28,7 @@
                     <p>Data de Criação:</p>
                     <p>{{ Forum.data_criacao }}</p>
                 </div>
-                <a class="Botao_entrar_forum" href="#">Entrar</a>
+                <a class="Botao_entrar_forum" href="{% url 'forum' Forum.idforum %}">Entrar</a>
             </section>
         {% endfor %}
     </main>

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ forum.nome }}</title>
+        <style>
+            body {
+                font-family: Arial;
+                max-width: 600px;
+                margin: 20px auto;
+                background: #f9f9f9;
+                border-radius: 10px;
+                padding: 20px;
+            }
+            .mensagens {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                height: 400px;
+                overflow-y: scroll;
+                border: 1px solid #ddd;
+                padding: 10px;
+                background: #fff;
+            }
+            .msg {
+                padding: 8px 12px;
+                border-radius: 15px;
+                max-width: 70%;
+                word-wrap: break-word;
+            }
+            /* Mensagem do usuário logado */
+            .minha-msg {
+                align-self: flex-end;
+                background-color: #007bff;
+                color: white;
+            }
+            /* Mensagem de outros usuários */
+            .outra-msg {
+                align-self: flex-start;
+                background-color: #e5e5ea;
+                color: black;
+            }
+            .msg strong {
+                color: inherit;
+            }
+            form {
+                margin-top: 10px;
+                display: flex;
+            }
+            input[name="conteudo"] {
+                flex: 1;
+                padding: 8px;
+            }
+            button {
+                padding: 8px 15px;
+                background: #007bff;
+                border: none;
+                color: white;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #0056b3;
+            }
+        </style>
+    </head>
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <h2>💬 {{ forum.nome }}</h2>
+
+    <div class="mensagens">
+        {% for msg in mensagens %}
+            <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
+                <strong>{{ msg.autor.nome }}</strong>: {{ msg.conteudo }} <br>
+                <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
+            </div>
+        {% empty %}
+            <p>Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off">
+        <button type="submit">Enviar</button>
+    </form>
+
+{% endblock %}

@@ -99,6 +99,30 @@ def cadastroTurma(request):
 def listaturma(request):
     return render(request, 'ListaTurma.html')
 
+
+def forum_chat(request, forum_id):
+    # pegar usuário logado via session
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')  # usuário não logado
+
+    usuario = Usuario.objects.get(email=email)  # instância do usuário real
+
+    forum = Forum.objects.get(pk=forum_id)
+    mensagens = Mensagem.objects.filter(forum=forum).order_by('criado_em')
+
+    if request.method == 'POST':
+        conteudo = request.POST.get('conteudo')
+        if conteudo.strip():
+            Mensagem.objects.create(
+                forum=forum,
+                autor=usuario,  # aqui passamos a instância correta
+                conteudo=conteudo
+            )
+        return redirect('forum', forum_id=forum.idforum)
+
+    return render(request, 'forum.html', {'forum': forum, 'mensagens': mensagens})
+
 def enviarUsuario(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
