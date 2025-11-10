@@ -35,20 +35,18 @@ def login(request):
             'senha': ''
         })
     
-
-def home_Coordenacao(request):
-    return render (request, 'home_Coordenacao.html')
+# --------------- Telas aluno e professor ---------------
 
 def home(request):
     # seleciona todos os campos do curso
     curso = Curso.objects.all()
-    return render(request, 'home.html', {'curso': curso})
+    return render(request, 'AlunoProfessor/home.html', {'curso': curso})
 
 def perfil(request):
-    return render(request, 'perfil.html')
+    return render(request, 'AlunoProfessor/perfil.html')
 
 def repositorio(request):
-    return render(request, 'repositorio.html')
+    return render(request, 'AlunoProfessor/repositorio.html')
 
 def cadastro(request):
     return render(request, 'cadastro_Aluno.html')
@@ -67,38 +65,19 @@ def calendario(request):
     context = {
         'eventos_json': json.dumps(eventos_json),
     }
-    return render(request, 'calendario.html', context)
-
-def lista_usuario(request):
-    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
-    return render(request, "ListaUsuario.html", {'usuarios':usuarios})
-
-
+    return render(request, 'AlunoProfessor/calendario.html', context)
 
 def forum_blocos(request):
     Foruns = Forum.objects.all()
-    return render(request, 'forum_blocos.html', {'Foruns':Foruns})
+    return render(request, 'AlunoProfessor/forum_blocos.html', {'Foruns':Foruns})
 
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
     turmas = Turma.objects.filter(curso=curso)
-    return render(request, 'turmas.html', {
+    return render(request, 'AlunoProfessor/turmas.html', {
         'curso': curso,
         'turmas': turmas
     })
-
-def cadastroCurso(request):
-    return render(request, 'cadastroCurso.html')
-
-def listacurso(request):
-    return render(request, 'ListaCurso.html')
-
-def cadastroTurma(request):
-    return render(request, 'cadastroTurma.html')
-
-def listaturma(request):
-    return render(request, 'ListaTurma.html')
-
 
 def forum_chat(request, forum_id):
     # pegar usuário logado via session
@@ -121,7 +100,28 @@ def forum_chat(request, forum_id):
             )
         return redirect('forum', forum_id=forum.idforum)
 
-    return render(request, 'forum.html', {'forum': forum, 'mensagens': mensagens})
+    return render(request, 'AlunoProfessor/forum.html', {'forum': forum, 'mensagens': mensagens})
+
+# --------------- Telas Coordenação ---------------
+
+def home_Coordenacao(request):
+    return render (request, 'Coordenacao/home_Coordenacao.html')
+
+def lista_usuario(request):
+    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
+    return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
+
+def cadastroCurso(request):
+    return render(request, 'Coordenacao/cadastroCurso.html')
+
+def listacurso(request):
+    return render(request, 'Coordenacao/ListaCurso.html')
+
+def cadastroTurma(request):
+    return render(request, 'Coordenacao/cadastroTurma.html')
+
+def listaturma(request):
+    return render(request, 'Coordenacao/ListaTurma.html')
 
 def enviarUsuario(request):
     if request.method == 'POST':
@@ -149,7 +149,7 @@ def enviarUsuario(request):
         
         return redirect('lista_usuario') #redireciona para pagina de listagem
 
-    return render(request, 'cadastro_usuario.html')
+    return render(request, 'Coordenacao/cadastro_usuario.html')
 
 def excluir_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, pk=idusuario)
