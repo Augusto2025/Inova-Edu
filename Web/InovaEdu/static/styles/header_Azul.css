@@ -60,6 +60,27 @@ nav a{
     margin: 90px;
 }
 
+.titulo{
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    margin: 30px;
+    width: 50%;
+}
+
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
 @media (max-width: 1024px) {
     header{
         padding: 0% 1%;
