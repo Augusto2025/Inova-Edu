@@ -166,6 +166,20 @@ class Forum(models.Model):
         managed = False
         db_table = 'forum'
 
+class Mensagem(models.Model):
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='ID_Forum', related_name='mensagens')
+    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='ID_Usuario')
+    conteudo = models.TextField(db_column='Conteudo')
+    criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'mensagem'
+
+    def __str__(self):
+        nome_autor = getattr(self.autor, "username", getattr(self.autor, "nome", str(self.autor.id)))
+        return f'{nome_autor}: {self.conteudo[:30]}'
+
 
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()

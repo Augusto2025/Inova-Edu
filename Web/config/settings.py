@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv 
-
+import secrets
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -12,8 +12,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l64998^jwty8gxuy@sx3bd-+1av7p5#2_51bdfd@xsxl=vw=lp'
-
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
+# 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -47,7 +47,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join("templates")], 
+        'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

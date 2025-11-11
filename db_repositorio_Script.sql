@@ -188,6 +188,26 @@ INSERT INTO Forum (Nome, Data_criacao, ID_Usuario) VALUES
 ('Design Criativo', '2025-07-21', 5);
 
 -- -----------------------------------------------------
+-- Table Mensagem
+-- -----------------------------------------------------
+CREATE TABLE `mensagem` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `ID_Forum` INT NOT NULL,
+    `ID_Usuario` INT NOT NULL,
+    `Conteudo` TEXT NOT NULL,
+    `Data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_mensagem_forum`
+        FOREIGN KEY (`ID_Forum`) REFERENCES `forum`(`idForum`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT `fk_mensagem_usuario`
+        FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario`(`ID_Usuario`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
 -- Table Usuario_da_Turma
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Usuario_da_Turma` (

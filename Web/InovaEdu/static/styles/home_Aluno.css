@@ -10,27 +10,6 @@ body{
     padding: 0;
 }
 
-.titulo{
-    display: flex;
-    justify-content: space-between;
-    justify-self: center;
-    margin: 30px;
-    width: 50%;
-}
-
-.titulo p{
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-    color: var(--azul-Senac);
-    margin: 0%;
-    font-size: 20px;
-}
-
-.filtro_icone{
-    width: 30px;
-    flex-shrink: 0;
-}
-
 .pesquisa{
     display: flex;
     justify-self: center;
