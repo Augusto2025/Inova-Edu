@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/criar_forum.css' %}">
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="criar-forum-container">
+        <h2>Criar novo fórum</h2>
+
+        <form method="POST" class="criar-forum-form">
+            {% csrf_token %}
+            <label for="nome">Nome do fórum</label>
+            <input id="nome" name="nome" class="criar-forum-input" type="text" required maxlength="100" placeholder="Nome do fórum">
+
+            <div class="criar-forum-actions">
+                <button type="submit" class="btn-primary">Criar</button>
+                <a href="{% url 'forum_blocos' %}" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}

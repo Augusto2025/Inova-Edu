@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from datetime import datetime
 import json
+from django.utils import timezone
+from django.shortcuts import HttpResponse
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -101,6 +103,32 @@ def forum_chat(request, forum_id):
         return redirect('forum', forum_id=forum.idforum)
 
     return render(request, 'AlunoProfessor/forum.html', {'forum': forum, 'mensagens': mensagens})
+
+def criar_forum(request):
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    if usuario.tipo != 'Professor':
+        return redirect('forum_blocos')
+
+    if request.method == 'POST':
+        nome = request.POST.get('nome', '').strip()
+        if nome:
+            Forum.objects.create(
+                nome=nome,
+                data_criacao=timezone.now().date(),
+                usuario=usuario
+            )
+            return redirect('forum_blocos')
+        # se quiser, pode adicionar mensagem de erro no contexto
+
+    return render(request, 'AlunoProfessor/criar_forum.html', {'usuario': usuario})
 
 # --------------- Telas Coordenação ---------------
 
