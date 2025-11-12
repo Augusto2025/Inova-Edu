@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'styles/criar_evento.css' %}">
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="criar-evento-container">
+        <h2>Criar novo evento</h2>
+
+        {% if erro %}
+            <div class="erro">{{ erro }}</div>
+        {% endif %}
+
+        <form method="POST" class="criar-evento-form">
+            {% csrf_token %}
+            <label for="nome">Nome do evento</label>
+            <input id="nome" name="nome" type="text" required maxlength="100" value="{{ form.nome|default_if_none:'' }}">
+
+            <label for="data">Data</label>
+            <input id="data" name="data" type="date" required value="{{ form.data|default_if_none:'' }}">
+
+            <label for="hora">Hora</label>
+            <input id="hora" name="hora" type="time" required value="{{ form.hora|default_if_none:'' }}">
+
+            <label for="endereco">Endereço</label>
+            <input id="endereco" name="endereco" type="text" maxlength="100" value="{{ form.endereco|default_if_none:'' }}">
+
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" name="descricao" rows="4">{{ form.descricao|default_if_none:'' }}</textarea>
+
+            <div class="criar-evento-actions">
+                <button type="submit" class="btn-primary">Criar evento</button>
+                <a href="{% url 'calendario' %}" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}

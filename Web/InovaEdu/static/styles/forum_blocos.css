@@ -5,22 +5,6 @@
     --cinza-Senac: #D9D9D9;
 }
 
-.titulo{
-    display: flex;
-    justify-content: space-between;
-    justify-self: center;
-    margin: 30px;
-    width: 50%;
-}
-
-.titulo p{
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-    color: var(--azul-Senac);
-    margin: 0%;
-    font-size: 20px;
-}
-
 .titulo-right {
   display: flex;
   align-items: center;
@@ -47,7 +31,6 @@
   z-index: 1000;
 }
 
-/* pequenos ajustes para evitar sobreposição em telas muito pequenas */
 @media (max-width: 480px) {
   .botao-criar-forum {
     top: auto;
@@ -83,10 +66,10 @@
 main{
     justify-self: center;
     display: flex;
-    max-width: 1000px;
+    max-width: 1100px;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
 }
 
 .imagem_curso{
@@ -95,7 +78,7 @@ main{
 }
 
 section{
-    width: 280px;
+    width: 290px;
     height: 180px;
     display: flex;
     padding: 20px;
@@ -107,16 +90,12 @@ section{
     border-radius: 23px;
 }
 
-section p{
-    margin: 20px 0px 0px 0px;
+.titulo-forum{
+    margin: 20px 0 8px 0;
     color: var(--azul-Senac);
-}
-
-.borda{
-    width: 100px;
-    margin: 10px 0px 20px 0px;
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
+    display: inline-block;            
+    border-bottom: 3px solid var(--laranja-Senac); 
+    padding-bottom: 6px;              
 }
 
 section .Botao_entrar_forum{

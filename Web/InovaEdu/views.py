@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from datetime import datetime
-import json
 from django.utils import timezone
+import json
 from django.shortcuts import HttpResponse
 
 def login(request):
@@ -129,6 +129,52 @@ def criar_forum(request):
         # se quiser, pode adicionar mensagem de erro no contexto
 
     return render(request, 'AlunoProfessor/criar_forum.html', {'usuario': usuario})
+
+def criar_evento(request):
+    email = request.session.get('usuario_email')
+    usuario = None
+    if email:
+        try:
+            usuario = Usuario.objects.get(email=email)
+        except Usuario.DoesNotExist:
+            usuario = None
+
+    if request.method == 'POST':
+        nome = request.POST.get('nome', '').strip()
+        data_str = request.POST.get('data')
+        hora_str = request.POST.get('hora')
+        descricao = request.POST.get('descricao', '').strip()
+        endereco = request.POST.get('endereco', '').strip()
+
+        # validações básicas
+        if not nome or not data_str or not hora_str:
+            return render(request, 'AlunoProfessor/criar_evento.html', {
+                'erro': 'Nome, data e hora são obrigatórios.',
+                'usuario': usuario,
+                'form': request.POST
+            })
+
+        try:
+            data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
+            hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
+        except ValueError:
+            return render(request, 'AlunoProfessor/criar_evento.html', {
+                'erro': 'Formato de data/hora inválido.',
+                'usuario': usuario,
+                'form': request.POST
+            })
+
+        Eventos.objects.create(
+            nome_do_evento=nome,
+            data_do_evento=data_do_evento,
+            hora_do_evento=hora_do_evento,
+            descricao=descricao,
+            endereco=endereco,
+            usuario=usuario
+        )
+        return redirect('calendario')
+
+    return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
 
 # --------------- Telas Coordenação ---------------
 

@@ -29,8 +29,7 @@
     <main>
         {% for Forum in Foruns  %}
             <section>
-                <p>{{ Forum.nome }}</p>
-                <div class="borda"></div>
+                <p class="titulo-forum">{{ Forum.nome }}</p>
                 <div class="data_criacao">
                     <p>Data de Criação:</p>
                     <p>{{ Forum.data_criacao }}</p>
