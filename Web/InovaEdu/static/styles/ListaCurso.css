@@ -139,8 +139,6 @@ body {
 
 
 /* LISTA DE USUÁRIOS */
-
-/* LISTA DE USUÁRIOS / TABELA GERAL */
 .lista-completa ul {
     list-style: none;
     padding: 0;
@@ -149,17 +147,14 @@ body {
 
 .lista-completa li {
     display: grid;
-    grid-template-columns: 1.4fr 1.2fr 1.2fr 2fr 0.8fr 1fr;
-    /* NOME | INÍCIO | TÉRMINO | DESCRIÇÃO | IMAGEM | AÇÕES */
-    gap: 10px;
-    padding: 12px 0;
-    border-bottom: none; /* sem linha entre os itens */
+     grid-template-columns: 0.8fr 1.5fr 1.2fr 1.2fr 2fr 1fr;
+    gap: 5px;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
     align-items: center;
-    text-align: center;
     transition: 0.3s;
 }
 
-/* Cabeçalho */
 .lista-completa li.cabecalho {
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
@@ -167,40 +162,46 @@ body {
     border-radius: 6px;
 }
 
-/* Efeito hover */
 .lista-completa li:not(.cabecalho):hover {
-    background-color: #8dc0f0;
-    color: black;
+    background-color:#8dc0f0 ;
+    color:black;
 }
 
-/* IMAGEM */
+/* IMAGENS */
 .lista-completa img {
-    width: 50px;
-    height: 50px;
     border-radius: 50%;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
-    margin: 0 auto;
 }
 
-/* DESCRIÇÃO */
-.lista-completa .descricao {
-    text-align: left;
-    padding: 0 10px;
-    word-wrap: break-word;
+/* SELECT DENTRO DA LISTA */
+.lista-completa select {
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* AÇÕES */
+.lista-completa select:hover,
+.lista-completa select:focus {
+    border-color: var(--azul-Senac);
+    box-shadow: 0 0 4px rgba(0,74,141,0.3);
+}
+
+/* Button (EDITAR/EXCLUIR) */
 .acoes {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    gap: 10px; 
+    justify-content: center; 
 }
 
 /* Botão Editar */
 .acoes button:first-child {
     padding: 5px 12px;
-    background-color: var(--azul-Senac);
+    background-color:var(--azul-Senac); /* verde */
     color: white;
     border: none;
     border-radius: 5px;
@@ -210,13 +211,13 @@ body {
 }
 
 .acoes button:first-child:hover {
-    background-color: var(--azul_Claro-Senac);
+    background-color:var(--azul_Claro-Senac);
 }
 
 /* Botão Excluir */
 .acoes button:last-child {
     padding: 5px 12px;
-    background-color: #f44336;
+    background-color: #f44336; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -228,33 +229,6 @@ body {
 .acoes button:last-child:hover {
     background-color: #da190b;
 }
-
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-    .lista-completa li {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .lista-completa li.cabecalho {
-        display: none;
-    }
-
-    .lista-completa li > * {
-        padding: 8px;
-    }
-
-    .acoes {
-        justify-content: center;
-    }
-}
-
-
-
-
-
-
-
 
 /* button Salvar e voltar */
 .button_salvar {
