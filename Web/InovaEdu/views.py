@@ -195,7 +195,9 @@ def cadastroTurma(request):
     return render(request, 'Coordenacao/cadastroTurma.html')
 
 def listaturma(request):
-    return render(request, 'Coordenacao/ListaTurma.html')
+    turmas = Turma.objects.all()
+    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
+
 
 def enviarUsuario(request):
     if request.method == 'POST':
@@ -229,3 +231,29 @@ def excluir_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, pk=idusuario)
     usuario.delete()
     return redirect('lista_usuario')
+
+
+def enviarturma(request):
+    if request.method == "POST":
+        codigo_turma = request.POST.get("codigo_turma")
+        turno = request.POST.get("turno")
+        curso_id = request.POST.get("curso")
+
+        curso = Curso.objects.get(pk=curso_id)
+
+        # Cria a turma no banco
+        Turma.objects.create(
+            codigo_turma=codigo_turma,
+            turno=turno,
+            curso=curso
+        )
+
+        # Redireciona para a lista
+        return redirect('listaturma')
+
+
+    cursos = Curso.objects.all()
+    return render(request, 'cadastroTurma.html', {'cursos': cursos})
+
+
+
