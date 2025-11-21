@@ -89,6 +89,14 @@ nav a{
     nav a{
         margin: 5%;
     }
+    
+    .titulo{
+        width: 90%;
+    }
+    
+    .pesquisa{
+        width: 60%;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -99,4 +107,5 @@ nav a{
     nav a{
         margin: 0% 5%;
     }
+
 }

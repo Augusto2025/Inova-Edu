@@ -159,6 +159,7 @@ function openModal(evento) {
   document.getElementById("modal-date").textContent = evento.data;
   document.getElementById("modal-hour").textContent = evento.hora;
   document.getElementById("modal-descricao").textContent = evento.descricao;
+  document.getElementById("modal-endereco").textContent = evento.endereco;
   document.getElementById("eventModal").style.display = "flex";
 }
 

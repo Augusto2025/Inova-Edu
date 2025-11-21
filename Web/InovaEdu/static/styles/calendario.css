@@ -9,9 +9,6 @@ body {
   height: 100vh;
 }
 
-section {
-  margin-top: 70px;
-}
 
 .calendar, .calendario {
   justify-self: center;

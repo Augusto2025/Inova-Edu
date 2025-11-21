@@ -23,9 +23,5 @@ urlpatterns = [
     path('enviar/',views.enviarUsuario,name='enviar'),
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('forum/<int:forum_id>/', views.forum_chat, name='forum'),
-<<<<<<< HEAD
-]
-=======
     path('enviar', views.enviarturma, name='enviar'),
 ] 
->>>>>>> integracaodb_turma

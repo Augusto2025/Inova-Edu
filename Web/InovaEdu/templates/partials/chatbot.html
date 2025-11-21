@@ -1,0 +1,135 @@
+{% load static %}
+<style>
+    .chatbot-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 25px;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        animation: pulse 1s infinite;
+    }
+
+
+    .chatbox {
+        position: fixed;
+        bottom: 90px;
+        right: 25px;
+        width: 300px;
+        background: #fff;
+        border: 1px solid #c8c8c8;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+        flex-direction: column;
+
+    }
+
+
+    .chat-header {
+        background: #f3f6fa;
+        color: #0a66c2;
+        font-weight: bold;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .bot-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+    }
+
+
+    .chat-body {
+        max-height: 250px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .chat-message {
+        background: #f0f2f5;
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .chat-footer {
+        border-top: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+    }
+
+    .chat-footer input {
+        flex: 1;
+        border: none;
+        padding: 8px;
+        outline: none;
+    }
+
+    .chat-footer button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .send-icon {
+        width: 22px;
+        height: 24px;
+        object-fit: contain;
+        transition: transform 0.2s;
+    }
+
+    .chat-footer button:hover .send-icon {
+        transform: scale(1.1);
+    }
+
+    .chatbot-img {
+        width: 70%;
+        animation: pulse 1s infinite;
+    }
+</style>
+
+<!-- Ícone flutuante do chat -->
+<div class="chatbot-icon" id="chatbotIcon">
+    <img src="{% static 'img/robo.webp' %}" alt="chatbot" class="chatbot-img">
+</div>
+
+<!-- Caixa do chat -->
+<div class="chatbox" id="chatBox" role="dialog" aria-hidden="true" aria-label="Chat de suporte">
+    <div class="chat-header">
+        <img src="{% static 'img/robo.webp' %}" alt="bot" class="bot-icon">
+        <span>Chat suporte</span>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="chat-message">Onde estão os meus PI’s?</div>
+        <div class="chat-message">Como Usar o Fórum?</div>
+        <div class="chat-message">Onde eu Vejo o meu repositório?</div>
+        <div class="chat-message">Como ver os outros PI’s?</div>
+        <div class="chat-message">Como ver os eventos?</div>
+        <div class="chat-message">Como achar os meus certificados?</div>
+    </div>
+
+    <div class="chat-footer">
+        <input type="text" id="userInput" placeholder="Digite sua mensagem...">
+        <button id="sendBtn" aria-label="Enviar mensagem">
+            <img src="{% static 'img/enviar.webp' %}" alt="Enviar" class="send-icon">
+        </button>
+    </div>
+</div>
+
+<script src="{% static 'scripts/chat_suporte.js' %}"></script>

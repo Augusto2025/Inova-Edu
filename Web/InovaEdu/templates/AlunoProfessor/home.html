@@ -29,36 +29,8 @@
                 <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
             </section>
         {% endfor %}
-        <!-- Ícone flutuante do chat -->
-        <div class="chatbot-icon" id="chatbotIcon">
-            <img src={% static 'img/robo.webp' %} alt="chatbot" class="chatbot-img">
-        </div>
-
-        <!-- Caixa do chat -->
-        <div class="chatbox" id="chatBox">
-            <div class="chat-header">
-                <img src={% static 'img/robo.webp' %} alt="bot" class="bot-icon">
-                <span>Chat suporte</span>
-            </div>
-
-            <div class="chat-body">
-                <div class="chat-message">Onde estão os meus PI’s?</div>
-                <div class="chat-message">Como Usar o Fórum?</div>
-                <div class="chat-message">Onde eu Vejo o meu repositório?</div>
-                <div class="chat-message">Como ver os outros PI’s?</div>
-                <div class="chat-message">Como ver os eventos?</div>
-                <div class="chat-message">Como achar os meus certificados?</div>
-            </div>
-
-            <div class="chat-footer">
-                <input type="text" id="userInput" placeholder="Digite sua mensagem...">
-                <button id="sendBtn">
-                    <img src={% static 'img/enviar.webp' %} alt="Enviar" class="send-icon">
-                </button>
-            </div>
-        </div>
+        
     </main>
-    <script src={% static 'scripts/chat_suporte.js' %}></script>
 {% endblock %}
 
 {% block footer %}

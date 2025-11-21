@@ -61,6 +61,7 @@ def calendario(request):
             "data": evento.data_do_evento.strftime("%Y-%m-%d"),
             "descricao": evento.descricao,
             "hora": evento.hora_do_evento.strftime("%H:%M"),
+            "endereco": evento.endereco,
         }
         for evento in eventos
     ]
