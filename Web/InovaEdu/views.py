@@ -41,13 +41,35 @@ def login(request):
 
 def home(request):
     query = request.GET.get("q", "").strip()
+    inicio = request.GET.get("inicio")
+    fim = request.GET.get("fim")
+    ordenar = request.GET.get("ordenar")
 
     if query:
         curso = Curso.objects.filter(nome_curso__icontains=query)
     else:
         curso = Curso.objects.all()
 
-    return render(request, 'AlunoProfessor/home.html', {'curso': curso, 'query': query})
+    # ---- FILTRO: data de início ----
+    if inicio:
+        curso = curso.filter(data_inicio__gte=inicio)
+
+    # ---- FILTRO: data final ----
+    if fim:
+        curso = curso.filter(data_final__lte=fim)  # <-- CORRIGIDO
+
+    # ---- FILTRO: ordenação ----
+    if ordenar == "asc":
+        curso = curso.order_by("nome_curso")
+    elif ordenar == "desc":
+        curso = curso.order_by("-nome_curso")
+
+    return render(request, 'AlunoProfessor/home.html', {
+        'curso': curso,
+        'query': query,
+    })
+
+
 
 def perfil(request):
     return render(request, 'AlunoProfessor/perfil.html')

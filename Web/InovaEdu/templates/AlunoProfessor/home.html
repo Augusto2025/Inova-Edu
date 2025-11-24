@@ -2,14 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
-    </head>
+    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
 
     {% block header %}
         {% include "partials/header.html" %}
@@ -17,10 +10,9 @@
 
     <div class="titulo">
         <p>Cursos</p>
-        <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
     </div>
 
-    <form method="get" action="{% url 'home' %}">
+    <form class="campo_pesq" method="get" action="{% url 'home' %}">
         <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
         {% if query %}
             <a href="{% url 'home' %}" >Limpar</a>
@@ -34,16 +26,45 @@
             {% endfor %}
     {% endif %}
 
-    <main class="blocos">
-        {% for Curso in curso %}
-            <section>
-                <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
-                <p>{{ Curso.nome_curso }}</p>
-                <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
-            </section>
-        {% endfor %}
-    </main>
+    <div class="divisoria" style="display: flex;">
+        <aside class="sidebar-filtro">
+            <form method="get" action="{% url 'home' %}">
+                <!-- FILTRO: Data de início -->
+                <div class="campo-filtro">
+                    <label>Data de início:</label>
+                    <input type="date" name="inicio" value="{{ request.GET.inicio }}">
+                </div>
+            
+                <!-- FILTRO: Data final -->
+                <div class="campo-filtro">
+                    <label>Data final:</label>
+                    <input type="date" name="fim" value="{{ request.GET.fim }}">
+                </div>
+            
+                <!-- FILTRO: Ordenação -->
+                <div class="campo-filtro">
+                    <label>Ordenar por:</label>
+                    <select name="ordenar">
+                        <option value="">Padrão</option>
+                        <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>Nome (A → Z)</option>
+                        <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Nome (Z → A)</option>
+                    </select>
+                </div>
+            
+                <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
+            </form>
+        </aside>
+        <main class="blocos">
+            {% for Curso in curso %}
+                <section>
+                    <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
+                    <p>{{ Curso.nome_curso }}</p>
+                    <div class="borda"></div>
+                    <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+                </section>
+            {% endfor %}
+        </main>
+    </div>
 {% endblock %}
 
 {% block footer %}

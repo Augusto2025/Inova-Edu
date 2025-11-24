@@ -2,13 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <!DOCTYPE html>
-    <html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{% static 'styles/forum_blocos.css' %}">
-    </head>
+    <link rel="stylesheet" href="{% static 'styles/forum_blocos.css' %}">
 
     {% block header %}
         {% include "partials/header.html" %}
@@ -22,11 +16,10 @@
             {% if usuario.tipo == "Professor" %}
                 <a href="{% url 'criar_forum' %}" class="botao-criar-forum">+ Criar fórum</a>
             {% endif %}
-            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
         </div>
     </div>
     
-    <form method="get" action="{% url 'forum_blocos' %}">
+    <form class="campo_pesq" method="get" action="{% url 'forum_blocos' %}">
         <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
         {% if query %}
             <a href="{% url 'forum_blocos' %}" >Limpar</a>

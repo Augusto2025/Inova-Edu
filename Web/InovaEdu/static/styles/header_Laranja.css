@@ -81,11 +81,11 @@ nav a{
     flex-shrink: 0;
 }
 
-form{
+.campo_pesq{
     display: flex;
     justify-self: center;
     align-items: center ;
-  }
+}
   
 .pesquisa{
   text-align: center;
