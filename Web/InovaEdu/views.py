@@ -76,8 +76,14 @@ def calendario(request):
     return render(request, 'AlunoProfessor/calendario.html', context)
 
 def forum_blocos(request):
-    Foruns = Forum.objects.all()
-    return render(request, 'AlunoProfessor/forum_blocos.html', {'Foruns':Foruns})
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        foruns = Forum.objects.filter(nome__icontains=query)
+    else:
+        foruns = Forum.objects.all()
+
+    return render(request, 'AlunoProfessor/forum_blocos.html', {'foruns':foruns, 'query': query})
 
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)

@@ -19,8 +19,9 @@
         <p>Cursos</p>
         <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
     </div>
+
     <form method="get" action="{% url 'home' %}">
-        <input id="searchForm" class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
+        <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
         {% if query %}
             <a href="{% url 'home' %}" >Limpar</a>
         {% endif %}

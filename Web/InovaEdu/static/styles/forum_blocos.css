@@ -5,18 +5,11 @@
     --cinza-Senac: #D9D9D9;
 }
 
-.titulo-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  white-space: nowrap;
-}
-
 /* estilo do botão criar - fixo no canto da tela */
 .botao-criar-forum {
   position: fixed;
   /* aumentei o deslocamento para ficar mais pra baixo */
-  top: calc(var(--nav-height, 160px) + 48px); /* antes +12px, agora +48px */
+  top: calc(var(--nav-height, 160px) + 48px);
   right: 20px;
   display: inline-flex;
   align-items: center;
@@ -48,28 +41,6 @@
 .filtro_icone{
     width: 30px;
     flex-shrink: 0;
-}
-
-.pesquisa{
-    display: flex;
-    justify-self: center;
-    text-align: center;
-    margin-bottom: 10px;
-    height: 30px;
-    width: 100%;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 2px solid;
-    border-color: var(--azul-Senac);
-}
-
-main{
-    justify-self: center;
-    display: flex;
-    max-width: 1100px;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
 }
 
 .imagem_curso{
