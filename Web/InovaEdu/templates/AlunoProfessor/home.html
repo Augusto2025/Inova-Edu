@@ -19,7 +19,20 @@
         <p>Cursos</p>
         <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
     </div>
-    <input class="pesquisa" type="search" placeholder="Pesquisar" />
+    <form method="get" action="{% url 'home' %}">
+        <input id="searchForm" class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
+        {% if query %}
+            <a href="{% url 'home' %}" >Limpar</a>
+        {% endif %}
+    </form>
+
+    {% if query %}
+            {% for Curso in curso %}
+            {% empty %}
+                <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
+            {% endfor %}
+    {% endif %}
+
     <main class="blocos">
         {% for Curso in curso %}
             <section>
@@ -29,7 +42,6 @@
                 <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
             </section>
         {% endfor %}
-        
     </main>
 {% endblock %}
 

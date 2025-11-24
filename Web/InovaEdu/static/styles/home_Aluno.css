@@ -10,13 +10,17 @@ body{
     padding: 0;
 }
 
-.pesquisa{
+form{
     display: flex;
     justify-self: center;
+    align-items: center ;
+}
+
+.pesquisa{
     text-align: center;
-    margin-bottom: 10px;
     height: 30px;
-    width: 100%;
+    width: 500px;
+    margin-right: 10px;
     max-width: 600px;
     border-radius: 10px;
     border: 2px solid;
@@ -27,6 +31,7 @@ main{
     justify-self: center;
     display: flex;
     max-width: 1000px;
+    min-height: calc(70vh - 80px); /* Calcula a altura e alguns px para nao quebrar o footer */
     justify-content: center;
     flex-wrap: wrap;
     gap: 16px;

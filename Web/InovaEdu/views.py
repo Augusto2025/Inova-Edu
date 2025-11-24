@@ -40,9 +40,14 @@ def login(request):
 # --------------- Telas aluno e professor ---------------
 
 def home(request):
-    # seleciona todos os campos do curso
-    curso = Curso.objects.all()
-    return render(request, 'AlunoProfessor/home.html', {'curso': curso})
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        curso = Curso.objects.filter(nome_curso__icontains=query)
+    else:
+        curso = Curso.objects.all()
+
+    return render(request, 'AlunoProfessor/home.html', {'curso': curso, 'query': query})
 
 def perfil(request):
     return render(request, 'AlunoProfessor/perfil.html')
