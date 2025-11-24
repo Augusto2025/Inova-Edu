@@ -10,22 +10,6 @@ body{
     padding: 0;
 }
 
-form{
-    display: flex;
-    justify-self: center;
-    align-items: center ;
-}
-
-.pesquisa{
-    text-align: center;
-    height: 30px;
-    width: 500px;
-    margin-right: 10px;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 2px solid;
-    border-color: var(--azul-Senac);
-}
 
 main{
     justify-self: center;

@@ -67,6 +67,12 @@ section{
     background: #F0F0F0;
     margin: 30px 0px;
     border-radius: 23px;
+    height: 150px;
+}
+
+section:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(2,6,23,0.06);
 }
 
 section p{
