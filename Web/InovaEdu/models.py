@@ -99,7 +99,7 @@ class Curso(models.Model):
 
     def __str__(self):
         return self.nome_curso
-
+    
 
 class Turma(models.Model):
     idturma = models.AutoField(db_column='idTurma', primary_key=True)

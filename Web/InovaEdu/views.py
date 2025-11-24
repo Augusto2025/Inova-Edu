@@ -5,6 +5,7 @@ from django.utils import timezone
 import json
 from django.shortcuts import HttpResponse
 
+
 def login(request):
     # ele pega o que tem dentro do form
     if request.method == 'GET':
@@ -189,8 +190,8 @@ def lista_usuario(request):
 def cadastroCurso(request):
     return render(request, 'Coordenacao/cadastroCurso.html')
 
-def listacurso(request):
-    return render(request, 'Coordenacao/ListaCurso.html')
+# def listacurso(request):
+#     return render(request, 'Coordenacao/ListaCurso.html')
 
 def cadastroTurma(request):
     return render(request, 'Coordenacao/cadastroTurma.html')
@@ -256,5 +257,29 @@ def enviarturma(request):
     cursos = Curso.objects.all()
     return render(request, 'cadastroTurma.html', {'cursos': cursos})
 
+
+# Curso
+
+    
+def criar_curso(request):
+    if request.method == 'POST':
+
+        usuario_django = request.user
+
+        usuario = Usuario.objects.get(user=usuario_django)
+
+        curso = Curso(
+            nome_curso=request.POST['nome_curso'],
+            descricao=request.POST['descricao'],
+            usuario=usuario
+        )
+
+    curso.save()
+    return redirect('lista_curso')
+
+
+def lista_curso(request):
+    cursos = Curso.objects.all()
+    return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
 
 
