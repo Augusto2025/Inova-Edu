@@ -40,7 +40,9 @@
         <div class="calendar">
             <header>
                 <h1>Calendario de eventos</h1>
-                <a href="{% url 'criar_evento' %}" class="btn-criar-evento" style="margin-left:16px;padding:8px 12px;border-radius:8px;background:#004A8D;color:#fff;text-decoration:none;">+ Criar evento</a>
+                {% if usuario.tipo == "Professor" %}
+                    <a href="{% url 'criar_evento' %}" class="btn-criar-evento" style="margin-left:16px;padding:8px 12px;border-radius:8px;background:#004A8D;color:#fff;text-decoration:none;">+ Criar evento</a>
+                {% endif %}
             </header>
             <div class="weekdays">
                 <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
