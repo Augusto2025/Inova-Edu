@@ -54,6 +54,11 @@ section{
     border-radius: 23px;
 }
 
+section:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(2,6,23,0.06);
+}
+
 section p{
     margin: 20px 0px 0px 0px;
     color: var(--azul-Senac);
