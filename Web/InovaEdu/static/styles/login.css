@@ -20,7 +20,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: var(--laranja-Senac);
+    background-image: url(/Web/InovaEdu/static/img/Imagemdesfocada.png);
 }
 
 .card_login {

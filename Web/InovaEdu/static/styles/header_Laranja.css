@@ -27,15 +27,16 @@ header{
     align-items: center;
     justify-content: space-between;
     width: auto;
-    height: 100px;
+    height: 80px;
     padding: 0px 10px;
-    background-color: var(--laranja-Senac);
+    background-color: #004A8D;
+    /* background-color: #1A6F9D; */
 }
 
 
 .logo {
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
     margin: 10px;
     flex-shrink: 0; 
 }
@@ -43,10 +44,10 @@ header{
 .texto_InovaEdu{
     margin: 10px;
     color: var(--branco-Senac);
-    font-size: 30px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 400;
-    width: 130px;
+    width: 140px;
 }
 
 .Nome_Usu{

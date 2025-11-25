@@ -1,10 +1,12 @@
 {% load static %}
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu" />
+
 <header>
     <div class="logo_e_texto">
         <a href="{% url 'home' %}">
             {% if usuario.tipo == "Aluno" %}
-                <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="Logo Inova Edu Laranja">
+                <!-- <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="Logo Inova Edu Laranja"> -->
             {% else %}
                 <img class="logo" src="{% static 'img/Logo Azul.svg' %}" alt="Logo Inova Edu Azul">
             {% endif %}
@@ -13,7 +15,10 @@
             <p class="texto_InovaEdu">Inova Edu</p>
         </a>
     </div>
-    <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
+    <div style="display: flex; align-items: center; color: white;">
+        <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
+        <span class="material-symbols-outlined" style="margin-left: 10px; font-size: 30px;">menu</span>
+    </div>
 </header>
 <nav>
     <a href="{% url "forum_blocos" %}">Forum</a>
