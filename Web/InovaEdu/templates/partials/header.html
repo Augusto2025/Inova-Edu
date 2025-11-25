@@ -1,16 +1,19 @@
 {% load static %}
 
 <header>
-    <a href="{% url 'home' %}">
-        {% if usuario.tipo == "Aluno" %}
-            <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="Logo Inova Edu Laranja">
-        {% else %}
-            <img class="logo" src="{% static 'img/Logo Azul.svg' %}" alt="Logo Inova Edu Azul">
-        {% endif %}
-    </a>
-    <a href="{% url "home" %}">
-        <p class="texto_InovaEdu">Inova Edu</p>
-    </a>
+    <div class="logo_e_texto">
+        <a href="{% url 'home' %}">
+            {% if usuario.tipo == "Aluno" %}
+                <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="Logo Inova Edu Laranja">
+            {% else %}
+                <img class="logo" src="{% static 'img/Logo Azul.svg' %}" alt="Logo Inova Edu Azul">
+            {% endif %}
+        </a>
+        <a href="{% url "home" %}">
+            <p class="texto_InovaEdu">Inova Edu</p>
+        </a>
+    </div>
+    <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
 </header>
 <nav>
     <a href="{% url "forum_blocos" %}">Forum</a>
