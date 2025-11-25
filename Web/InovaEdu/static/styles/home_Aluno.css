@@ -1,48 +1,42 @@
 :root {
-    --laranja-Senac:#F7941D;
-    --branco-Senac:#FFF;
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
     --azul-Senac: #004A8D;
     --cinza-Senac: #D9D9D9;
 }
 
-body{
+/* ---------------------- */
+/* LAYOUT GERAL DOS CURSOS */
+/* ---------------------- */
+
+body {
     margin: 0;
     padding: 0;
 }
 
-form{
+.divisoria{
     display: flex;
-    justify-self: center;
-    align-items: center ;
+    width: 100%;
 }
 
-.pesquisa{
-    text-align: center;
-    height: 30px;
-    width: 500px;
-    margin-right: 10px;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 2px solid;
-    border-color: var(--azul-Senac);
-}
-
-main{
-    justify-self: center;
+.blocos {
     display: flex;
-    max-width: 1000px;
-    min-height: calc(70vh - 80px); /* Calcula a altura e alguns px para nao quebrar o footer */
-    justify-content: center;
+    justify-content: center;  /* CENTRALIZA os cards */
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: 16px;
+
+    width: 100%;
+    max-width: 1000px;
+    margin: 0px 120px;
 }
 
-.imagem_curso{
+.imagem_curso {
     width: 300px;
     border-radius: 23px 23px 0px 0px;
 }
 
-section{
+section {
     width: 300px;
     height: 340px;
     display: flex;
@@ -52,21 +46,27 @@ section{
     background: #F0F0F0;
     margin: 30px 0px;
     border-radius: 23px;
+    transition: 0.2s ease;
 }
 
-section p{
+section:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+}
+
+section p {
     margin: 20px 0px 0px 0px;
     color: var(--azul-Senac);
 }
 
-.borda{
+.borda {
     width: 100px;
     margin: 10px 0px 20px 0px;
     border-bottom: solid;
     border-color: var(--laranja-Senac);
 }
 
-section .Botao_entrar_curso{
+section .Botao_entrar_curso {
     width: 150px;
     height: 30px;
     display: flex;
@@ -75,5 +75,77 @@ section .Botao_entrar_curso{
     color: var(--branco-Senac);
     border: none;
     border-radius: 23px;
-    background: #004A8D;
+    background: var(--azul-Senac);
+}
+
+
+/* ---------------------- */
+/* SIDEBAR DE FILTROS     */
+/* ---------------------- */
+
+/* --- SIDEBAR FIXA À ESQUERDA --- */
+.sidebar-filtro {
+    align-self: start;
+    width: 280px;
+    padding: 25px 20px;
+}
+
+.sidebar-filtro.ativo {
+    left: 0;
+    /* mostra */
+}
+
+.sidebar-filtro h2 {
+    margin-bottom: 20px;
+    font-size: 21px;
+    font-weight: bold;
+    color: var(--azul-Senac);
+}
+
+/* campos do filtro */
+
+.campo-filtro {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-filtro label {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+/* input date */
+.campo-filtro input[type="date"] {
+    padding: 8px;
+    border: 1px solid var(--cinza-Senac);
+    border-radius: 8px;
+}
+
+/* select */
+.campo-filtro select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--cinza-Senac);
+    background-color: #fff;
+}
+
+/* botão aplicar */
+.btn-aplicar {
+    width: 100%;
+    padding: 10px;
+    background: var(--azul-Senac);
+    color: var(--branco-Senac);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.btn-aplicar:hover {
+    background: #00376a;
 }

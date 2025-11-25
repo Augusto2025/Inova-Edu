@@ -41,13 +41,35 @@ def login(request):
 
 def home(request):
     query = request.GET.get("q", "").strip()
+    inicio = request.GET.get("inicio")
+    fim = request.GET.get("fim")
+    ordenar = request.GET.get("ordenar")
 
     if query:
         curso = Curso.objects.filter(nome_curso__icontains=query)
     else:
         curso = Curso.objects.all()
 
-    return render(request, 'AlunoProfessor/home.html', {'curso': curso, 'query': query})
+    # ---- FILTRO: data de início ----
+    if inicio:
+        curso = curso.filter(data_inicio__gte=inicio)
+
+    # ---- FILTRO: data final ----
+    if fim:
+        curso = curso.filter(data_final__lte=fim)  # <-- CORRIGIDO
+
+    # ---- FILTRO: ordenação ----
+    if ordenar == "asc":
+        curso = curso.order_by("nome_curso")
+    elif ordenar == "desc":
+        curso = curso.order_by("-nome_curso")
+
+    return render(request, 'AlunoProfessor/home.html', {
+        'curso': curso,
+        'query': query,
+    })
+
+
 
 def perfil(request):
     return render(request, 'AlunoProfessor/perfil.html')
@@ -76,8 +98,14 @@ def calendario(request):
     return render(request, 'AlunoProfessor/calendario.html', context)
 
 def forum_blocos(request):
-    Foruns = Forum.objects.all()
-    return render(request, 'AlunoProfessor/forum_blocos.html', {'Foruns':Foruns})
+    query = request.GET.get("q", "").strip()
+
+    if query:
+        foruns = Forum.objects.filter(nome__icontains=query)
+    else:
+        foruns = Forum.objects.all()
+
+    return render(request, 'AlunoProfessor/forum_blocos.html', {'foruns':foruns, 'query': query})
 
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)

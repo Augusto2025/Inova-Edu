@@ -81,6 +81,33 @@ nav a{
     flex-shrink: 0;
 }
 
+.campo_pesq{
+    display: flex;
+    justify-self: center;
+    align-items: center ;
+}
+  
+.pesquisa{
+  text-align: center;
+  height: 30px;
+  width: 500px;
+  margin-right: 10px;
+  max-width: 600px;
+  border-radius: 10px;
+  border: 2px solid;
+  border-color: var(--azul-Senac);
+}
+
+main{
+    justify-self: center;
+    display: flex;
+    max-width: 1022px;
+    min-height: calc(70vh - 80px); /* Calcula a altura e alguns px para nao quebrar o footer */
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
 @media (max-width: 1024px) {
     header{
         padding: 0% 1%;
