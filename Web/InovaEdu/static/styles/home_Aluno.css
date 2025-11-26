@@ -1,5 +1,5 @@
 /* ===========================================================
-   VARIÁVEIS (vêm do global, mas reforço aqui por segurança)
+   VARIÁVEIS
    =========================================================== */
    :root {
     --laranja-Senac:#F7941D;
@@ -32,24 +32,14 @@ body {
     border-bottom: 4px solid var(--laranja-Senac);
 }
 
-/* ===========================================================
-   BARRA DE PESQUISA + ICONE FILTRO
-   =========================================================== */
-.campo_pesq_filtro {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-self: center;
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 20px;
-}
-
+/* BARRA DE PESQUISA + ICONE FILTRO */
 .campo_pesq {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
 }
 
 .pesquisa {
@@ -60,11 +50,11 @@ body {
     font-size: 15px;
 }
 
-/* Ícone do filtro */
 .btn-toggle-filtro {
+    display: none; /* apenas no mobile */
     cursor: pointer;
-    display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .filtro_icone {
@@ -73,16 +63,24 @@ body {
 }
 
 /* ===========================================================
-   SIDEBAR DE FILTRO
+   DIVISÓRIA: SIDEBAR + MAIN
    =========================================================== */
-.sidebar-filtro {
-    display: none; /* inicialmente escondido em mobile */
+.divisoria {
+    display: flex;
     width: 100%;
+    padding: 40px 20px;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* SIDEBAR DE FILTRO */
+.sidebar-filtro {
+    width: 260px;
     background: #ffffff;
-    padding: 20px;
+    padding: 25px 20px;
     border-radius: 16px;
     box-shadow: var(--shadow);
-    margin-top: 10px;
     height: fit-content;
 }
 
@@ -94,7 +92,7 @@ body {
 }
 
 .campo-filtro {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -124,16 +122,13 @@ body {
     background: #00376a;
 }
 
-/* ===========================================================
-   GRID DE CURSOS
-   =========================================================== */
+/* MAIN: GRID DE CURSOS */
 .blocos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 26px;
-    width: 100%;
     max-width: 1050px;
-    margin: 40px 0px;
 }
 
 section {
@@ -202,43 +197,39 @@ section p {
     }
 
     .sidebar-filtro {
+        display: none; /* sidebar some */
         width: 90%;
+        margin-top: 10px;
     }
 
-    .blocos {
-        max-width: 100%;
-    }
-}
-
-/* Celulares */
-@media (max-width: 600px) {
-
-    .sidebar-filtro {
-        width: 100%;
-    }
-
-    /* Sidebar vira dropdown */
-    .sidebar-filtro {
-        display: none;
-    }
-
-    /* Ícone de filtro com estilo de botão */
     .btn-toggle-filtro {
         display: flex;
         justify-content: center;
         align-items: center;
-        /* background: var(--azul-Senac); */
+        background: var(--azul-Senac);
         color: white;
-        /* padding: 10px 15px; */
+        padding: 10px 15px;
         border-radius: 10px;
-        text-align: center;
-        margin-top: 10px;
         cursor: pointer;
         font-weight: 500;
         gap: 10px;
+        margin-bottom: 15px;
     }
 
     .blocos {
+        max-width: 100%;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .sidebar-filtro {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .blocos {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
 }
