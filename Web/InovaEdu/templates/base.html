@@ -6,14 +6,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Colocar se o usuário for Aluno usar LARANJA se for Professor ou Coordenador usar AZUL -->
-  {% if usuario.tipo == "Aluno" %}
-    <link rel="stylesheet" href="{% static 'styles/header_Laranja.css' %}">
-    <link rel="icon" href="{% static 'img/Logo Laranja.svg' %}" type="image/png"/>
-    {% else %}
-    <link rel="stylesheet" href="{% static 'styles/header_Azul.css' %}">
-    <link rel="icon" href="{% static 'img/Logo Azul.svg' %}" type="image/png"/>
-  {% endif %}
+  <link rel="stylesheet" href="{% static 'styles/header.css' %}">
   <title>Inova Edu</title>
 </head>
 <body>

@@ -55,13 +55,16 @@ header{
 }
 
 nav{
-    display: flex;
+    display: none;
     height: 80px;
     align-items: center;
     justify-content: center;
-    /* background-color: var(--cinza-Senac); */
     border-bottom: solid 1px var(--cinza-Senac);
     font-size: 16px;
+}
+
+nav.open{
+    display: flex;
 }
 
 a{
@@ -72,6 +75,16 @@ a{
 nav a{
     margin: 90px;
 }
+
+nav .sair{
+    display: flex;
+    align-items: center;
+    background-color: rgb(176, 0, 0);
+    color: white;
+    padding: 5px 30px;
+    border-radius: 10px;
+}
+
 
 .titulo{
     display: flex;
@@ -111,6 +124,7 @@ nav a{
   border-color: var(--azul-Senac);
 }
 
+
 main{
     justify-self: center;
     display: flex;
@@ -125,7 +139,7 @@ main{
     header{
         padding: 0% 1%;
     }
-
+    
     nav a{
         margin: 5%;
     }

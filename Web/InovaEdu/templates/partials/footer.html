@@ -5,11 +5,10 @@
         text-align: center;
         padding: 20px;
         color: var(--branco-Senac);
+        background-color: var(--azul-Senac);
     }
-    .footer-aluno { background-color: var(--laranja-Senac); }
-    .footer-outro { background-color: var(--azul-Senac); }
 </style>
 
-<footer class="{% if usuario and usuario.tipo == 'Aluno' %}footer-aluno{% else %}footer-outro{% endif %}">
+<footer>
     <p>&copy; 2025 Plataforma Senac - Todos os direitos reservados</p>
 </footer>

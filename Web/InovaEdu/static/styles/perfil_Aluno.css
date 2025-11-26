@@ -10,15 +10,6 @@ body{
     padding: 0%;
 }
 
-.titulo a{
-    display: flex;
-    align-items: center;
-    background-color: rgb(176, 0, 0);
-    color: white;
-    padding: 0px 30px;
-    border-radius: 10px;
-}
-
 main{
     justify-self: center;
     display: flex;
