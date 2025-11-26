@@ -1,341 +1,388 @@
 :root {
-  --laranja-Senac: #F7941D;
-  --branco-Senac: #FFF;
-  --azul-Senac: #004A8D;
-  --cinza-Senac: #D9D9D9;
+  --azul: #004A8D;
+  --azul-light: #0E66B3;
+  --laranja: #F7941D;
+  --bg: #F5F7FA;
+  --white: #fff;
+  --shadow: 0 4px 15px rgba(0,0,0,0.1);
+  --radius: 14px;
+  --transition: .2s ease;
 }
 
 body {
-  height: 100vh;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
 }
 
-
-.calendar, .calendario {
-  justify-self: center;
-  width: 400px;
-  height: 550px;
-  background: #fff;
-  padding: 14px;
-  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
-  border-radius: 10px;
-}
-
-
-.calendar header {
+/* CONTAINER PRINCIPAL ------------------------------------------------------ */
+.calendar-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  background-color: transparent;
+  gap: 25px;
+  padding: 30px;
+  max-width: 1400px;
+  min-height: calc(90vh - 90px);
+  margin: auto;
 }
 
-.informacoes_eventos {
+/* SIDEBAR --------------------------------------------------------------- */
+.sidebar {
+  width: 220px;
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.year-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.year-controls span {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--azul);
+}
+
+.year-controls button {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--azul);
+}
+
+.month-list {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  margin: 70px 0px;
-  width: 100%;
 }
 
-.informacoes_eventos p {
+.month-list button {
+  background: transparent;
+  border: none;
+  padding: 12px;
+  text-align: left;
   font-size: 16px;
-  color: var(--azul-Senac);
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: var(--transition);
 }
 
-.weekdays,
-.days {
+.month-list button:hover,
+.month-list button.active {
+  background: var(--azul);
+  color: var(--white);
+}
+
+/* BOTÃO CRIAR EVENTO */
+.btn-create {
+  display: block;
+  width: 100%;
+  background: var(--laranja);
+  color: white;
+  padding: 12px;
+  border-radius: var(--radius);
+  text-align: center;
+  margin-top: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: var(--transition);
+}
+
+.btn-create:hover {
+  background: #ff9f34;
+}
+
+/* CALENDÁRIO PRINCIPAL --------------------------------------------------- */
+.calendar-card {
+  flex-grow: 1;
+  background: var(--white);
+  padding: 25px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.calendar-header{
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 {
+  color: var(--azul);
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Cabeçalho dos dias da semana */
+.weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-}
-
-.weekdays div {
   font-weight: bold;
-  padding: 10px 0;
+  color: var(--azul);
+  padding-bottom: 10px;
 }
 
-.days div {
-  padding: 10px 0;
-  border-radius: 10px;
-  cursor: pointer;
+/* Grelha dos dias */
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 12px;
+  column-gap: 6px;
+  padding-top: 10px;
 }
 
-.days div:hover {
-  background: #007bff;
-  color: white;
-}
-
-.today {
-  background: #007bff;
-  color: white;
-}
-
-/* Custom day layout */
+/* Cada dia do mês */
 .day-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 10px 0;
+  border-radius: 12px;
+  transition: var(--transition);
+  cursor: pointer;
+  min-height: 60px;
+}
+
+.day-box:hover {
+  background: var(--azul-light);
+  color: white;
 }
 
 .day-number {
-  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 6px;
 }
 
-.event-dot {
+/* Destacar o dia atual */
+.today {
+  background: var(--laranja) !important;
+  color: white;
+  font-weight: 700;
+}
+
+/* Dots de status */
+.dots-container {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
 
-.dots-container {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-  margin-top: 4px;
+.green { background: #43CD48; }
+.yellow { background: #E5AB3E; }
+.red { background: #E53E3E; }
+
+/* LEGENDA ------------------------------------------------------------- */
+.legend {
+  margin-top: 20px;
+  text-align: left;
+  background-color: white;
+  color: #004A8D;
 }
 
-.verde {
-  background-color: #28a745;
-}
-
-.amarelo {
-  background-color: #ffc107;
-}
-
-.vermelho {
-  background-color: #dc3545;
-}
-
-.cinza {
-  background-color: #999;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+.legend-row {
   display: flex;
   align-items: center;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+/* PAINEL DE EVENTOS ---------------------------------------------------- */
+.event-panel {
+  width: 260px;
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.event-panel h3 {
+  text-align: center;
+  color: var(--azul);
+  margin-bottom: 10px;
+}
+
+.event-item {
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.event-item:hover {
+  color: var(--azul);
+}
+
+/* MODAL --------------------------------------------------------------- */
+.modal {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  background: rgba(0,0,0,0.55);
+  display: flex;
   justify-content: center;
-  z-index: 1000;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
 }
 
 .modal-content {
   background: white;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 25px;
   width: 90%;
   max-width: 400px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   position: relative;
-  text-align: left;
 }
 
 .modal-close {
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.5em;
+  top: 12px;
+  right: 18px;
+  font-size: 26px;
   cursor: pointer;
 }
 
-.evento-info {
-  margin: 4px 0;
-}
+/* ===========================================================
+   📱 RESPONSIVIDADE DO CALENDÁRIO
+   =========================================================== */
 
-.evento-separador {
-  margin: 8px 0;
-  border: none;
-  border-top: 1px solid #ccc;
-}
+/* ---------- Telas até 1024px (tablets) ---------- */
+@media (max-width: 1024px) {
 
-.barras {
-  width: 10px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: 100px;
-}
-
-#vermelho {
-  background: #E53E3E;
-}
-
-#amarelo {
-  background: #E5AB3E;
-}
-
-#verde {
-  background: #43CD48;
-}
-
-ul {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 450px;
-  padding: 0%;
-  margin: 0%;
-}
-
-.btn-criar-evento {
-    min-width: 110px; /* ajuste para a largura desejada */
-    padding: 10px 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-@media (max-width: 1000px) {
-  .maximo {
-    display: none;
-  }
-    
-  .minimo header {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
+  .calendar-container {
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
   }
 
-  .minimo select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background: #f8f8f8;
-    cursor: pointer;
+  .sidebar {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      overflow-x: auto;
+      padding: 12px;
   }
 
-  .minimo .dias-semana {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 8px;
+  .month-list {
+      flex-direction: row;
+      gap: 10px;
+      white-space: nowrap;
   }
 
-  .minimo .days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+  .month-list button {
+      padding: 8px 14px;
+      font-size: 14px;
   }
 
-  .minimo .day, .minimo .empty {
-    text-align: center;
-    padding: 8px;
-    border-radius: 5px;
+  .calendar-card {
+      width: 100%;
   }
 
-  .minimo .day:hover {
-    background: #007bff;
-    color: #fff;
-    cursor: pointer;
+  .event-panel {
+      width: 100%;
+      margin-top: 15px;
   }
 }
 
-@media (min-width: 1000px) {
-  .minimo {
-    display: none;
+/* ---------- Telas pequenas até 768px (celulares normais) ---------- */
+@media (max-width: 768px) {
+
+  .calendar-container {
+      padding: 10px;
   }
 
-  .maximo {
-    display: flex;
-    justify-content: space-between;
+  .weekdays div {
+      font-size: 13px;
+      padding: 6px 0;
   }
 
-  .calendar header{
-    padding: 0%;
-    text-align: center;
+  .day-box {
+      min-height: 50px;
+      padding: 8px 0;
   }
 
-  h1{
-    width: 100%;
-    color: var(--azul-Senac);
+  .day-number {
+      font-size: 14px;
   }
 
-  #month-select {
-    width: 20%;
-    padding: 20px 20px 20px 0px;
-    display: flex;
-    flex-direction: column;
-    border-top-right-radius: 20px;
-    background-color: var(--azul-Senac);
-    box-shadow: 29px 4px 38px 0 rgba(0, 0, 0, 0.25);
+  .calendar-header h2 {
+      font-size: 22px;
   }
 
-  #month-select button {
-    width: 100%;
-    margin: 15px 0px;
-    padding: 10px;
-    text-align: start;
-    border-style: none;
-    color: white;
-    background-color: rgba(0, 0, 255, 0);
-    font-size: large;
+  .legend-row {
+      flex-wrap: wrap;
+      gap: 8px;
   }
 
-  #month-select button:hover {
-    background-color: var(--laranja-Senac);
+  .event-panel h3 {
+      font-size: 18px;
+  }
+}
+
+/* ---------- Telas muito pequenas (menos de 480px) ---------- */
+@media (max-width: 480px) {
+
+  .sidebar {
+      flex-wrap: wrap;
+      justify-content: center;
   }
 
-  .events_mouth {
-    width: 20%;
-    padding: 25px;
-    text-align: center;
-    border-top-left-radius: 20px;
-    background-color: var(--azul-Senac);
-    box-shadow: -20px 0 30px rgba(0,0,0,0.10), 20px 0 30px rgba(0,0,0,0.10);
-    color: white;
+  .month-list {
+      flex-wrap: wrap;
+      justify-content: center;
   }
 
-  .evento-mes p,
-  .evento-mes strong {
-    margin: 5px;
+  .month-list button {
+      font-size: 13px;
+      padding: 6px 10px;
   }
 
-  .evento-mes {
-    margin: 30px 0px;
+  .days {
+      grid-template-columns: repeat(7, minmax(32px, 1fr)); /* colunas mais estreitas */
+      gap: 2px;
   }
 
-  #year-selector {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+  .day-box {
+      padding: 6px 0;
+      min-height: 40px;
   }
 
-  #year-selector button {
-    font-size: 20px;
-    background-color: transparent;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin: 0%;
+  .day-number {
+      font-size: 12px;
   }
 
-  #year-display {
-    font-weight: bold;
-    font-size: 25px;
-    min-width: 60px;
-    text-align: center;
-    color: white;
+  .dots-container .dot {
+      width: 7px;
+      height: 7px;
   }
 
-  #year-selector button:disabled {
-    color: #ccc;
-    border-color: #ccc;
-    cursor: not-allowed;
+  .event-panel {
+      padding: 12px;
   }
 
-  #month-select #prev-year, #month-select #next-year{
-    text-align: center;
-    padding: 0%;
-    width: 10%;
+  .event-item p {
+      font-size: 14px;
   }
 
-  #month-select #prev-year:hover, #month-select #next-year:hover{
-    background-color: rgba(0, 0, 255, 0);
+  .modal-content {
+      width: 92%;
+      padding: 18px;
   }
 }

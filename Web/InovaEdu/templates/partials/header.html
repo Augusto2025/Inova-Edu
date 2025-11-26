@@ -23,26 +23,26 @@
 </nav>
 
 <script>
-(function() {
-    const btnMenu = document.getElementById('menu');        // ícone normal
-    const btnMenuOpen = document.getElementById('menu-open'); // ícone aberto
-    const nav = document.getElementById('site-nav');
+    (function() {
+        const btnMenu = document.getElementById('menu');        // ícone normal
+        const btnMenuOpen = document.getElementById('menu-open'); // ícone aberto
+        const nav = document.getElementById('site-nav');
 
-    function toggleNav() {
-        const isOpen = nav.classList.toggle('open');
+        function toggleNav() {
+            const isOpen = nav.classList.toggle('open');
 
-        // troca ícones
-        if (isOpen) {
-            btnMenu.style.display = "none";
-            btnMenuOpen.style.display = "inline-block";
-        } else {
-            btnMenu.style.display = "inline-block";
-            btnMenuOpen.style.display = "none";
+            // troca ícones
+            if (isOpen) {
+                btnMenu.style.display = "none";
+                btnMenuOpen.style.display = "inline-block";
+            } else {
+                btnMenu.style.display = "inline-block";
+                btnMenuOpen.style.display = "none";
+            }
         }
-    }
 
-    // eventos nos dois ícones
-    btnMenu.addEventListener('click', toggleNav);
-    btnMenuOpen.addEventListener('click', toggleNav);
-})();
+        // eventos nos dois ícones
+        btnMenu.addEventListener('click', toggleNav);
+        btnMenuOpen.addEventListener('click', toggleNav);
+    })();
 </script>

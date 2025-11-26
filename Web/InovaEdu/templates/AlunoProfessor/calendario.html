@@ -1,80 +1,83 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %} 
+{% load static %} 
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/calendario.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/calendario.css' %}" />
+  {% include "partials/header.html" %}
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
-  
-    <section class="minimo">
-        <div class="calendario">
-            <header>
-            <select id="month-select-min"></select>
-            <select id="year-select-min"></select>
-            </header>
-            <div class="dias-semana">
-            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-            </div>
-            <div class="days" id="days-min"></div>
+  <section class="calendar-container">
+    <!-- Sidebar com meses -->
+    <aside class="sidebar">
+      <div class="year-controls">
+        <button id="prev-year">&lt;</button>
+        <span id="year-display">2025</span>
+        <button id="next-year">&gt;</button>
+      </div>
+
+      <nav class="month-list" id="month-list">
+        <!-- Preenchido pelo JS -->
+      </nav>
+
+      {% if usuario.tipo == "Professor" %}
+      <a class="btn-create" href="{% url 'criar_evento' %}">+ Criar Evento</a>
+      {% endif %}
+    </aside>
+
+    <!-- Área principal do calendário -->
+    <main class="calendar-card">
+      <header class="calendar-header">
+        <h2 id="selected-month">Janeiro</h2>
+      </header>
+
+      <div class="weekdays">
+        <div>Dom</div>
+        <div>Seg</div>
+        <div>Ter</div>
+        <div>Qua</div>
+        <div>Qui</div>
+        <div>Sex</div>
+        <div>Sáb</div>
+      </div>
+
+      <div class="days" id="days"></div>
+
+      <footer class="legend">
+        <p><strong>Status dos Eventos</strong></p>
+        <div class="legend-row">
+          <span class="dot red"></span> Finalizado
+          <span class="dot yellow"></span> Em andamento
+          <span class="dot green"></span> Agendado
         </div>
+      </footer>
+    </main>
+
+    <!-- Eventos do mês -->
+    <section class="event-panel">
+      <h3>Eventos do mês</h3>
+      <div id="event-list">
+        <p>Selecione um dia para ver os eventos.</p>
+      </div>
     </section>
+  </section>
 
-    <section class="maximo">
-        <div id="month-select">
-            <div id="year-selector" style="display: flex; align-items: center; gap: 10px;">
-                <button id="prev-year">&lt;</button>
-                <span id="year-display">2025</span>
-                <button id="next-year">&gt;</button>
-            </div>
-        </div>
-        <div class="calendar">
-            <header>
-                <h1>Calendario de eventos</h1>
-                {% if usuario.tipo == "Professor" %}
-                    <a href="{% url 'criar_evento' %}" class="btn-criar-evento" style="margin-left:16px;padding:8px 12px;border-radius:8px;background:#004A8D;color:#fff;text-decoration:none;">+ Criar evento</a>
-                {% endif %}
-            </header>
-            <div class="weekdays">
-                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-            </div>
-            <div class="days" id="days">
-            </div>
-            <div class="informacoes_eventos">
-                <p>Status dos eventos</p>
-                <ul>
-                    <div class="barras" id="vermelho"></div>
-                    <p>Evento Finalizado</p>
-                    <div class="barras" id="amarelo"></div>
-                    <p>Evento em andamento</p>
-                    <div class="barras" id="verde"></div>
-                    <p>Evento Agendado</p>
-                </ul>
-            </div>
-        </div>
-        <div class="events_mouth">
-        </div>
-    </section>
+  <!-- MODAL -->
+  <div id="eventModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
 
-    <div id="eventModal" class="modal-overlay" style="display:none;">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <h2>Informações do Evento</h2>
-            <p><strong>Nome:</strong> <span id="modal-nome"></span></p>
-            <p><strong>Data:</strong> <span id="modal-date"></span></p>
-            <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
-            <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
-            <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
-        </div>
+      <h2 id="modal-nome"></h2>
+
+      <p><strong>Data:</strong> <span id="modal-date"></span></p>
+      <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
+      <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
+      <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
     </div>
+  </div>
 
-    
-    <script>
-        const eventos = JSON.parse('{{ eventos_json|escapejs }}');
-    </script>
-    <script src="{% static 'scripts/calendario.js' %}"></script>
-
+  <script>
+    const eventos = JSON.parse("{{ eventos_json|escapejs }}");
+  </script>
+  <script src="{% static 'scripts/calendario.js' %}"></script>
 {% endblock %}
 
 {% block footer %}

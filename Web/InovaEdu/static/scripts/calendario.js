@@ -1,290 +1,189 @@
-// ===============================
-// 📅 CALENDÁRIO MÁXIMO (desktop)
-// ===============================
-const daysContainerMax = document.getElementById("days");
-const monthSelectMax = document.getElementById("month-select");
-const yearDisplayMax = document.getElementById("year-display");
+// ====================================================================
+// 📅 NOVO CALENDÁRIO — versão moderna e simplificada
+// ====================================================================
 
-const meses = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
-];
-
-const currentDate = new Date();
-let selectedMonth = currentDate.getMonth();
-let selectedYear = currentDate.getFullYear();
-
-function populateSelectsMax() {
-  meses.forEach((mes, index) => {
-    const button = document.createElement("button");
-    button.value = index;
-    button.textContent = mes;
-
-    if (index === selectedMonth) {
-      button.classList.add("ativo");
-    }
-
-    button.addEventListener("click", () => {
-      selectedMonth = index;
-
-      document.querySelectorAll("#month-select button")
-        .forEach(btn => btn.classList.remove("ativo"));
-      button.classList.add("ativo");
-
-      renderCalendarMax(selectedMonth, selectedYear);
-    });
-
-    monthSelectMax.appendChild(button);
-  });
-
-  yearDisplayMax.textContent = selectedYear;
-}
-
-function updateYearDisplayMax() {
-  yearDisplayMax.textContent = selectedYear;
-}
-
-function decrementYearMax() {
-  selectedYear--;
-  updateYearDisplayMax();
-  renderCalendarMax(selectedMonth, selectedYear);
-}
-
-function incrementYearMax() {
-  selectedYear++;
-  updateYearDisplayMax();
-  renderCalendarMax(selectedMonth, selectedYear);
-}
-
-document.getElementById("prev-year").addEventListener("click", decrementYearMax);
-document.getElementById("next-year").addEventListener("click", incrementYearMax);
-
-function renderEventsOfMonthMax(month, year) {
-  const eventsMonthContainer = document.querySelector(".events_mouth");
-  eventsMonthContainer.innerHTML = "";
-
-  const eventosDoMes = eventos.filter(ev => {
-    const dataEv = new Date(ev.data);
-    return dataEv.getMonth() === month && dataEv.getFullYear() === year;
-  });
-
-  if (eventosDoMes.length === 0) {
-    eventsMonthContainer.innerHTML = "<p>Sem eventos este mês.</p>";
-    return;
-  }
-
-  eventosDoMes.forEach(ev => {
-    const evDiv = document.createElement("div");
-    evDiv.classList.add("evento-mes");
-
-    const nomeEl = document.createElement("strong");
-    nomeEl.textContent = ev.nome;
-
-    const descEl = document.createElement("p");
-    descEl.textContent = ev.descricao;
-
-    const horaEl = document.createElement("p");
-    horaEl.textContent = ev.hora;
-
-    evDiv.appendChild(nomeEl);
-    evDiv.appendChild(descEl);
-    evDiv.appendChild(horaEl);
-
-    eventsMonthContainer.appendChild(evDiv);
-  });
-}
-
-function renderCalendarMax(month, year) {
-  daysContainerMax.innerHTML = "";
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const firstDayIndex = firstDay.getDay();
-  const lastDate = lastDay.getDate();
-
-  const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-
-  for (let i = 0; i < firstDayIndex; i++) {
-    const emptyDiv = document.createElement('div');
-    daysContainerMax.appendChild(emptyDiv);
-  }
-
-  for (let d = 1; d <= lastDate; d++) {
-    const currentDate = new Date(year, month, d);
-    const dateStr = currentDate.toISOString().split('T')[0];
-    const eventosDoDia = eventos.filter(ev => ev.data === dateStr);
-
-    const dayBox = document.createElement("div");
-    dayBox.classList.add("day-box");
-
-    const dayNumber = document.createElement("div");
-    dayNumber.classList.add("day-number");
-    dayNumber.textContent = d;
-    dayBox.appendChild(dayNumber);
-
-    if (eventosDoDia.length > 0) {
-      const dotsContainer = document.createElement("div");
-      dotsContainer.classList.add("dots-container");
-
-      eventosDoDia.forEach(ev => {
-        const dot = document.createElement("span");
-        dot.classList.add("event-dot");
-
-        const dataEvento = new Date(ev.data);
-        if (dateStr === todayStr) dot.classList.add("amarelo");
-        else if (dataEvento > today) dot.classList.add("verde");
-        else dot.classList.add("vermelho");
-
-        dot.title = ev.nome;
-        dotsContainer.appendChild(dot);
-      });
-
-      dayBox.appendChild(dotsContainer);
-    }
-
-    dayBox.addEventListener("click", () => {
-      if (eventosDoDia.length > 0) openModal(eventosDoDia[0]);
-    });
-
-    daysContainerMax.appendChild(dayBox);
-  }
-
-  renderEventsOfMonthMax(month, year);
-}
+// Elementos principais
+const daysContainer = document.getElementById("days");
+const monthList = document.getElementById("month-list");
+const yearDisplay = document.getElementById("year-display");
+const eventList = document.getElementById("event-list");
+const selectedMonthLabel = document.getElementById("selected-month");
 
 // Modal
-function openModal(evento) {
-  document.getElementById("modal-nome").textContent = evento.nome;
-  document.getElementById("modal-date").textContent = evento.data;
-  document.getElementById("modal-hour").textContent = evento.hora;
-  document.getElementById("modal-descricao").textContent = evento.descricao;
-  document.getElementById("modal-endereco").textContent = evento.endereco;
-  document.getElementById("eventModal").style.display = "flex";
+const modal = document.getElementById("eventModal");
+const modalClose = document.querySelector(".modal-close");
+
+// Dados iniciais
+const meses = [
+    "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+    "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+
+let current = new Date();
+let selectedMonth = current.getMonth();
+let selectedYear = current.getFullYear();
+
+// ====================================================================
+// 🗂️ Criar lista de meses (sidebar)
+// ====================================================================
+function createMonthList() {
+    meses.forEach((mes, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = mes;
+        btn.dataset.mes = index;
+
+        if (index === selectedMonth) btn.classList.add("active");
+
+        btn.addEventListener("click", () => {
+            selectedMonth = index;
+
+            document.querySelectorAll(".month-list button")
+                .forEach(el => el.classList.remove("active"));
+
+            btn.classList.add("active");
+            updateCalendar();
+        });
+
+        monthList.appendChild(btn);
+    });
 }
 
-function closeModal() {
-  document.getElementById("eventModal").style.display = "none";
-}
+// ====================================================================
+// 🗓️ Renderizar Calendário
+// ====================================================================
+function renderCalendar() {
+    daysContainer.innerHTML = "";
+    selectedMonthLabel.textContent = meses[selectedMonth];
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelector(".modal-close").addEventListener("click", closeModal);
-  document.getElementById("eventModal").addEventListener("click", (e) => {
-    if (e.target.id === "eventModal") closeModal();
-  });
-});
+    const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+    const lastDay = new Date(selectedYear, selectedMonth + 1, 0).getDate();
 
-populateSelectsMax();
-renderCalendarMax(selectedMonth, selectedYear);
-
-
-// ===============================
-// 📱 CALENDÁRIO MÍNIMO (mobile)
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-  const monthSelectMin = document.getElementById("month-select-min");
-  const yearSelectMin = document.getElementById("year-select-min");
-  const daysContainerMin = document.getElementById("days-min");
-
-  if (!monthSelectMin || !yearSelectMin || !daysContainerMin) return;
-
-  const months = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-  ];
-
-  // Preenche o select de meses
-  months.forEach((m, i) => {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = m;
-    monthSelectMin.appendChild(opt);
-  });
-
-  const currentYear = new Date().getFullYear();
-
-  // Preenche o select de anos
-  for (let y = currentYear - 5; y <= currentYear + 5; y++) {
-    const opt = document.createElement("option");
-    opt.value = y;
-    opt.textContent = y;
-    if (y === currentYear) opt.selected = true;
-    yearSelectMin.appendChild(opt);
-  }
-
-  monthSelectMin.value = new Date().getMonth();
-
-  function renderCalendarMin() {
-    const month = parseInt(monthSelectMin.value);
-    const year = parseInt(yearSelectMin.value);
-
-    daysContainerMin.innerHTML = "";
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const totalDays = new Date(year, month + 1, 0).getDate();
-
-    const today = new Date();
-    const todayStr = today.toISOString().split("T")[0];
+    const todayStr = new Date().toISOString().split("T")[0];
 
     // Espaços vazios antes do primeiro dia
     for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement("div");
-      empty.classList.add("empty");
-      daysContainerMin.appendChild(empty);
+        const empty = document.createElement("div");
+        daysContainer.appendChild(empty);
     }
 
-    // Preenche os dias com as bolinhas de evento
-    for (let d = 1; d <= totalDays; d++) {
-      const date = new Date(year, month, d);
-      const dateStr = date.toISOString().split("T")[0];
+    // Dias do mês
+    for (let d = 1; d <= lastDay; d++) {
+        const date = new Date(selectedYear, selectedMonth, d);
+        const dateStr = date.toISOString().split("T")[0];
 
-      const eventosDoDia = typeof eventos !== "undefined"
-        ? eventos.filter(ev => ev.data === dateStr)
-        : [];
+        const eventosDoDia = eventos.filter(ev => ev.data === dateStr);
 
-      const dayBox = document.createElement("div");
-      dayBox.classList.add("day-box");
+        const day = document.createElement("div");
+        day.classList.add("day-box");
 
-      const dayNumber = document.createElement("div");
-      dayNumber.classList.add("day-number");
-      dayNumber.textContent = d;
+        const number = document.createElement("div");
+        number.textContent = d;
+        number.classList.add("day-number");
 
-      const dotsContainer = document.createElement("div");
-      dotsContainer.classList.add("dots-container");
+        if (dateStr === todayStr) day.classList.add("today");
 
-      eventosDoDia.forEach(ev => {
-        const dot = document.createElement("span");
-        dot.classList.add("event-dot");
-        const dataEvento = new Date(ev.data);
+        const dots = document.createElement("div");
+        dots.classList.add("dots-container");
 
-        if (dateStr === todayStr) dot.classList.add("amarelo");
-        else if (dataEvento > today) dot.classList.add("verde");
-        else dot.classList.add("vermelho");
+        eventosDoDia.forEach(ev => {
+            const dot = document.createElement("span");
+            dot.classList.add("dot");
 
-        dotsContainer.appendChild(dot);
-      });
+            const dataEvento = new Date(ev.data);
 
-      dayBox.appendChild(dayNumber);
-      dayBox.appendChild(dotsContainer);
+            if (dataEvento < new Date()) dot.classList.add("red");
+            else if (dataEvento.toDateString() === new Date().toDateString()) dot.classList.add("yellow");
+            else dot.classList.add("green");
 
-      // Clique para abrir modal do evento (se existir)
-      dayBox.addEventListener("click", () => {
-        if (eventosDoDia.length > 0 && typeof openModal === "function") {
-          openModal(eventosDoDia[0]);
-        }
-      });
+            dots.appendChild(dot);
+        });
 
-      daysContainerMin.appendChild(dayBox);
+        day.appendChild(number);
+        day.appendChild(dots);
+
+        day.addEventListener("click", () => {
+            if (eventosDoDia.length > 0) openModal(eventosDoDia[0]);
+            renderEventsOfMonth(); 
+        });
+
+        daysContainer.appendChild(day);
     }
-  }
+}
 
-  // Atualiza o calendário quando muda mês ou ano
-  monthSelectMin.addEventListener("change", renderCalendarMin);
-  yearSelectMin.addEventListener("change", renderCalendarMin);
+// ====================================================================
+// 📝 Renderizar eventos do mês
+// ====================================================================
+function renderEventsOfMonth() {
+    eventList.innerHTML = "";
 
-  // Renderização inicial
-  renderCalendarMin();
+    const eventosDoMes = eventos.filter(ev => {
+        const dataEv = new Date(ev.data);
+        return dataEv.getMonth() === selectedMonth && dataEv.getFullYear() === selectedYear;
+    });
+
+    if (eventosDoMes.length === 0) {
+        eventList.innerHTML = "<p>Nenhum evento neste mês.</p>";
+        return;
+    }
+
+    eventosDoMes.forEach(ev => {
+        const div = document.createElement("div");
+        div.classList.add("event-item");
+
+        div.innerHTML = `
+            <p><strong>${ev.nome}</strong></p>
+            <p>${ev.descricao}</p>
+            <p>${ev.hora}</p>
+            <hr>
+        `;
+
+        div.addEventListener("click", () => openModal(ev));
+
+        eventList.appendChild(div);
+    });
+}
+
+// ====================================================================
+// 📆 Atualizar mês/ano
+// ====================================================================
+function updateCalendar() {
+    yearDisplay.textContent = selectedYear;
+    renderCalendar();
+    renderEventsOfMonth();
+}
+
+// Botões de ano
+document.getElementById("prev-year").addEventListener("click", () => {
+    selectedYear--;
+    updateCalendar();
 });
 
+document.getElementById("next-year").addEventListener("click", () => {
+    selectedYear++;
+    updateCalendar();
+});
 
+// ====================================================================
+// 🔍 Modal de detalhes do evento
+// ====================================================================
+function openModal(ev) {
+    modal.querySelector("#modal-nome").textContent = ev.nome;
+    modal.querySelector("#modal-date").textContent = ev.data;
+    modal.querySelector("#modal-hour").textContent = ev.hora;
+    modal.querySelector("#modal-descricao").textContent = ev.descricao;
+    modal.querySelector("#modal-endereco").textContent = ev.endereco;
+
+    modal.classList.remove("hidden");
+}
+
+modalClose.addEventListener("click", () => modal.classList.add("hidden"));
+modal.addEventListener("click", e => {
+    if (e.target === modal) modal.classList.add("hidden");
+});
+
+// ====================================================================
+// 🚀 Inicialização
+// ====================================================================
+createMonthList();
+updateCalendar();
 
