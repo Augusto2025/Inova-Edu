@@ -81,7 +81,9 @@ def repositorio(request):
     return render(request, 'AlunoProfessor/repositorio.html')
 
 def cadastro(request):
-    return render(request, 'cadastro_Aluno.html')
+    return render(request, 'Coordenacao/cadastro_Aluno.html')
+
+
 
 def calendario(request):
     eventos = Eventos.objects.all()
@@ -234,6 +236,9 @@ def cadastroCurso(request):
 def cadastroTurma(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
+
+
+
 
 
 
