@@ -8,27 +8,11 @@
       <meta charset="UTF-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <link rel="stylesheet" href="{% static 'styles/ListaTurma.css' %}">
 
-<<<<<<< HEAD
-    <!-- CSS -->
-    <link rel="stylesheet" href="{% static 'styles/ListaTurma.css' %}">
-=======
-      <!-- CSS -->
-      <link rel="stylesheet" href="{% static 'styles/ListaTurma.css' %}" />
-    </head>
-    <body>
-      {% block header %}
-        {% include 'partials/header.html' %}
-      {% endblock %}
->>>>>>> integracaodb_turma
+     
+  
 
-      <div class="titulo">
-        <p>Lista Turma</p>
-        <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" />
-      </div>
-      <input class="pesquisa" type="search" placeholder="Pesquisar" />
-
-<<<<<<< HEAD
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
@@ -42,64 +26,56 @@
 
     <main class="container_usuario">
 
-        
-=======
-      <main class="container_usuario">
->>>>>>> integracaodb_turma
-        <section class="lista-completa">
-          <ul>
-            <!-- Cabeçalho -->
-            <li class="cabecalho">
-              <span>Código da Turma:</span>
-              <span>Curso</span>
-              <span>Turno</span>
-              <span class="acoes">Ações</span>
+      <section class="lista-completa">
+        <ul>
+          <!-- Cabeçalho -->
+          <li class="cabecalho">
+            <span>Código da Turma:</span>
+            <span>Curso</span>
+            <span>Turno</span>
+            <span class="acoes">Ações</span>
+          </li>
+
+          {% for turma in turmas %}
+            <li>
+              <!-- Campo vindo do banco -->
+              <span>{{ turma.codigo_turma }}</span>
+              <span>{{ turma.curso.nome_curso }}</span>
+
+              
+              <span>
+                {% if turma.alunos.all %}
+                  {% for aluno in turma.alunos.all %}
+                    {{ aluno.nome }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                {% else %}
+                  -
+                {% endif %}
+              </span>
+
+              <!-- Turno vindo do banco -->
+              <span>{{ turma.turno }}</span>
+
+              <!-- Botões -->
+              <span class="acoes">
+                {% comment %} <button type="button" onclick="window.location.href='{% url 'editar_turma' turma.id %}'">Editar</button>
+                {% comment %} <button type="button" onclick="window.location.href='{% url 'excluir_turma' turma.id %}'">Excluir</button> {% endcomment %}
+            
             </li>
 
-            
-            {% for turma in turmas %}
-              <li>
-                <span>{{ turma.codigo_turma }}</span>
-                <span>
-                  {% if turma.alunos.all %}
-                    {% for aluno in turma.alunos.all %}
-                      {{ aluno.nome }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                  {% else %}
-                    -
-                  {% endif %}
-                </span>
-                <span>{{ turma.turno }}</span>
-                <span class="acoes">
-                  <!-- Botões FIXOS -->
-                  <button type="button">Editar</button>
-                  <button type="button">Excluir</button>
-                </span>
-              </li>
-            {% empty %}
-              <li>
-                <span colspan="4">Nenhuma turma cadastrada.</span>
-              </li>
-            {% endfor %}
-          </ul>
-        </section>
-      </main>
-
-<<<<<<< HEAD
+          {% empty %}
+            <li><span colspan="4">Nenhuma turma cadastrada.</span></li>
+          {% endfor %}
+        </ul>
+      </section>
     </main>
 
+
     
-    <button class="button_salvar" type="submit">Salvar</button>
-    <button class="button_salvar" type="button" onclick="window.history.back()">Voltar</button>
+  <button class="button_salvar" type="submit">Salvar</button>
+  <button class="button_salvar" type="button" onclick="window.history.back()">Voltar</button>
 
 
 </body>
 </html>
 {% endblock %}
-=======
-      <button class="button_salvar" type="submit">Salvar</button>
-      <button class="button_salvar" type="button" onclick="window.history.back()">Voltar</button>
-    </body>
-  </html>
-{% endblock %}
->>>>>>> integracaodb_turma

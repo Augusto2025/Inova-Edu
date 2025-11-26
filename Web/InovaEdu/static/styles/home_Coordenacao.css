@@ -1,7 +1,7 @@
 :root {
     --laranja-Senac: #F7941D;
     --branco-Senac: #FFF;
-    --azul-Senac: #004A8D;
+    --azul-Senac: #1A6F9D;
     --cinza-Senac: #D9D9D9;
     --azul_Claro-Senac: #177bda;
     --fonte-principal: "Kadwa", sans-serif;
@@ -26,6 +26,7 @@ body {
     padding: 20px 50px;
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
+    
 }
 
 .header h1 {
@@ -51,7 +52,7 @@ body {
 
 /* PARALLAX HERO */
 .parallax.hero {
-    height: 400px;
+    height: 450px;
     background-image: url('parallax1.jpg');
     background-attachment: fixed;
     background-position: center;
@@ -63,6 +64,8 @@ body {
     text-align: center;
     color: var(--branco-Senac);
     position: relative;
+    min-height: calc(70vh - 90px);
+
 }
 
 .conteudo-parallax {
@@ -156,6 +159,7 @@ footer {
     padding: 20px;
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
+    
 }
 
 /* RESPONSIVIDADE */
