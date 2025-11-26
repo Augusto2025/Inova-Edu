@@ -1,125 +1,244 @@
-/* ---------------------- */
-/* LAYOUT GERAL DOS CURSOS */
-/* ---------------------- */
+/* ===========================================================
+   VARIÁVEIS (vêm do global, mas reforço aqui por segurança)
+   =========================================================== */
+   :root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+    --shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
 
+/* ===========================================================
+   LAYOUT GERAL
+   =========================================================== */
 body {
     margin: 0;
     padding: 0;
+    background: #f8f9fb;
 }
 
-.divisoria{
-    display: flex;
+.titulo {
     width: 100%;
-    margin: 50px 0px;
-}
-
-main {
-    width: 1000px;
-    margin: 0px 120px;
-}
-
-.imagem_curso {
-    width: 300px;
-    border-radius: 23px 23px 0px 0px;
-}
-
-section {
-    width: 300px;
-    height: 340px;
-}
-
-section p {
-    margin: 20px 0px 0px 0px;
-    color: var(--azul-Senac);
-}
-
-.borda {
-    width: 100px;
-    margin: 10px 0px 20px 0px;
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-}
-
-section .Botao_entrar_curso {
-    width: 150px;
-    height: 30px;
     display: flex;
     justify-content: center;
-    align-items: center;
-    color: var(--branco-Senac);
-    border: none;
-    border-radius: 23px;
-    background: var(--azul-Senac);
+    margin-top: 40px;
 }
 
-
-/* ---------------------- */
-/* SIDEBAR DE FILTROS     */
-/* ---------------------- */
-
-/* --- SIDEBAR FIXA À ESQUERDA --- */
-.sidebar-filtro {
-    align-self: start;
-    width: 280px;
-    padding: 25px 20px;
-}
-
-.sidebar-filtro.ativo {
-    left: 0;
-    /* mostra */
-}
-
-.sidebar-filtro h2 {
-    margin-bottom: 20px;
-    font-size: 21px;
-    font-weight: bold;
+.titulo p {
     color: var(--azul-Senac);
+    font-size: 26px;
+    font-weight: 600;
+    border-bottom: 4px solid var(--laranja-Senac);
 }
 
-/* campos do filtro */
+/* ===========================================================
+   BARRA DE PESQUISA + ICONE FILTRO
+   =========================================================== */
+.campo_pesq_filtro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+.campo_pesq {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.pesquisa {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid var(--azul-Senac);
+    font-size: 15px;
+}
+
+/* Ícone do filtro */
+.btn-toggle-filtro {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.filtro_icone {
+    width: 28px;
+    height: 28px;
+}
+
+/* ===========================================================
+   SIDEBAR DE FILTRO
+   =========================================================== */
+.sidebar-filtro {
+    display: none; /* inicialmente escondido em mobile */
+    width: 100%;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-top: 10px;
+    height: fit-content;
+}
+
+.sidebar-filtro label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
 
 .campo-filtro {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: flex;
     flex-direction: column;
 }
 
-.campo-filtro label {
-    font-size: 14px;
-    color: #444;
-    margin-bottom: 5px;
-}
-
-/* input date */
-.campo-filtro input[type="date"] {
-    padding: 8px;
-    border: 1px solid var(--cinza-Senac);
-    border-radius: 8px;
-}
-
-/* select */
+.campo-filtro input,
 .campo-filtro select {
-    width: 100%;
-    padding: 8px;
+    padding: 10px;
+    border: 1px solid #d0d0d0;
     border-radius: 8px;
-    border: 1px solid var(--cinza-Senac);
-    background-color: #fff;
+    font-size: 14px;
 }
 
-/* botão aplicar */
 .btn-aplicar {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: var(--azul-Senac);
-    color: var(--branco-Senac);
+    color: white;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    margin-top: 10px;
     font-size: 15px;
-    transition: 0.2s ease;
+    font-weight: 600;
+    transition: 0.2s ease-in-out;
 }
 
 .btn-aplicar:hover {
     background: #00376a;
+}
+
+/* ===========================================================
+   GRID DE CURSOS
+   =========================================================== */
+.blocos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 26px;
+    width: 100%;
+    max-width: 1050px;
+    margin: 40px 0px;
+}
+
+section {
+    background: white;
+    border-radius: 18px;
+    padding-bottom: 20px;
+    box-shadow: var(--shadow);
+    transition: transform 0.20s ease, box-shadow 0.20s ease;
+}
+
+section:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.imagem_curso {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 18px 18px 0 0;
+}
+
+section p {
+    margin: 18px 15px 5px 15px;
+    color: var(--azul-Senac);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.borda {
+    width: 60px;
+    height: 3px;
+    background: var(--laranja-Senac);
+    margin: 8px 15px;
+    border: none;
+}
+
+.Botao_entrar_curso {
+    width: 120px;
+    height: 34px;
+    background: var(--azul-Senac);
+    color: white;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 15px;
+    margin-top: 10px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.Botao_entrar_curso:hover {
+    background: #00376a;
+}
+
+/* ===========================================================
+   RESPONSIVIDADE
+   =========================================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .divisoria {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar-filtro {
+        width: 90%;
+    }
+
+    .blocos {
+        max-width: 100%;
+    }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+
+    .sidebar-filtro {
+        width: 100%;
+    }
+
+    /* Sidebar vira dropdown */
+    .sidebar-filtro {
+        display: none;
+    }
+
+    /* Ícone de filtro com estilo de botão */
+    .btn-toggle-filtro {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* background: var(--azul-Senac); */
+        color: white;
+        /* padding: 10px 15px; */
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        gap: 10px;
+    }
+
+    .blocos {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
 }
