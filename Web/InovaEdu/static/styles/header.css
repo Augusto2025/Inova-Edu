@@ -114,14 +114,16 @@ nav .sair{
 }
   
 .pesquisa{
-  text-align: center;
-  height: 30px;
-  width: 500px;
-  margin-right: 10px;
-  max-width: 600px;
-  border-radius: 10px;
-  border: 2px solid;
-  border-color: var(--azul-Senac);
+    display: flex;
+    text-align: center;
+    justify-self: center;
+    height: 30px;
+    width: 500px;
+    margin-right: 10px;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid;
+    border-color: var(--azul-Senac);
 }
 
 
