@@ -86,8 +86,8 @@ class Usuario(models.Model):
 
 class Curso(models.Model):
     idcurso = models.AutoField(db_column='idCurso', primary_key=True)
-    imagem = models.ImageField(db_column='imagem_curso' , upload_to='curso/', blank=True, null= True)
     nome_curso = models.CharField(db_column='Nome_curso', max_length=45)
+    imagem = models.ImageField(db_column='imagem_curso' , upload_to='curso/', blank=True, null= True)
     descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)
     data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)
     data_final = models.DateField(db_column='Data_final', blank=True, null=True)

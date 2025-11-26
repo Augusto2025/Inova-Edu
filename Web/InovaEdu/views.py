@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404 
 from .models import *
 from datetime import datetime
 from django.utils import timezone
 import json
 from django.shortcuts import HttpResponse
+from django.contrib.auth.decorators import login_required
+
 
 
 def login(request):
@@ -193,12 +195,14 @@ def cadastroCurso(request):
 # def listacurso(request):
 #     return render(request, 'Coordenacao/ListaCurso.html')
 
-def cadastroTurma(request):
-    return render(request, 'Coordenacao/cadastroTurma.html')
+# def cadastroTurma(request):
+#     return render(request, 'Coordenacao/cadastroTurma.html')
 
-def listaturma(request):
-    turmas = Turma.objects.all()
-    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
+def cadastroTurma(request):
+    cursos = Curso.objects.all()
+    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
+
+
 
 
 def enviarUsuario(request):
@@ -235,47 +239,67 @@ def excluir_usuario(request, idusuario):
     return redirect('lista_usuario')
 
 
+# Turma
+
 def enviarturma(request):
     if request.method == "POST":
         codigo_turma = request.POST.get("codigo_turma")
         turno = request.POST.get("turno")
         curso_id = request.POST.get("curso")
 
-        curso = Curso.objects.get(pk=curso_id)
-
-        # Cria a turma no banco
+        curso = Curso.objects.get(idcurso=curso_id)
+        
         Turma.objects.create(
             codigo_turma=codigo_turma,
             turno=turno,
             curso=curso
         )
 
-        # Redireciona para a lista
         return redirect('listaturma')
 
-
     cursos = Curso.objects.all()
-    return render(request, 'cadastroTurma.html', {'cursos': cursos})
+    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
+
+
+def listaturma(request):
+    turmas = Turma.objects.all()
+    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
+
+
+
+
 
 
 # Curso
 
-    
+
 def criar_curso(request):
     if request.method == 'POST':
 
-        usuario_django = request.user
+        # pega o email salvo na sessão na hora do login
+        email_usuario = request.session.get('usuario_email')
 
-        usuario = Usuario.objects.get(user=usuario_django)
+        if not email_usuario:
+            return redirect('login')  # não está logado
+
+        # pega o usuário na sua tabela Usuario
+        usuario = Usuario.objects.get(email=email_usuario)
+
+        imagem = request.FILES.get('imagem')
 
         curso = Curso(
             nome_curso=request.POST['nome_curso'],
-            descricao=request.POST['descricao'],
-            usuario=usuario
+            descricao_curso=request.POST['descricao_curso'],
+            data_inicio=request.POST.get('data_inicio'),
+            data_final=request.POST.get('data_final'),
+            usuario=usuario,
+            imagem=imagem
         )
 
-    curso.save()
-    return redirect('lista_curso')
+        curso.save()
+        return redirect('ListaCurso')
+
+    return render(request, 'Coordenacao/ListaCurso.html')  # GET
 
 
 def lista_curso(request):
