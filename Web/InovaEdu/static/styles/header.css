@@ -79,6 +79,10 @@ header a {
     color: var(--azul-Senac);
 }
 
+a{
+    text-decoration: none;
+}
+
 #site-nav .sair{
     display: flex;
     align-items: center;

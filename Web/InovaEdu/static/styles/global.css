@@ -9,6 +9,7 @@ main {
     display: flex;
     justify-content: center;  /* CENTRALIZA os cards */
     align-items: center;
+    justify-self: center;
     flex-wrap: wrap;
     min-height: calc(81vh - 90px);
     gap: 30px;
