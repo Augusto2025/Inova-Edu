@@ -29,8 +29,7 @@
 
     <main class="container_usuario">
 
-
-        <!-- Lista de cursos -->
+    
         <section class="lista-completa">
             <ul>
                 <!-- Cabeçalho -->
@@ -43,24 +42,47 @@
                     <span class="acoes">Ações</span>
                 </li>
 
-                <!-- Linha de exemplo 1 -->
-                <li>
-                    <span>Clariane Torres</span>
-                    <span>2025-10-01</span>
-                    <span>2025-10-31</span>
-                    <span><img src="#" alt=""></span>
-                    <span>Curso de Informática</span>
-                    <span class="acoes">
-                        <button type="submit">Editar</button>
-                        <button type="submit">Excluir</button>
-                    </span>
-                </li>
+                <!-- Linha de cursos do banco -->
+                {% for curso in cursos %}
+                    <li>
+                        <span>{{ curso.nome_curso }}</span>
+                        <span>{{ curso.data_inicio }}</span>
+                        <span>{{ curso.data_final }}</span>
+                        <span>
+                            {% if curso.imagem %}
+                                <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}" width="80">
+                            {% else %}
+                                -
+                            {% endif %}
+                        </span>
+                        <span>{{ curso.descricao_curso }}</span>
+                        <span class="acoes">
+                         
+                        {% comment %} </span>
+
+                            <button type="button" onclick="window.location.href='{% url 'editar_curso' turma.pk %}'">Editar</button>
+                            <button type="button" onclick="window.location.href='{% url 'excluir_curso' turma.pk %}'">Excluir</button>
+
+                        <span class="acoes"> {% endcomment %}
+         
+            </span>
+
+
+
+
+
+                    </li>
+                {% empty %}
+                    <li>
+                        <span colspan="6">Nenhum curso cadastrado.</span>
+                    </li>
+                {% endfor %}
 
             </ul>
         </section>
 
     </main>
-    
+
     
     <button class="button_salvar" type="submit">Salvar</button>
     <button class="button_salvar" type="button" onclick="window.history.back()">Voltar</button>

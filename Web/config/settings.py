@@ -134,3 +134,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # serve para quando eu deslogar eu não posso voltar para a outra tela do navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/home'
