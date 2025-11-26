@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* -------------------- VARIÁVEIS -------------------- */
 :root {
     --laranja-Senac:#F7941D;
     --branco-Senac:#FFF;
@@ -7,21 +8,14 @@
     --cinza-Senac: #D9D9D9;
 }
 
+/* -------------------- RESET -------------------- */
 body{
     margin: 0;
     padding: 0;
     font-family: "Roboto", sans-serif;
 }
 
-.logo_e_texto{
-    align-items: center;
-    display: flex;
-}
-
-a{
-    display: flex;
-}
-
+/* -------------------- HEADER -------------------- */
 header{
     display: flex;
     align-items: center;
@@ -29,23 +23,33 @@ header{
     width: auto;
     height: 80px;
     padding: 0px 10px;
-    background-color: #004A8D;
-    /* background-color: #1A6F9D; */
+    background-color: var(--azul-Senac);
 }
 
+/* Área com logo + texto */
+.logo_e_texto{
+    align-items: center;
+    display: flex;
+}
+
+header a {
+    display: flex;           /* Apenas links do HEADER usam display:flex */
+    text-decoration: none;
+    color: var(--branco-Senac);
+}
 
 .logo {
     width: 50px;
     height: 50px;
     margin: 10px;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 }
 
+/* Nome InovaEdu */
 .texto_InovaEdu{
     margin: 10px;
     color: var(--branco-Senac);
     font-size: 20px;
-    font-style: normal;
     font-weight: 400;
     width: 140px;
 }
@@ -54,8 +58,9 @@ header{
     color: var(--branco-Senac);
 }
 
-nav{
-    display: none;
+/* -------------------- NAV SUPERIOR -------------------- */
+#site-nav {
+    display: none; /* fechado por padrão */
     height: 80px;
     align-items: center;
     justify-content: center;
@@ -63,20 +68,18 @@ nav{
     font-size: 16px;
 }
 
-nav.open{
+#site-nav.open{
     display: flex;
 }
 
-a{
+/* Apenas links do NAV usam estilo próprio */
+#site-nav a{
+    margin: 90px;
     text-decoration: none;
     color: var(--azul-Senac);
 }
 
-nav a{
-    margin: 90px;
-}
-
-nav .sair{
+#site-nav .sair{
     display: flex;
     align-items: center;
     background-color: rgb(176, 0, 0);
@@ -85,7 +88,7 @@ nav .sair{
     border-radius: 10px;
 }
 
-
+/* -------------------- TÍTULO DAS PÁGINAS -------------------- */
 .titulo{
     display: flex;
     justify-content: space-between;
@@ -102,6 +105,7 @@ nav .sair{
     font-size: 20px;
 }
 
+/* -------------------- PESQUISA -------------------- */
 .filtro_icone{
     width: 30px;
     flex-shrink: 0;
@@ -114,33 +118,30 @@ nav .sair{
 }
   
 .pesquisa{
-  text-align: center;
-  height: 30px;
-  width: 500px;
-  margin-right: 10px;
-  max-width: 600px;
-  border-radius: 10px;
-  border: 2px solid;
-  border-color: var(--azul-Senac);
-}
-
-
-main{
-    justify-self: center;
     display: flex;
-    max-width: 1022px;
-    min-height: calc(70vh - 80px); /* Calcula a altura e alguns px para nao quebrar o footer */
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    text-align: center;
+    height: 30px;
+    width: 500px;
+    margin-right: 10px;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid var(--azul-Senac);
 }
 
+/* -------------------- IMPORTANTE: remover conflito global -------------------- */
+/* Esse main afetava TODAS as páginas, inclusive o calendário */
+main{
+    max-width: 1022px;
+    min-height: calc(70vh - 80px);
+}
+
+/* -------------------- RESPONSIVIDADE -------------------- */
 @media (max-width: 1024px) {
     header{
         padding: 0% 1%;
     }
     
-    nav a{
+    #site-nav a{
         margin: 5%;
     }
     
@@ -158,8 +159,7 @@ main{
         padding: 0% 24%;
     }
 
-    nav a{
+    #site-nav a{
         margin: 0% 5%;
     }
-
 }

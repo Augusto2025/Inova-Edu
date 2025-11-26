@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
     <link rel="stylesheet" href="{% static 'styles/forum_blocos.css' %}">
 
     {% block header %}
@@ -13,6 +14,7 @@
             <p>Todos os Foruns</p>
         </div>
         <div class="titulo-right">
+            <!-- <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" /> -->
             {% if usuario.tipo == "Professor" %}
                 <a href="{% url 'criar_forum' %}" class="botao-criar-forum">+ Criar fórum</a>
             {% endif %}
