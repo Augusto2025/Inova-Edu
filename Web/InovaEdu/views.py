@@ -102,14 +102,30 @@ def calendario(request):
 
 def forum_blocos(request):
     query = request.GET.get("q", "").strip()
+    data_criacao = request.GET.get("data_criacao", "")
+    ordenar = request.GET.get("ordenar", "")
+
+    foruns = Forum.objects.all()
 
     if query:
-        foruns = Forum.objects.filter(nome__icontains=query)
-    else:
-        foruns = Forum.objects.all()
+        foruns = foruns.filter(nome__icontains=query)
 
-    return render(request, 'AlunoProfessor/forum_blocos.html', {'foruns':foruns, 'query': query})
+    if data_criacao:
+        foruns = foruns.filter(data_criacao=data_criacao)
 
+    if ordenar == "asc":
+        foruns = foruns.order_by("nome")
+    elif ordenar == "desc":
+        foruns = foruns.order_by("-nome")
+
+    return render(
+        request,
+        'AlunoProfessor/forum_blocos.html',
+        {
+            'foruns': foruns,
+            'query': query,
+        }
+    )
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
     turmas = Turma.objects.filter(curso=curso)

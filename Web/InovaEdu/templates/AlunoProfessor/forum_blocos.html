@@ -26,6 +26,11 @@
         {% if query %}
             <a href="{% url 'forum_blocos' %}" >Limpar</a>
         {% endif %}
+        <div class="btn-toggle-filtro" onclick="
+            const f = document.querySelector('.sidebar-filtro');
+            f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
+            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
+        </div>
     </form>
 
     {% if query %}
@@ -34,6 +39,30 @@
                 <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
             {% endfor %}
     {% endif %}
+
+    <!-- SIDEBAR DE FILTRO (igual ao da outra página) -->
+    <aside class="sidebar-filtro">
+        <form method="get" action="{% url 'forum_blocos' %}">
+            
+            <div class="campo-filtro">
+                <label>Data de criação:</label>
+                <input type="date" name="data_criacao" value="{{ request.GET.data_criacao }}">
+            </div>
+
+            <div class="campo-filtro">
+                <label>Ordenar por:</label>
+                <select name="ordenar">
+                    <option value="">Padrão</option>
+                    <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>Nome (A → Z)</option>
+                    <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Nome (Z → A)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
+        </form>
+    </aside>
+
+
 
     <main>
         {% for Forum in foruns  %}
