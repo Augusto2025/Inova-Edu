@@ -5,56 +5,66 @@
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
+
     <div class="titulo">
         <p>Repositório</p>
     </div>
 
-    {% for item in repositorio_turmas %}
-        <div class="turma-repositorio">
-            <h3>{{ item.curso.nome_curso }} - {{ item.turma.codigo_turma }} ({{ item.turma.turno }})</h3>
+    <div class="turma-repositorio">
+        <h3>Nome do Curso - Código da Turma (Turno)</h3>
 
-            <!-- Pastas -->
-            <div class="pastas">
-                <h4>Pastas</h4>
-                <ul class="lista-pastas">
-                {% for pasta in item.pastas %}
-                    <li class="pasta-item">
-                        <div class="pasta-info">
-                            <a class="pasta-link" href="{% url 'abrir_pasta' pasta.idpasta %}">
-                                📁 {{ pasta.nome }}
-                            </a>
-                            <p><strong>Criada por:</strong> {{ pasta.criador.username }} - <strong>Em:</strong> {{ pasta.data_criacao|date:"d/m/Y" }}</p>
-                        </div>
-                    </li>
-                {% empty %}
-                    <li class="sem-pasta">Nenhuma pasta</li>
-                {% endfor %}
-                </ul>
-            </div>
-
-            <!-- Arquivos -->
-            <div class="arquivos">
-                <h4>Arquivos</h4>
-                <ul class="lista-arquivos">
-                {% for arquivo in item.arquivos %}
-                    <li class="arquivo-item">
-                        <a href="{{ arquivo.arquivo.url }}" download>
-                            📄 {{ arquivo.nome_projeto }}
+        <!-- Pastas -->
+        <div class="pastas">
+            <h4>Pastas</h4>
+            <ul class="lista-pastas">
+                <li class="pasta-item">
+                    <div class="pasta-info">
+                        <a class="pasta-link" href="#">
+                            📁 Nome da Pasta
                         </a>
-                        <p><strong>Criado por:</strong> {{ arquivo.criador.username }} - <strong>Em:</strong> {{ arquivo.data_criacao|date:"d/m/Y" }}</p>
-                    </li>
-                {% empty %}
-                    <li class="sem-arquivo">Nenhum arquivo</li>
-                {% endfor %}
-                </ul>
-            </div>
+                        <p><strong>Criada por:</strong> Usuário - <strong>Em:</strong> 01/01/2024</p>
+                    </div>
+                </li>
+
+                <li class="pasta-item">
+                    <div class="pasta-info">
+                        <a class="pasta-link" href="#">
+                            📁 Outra Pasta
+                        </a>
+                        <p><strong>Criada por:</strong> Usuário - <strong>Em:</strong> 05/01/2024</p>
+                    </div>
+                </li>
+
+                <li class="sem-pasta">Nenhuma pasta</li>
+            </ul>
         </div>
-    {% empty %}
-        <p>Você não está em nenhuma turma.</p>
-    {% endfor %}
+
+        <!-- Arquivos -->
+        <div class="arquivos">
+            <h4>Arquivos</h4>
+            <ul class="lista-arquivos">
+                <li class="arquivo-item">
+                    <a href="#" download>
+                        📄 Nome do Arquivo
+                    </a>
+                    <p><strong>Criado por:</strong> Usuário - <strong>Em:</strong> 02/02/2024</p>
+                </li>
+
+                <li class="arquivo-item">
+                    <a href="#" download>
+                        📄 Outro Arquivo
+                    </a>
+                    <p><strong>Criado por:</strong> Usuário - <strong>Em:</strong> 03/02/2024</p>
+                </li>
+
+                <li class="sem-arquivo">Nenhum arquivo</li>
+            </ul>
+        </div>
+    </div>
 
 <!-- Estilos -->
 <style>
+/* (todo o CSS permanece exatamente igual ao que você enviou) */
 .titulo {
     width: 100%;
     display: flex;
@@ -158,13 +168,14 @@
 .arquivo-item a {
     font-size: 1.1em;
     font-weight: 600;
-    color: #3498db;
+   color: #3498db;
 }
 
 .arquivo-item a:hover {
     text-decoration: underline;
 }
 </style>
+
 {% endblock %}
 
 {% block footer %}

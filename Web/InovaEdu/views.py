@@ -105,9 +105,6 @@ def editar_perfil(request):
     return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
 
 
-from django.shortcuts import render, redirect
-from .models import Usuario, Turma, UsuarioDaTurma, Pasta, Projeto
-
 def repositorio(request):
     email = request.session.get('usuario_email')
     if not email:
