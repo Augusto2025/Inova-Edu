@@ -1,4 +1,7 @@
 {% load static %}
+<!-- Fonte do Google Icons atualizada -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
 <style>
     /* ANIMAÇÃO DE PULSAÇÃO */
     @keyframes pulse {
@@ -15,7 +18,7 @@
             box-shadow: 0 0 0 rgba(0, 150, 255, 0.4);
         }
     }
-
+    
     .chatbot-icon {
         position: fixed;
         bottom: 20px;
@@ -29,8 +32,11 @@
         cursor: pointer;
         animation: pulse 1.4s infinite ease-in-out;
         background: white;
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; /* Personalização do Material Symbol */
+        font-size: 32px; /* Ajuste do tamanho do ícone */
+        color: #0a66c2;
     }
-
+    
     .chatbox {
         position: fixed;
         bottom: 90px;
@@ -53,7 +59,7 @@
         align-items: center;
         border-bottom: 1px solid #ddd;
     }
-
+    
     .bot-icon {
         width: 24px;
         height: 24px;
@@ -109,18 +115,13 @@
     .chat-footer button:hover .send-icon {
         transform: scale(1.1);
     }
-
-    .chatbot-img {
-        width: 70%;
-        background: #0a66c200;
-        animation: pulse 1.4s infinite ease-in-out;
-    }
 </style>
 
-
-<!-- Ícone flutuante do chat -->
-<div class="chatbot-icon" id="chatbotIcon">
-    <img src="{% static 'img/robo.webp' %}" alt="chatbot" class="chatbot-img">
+<!-- Ícone flutuante do chat atualizado -->
+<div class="chatbot-icon" id="chatbotIcon" aria-label="Abrir chat">
+    <span class="material-symbols-outlined">
+        smart_toy
+    </span>
 </div>
 
 <!-- Caixa do chat -->
