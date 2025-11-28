@@ -10,7 +10,9 @@
         </a>
     </div>
     <div style="display: flex; align-items: center; color: white;">
-        <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
+        <a href="{% url "perfil" %}">
+            <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
+        </a>
         <span id="menu" class="material-symbols-outlined" style="color: white; margin-left: 10px; font-size: 30px; cursor: pointer;">menu</span>
         <span id="menu-open" class="material-symbols-outlined" style="color: white; margin-left: 10px; font-size: 30px; cursor: pointer; display: none;">menu_open</span>
     </div>
