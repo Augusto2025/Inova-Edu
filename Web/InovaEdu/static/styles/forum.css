@@ -18,8 +18,9 @@
 .main {
     max-width: 900px;
     width: min(900px, 98%);
-    min-height: calc(52vh - 80px);
-    margin: 120px auto;
+    min-height: calc(72vh - 90px);
+    margin: 80px 0px;
+    justify-self: center;
     display: grid;
     gap: 14px;
     padding: 0 6px;
@@ -31,7 +32,7 @@
     flex-direction: column;
     gap: 12px;
     max-height: 50vh;
-    height: 300px;
+    height: 450px;
     overflow-y: auto;
     border-radius: var(--radius);
     padding: 16px;
