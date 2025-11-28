@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'styles/homePage.css' %}?=V1">
+    </head>
+
+
+    <!-- HERO PARALLAX -->
+    <div class="parallax"
+        style="background-image: url('{% static "img/imgtransparente.png" %}')">
+
+        <div class="botoeslogin">
+            <a href="/login" class="btn-acao">Login</a>
+        </div>
+
+        <h1>Bem-vindo ao Repositório do Senac ✨</h1>
+    </div>
+
+    <!-- SEÇÃO 1 -->
+    <section>
+        <h2 class="titulo-secao">O que você vai encontrar aqui</h2>
+        <p class="descricao">Uma visão geral das principais partes do Repositório.</p>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Projetos</h3>
+                <p>Acompanhar todos os projetos desenvolvidos pelas turmas.</p>
+            </div>
+
+            <div class="card">
+                <h3>Portfólio</h3>
+                <p>Veja as criações, ideias e trabalhos organizados.</p>
+            </div>
+
+            <div class="card">
+                <h3>Turmas</h3>
+                <p>Uma seção de projetos de turmas da área da tecnologia.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARALLAX 2 -->
+    <div class="parallax"
+        style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c');">
+        <h1>Projetos Moderno e Elegante</h1>
+    </div>
+
+    <!-- SEÇÃO 2 -->
+    <section>
+        <h2 class="titulo-secao">Mais detalhes</h2>
+        <p class="descricao">Você pode adicionar mais projetos, continuar projetos e ter facil contato com outros alunos.</p>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Fórum</h3>
+                <p>Compartilhar conhecimentos, estudos, inspirações e aprendizados.</p>
+            </div>
+
+            <div class="card">
+                <h3>Calendário</h3>
+                <p>Visualizar os projetos que serão apresentados.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        © 2025 - Desenvolvimento do Repositório
+    </footer>
+
+{% endblock %}
