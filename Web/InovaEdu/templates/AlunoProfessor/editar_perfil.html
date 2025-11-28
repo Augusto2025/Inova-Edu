@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/editar_perfil.css' %}">
+
+{% include "partials/header.html" %}
+
+<div class="titulo">
+    <p>Editar Perfil</p>
+</div>
+
+<main>
+    <form method="POST" enctype="multipart/form-data" class="editar-form">
+        {% csrf_token %}
+
+        <div class="foto-area">
+            <img class="perfil-img" src="{% if usuario.imagem %}{{ usuario.imagem.url }}{% else %}{% static 'img/homem.png' %}{% endif %}"alt="Foto do usuário">
+
+            <label for="imagem" class="alterar-foto">Alterar Foto</label>
+            <input type="file" id="imagem" name="imagem" accept="image/*">
+        </div>
+
+        <div class="inputs">
+            <div class="campo">
+                <label>Nome</label>
+                <input type="text" name="nome" value="{{ usuario.nome }}">
+            </div>
+
+            <div class="campo">
+                <label>Sobrenome</label>
+                <input type="text" name="sobrenome" value="{{ usuario.sobrenome }}">
+            </div>
+
+            <div class="campo">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ usuario.email }}">
+            </div>
+
+            <div class="campo">
+                <label>Nova senha:</label>
+                <input type="password" name="senha" placeholder="Deixe em branco para manter a senha atual">
+            </div>
+
+
+            <div class="campo">
+                <label>Descrição</label>
+                <textarea name="descricao">{{ usuario.descricao }}</textarea>
+            </div>
+        </div>
+
+        <div class="botoes">
+            <a href="{% url 'perfil' %}" class="cancelar">Cancelar</a>
+            <button type="submit" class="salvar">Salvar Alterações</button>
+        </div>
+
+    </form>
+</main>
+
+{% include "partials/footer.html" %}
+{% endblock %}

@@ -77,6 +77,34 @@ def home(request):
 def perfil(request):
     return render(request, 'AlunoProfessor/perfil.html')
 
+def editar_perfil(request):
+    email = request.session.get('usuario_email')  # Pegando o email da sessão
+
+    if not email:
+        return redirect('login')
+
+    # Busca pelo email em vez do ID
+    usuario = get_object_or_404(Usuario, email=email)
+
+    if request.method == "POST":
+        usuario.nome = request.POST.get('nome')
+        usuario.sobrenome = request.POST.get('sobrenome')
+        usuario.email = request.POST.get('email')
+        usuario.descricao = request.POST.get('descricao')
+
+        if 'imagem' in request.FILES:
+            usuario.imagem = request.FILES['imagem']
+
+        usuario.save()
+
+        # Atualiza o email se o usuário alterar
+        request.session['usuario_email'] = usuario.email
+
+        return redirect('perfil')
+
+    return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
+
+
 def repositorio(request):
     return render(request, 'AlunoProfessor/repositorio.html')
 

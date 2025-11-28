@@ -25,6 +25,7 @@ urlpatterns = [
     path('enviarturma/', views.enviarturma, name='enviarturma'),
     path('criar_curso', views.criar_curso, name='criar_curso'),
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
    
 
 

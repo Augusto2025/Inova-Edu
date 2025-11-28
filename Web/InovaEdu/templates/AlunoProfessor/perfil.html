@@ -11,20 +11,28 @@
     <div class="titulo">
         <p>Meu Perfil</p>
     </div>
+
     <main>
-        <section>
-            <img class="perfil" src="{% static 'img/homem.png' %}" alt="Imagem de Perfil">
-            {% if usuario %}
+        <section class="perfil-container">
+
+            <div class="foto-nome">
+                <img class="perfil-img" src="{% static 'img/homem.png' %}" alt="Foto do usuário">
                 <p class="Nome_Usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</p>
-            {% else %}
-                <p>Usuário não encontrado.</p>
-            {% endif %}
-            <div class="descricao">
-                {{ usuario.descricao }}
             </div>
+
+            <div class="info-card">
+                <p><strong>Email:</strong> {{ usuario.email }}</p>
+                <p><strong>Tipo:</strong> {{ usuario.tipo }}</p>
+            </div>
+
+            <div class="descricao">
+                {{ usuario.descricao|default:"Sem descrição." }}
+            </div>
+
+            <a href="{% url 'editar_perfil' %}" class="Editar_Perfil">Editar Perfil</a>
         </section>
-        <a href="" class="Editar_Perfil">Editar Perfil</a>
     </main>
+
 {% endblock %}
 
 {% block footer %}

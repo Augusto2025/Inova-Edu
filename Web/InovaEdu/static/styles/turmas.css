@@ -3,10 +3,28 @@ body{
     padding: 0;
 }
 
+.pesquisa{
+    justify-self: center;
+}
+
+.titulo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.titulo p {
+    color: var(--azul-Senac);
+    font-size: 26px;
+    font-weight: 600;
+    border-bottom: 4px solid var(--laranja-Senac);
+}
+
 main{
     align-items: flex-start;
     margin: 50px;
-    min-height: calc(70vh - 90px);
+    min-height: calc(74vh - 90px);
 }
 
 section{
