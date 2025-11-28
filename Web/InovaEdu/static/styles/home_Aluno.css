@@ -120,6 +120,7 @@ body {
     display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
+    margin: 25px 0px;
     gap: 26px;
 }
 
