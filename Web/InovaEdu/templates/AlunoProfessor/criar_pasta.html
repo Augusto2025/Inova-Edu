@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Criar Nova Pasta</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="nome_pasta">Nome da Pasta:</label>
+    <input type="text" id="nome_pasta" name="nome_pasta" required>
+    <button type="submit">Criar Pasta</button>
+</form>
+
+{% endblock %}

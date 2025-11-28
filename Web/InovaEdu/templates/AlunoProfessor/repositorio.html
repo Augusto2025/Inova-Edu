@@ -2,11 +2,169 @@
 {% load static %}
 
 {% block content %}
-
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
+    <div class="titulo">
+        <p>Repositório</p>
+    </div>
 
+    {% for item in repositorio_turmas %}
+        <div class="turma-repositorio">
+            <h3>{{ item.curso.nome_curso }} - {{ item.turma.codigo_turma }} ({{ item.turma.turno }})</h3>
+
+            <!-- Pastas -->
+            <div class="pastas">
+                <h4>Pastas</h4>
+                <ul class="lista-pastas">
+                {% for pasta in item.pastas %}
+                    <li class="pasta-item">
+                        <div class="pasta-info">
+                            <a class="pasta-link" href="{% url 'abrir_pasta' pasta.idpasta %}">
+                                📁 {{ pasta.nome }}
+                            </a>
+                            <p><strong>Criada por:</strong> {{ pasta.criador.username }} - <strong>Em:</strong> {{ pasta.data_criacao|date:"d/m/Y" }}</p>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="sem-pasta">Nenhuma pasta</li>
+                {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Arquivos -->
+            <div class="arquivos">
+                <h4>Arquivos</h4>
+                <ul class="lista-arquivos">
+                {% for arquivo in item.arquivos %}
+                    <li class="arquivo-item">
+                        <a href="{{ arquivo.arquivo.url }}" download>
+                            📄 {{ arquivo.nome_projeto }}
+                        </a>
+                        <p><strong>Criado por:</strong> {{ arquivo.criador.username }} - <strong>Em:</strong> {{ arquivo.data_criacao|date:"d/m/Y" }}</p>
+                    </li>
+                {% empty %}
+                    <li class="sem-arquivo">Nenhum arquivo</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% empty %}
+        <p>Você não está em nenhuma turma.</p>
+    {% endfor %}
+
+<!-- Estilos -->
+<style>
+.titulo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.titulo p {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--azul-Senac);
+}
+
+.turma-repositorio {
+    width: 50%;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    display: flex;
+    allgn-items: center;
+    flex-direction: column;
+    justify-self: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: calc(80vh - 90px);
+}
+
+.turma-repositorio h3 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.pasta-link, .lista-arquivos a {
+    text-decoration: none;
+    color: #2980b9;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.pasta-link:hover, .lista-arquivos a:hover {
+    text-decoration: underline;
+}
+
+.lista-pastas, .lista-arquivos {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 15px;
+}
+
+.lista-pastas li, .lista-arquivos li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f4f7fb;
+    transition: background-color 0.3s ease;
+}
+
+.lista-pastas li:hover, .lista-arquivos li:hover {
+    background-color: #e0eaf5;
+}
+
+.pasta-info p, .arquivo-item p {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 5px;
+}
+
+.pasta-info p strong, .arquivo-item p strong {
+    color: #333;
+}
+
+.sem-pasta, .sem-arquivo {
+    font-style: italic;
+    color: #7f8c8d;
+}
+
+.pasta-item {
+    padding: 10px;
+    border-left: 4px solid #2980b9;
+    margin-bottom: 10px;
+}
+
+.pasta-item .pasta-link {
+    font-size: 1.2em;
+    color: #2980b9;
+}
+
+.pasta-item .pasta-link:hover {
+    text-decoration: underline;
+}
+
+.arquivo-item {
+    padding: 10px;
+    border-left: 4px solid #3498db;
+    margin-bottom: 10px;
+}
+
+.arquivo-item a {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #3498db;
+}
+
+.arquivo-item a:hover {
+    text-decoration: underline;
+}
+</style>
 {% endblock %}
 
 {% block footer %}

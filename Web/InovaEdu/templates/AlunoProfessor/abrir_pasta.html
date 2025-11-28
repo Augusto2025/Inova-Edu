@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Repositório: {{ pasta.nome }}</h2>
+
+{% if sem_pastas %}
+    <div class="alert alert-info">
+        Não há pastas nesta pasta. Você pode criar uma nova pasta.
+        <a href="{% url 'criar_pasta' pasta.idpasta %}" class="btn btn-primary">Criar Nova Pasta</a>
+    </div>
+{% endif %}
+
+{% if sem_arquivos %}
+    <div class="alert alert-info">
+        Não há arquivos nesta pasta. Você pode enviar um novo arquivo.
+        <a href="{% url 'criar_arquivo' pasta.idpasta %}" class="btn btn-primary">Criar Novo Arquivo</a>
+    </div>
+{% endif %}
+
+<div class="pastas">
+    <h4>Pastas</h4>
+    <ul class="lista-pastas">
+    {% for pasta in subpastas %}
+        <li>
+            <a class="pasta-link" href="{% url 'abrir_pasta' pasta.idpasta %}">📁 {{ pasta.nome }}</a>
+        </li>
+    {% empty %}
+        <li>Nenhuma pasta</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="arquivos">
+    <h4>Arquivos</h4>
+    <ul class="lista-arquivos">
+    {% for arquivo in arquivos %}
+        <li>
+            <a href="{{ arquivo.arquivo.url }}" download>📄 {{ arquivo.nome_projeto }}</a>
+        </li>
+    {% empty %}
+        <li>Nenhum arquivo</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<style>
+    .alert {
+        margin-bottom: 15px;
+    }
+    .btn {
+        margin-top: 10px;
+    }
+</style>
+
+{% endblock %}

@@ -105,8 +105,103 @@ def editar_perfil(request):
     return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
 
 
+from django.shortcuts import render, redirect
+from .models import Usuario, Turma, UsuarioDaTurma, Pasta, Projeto
+
 def repositorio(request):
-    return render(request, 'AlunoProfessor/repositorio.html')
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+    
+    usuario = Usuario.objects.get(email=email)
+    
+    turmas_usuario = Turma.objects.filter(usuariodaturma__id_usuario=usuario)
+    
+    repositorio_turmas = []
+
+    for turma in turmas_usuario:
+        # Pastas raiz da turma
+        pastas = Pasta.objects.filter(pasta_pai=None)
+        # Arquivos fora de pastas
+        arquivos = Projeto.objects.filter(turma=turma, pasta=None)
+        
+        repositorio_turmas.append({
+            'turma': turma,
+            'curso': turma.curso,
+            'pastas': pastas,
+            'arquivos': arquivos,
+        })
+
+    return render(request, 'AlunoProfessor/repositorio.html', {'repositorio_turmas': repositorio_turmas})
+
+def abrir_pasta(request, pasta_id):
+    try:
+        pasta = Pasta.objects.get(idpasta=pasta_id)
+    except Pasta.DoesNotExist:
+        pasta = None  # ou redirecionar para uma página de erro
+
+    # Subpastas
+    subpastas = Pasta.objects.filter(pasta_pai=pasta)
+
+    # Arquivos dentro desta pasta
+    arquivos = Projeto.objects.filter(pasta=pasta)
+
+    # Verifica se não há subpastas ou arquivos
+    sem_pastas = not subpastas.exists()
+    sem_arquivos = not arquivos.exists()
+
+    context = {
+        'pasta': pasta,
+        'subpastas': subpastas,
+        'arquivos': arquivos,
+        'sem_pastas': sem_pastas,
+        'sem_arquivos': sem_arquivos,
+    }
+
+    return render(request, 'AlunoProfessor/abrir_pasta.html', context)
+
+def criar_pasta(request, pasta_id):
+    pasta_pai = Pasta.objects.get(idpasta=pasta_id)  # Pega a pasta pai
+
+    if request.method == 'POST':
+        nome_pasta = request.POST.get('nome_pasta')
+        Pasta.objects.create(nome=nome_pasta, pasta_pai=pasta_pai)
+        return redirect('abrir_pasta', pasta_id=pasta_id)
+
+    return render(request, 'AlunoProfessor/criar_pasta.html', {'pasta_pai': pasta_pai})
+
+def criar_arquivo(request, pasta_id):
+    # Obter a pasta específica pelo ID
+    pasta = get_object_or_404(Pasta, idpasta=pasta_id)
+
+    if request.method == 'POST':
+        # Verifique se o formulário contém o arquivo
+        form = ProjetoForm(request.POST, request.FILES)  # Recebe os arquivos do formulário
+        if form.is_valid():
+            # Criar o projeto com o arquivo e associá-lo à pasta
+            projeto = form.save(commit=False)
+            projeto.pasta = pasta  # Associa o arquivo à pasta selecionada
+            projeto.save()
+            return redirect('abrir_pasta', pasta_id=pasta_id)  # Redireciona para a página da pasta
+    else:
+        # Exibe o formulário vazio
+        form = ProjetoForm()
+
+    return render(request, 'AlunoProfessor/criar_arquivo.html', {'form': form, 'pasta': pasta})
+
+def upload_arquivo(request):
+    if request.method == "POST":
+        nome_projeto = request.POST.get('nome_projeto')
+        arquivo = request.FILES.get('arquivo')  # Aqui pegamos o arquivo enviado
+
+        # Cria um novo projeto e salva no banco
+        projeto = Projeto.objects.create(nome_projeto=nome_projeto, arquivo=arquivo)
+
+        # Redireciona para a página de repositório ou qualquer outra página
+        return redirect('repositorio')  # ou a URL que você quiser
+
+    return render(request, 'AlunoProfessor/upload_arquivo.html')
+
 
 def cadastro(request):
     return render(request, 'cadastro_Aluno.html')

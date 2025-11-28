@@ -1,0 +1,10 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="nome_projeto">Nome do Projeto</label>
+    <input type="text" name="nome_projeto" id="nome_projeto" required><br>
+
+    <label for="arquivo">Arquivo do Projeto</label>
+    <input type="file" name="arquivo" id="arquivo" accept="application/pdf, image/*"><br>
+
+    <button type="submit">Enviar</button>
+</form>

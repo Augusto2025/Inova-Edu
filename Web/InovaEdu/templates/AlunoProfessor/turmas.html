@@ -19,7 +19,7 @@
                 <p>Código da Turma: {{ Turma.codigo_turma }}</p>
                 <div class="borda"></div>
                 <i>Turno: {{ Turma.turno }}</i>
-                <a class="Botao_entrar_curso" href="">Entrar</a>
+                <a class="Botao_entrar_curso" href="{% url 'repositorio' %}">Entrar</a>
             </section>
         {% endfor %}
     </main>

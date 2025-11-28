@@ -112,18 +112,32 @@ class Turma(models.Model):
         db_table = 'turma'
 
 
+class Pasta(models.Model):
+    idpasta = models.AutoField(db_column='idPasta', primary_key=True)
+    nome = models.CharField(max_length=50)
+    pasta_pai = models.ForeignKey(
+        'self',
+        db_column='pasta_pai_id',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        db_table = 'pasta'
+
+
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
-    data_de_criacao = models.DateField(db_column='Data_de_criacao')
-    data_de_modificacao = models.DateField(db_column='Data_de_modificacao')
-    caminho_do_arquivo = models.CharField(db_column='Caminho_do_arquivo', max_length=50)
-    turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='Turma_idTurma')
+    arquivo = models.FileField(upload_to='projetos/', null=True, blank=True)  # Permite nulo e vazio
+    data_de_criacao = models.DateField(auto_now_add=True)
+    data_de_modificacao = models.DateField(auto_now=True)
+    turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
+    pasta = models.ForeignKey(Pasta, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
-        managed = False
         db_table = 'projeto'
-
 
 class UsuarioDaTurma(models.Model):
     id = models.BigAutoField(primary_key=True) 
