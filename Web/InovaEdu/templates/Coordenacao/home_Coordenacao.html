@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - coordenação</title>
-    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
 </head>
 <body>
     <!-- Header -->
@@ -22,42 +22,173 @@
     </header>
 
     
-    <section class="parallax hero">
-        <div class="conteudo-parallax">
-            <h2>Bem-vinda à coordenação</h2>
-            <p>Aqui você vai cadastrar Usuários, cursos, turmas e alunos de forma rápida e fácil</p>
-        </div>
-    </section>
+ 
 
-    <!-- Seções cards -->
-    <section class="cards-home">
+    <!-- Seções cards e lista -->
+    <section class="section-wrapper">
 
-        <div class="card">
-            <img src="{% static 'img/curso.jpg' %}" alt="Cursos">
-            <h3>Cursos</h3>
-            <p>Veja a lista de cursos disponíveis</p>
-            <a href="{% url 'cadastroCurso' %}" class="botao-card">Acessar</a>
-        </div>
-        
-        <div class="card">
-            <img src="{% static 'img/turma.jpg' %}" alt="Turmas">
-            <h3>Turmas</h3>
-            <p>Gerencie suas turmas e horários</p>
-            <a href="{% url 'cadastroTurma' %}" class="botao-card">Acessar</a>
+        <!-- CARDS (COLUNA, ESQUERDA) -->
+        <div class="cards-home">
+            <div class="card">
+                <img src="{% static 'img/chalkboard-user-solid-full.svg' %}" alt="Cursos">
+                <h3>Cursos</h3>
+                <p>Veja a lista de cursos disponíveis</p>
+                <a href="{% url 'cadastroCurso' %}" class="botao-card">Acessar</a>
+            </div>
+    
+            <div class="card">
+                <img src="{% static 'img/user-graduate-solid-full.svg' %}" alt="Turmas">
+                <h3>Turmas</h3>
+                <p>Gerencie suas turmas e horários</p>
+                <a href="{% url 'cadastroTurma' %}" class="botao-card">Acessar</a>
+            </div>
+    
+            <div class="card">
+                <img src="{% static 'img/users-solid-full.svg' %}" alt="Usuario">
+                <h3>Usuario</h3>
+                <p>Adicione novos usuários à plataforma</p>
+                <a href="{% url 'cadastro_Aluno' %}" class="botao-card">Acessar</a>
+            </div>
         </div>
     
-        <div class="card">
-            <img src="{% static 'img/usuario.jpg' %}" alt="Usuario">
-            <h3>Usuario</h3>
-            <p>Adicione novos usuários à plataforma</p>
-            <a href="{% url 'cadastro_Aluno' %}" class="botao-card">Acessar</a>
-
-        </div>
+        <!-- LISTA DE USUÁRIOS (LADO DIREITO) -->
+        <main class="container_usuario">
+            <div class="titulo_usuario">
+                <p>Lista Usuário</p>
+            </div>
+    
+            <section class="lista-completa">
+                <ul>
+                    <li class="cabecalho">
+                        <span>Nome</span>
+                        <span>Sobrenome</span>
+                        <span>Email</span>
+                        <span>Senha</span>
+                        <span>Descrição</span>
+                        <span>Imagem</span>
+                        <span>Tipo de Usuário</span>
+                        <span class="acoes">Ações</span>
+                    </li>
+    
+                    {% for usuario in usuarios %}
+                    <li>
+                        <span>{{ usuario.nome }}</span>
+                        <span>{{ usuario.sobrenome }}</span>
+                        <span>{{ usuario.email }}</span>
+                        <span>••••••</span>
+                        <span>{{ usuario.descricao }}</span>
+    
+                        {% if usuario.imagem %}
+                        <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
+                        {% else %}
+                        <span><img src="{% static 'img/default_user.png' %}" alt="Sem foto"></span>
+                        {% endif %}
+    
+                        <span>{{ usuario.tipo }}</span>
+    
+                        <span class="acoes">
+                            <button type="button">Editar</button>
+                            <form action="{% url 'excluir_usuario' usuario.idusuario %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="botao-excluir" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                    Excluir
+                                </button>
+                            </form>
+                        </span>
+                    </li>
+                    {% empty %}
+                    <li><span>Nenhum usuário cadastrado ainda.</span></li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </main>
+    
     </section>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Plataforma Senac - Todos os direitos reservados</p>
+        <p>&copy; 2025 Desenvolvido por Alcides, Augusto e Clariane  </p>
     </footer>
 </body>
 </html>

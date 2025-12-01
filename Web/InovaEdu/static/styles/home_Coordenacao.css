@@ -1,24 +1,28 @@
+/* ======= CORES PADRÃO ======= */
 :root {
     --laranja-Senac: #F7941D;
     --branco-Senac: #FFF;
-    --azul-Senac: #1A6F9D;
-    --cinza-Senac: #D9D9D9;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #F2F2F2;
     --azul_Claro-Senac: #177bda;
-    --fonte-principal: "Kadwa", sans-serif;
+    --fonte-principal: "Arial", sans-serif;
 }
 
+/* ======= RESET ======= */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-body {
+    box-sizing: border-box;
     font-family: var(--fonte-principal);
-    background-color: var(--branco-Senac);
 }
 
-/* HEADER */
+/* ======= BODY ======= */
+body {
+    background-color: var(--cinza-Senac);
+    color: #333;
+}
+
+/* ======= HEADER ======= */
 .header {
     display: flex;
     justify-content: space-between;
@@ -26,7 +30,6 @@ body {
     padding: 20px 50px;
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
-    
 }
 
 .header h1 {
@@ -50,81 +53,75 @@ body {
     color: var(--laranja-Senac);
 }
 
-/* PARALLAX HERO */
-.parallax.hero {
-    height: 450px;
-    background-image: url('parallax1.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+/* ======= CONTAINER FLEX ======= */
+.section-wrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--branco-Senac);
-    position: relative;
-    min-height: calc(70vh - 90px);
-
+    gap: 40px; /* espaço entre cards e lista */
+    align-items: flex-start;
+    padding: 20px;
 }
 
-.conteudo-parallax {
-    background-color: rgba(0,0,0,0.5);
-    padding: 30px 50px;
-    border-radius: 12px;
-}
-
-/* CARDS HOME */
+/* ======= CARDS (COLUNA ESQUERDA) ======= */
 .cards-home {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    padding: 50px 20px;
-    background-color: var(--cinza-Senac);
+    flex-direction: column; /* um embaixo do outro */
+    gap: 100px;
+    width: 300px;
+    padding-right: 20px;
+    border-right: 2px solid #ccc;
+    min-height: calc(100vh - 80px);
+    justify-content: space-between;
+
 }
 
 .card {
     background-color: var(--branco-Senac);
-    width: 250px;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     padding: 20px;
+    text-align: center;
+    width: 250px;
     transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
-.card img {
+/* Ícone ou imagem dentro do card */
+.card img,
+.card svg {
     width: 80px;
     height: 80px;
-    object-fit: cover;
     margin-bottom: 15px;
-    border-radius: 50%;
 }
 
+/* Título */
 .card h3 {
     color: var(--azul-Senac);
+    font-size: 1.3rem;
     margin-bottom: 10px;
 }
 
+/* Descrição */
 .card p {
-    color: #333;
-    font-size: 14px;
+    color: #555;
+    font-size: 0.95rem;
     margin-bottom: 15px;
 }
 
+/* Botão */
 .botao-card {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    border-radius: 8px;
     text-decoration: none;
+    background-color: var(--laranja-Senac);
+    color: var(--branco-Senac);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
     transition: background-color 0.3s;
 }
 
@@ -132,51 +129,128 @@ body {
     background-color: var(--azul_Claro-Senac);
 }
 
-/* PARALLAX SEÇÃO 2 */
-.parallax.parallax2 {
-    height: 300px;
-    background-image: url('parallax2.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+
+/* ======= LISTA DE USUÁRIOS (LADO DIREITO) ======= */
+.container_usuario {
+    flex: 1; /* ocupa o restante da largura */
+    background-color: var(--branco-Senac);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.titulo_usuario p {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.lista-completa ul {
+    list-style: none;
+    width: 100%;
+}
+
+.lista-completa li {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    padding: 12px;
+    border-bottom: 1px solid var(--cinza-Senac);
+    align-items: center;
+    font-size: 14px;
+}
+
+.lista-completa li.cabecalho {
+    font-weight: bold;
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    border-radius: 6px;
+}
+
+.lista-completa img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+/* AÇÕES */
+.acoes {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--branco-Senac);
-    text-align: center;
+    gap: 8px;
 }
 
-.parallax.parallax2 .conteudo-parallax {
-    background-color: rgba(0,0,0,0.4);
-    padding: 20px 40px;
-    border-radius: 12px;
-}
-
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 20px;
+.acoes button:first-child {
+    padding: 5px 12px;
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.acoes button:first-child:hover {
+    background-color: var(--azul_Claro-Senac);
+}
+
+.acoes button:last-child {
+    padding: 5px 12px;
+    background-color: #f44336;
+    color: var(--branco-Senac);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.acoes button:last-child:hover {
+    background-color: #da190b;
+}
+
+/* ======= FOOTER ======= */
+.section-wrapper {
+    flex:1;
+}
+
+footer {
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    text-align: center;
+    padding: 18px;
+    font-size: 14px;
     
 }
 
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-    .header {
+.page-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+/* ======= RESPONSIVO ======= */
+@media (max-width: 990px) {
+    .section-wrapper {
         flex-direction: column;
-        gap: 15px;
-        text-align: center;
     }
 
     .cards-home {
-        flex-direction: column;
-        align-items: center;
+        width: 100%;
+        border-right: none; /* remove linha no mobile */
+        padding-right: 0;
     }
 
-    .parallax.hero,
-    .parallax.parallax2 {
-        height: 250px;
+    .container_usuario {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+
+    .lista-completa li {
+        grid-template-columns: repeat(4, 1fr);
+        font-size: 12px;
     }
 }
