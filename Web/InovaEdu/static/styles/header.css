@@ -59,37 +59,33 @@ header a {
 }
 
 /* -------------------- NAV SUPERIOR -------------------- */
-#site-nav {
-    display: none; /* fechado por padrão */
-    height: 80px;
+.Paginas {
+    display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: solid 1px var(--cinza-Senac);
+    width: 100px;
     font-size: 16px;
-}
-
-#site-nav.open{
-    display: flex;
+    gap: 100px;
 }
 
 /* Apenas links do NAV usam estilo próprio */
-#site-nav a{
-    margin: 90px;
+.Paginas a{
     text-decoration: none;
-    color: var(--azul-Senac);
+    color: var(--branco-Senac);
+}
+
+.Paginas a:hover{
+    border-bottom: solid;
+    border-bottom-color: #F7941D;
 }
 
 a{
     text-decoration: none;
 }
 
-#site-nav .sair{
-    display: flex;
-    align-items: center;
-    background-color: rgb(176, 0, 0);
-    color: white;
-    padding: 5px 30px;
-    border-radius: 10px;
+.sair{
+    color: var(--branco-Senac);
+    margin-left: 10px;
 }
 
 /* -------------------- TÍTULO DAS PÁGINAS -------------------- */
@@ -141,9 +137,6 @@ main{
 
 /* -------------------- RESPONSIVIDADE -------------------- */
 @media (max-width: 1024px) {
-    header{
-        padding: 0% 1%;
-    }
     
     #site-nav a{
         margin: 5%;
@@ -159,9 +152,6 @@ main{
 }
 
 @media (min-width: 1024px) {
-    header{
-        padding: 0% 24%;
-    }
 
     #site-nav a{
         margin: 0% 5%;

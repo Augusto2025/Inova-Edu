@@ -21,29 +21,29 @@
         </div>
     </div>
     
-    <form class="campo_pesq" method="get" action="{% url 'forum_blocos' %}">
-        <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
-        {% if query %}
-            <a href="{% url 'forum_blocos' %}" >Limpar</a>
-        {% endif %}
-        <div class="btn-toggle-filtro" onclick="
-            const f = document.querySelector('.sidebar-filtro');
-            f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
-            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
-        </div>
-    </form>
-
+    
     {% if query %}
-            {% for Forum in foruns %}
-            {% empty %}
-                <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-            {% endfor %}
+    {% for Forum in foruns %}
+    {% empty %}
+    <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
+    {% endfor %}
     {% endif %}
-
+    
     <!-- SIDEBAR DE FILTRO (igual ao da outra página) -->
     <aside class="sidebar-filtro">
+        <h3 style="justify-self: center; color: #004A8D;">Filtros</h3>
+        <form class="campo_pesq" method="get" action="{% url 'forum_blocos' %}">
+            <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
+            {% if query %}
+                <a href="{% url 'forum_blocos' %}" >Limpar</a>
+            {% endif %}
+            <div class="btn-toggle-filtro" onclick="
+                const f = document.querySelector('.sidebar-filtro');
+                f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
+                <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
+            </div>
+        </form>
         <form method="get" action="{% url 'forum_blocos' %}">
-            
             <div class="campo-filtro">
                 <label>Data de criação:</label>
                 <input type="date" name="data_criacao" value="{{ request.GET.data_criacao }}">

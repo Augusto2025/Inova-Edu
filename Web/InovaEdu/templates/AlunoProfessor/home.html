@@ -13,26 +13,28 @@
         <p>Cursos</p>
     </div>
 
-    <form class="campo_pesq" method="get" action="{% url 'home' %}">
-        <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
-        {% if query %}
-            <a href="{% url 'home' %}" >Limpar</a>
-        {% endif %}
-        <div class="btn-toggle-filtro" onclick="
-            const f = document.querySelector('.sidebar-filtro');
-            f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
-            <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
-        </div>
-    </form>
-
+    
     {% if query %}
-            {% for Curso in curso %}
-            {% empty %}
-                <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-            {% endfor %}
+    {% for Curso in curso %}
+    {% empty %}
+        <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
+    {% endfor %}
     {% endif %}
-
+    
     <aside class="sidebar-filtro">
+        <h3 style="justify-self: center; color: #004A8D;">Filtros</h3>
+        <form class="campo_pesq" method="get" action="{% url 'home' %}">
+            <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
+            {% if query %}
+                <a style="color: #004A8D;" href="{% url 'home' %}" >Limpar</a>
+            {% endif %}
+            <div class="btn-toggle-filtro" onclick="
+                const f = document.querySelector('.sidebar-filtro');
+                f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
+                <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
+            </div>
+        </form>
+        
         <form method="get" action="{% url 'home' %}">
             <!-- FILTRO: Data de início -->
             <div class="campo-filtro">
@@ -70,6 +72,10 @@
             </section>
         {% endfor %}
     </main>
+
+    <div class="Eventos_do_mes">
+        <p></p>
+    </div>
 {% endblock %}
 
 {% block footer %}
