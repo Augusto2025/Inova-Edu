@@ -276,20 +276,14 @@ def lista_usuario(request):
 def cadastroCurso(request):
     return render(request, 'Coordenacao/cadastroCurso.html')
 
-# def listacurso(request):
-#     return render(request, 'Coordenacao/ListaCurso.html')
+def homePage(request):
+    return render(request, 'homePage.html')
 
-# def cadastroTurma(request):
-#     return render(request, 'Coordenacao/cadastroTurma.html')
+
 
 def cadastroTurma(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
-
-
-
-
-
 
 
 def enviarUsuario(request):
