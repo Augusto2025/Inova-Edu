@@ -9,6 +9,7 @@
 
 .criar-evento-container{
   max-width:720px;
+  min-height: calc(73vh - 90px);
   margin: 80px auto;
   padding: 24px;
   background: #fff;

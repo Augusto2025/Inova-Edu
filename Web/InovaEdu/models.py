@@ -112,19 +112,19 @@ class Turma(models.Model):
         db_table = 'turma'
 
 
-class Pasta(models.Model):
-    idpasta = models.AutoField(db_column='idPasta', primary_key=True)
-    nome = models.CharField(max_length=50)
-    pasta_pai = models.ForeignKey(
-        'self',
-        db_column='pasta_pai_id',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
+# class Pasta(models.Model):
+#     idpasta = models.AutoField(db_column='idPasta', primary_key=True)
+#     nome = models.CharField(max_length=50)
+#     pasta_pai = models.ForeignKey(
+#         'self',
+#         db_column='pasta_pai_id',
+#         null=True,
+#         blank=True,
+#         on_delete=models.CASCADE
+#     )
 
-    class Meta:
-        db_table = 'pasta'
+#     class Meta:
+#         db_table = 'pasta'
 
 
 class Projeto(models.Model):
@@ -134,7 +134,7 @@ class Projeto(models.Model):
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
-    pasta = models.ForeignKey(Pasta, null=True, blank=True, on_delete=models.SET_NULL)
+    # pasta = models.ForeignKey(Pasta, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'projeto'

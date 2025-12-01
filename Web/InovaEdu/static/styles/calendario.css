@@ -79,7 +79,7 @@ body {
 /* BOTÃO CRIAR EVENTO */
 .btn-create {
   display: block;
-  width: 100%;
+  width: 90%;
   background: var(--laranja);
   color: white;
   padding: 12px;
