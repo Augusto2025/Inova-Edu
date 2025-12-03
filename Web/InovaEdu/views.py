@@ -159,13 +159,23 @@ def forum_blocos(request):
             'query': query,
         }
     )
+
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
-    turmas = Turma.objects.filter(curso=curso)
-    return render(request, 'AlunoProfessor/turmas.html', {
-        'curso': curso,
-        'turmas': turmas
+
+    # busca turmas do curso e ordena por ano
+    turmas = Turma.objects.filter(curso=curso).order_by("ano")
+
+    # agrupar por ano
+    turmas_por_ano = {}
+    for turma in turmas:
+        turmas_por_ano.setdefault(turma.ano, []).append(turma)
+
+    return render(request, "AlunoProfessor/turmas.html", {
+        "curso": curso,
+        "turmas_por_ano": turmas_por_ano
     })
+
 
 def forum_chat(request, forum_id):
     # pegar usuário logado via session

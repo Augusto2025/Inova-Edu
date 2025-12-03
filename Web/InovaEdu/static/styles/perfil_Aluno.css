@@ -19,21 +19,6 @@ body {
     background-color: var(--cinza-claro);
 }
 
-/* --------- TÍTULO --------- */
-
-.titulo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.titulo p {
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--azul-Senac);
-}
-
 /* --------- CONTEÚDO PRINCIPAL --------- */
 
 main {

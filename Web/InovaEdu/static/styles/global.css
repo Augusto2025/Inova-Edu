@@ -3,6 +3,99 @@
     --branco-Senac: #FFF;
     --azul-Senac: #004A8D;
     --azulEsverdiado-InovaEdu: #1A6F9D;
+    --shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+.titulo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.titulo p {
+    color: var(--azul-Senac);
+    font-size: 26px;
+    font-weight: 600;
+    border-bottom: 4px solid var(--laranja-Senac);
+}
+
+.campo_pesq {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+}
+
+.pesquisa {
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid var(--azul-Senac);
+    font-size: 15px;
+}
+
+.btn-toggle-filtro {
+    display: none; /* apenas no mobile */
+    cursor: pointer;
+    align-items: center;
+    gap: 10px;
+}
+
+.filtro_icone {
+    width: 28px;
+    height: 28px;
+}
+
+.sidebar-filtro {
+    position: fixed;
+    top: 180px;      /* ajuste se quiser subir/descer */
+    left: 20px;      /* distância da borda */
+    width: 300px;
+    background: #ffffff;
+    padding: 25px 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-filtro label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.campo-filtro {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-filtro input,
+.campo-filtro select {
+    padding: 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-aplicar {
+    width: 100%;
+    padding: 12px;
+    background: var(--azul-Senac);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.2s ease-in-out;
+}
+
+.btn-aplicar:hover {
+    background: #00376a;
 }
 
 main {

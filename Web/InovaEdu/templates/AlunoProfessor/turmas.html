@@ -12,17 +12,55 @@
     <div class="titulo">
         <p>Turmas</p>
     </div>
-    <input class="pesquisa" type="search" placeholder="Pesquisar" />
-    <main class="blocos">
-        {% for Turma in turmas %}
-            <section>
-                <p>Código da Turma: {{ Turma.codigo_turma }}</p>
-                <div class="borda"></div>
-                <i>Turno: {{ Turma.turno }}</i>
-                <a class="Botao_entrar_curso" href="{% url 'repositorio' %}">Entrar</a>
-            </section>
+    
+    <main class="accordion-container">
+
+        {% for ano, turmas_do_ano in turmas_por_ano.items %}
+        
+        <div class="accordion-item">
+            <button class="accordion-header">
+                <span>Ano {{ ano }}</span>
+                <span class="icon">+</span>
+            </button>
+    
+            <div class="accordion-content">
+                {% for Turma in turmas_do_ano %}
+                    <section class="turma-card">
+                        <p><strong>Código:</strong> {{ Turma.codigo_turma }}</p>
+                        <p><strong>Turno:</strong> {{ Turma.turno }}</p>
+                        <a class="Botao_entrar_curso" href="{% url 'repositorio' %}">Entrar</a>
+                    </section>
+                {% endfor %}
+            </div>
+        </div>
+    
         {% endfor %}
+    
     </main>
+
+    <script>
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+    
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.icon');
+    
+                const isOpen = content.style.display === "block";
+    
+                // Fecha todos os acordions antes de abrir o clicado
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
+                document.querySelectorAll('.accordion-header .icon').forEach(i => i.textContent = "+");
+    
+                // Abre apenas o que foi clicado
+                if (!isOpen) {
+                    content.style.display = "block";
+                    icon.textContent = "−";
+                }
+            });
+        });
+    </script>
+    
+    
 {% endblock %}
 
 {% block footer %}

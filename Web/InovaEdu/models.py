@@ -105,10 +105,10 @@ class Turma(models.Model):
     idturma = models.AutoField(db_column='idTurma', primary_key=True)
     codigo_turma = models.CharField(db_column='Codigo_Turma', max_length=11)
     turno = models.CharField(db_column='Turno', max_length=5, blank=True, null=True)
+    ano = models.IntegerField(db_column='Ano')
     curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='ID_Curso')
 
     class Meta:
-        managed = False
         db_table = 'turma'
 
 

@@ -114,30 +114,6 @@ section .Botao_entrar_forum {
   border-radius: 23px 23px 0px 0px;
 }
 
-/* ============================================================
-   NOVO — SIDEBAR DE FILTRO (COPIADO/ADAPTADO DA OUTRA PÁGINA)
-   ============================================================ */
-
-/* Sidebar fixa no desktop */
-.sidebar-filtro {
-  position: fixed;
-  top: 180px;
-  /* ajuste se quiser subir/descer */
-  left: 20px;
-  /* distância da borda */
-  width: 260px;
-  background: #ffffff;
-  padding: 25px 20px;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-}
-
-.sidebar-filtro label {
-  font-size: 14px;
-  color: #333;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
 
 /* empurra o conteúdo para a direita quando sidebar visível */
 main {

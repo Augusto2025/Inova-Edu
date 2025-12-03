@@ -22,9 +22,10 @@ body{
 }
 
 main{
-    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
     margin: 50px;
-    min-height: calc(74vh - 90px);
+    min-height: calc(80vh - 90px);
 }
 
 section{
@@ -63,6 +64,52 @@ section .Botao_entrar_curso{
     border-radius: 23px;
     background: #004A8D;
 }
+
+.accordion-container {
+    width: 90%;
+    margin: 20px auto;
+}
+
+.accordion-item {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.accordion-header {
+    width: 300px;
+    background: #005eb8;
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 18px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.accordion-header .icon {
+    font-size: 22px;
+    transition: transform 0.3s;
+}
+
+.accordion-content {
+    display: none;
+    padding: 15px;
+    background: #f5f5f5;
+}
+
+.turma-card {
+    margin-bottom: 15px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
 
 @media (max-width: 1024px) {
     .titulo{
