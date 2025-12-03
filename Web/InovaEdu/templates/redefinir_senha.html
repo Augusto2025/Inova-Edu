@@ -11,20 +11,23 @@
 
 <body>
 
-    <form class="card_login" onsubmit="return salvarSenha(event)">
+    <form class="card_login" method="POST">
+        {% csrf_token %}
+
         <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="logo">
         <h1>Redefinir senha</h1>
 
-        <input type="password" placeholder="Nova senha" id="senha1">
-        <input type="password" placeholder="Confirmar senha" id="senha2">
+        <input type="password" name="senha1" placeholder="Nova senha" required>
+        <input type="password" name="senha2" placeholder="Confirmar senha" required>
 
-        <p id="mensagem" style="display:none; margin-top:10px; font-size:16px;"></p>
+        {% if mensagem %}
+            <p id="mensagem" style="margin-top:10px; font-size:16px; color:red;">
+                {{ mensagem }}
+            </p>
+        {% endif %}
 
         <button type="submit">Confirmar</button>
     </form>
-
-
-    <script src="{% static 'scripts/salvar_senha.js' %}"></script>
 
 </body>
 </html>
