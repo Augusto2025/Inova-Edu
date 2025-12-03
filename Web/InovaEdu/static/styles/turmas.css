@@ -79,7 +79,7 @@ section .Botao_entrar_curso{
 }
 
 .accordion-header {
-    width: 300px;
+    width: 1000px;
     background: #005eb8;
     color: white;
     border: none;
@@ -98,12 +98,14 @@ section .Botao_entrar_curso{
 
 .accordion-content {
     display: none;
+    justify-content: center;
     padding: 15px;
     background: #f5f5f5;
 }
 
 .turma-card {
-    margin-bottom: 15px;
+    width: 200px;
+    margin: 15px;
     background: #fff;
     padding: 12px;
     border-radius: 6px;
