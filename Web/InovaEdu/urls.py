@@ -31,6 +31,7 @@ urlpatterns = [
     path('pasta/<int:pasta_id>/', views.abrir_pasta, name='abrir_pasta'),
     path('pasta/<int:pasta_id>/criar_pasta/', views.criar_pasta, name='criar_pasta'),  # Certifique-se de que essa linha existe
     path('pasta/<int:pasta_id>/criar_arquivo/', views.criar_arquivo, name='criar_arquivo'),
+    path('reSenha', views.reSenha, name='reSenha'),
 ]
 
 # Serve arquivos de mídia durante o desenvolvimento

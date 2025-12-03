@@ -6,6 +6,20 @@ import json
 from django.shortcuts import HttpResponse
 from django.contrib.auth.decorators import login_required
 
+def reSenha(request):
+    if request.method == "POST":
+        senha1 = request.POST.get("senha1")
+        senha2 = request.POST.get("senha")
+        
+        if senha1 == senha2:
+            request.user.set_password(senha1)
+            request.user.save()
+        
+
+
+        
+
+    return render(request, "reSenha.html")
 
 
 def login(request):
