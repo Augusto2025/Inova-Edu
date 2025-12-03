@@ -1,5 +1,6 @@
 from django.urls import path
-from config import settings  # Corrigido para importar de 'config'
+from config import settings 
+from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
@@ -28,4 +29,7 @@ urlpatterns = [
     path('criar_curso', views.criar_curso, name='criar_curso'),
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
     path('lista/', views.lista_usuario, name="lista_usuario"),
-]
+] 
+
+if settings.DEBUG:  
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

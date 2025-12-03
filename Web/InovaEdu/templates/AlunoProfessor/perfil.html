@@ -16,7 +16,11 @@
         <section class="perfil-container">
 
             <div class="foto-nome">
-                <img class="perfil-img" src="{% static 'img/homem.png' %}" alt="Foto do usuário">
+                {% if usuario.imagem %}
+                    <img class="perfil-img" src="{{ usuario.imagem.url }}" alt="Foto do usuário">
+                {% else %}
+                    <img class="perfil-img" src="{% static 'img/default_user.png' %}" alt="Foto do usuário">
+                {% endif %}
                 <p class="Nome_Usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</p>
             </div>
 

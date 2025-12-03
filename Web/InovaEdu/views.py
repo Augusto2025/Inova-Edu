@@ -269,9 +269,6 @@ def cadastro(request):
 def home_Coordenacao(request):
     return render (request, 'Coordenacao/home_Coordenacao.html')
 
-def lista_usuario(request):
-    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
-    return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
 
 def cadastroCurso(request):
     return render(request, 'Coordenacao/cadastroCurso.html')
@@ -279,12 +276,13 @@ def cadastroCurso(request):
 def homePage(request):
     return render(request, 'homePage.html')
 
-
-
 def cadastroTurma(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
 
+def lista_usuario(request):
+    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
+    return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
 
 def enviarUsuario(request):
     if request.method == 'POST':
@@ -294,6 +292,8 @@ def enviarUsuario(request):
         senha = request.POST.get('Senha')
         descricao = request.POST.get('descricao')
         tipo = request.POST.get('tipoCadastro')
+        imagem = request.FILES.get('imagem')
+
         imagem = request.FILES.get('imagem')
 
         # Criar e salva o usuario
