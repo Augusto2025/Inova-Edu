@@ -11,6 +11,7 @@
 
     <div class="titulo">
         <p>Cursos</p>
+        <img class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
     </div>
 
     
@@ -31,7 +32,6 @@
             <div class="btn-toggle-filtro" onclick="
                 const f = document.querySelector('.sidebar-filtro');
                 f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
-                <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
             </div>
         </form>
 

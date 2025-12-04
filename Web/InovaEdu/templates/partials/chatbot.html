@@ -61,9 +61,8 @@
     }
     
     .bot-icon {
-        width: 24px;
-        height: 24px;
-        margin-right: 8px;
+        width: 30px;
+        height: 30px;
     }
 
     .chat-body {
@@ -119,16 +118,17 @@
 
 <!-- Ícone flutuante do chat atualizado -->
 <div class="chatbot-icon" id="chatbotIcon" aria-label="Abrir chat">
-    <span class="material-symbols-outlined">
+    {% comment %} <span class="material-symbols-outlined">
         smart_toy
-    </span>
+    </span> {% endcomment %}
+    <img src="{% static 'img/Robo.png' %}" alt="bot" class="bot-icon">
 </div>
 
 <!-- Caixa do chat -->
 <div class="chatbox" id="chatBox" role="dialog" aria-hidden="true" aria-label="Chat de suporte">
     <div class="chat-header">
-        <img src="{% static 'img/robo.webp' %}" alt="bot" class="bot-icon">
-        <span>Chat suporte</span>
+        <img src="{% static 'img/Robo.png' %}" alt="bot" class="bot-icon">
+        <span style="margin-left: 8px;">Chat suporte</span>
     </div>
 
     <div class="chat-body" id="chatBody">
