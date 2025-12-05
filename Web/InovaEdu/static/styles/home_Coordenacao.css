@@ -56,6 +56,13 @@ body {
   color: var(--laranja-Senac);
 }
 
+/* ======= CONTAINER main ======= */
+
+.maincontainer{
+  display: flex;
+  padding: auto;
+}
+
 /* ======= CONTAINER PRINCIPAL ======= */
 .section-wrapper {
   display: flex;
@@ -73,6 +80,7 @@ body {
   width: 300px;
   padding-right: 20px;
   border-right: 2px solid #ccc;
+  margin: 10px;
 }
 
 .card {
@@ -169,6 +177,9 @@ body {
   list-style: none;
   padding: 0;
   margin-top: 10px;
+  max-height: 850px;  /* altura máxima */
+  overflow-y: auto;   /* ativa rolagem vertical */
+  overflow-x: hidden; /* evita barra lateral horizontal */
 }
 
 .lista_conteudo li {
@@ -177,7 +188,7 @@ body {
   padding: 12px;
   border-bottom: 1px solid var(--cinza-Senac);
   align-items: center;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .lista_conteudo li.cabecalho {
@@ -185,7 +196,11 @@ body {
   background-color: var(--azul-Senac);
   color: var(--branco-Senac);
   border-radius: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
+  
 
 .lista_conteudo img {
   width: 50px;
@@ -200,22 +215,24 @@ body {
   display: flex;
   gap: 10px;
   justify-content: center;
+  align-items: center;
 }
 
-.acoes button:first-child {
+.botao-editar {
   padding: 5px 12px;
   background-color: var(--azul-Senac);
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #da190b;
 }
 
-.acoes button:first-child:hover {
+.botao-editar:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-.acoes button:last-child {
+.botao-excluir {
   padding: 5px 12px;
   background-color: #f44336;
   color: #fff;
@@ -224,9 +241,10 @@ body {
   cursor: pointer;
 }
 
-.acoes button:last-child:hover {
+.botao-excluir:hover {
   background-color: #da190b;
 }
+
 
 /* ======= MODAL ======= */
 .modal {
@@ -313,9 +331,9 @@ form button[type="submit"]:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-form button[type="button"] {
+/* form button[type="button"] {
   background-color: #ccc;
-}
+} */
 
 form button[type="button"]:hover {
   background-color: var(--cinza-Senac);
@@ -561,6 +579,12 @@ form button[type="button"]:hover {
     font-size: 25px;
     cursor: pointer;
 }
+
+
+
+
+
+
 
 
 /* ======= FOOTER ======= */

@@ -21,7 +21,7 @@ ALLOWED_HOSTS = []
 
 # Arquivos de mídia (upload de arquivos)
 MEDIA_URL = '/media/'  # URL pública para acessar os arquivos
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Diretório no sistema de arquivos onde os arquivos serão armazenados
+MEDIA_ROOT = BASE_DIR / 'media'  # Diretório no sistema de arquivos onde os arquivos serão armazenados
 
 
 # Application definition
