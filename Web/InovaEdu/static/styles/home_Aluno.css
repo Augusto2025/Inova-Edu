@@ -129,6 +129,7 @@ body {
 .cards_curso {
     background: white;
     width: 300px;
+    flex-direction: column;
     border-radius: 18px;
     padding-bottom: 20px;
     box-shadow: var(--shadow);
