@@ -67,7 +67,7 @@
             <div id="modalCadastro" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModal">&times;</span>
-                    <div class="titulo_usuario">
+                    <div class="titulo_lista">
                         <p>Cadastro Usuário</p>
                     </div>
                     <form action="{% url 'enviar' %}" method="POST" enctype="multipart/form-data">
@@ -138,10 +138,13 @@
             </section>
         </section>
 
-        <!-- CURSOS -->
+        <!-- =======================CURSOS =================-->
         <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
-            <div class="titulo_lista"><p>Lista de Cursos</p></div>
-            <section class="lista_curso">
+            <div class="titulo_curso">
+                <p>Lista de Cursos</p>
+                <a href="#" class="btncurso" id="abrirModal">Cadastro</a>
+            </div>
+                <section class="lista-completa">
                 <ul>
                     <li class="cabecalho">
                         <span>Nome</span>
@@ -174,24 +177,26 @@
             </section>
         </section>
 
-        <!-- TURMAS -->
+        <!-- ==============TURMAS================= -->
         <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
-            <div class="titulo_lista"><p>Lista de Turmas</p></div>
-            <section class="lista_curso">
+            <div class="titulo_lista">
+                <p>Lista de Turmas</p>
+                <a href="#" class="btncurso" id="abrirModal">Cadastro</a>
+            </div>
+
+            <section class="lista-completa">
                 <ul>
                     <li class="cabecalho">
-                        <span>Nome Turma</span>
+                        <span>Código da Turma:</span>
                         <span>Curso</span>
-                        <span>Data Início</span>
-                        <span>Data Fim</span>
+                        <span>Turno</span>
                         <span class="acoes">Ações</span>
                     </li>
                     {% for turma in turmas %}
                     <li>
-                        <span>{{ turma.nome_turma }}</span>
+                        <span>{{ turma.codigo_turma }}</span>
                         <span>{{ turma.curso.nome_curso }}</span>
-                        <span>{{ turma.data_inicio }}</span>
-                        <span>{{ turma.data_fim }}</span>
+                        <span>{{ turma.turno }}</span>
                         <span class="acoes">
                             <button type="button">Editar</button>
                             <button type="button">Excluir</button>

@@ -1,394 +1,602 @@
 /* ======= CORES PADRÃO ======= */
 :root {
-    --laranja-Senac: #f7941d;
-    --branco-Senac: #fff;
-    --azul-Senac: #004a8d;
-    --cinza-Senac: #f2f2f2;
-    --azul_Claro-Senac: #177bda;
-    --fonte-principal: "Arial", sans-serif;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
+}
+
+/* ======= RESET ======= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-principal);
+}
+
+/* ======= BODY ======= */
+body {
+  background-color: var(--cinza-Senac);
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ======= HEADER ======= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+}
+
+.header h1 {
+  font-size: 24px;
+}
+
+.header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.header nav ul li a {
+  color: var(--branco-Senac);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.header nav ul li a:hover {
+  color: var(--laranja-Senac);
+}
+
+/* ======= CONTAINER PRINCIPAL ======= */
+.section-wrapper {
+  display: flex;
+  gap: 40px;
+  padding: 20px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+/* ======= COLUNA DE CARDS ======= */
+.cards-home {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  padding-right: 20px;
+  border-right: 2px solid #ccc;
+}
+
+.card {
+  background-color: var(--branco-Senac);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+}
+
+.card h3 {
+  color: var(--azul-Senac);
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+.botao-card {
+  text-decoration: none;
+  background-color: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.botao-card:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+/* ======= COLUNA DE LISTAS (DIREITA) ======= */
+.container_usuario {
+  flex: 1;
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título da lista */
+.titulo_lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 22px;
+  color: var(--azul-Senac);
+  border-bottom: 3px solid var(--laranja-Senac);
+}
+
+.btn-add {
+  background-color: var(--laranja-Senac);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-add:hover {
+  background-color: #d67c12;
+}
+
+/* ======= LISTAS GERAIS ======= */
+.lista_conteudo {
+  display: none;
+  /* Todas começam escondidas */
+}
+
+.lista_conteudo ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.lista_conteudo li {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-Senac);
+  align-items: center;
+  font-size: 14px;
+}
+
+.lista_conteudo li.cabecalho {
+  font-weight: bold;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  border-radius: 6px;
+}
+
+.lista_conteudo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+/* Ações (editar/excluir) */
+.acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.acoes button:first-child {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.acoes button:first-child:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+.acoes button:last-child {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.acoes button:last-child:hover {
+  background-color: #da190b;
+}
+
+/* ======= MODAL ======= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-conteudo {
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  width: 550px;
+  position: relative;
+  animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
   }
-  
-  /* ======= RESET ======= */
-  * {
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.fechar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Formulário dentro do modal */
+form {
+  width: 100%;
+  margin-top: 15px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 6px;
+  color: black;
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--azul-Senac);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+form button[type="submit"] {
+  background-color: var(--azul-Senac);
+  color: #fff;
+}
+
+form button[type="submit"]:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+form button[type="button"] {
+  background-color: #ccc;
+}
+
+form button[type="button"]:hover {
+  background-color: var(--cinza-Senac);
+}
+
+/* ======= LISTA DE CURSOS ======= */
+
+.titulo_curso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 22px;
+  color: var(--azul-Senac);
+  border-bottom: 3px solid var(--laranja-Senac);
+}
+
+.btncurso {
+  background-color: var(--laranja-Senac);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btncurso:hover {
+  background-color: #d67c12;
+}
+
+
+
+
+
+.lista_curso {
+  display: blok;
+  /* inicia escondida */
+}
+
+.lista_curso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista_curso li {
+  display: grid;
+  grid-template-columns: 0.8fr 1.5fr 1.2fr 1.2fr 2fr 1fr;
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+}
+
+.lista_curso li.cabecalho {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.lista_curso li:not(.cabecalho):hover {
+  background-color: #8dc0f0;
+  color: black;
+}
+
+.lista_curso img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.lista_curso select {
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* =========== Turma======= */
+
+/* ======= LISTA DE TURMAS ======= */
+/* ======= LISTA DE TURMAS ======= */
+
+#listaTurma .lista_curso ul {
+    list-style: none;
+    padding: 0;
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: var(--fonte-principal);
-  }
-  
-  /* ======= BODY ======= */
-  body {
-    background-color: var(--cinza-Senac);
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  
-  /* ======= HEADER ======= */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px;
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-  }
-  
-  .header h1 {
-    font-size: 24px;
-  }
-  
-  .header nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-  }
-  
-  .header nav ul li a {
-    color: var(--branco-Senac);
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s;
-  }
-  
-  .header nav ul li a:hover {
-    color: var(--laranja-Senac);
-  }
-  
-  /* ======= CONTAINER PRINCIPAL ======= */
-  .section-wrapper {
-    display: flex;
-    gap: 40px;
-    padding: 20px;
-    align-items: flex-start;
-    flex: 1;
-  }
-  
-  /* ======= COLUNA DE CARDS ======= */
-  .cards-home {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 300px;
-    padding-right: 20px;
-    border-right: 2px solid #ccc;
-  }
-  
-  .card {
-    background-color: var(--branco-Senac);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    padding: 20px;
-    text-align: center;
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  }
-  
-  .card img {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 15px;
-  }
-  
-  .card h3 {
-    color: var(--azul-Senac);
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-  }
-  
-  .card p {
-    color: #555;
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-  }
-  
-  .botao-card {
-    text-decoration: none;
-    background-color: var(--laranja-Senac);
-    color: var(--branco-Senac);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-  }
-  
-  .botao-card:hover {
-    background-color: var(--azul_Claro-Senac);
-  }
-  
-  /* ======= COLUNA DE LISTAS (DIREITA) ======= */
-  .container_usuario {
-    flex: 1;
-    background-color: var(--branco-Senac);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  
-  /* Título da lista */
-  .titulo_lista {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    font-size: 22px;
-    color: var(--azul-Senac);
-    border-bottom: 3px solid var(--laranja-Senac);
-  }
-  
-  .btn-add {
-    background-color: var(--laranja-Senac);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.3s;
-  }
-  
-  .btn-add:hover {
-    background-color: #d67c12;
-  }
-  
-  /* ======= LISTAS GERAIS ======= */
-  .lista_conteudo {
-    display: none; /* Todas começam escondidas */
-  }
-  
-  .lista_conteudo ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-  }
-  
-  .lista_conteudo li {
+}
+
+#listaTurma .lista_curso li {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: 1fr 1.5fr 1fr 1fr; /* Código | Curso | Turno | Ações */
+    gap: 5px;
     padding: 12px;
-    border-bottom: 1px solid var(--cinza-Senac);
+    border-bottom: 1px solid #e0e0e0;
     align-items: center;
     font-size: 14px;
-  }
-  
-  .lista_conteudo li.cabecalho {
-    font-weight: bold;
+}
+
+#listaTurma .lista_curso li.cabecalho {
     background-color: var(--azul-Senac);
     color: var(--branco-Senac);
+    font-weight: bold;
     border-radius: 6px;
-  }
-  
-  .lista_conteudo img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto;
-  }
-  
-  /* Ações (editar/excluir) */
-  .acoes {
+}
+
+#listaTurma .lista_curso li:not(.cabecalho):hover {
+    background-color: #8dc0f0;
+    color: black;
+}
+
+#listaTurma .acoes {
     display: flex;
     gap: 10px;
     justify-content: center;
-  }
-  
-  .acoes button:first-child {
+}
+
+#listaTurma .acoes button:first-child {
     padding: 5px 12px;
     background-color: var(--azul-Senac);
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .acoes button:first-child:hover {
+}
+
+#listaTurma .acoes button:first-child:hover {
     background-color: var(--azul_Claro-Senac);
-  }
-  
-  .acoes button:last-child {
+}
+
+#listaTurma .acoes button:last-child {
     padding: 5px 12px;
     background-color: #f44336;
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .acoes button:last-child:hover {
+}
+
+#listaTurma .acoes button:last-child:hover {
     background-color: #da190b;
-  }
-  
-  /* ======= MODAL ======= */
-  .modal {
+}
+
+
+
+/* ====================CURSO============================== */
+
+/* ======= LISTA DE CURSOS ======= */
+#listaCurso .lista_curso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#listaCurso .lista_curso li {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.8fr 2fr 1fr;
+  /* 6 colunas */
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  font-size: 14px;
+}
+
+#listaCurso .lista_curso li.cabecalho {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+#listaCurso .lista_curso li:not(.cabecalho):hover {
+  background-color: #8dc0f0;
+  color: black;
+}
+
+#listaCurso .lista_curso img {
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+#listaCurso .acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#listaCurso .acoes button:first-child {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaCurso .acoes button:first-child:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+#listaCurso .acoes button:last-child {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaCurso .acoes button:last-child:hover {
+  background-color: #da190b;
+}
+
+
+/* modal curso====== */
+.modal {
     display: none;
     position: fixed;
-    z-index: 9999;
+    z-index: 999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-conteudo {
-    background-color: var(--branco-Senac);
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: #fff;
+    width: 50%;
+    margin: 5% auto;
     padding: 20px;
-    border-radius: 12px;
-    width: 550px;
-    position: relative;
-    animation: aparecer 0.3s ease;
-  }
-  
-  @keyframes aparecer {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  
-  .fechar {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
+    border-radius: 10px;
+}
+
+.close {
+    float: right;
+    font-size: 25px;
     cursor: pointer;
+}
+
+
+/* ======= FOOTER ======= */
+.footer-fixo {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  text-align: center;
+  padding: 15px 0;
+  margin-top: auto;
+}
+
+/* ======= RESPONSIVO ======= */
+@media (max-width: 990px) {
+  .section-wrapper {
+    flex-direction: column;
   }
-  
-  /* Formulário dentro do modal */
-  form {
+
+  .cards-home {
     width: 100%;
-    margin-top: 15px;
+    border-right: none;
+    padding-right: 0;
   }
-  
-  form label {
-    display: block;
-    margin-bottom: 6px;
-    color: black;
+
+  .container_usuario {
+    margin-left: 0;
+    margin-top: 20px;
   }
-  
-  form input, form textarea, form select {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 20px;
-    border: 1px solid var(--azul-Senac);
-    border-radius: 8px;
-    font-size: 16px;
+
+  .lista_conteudo li {
+    grid-template-columns: repeat(4, 1fr);
+    font-size: 12px;
   }
-  
-  form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  form button[type="submit"] {
-    background-color: var(--azul-Senac);
-    color: #fff;
-  }
-  
-  form button[type="submit"]:hover {
-    background-color: var(--azul_Claro-Senac);
-  }
-  
-  form button[type="button"] {
-    background-color: #ccc;
-  }
-  
-  form button[type="button"]:hover {
-    background-color: var(--cinza-Senac);
-  }
-  
-  /* ======= LISTA DE CURSOS ======= */
-  .lista_curso {
-    display: none; /* inicia escondida */
-  }
-  
-  .lista_curso ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
+
   .lista_curso li {
-    display: grid;
-    grid-template-columns: 0.8fr 1.5fr 1.2fr 1.2fr 2fr 1fr;
-    gap: 5px;
-    padding: 12px;
-    border-bottom: 1px solid #e0e0e0;
-    align-items: center;
+    grid-template-columns: repeat(4, 1fr);
   }
-  
-  .lista_curso li.cabecalho {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    font-weight: bold;
-    border-radius: 6px;
-  }
-  
-  .lista_curso li:not(.cabecalho):hover {
-    background-color: #8dc0f0;
-    color: black;
-  }
-  
-  .lista_curso img {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-  }
-  
-  .lista_curso select {
-    padding: 5px 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  
-  /* ======= FOOTER ======= */
-  .footer-fixo {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    text-align: center;
-    padding: 15px 0;
-    margin-top: auto;
-  }
-  
-  /* ======= RESPONSIVO ======= */
-  @media (max-width: 990px) {
-    .section-wrapper {
-      flex-direction: column;
-    }
-  
-    .cards-home {
-      width: 100%;
-      border-right: none;
-      padding-right: 0;
-    }
-  
-    .container_usuario {
-      margin-left: 0;
-      margin-top: 20px;
-    }
-  
-    .lista_conteudo li {
-      grid-template-columns: repeat(4, 1fr);
-      font-size: 12px;
-    }
-  
-    .lista_curso li {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-  
+}
+
+
