@@ -111,30 +111,12 @@ class Turma(models.Model):
     class Meta:
         db_table = 'turma'
 
-
-# class Pasta(models.Model):
-#     idpasta = models.AutoField(db_column='idPasta', primary_key=True)
-#     nome = models.CharField(max_length=50)
-#     pasta_pai = models.ForeignKey(
-#         'self',
-#         db_column='pasta_pai_id',
-#         null=True,
-#         blank=True,
-#         on_delete=models.CASCADE
-#     )
-
-#     class Meta:
-#         db_table = 'pasta'
-
-
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
-    arquivo = models.FileField(upload_to='projetos/', null=True, blank=True)  # Permite nulo e vazio
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
-    # pasta = models.ForeignKey(Pasta, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'projeto'
@@ -174,10 +156,10 @@ class Forum(models.Model):
     idforum = models.AutoField(db_column='idForum', primary_key=True)
     nome = models.CharField(db_column='Nome', max_length=30)
     data_criacao = models.DateField(db_column='Data_criacao')
+    descricao = models.CharField(db_column='Descricao', max_length=30, blank=True, null=True)
     usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'forum'
 
 class Mensagem(models.Model):

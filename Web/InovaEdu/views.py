@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404 
 from .models import *
+import os
 from datetime import datetime
 from django.utils import timezone
 import json
@@ -304,7 +305,7 @@ def enviarUsuario(request):
         tipo = request.POST.get('tipoCadastro')
         imagem = request.FILES.get('imagem')
 
-        imagem = request.FILES.get('imagem')
+        # imagem = request.FILES.get('imagem')
 
         # Criar e salva o usuario
 

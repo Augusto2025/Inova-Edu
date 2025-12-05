@@ -61,15 +61,52 @@
             <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
         </form>
     </aside>
-    
     <main class="blocos">
         {% for Curso in curso %}
-            <section>
-                <img class="imagem_curso" src="{% static 'img/tecnologia.png' %}" alt="Imagem do curso" />
+        {% if Curso.imagem %}
+            <section class="cards_curso">
+                <img class="imagem_curso" src="{{ Curso.imagem.url }}" alt="Imagem do curso" />
                 <p>{{ Curso.nome_curso }}</p>
                 <div class="borda"></div>
                 <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
             </section>
+        {% else %}
+            <section class="cards_curso2">
+                <p>{{ Curso.nome_curso }}</p>
+                <div class="borda"></div>
+                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+            </section>
+            <style>
+                .cards_curso2 {
+                    justify-content: center;
+                    background: white;
+                    width: 300px;
+                    height: 275px;
+                    border-radius: 18px;
+                    padding-bottom: 20px;
+                    box-shadow: var(--shadow);
+                    transition: transform 0.20s ease, box-shadow 0.20s ease;
+                }
+
+                .cards_curso2:hover {
+                    transform: translateY(-6px);
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+                }
+
+                .cards_curso2 p {
+                    margin: 18px 15px 5px 15px;
+                    color: var(--azul-Senac);
+                    font-size: 17px;
+                    font-weight: 600;
+                }
+
+                .Botao_entrar_curso{
+                    margin: 0%;
+                    margin-top: 20px;
+                    justify-self: end;
+                }
+            </style>
+        {% endif %}
         {% endfor %}
     </main>   
 

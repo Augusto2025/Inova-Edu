@@ -21,14 +21,15 @@ body {
 /* estilo do botão criar - fixo no canto da tela */
 .botao-criar-forum {
   position: fixed;
-  top: calc(var(--nav-height, 160px) + 48px);
-  right: 20px;
+  width: 315px;
+  top: 580px;
+  left: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 12px;
   border-radius: 8px;
-  background: #0d6efd;
+  background: var(--laranja-Senac);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
@@ -38,10 +39,8 @@ body {
 
 section {
   background: white;
-  width: 290px;
-  height: 180px;
+  width: 100%;
   padding: 10px;
-  align-items: flex-start;
   border-radius: 18px;
   padding-bottom: 20px;
   box-shadow: var(--shadow);
@@ -57,7 +56,6 @@ section:hover {
 .titulo-forum {
   margin: 20px 0 8px 0;
   color: var(--azul-Senac);
-  display: inline-block;
   border-bottom: 3px solid var(--laranja-Senac);
   padding-bottom: 6px;
 }
@@ -114,12 +112,12 @@ section .Botao_entrar_forum {
   border-radius: 23px 23px 0px 0px;
 }
 
-
-/* empurra o conteúdo para a direita quando sidebar visível */
 main {
   display: flex;
   align-items: flex-start;
+  flex-direction: column;
   flex-wrap: wrap;
+  width: 1000px;
   gap: 26px;
   min-height: calc(82vh - 90px);
   margin: 20px 0px;

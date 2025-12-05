@@ -62,7 +62,7 @@ section .Botao_entrar_curso{
     color: var(--branco-Senac);
     border: none;
     border-radius: 23px;
-    background: #004A8D;
+    background: var(--laranja-Senac);
 }
 
 .accordion-container {

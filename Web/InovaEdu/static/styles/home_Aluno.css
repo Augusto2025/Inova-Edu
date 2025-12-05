@@ -126,7 +126,7 @@ body {
     gap: 26px;
 }
 
-section {
+.cards_curso {
     background: white;
     width: 300px;
     border-radius: 18px;
@@ -135,7 +135,7 @@ section {
     transition: transform 0.20s ease, box-shadow 0.20s ease;
 }
 
-section:hover {
+.cards_curso:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
@@ -147,7 +147,7 @@ section:hover {
     border-radius: 18px 18px 0 0;
 }
 
-section p {
+.cards_curso p {
     margin: 18px 15px 5px 15px;
     color: var(--azul-Senac);
     font-size: 17px;
