@@ -258,6 +258,16 @@ body {
   cursor: pointer;
 }
 
+.rota {
+    width: 100%;
+    text-align: center;
+    color: var(--azul-Senac);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
+
 /* ===========================================================
    📱 RESPONSIVIDADE DO CALENDÁRIO
    =========================================================== */

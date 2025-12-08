@@ -8,9 +8,10 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;      /* alinhamento igual ao home */
+    gap: 12px;                /* espaço entre título e ícone */
     margin-top: 40px;
 }
-
 .titulo p {
     color: var(--azul-Senac);
     font-size: 26px;
@@ -102,56 +103,61 @@ section .Botao_entrar_forum {
   margin-right: 5px;
 }
 
+/* ícone do filtro - escondido por padrão */
 .filtro_icone {
   width: 30px;
   flex-shrink: 0;
-}
-
-.imagem_curso {
-  width: 300px;
-  border-radius: 23px 23px 0px 0px;
-}
-
-main {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  flex-wrap: wrap;
-  width: 1000px;
-  gap: 26px;
-  min-height: calc(82vh - 90px);
-  margin: 20px 0px;
-}
-
-/* botão de abrir filtro no mobile */
-.btn-toggle-filtro {
   display: none;
-  cursor: pointer;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 15px;
-  border-radius: 12px;
-  width: fit-content;
-  margin: 15px auto;
-  color: white;
-  font-weight: 500;
+  margin-left: 20px;
+  align-self: center;
 }
 
-/* campos da sidebar */
+/* SIDEBAR: usar mesmo estilo do home */
+.sidebar-filtro {
+  position: fixed;
+  top: 180px;
+  left: 20px;
+  width: 230px;
+  background: #ffffff;
+  padding: 25px 20px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+/* título interno */
+.sidebar-filtro h3 {
+  margin: 0 0 12px 0;
+  text-align: center;
+  color: #004A8D;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* campos de filtro */
 .campo-filtro {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
+}
+
+.campo-filtro label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .campo-filtro input,
-.campo-filtro select {
+.campo-filtro select{
   padding: 10px;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
+/* botão aplicar igual ao home */
 .btn-aplicar {
   width: 100%;
   padding: 12px;
@@ -162,30 +168,52 @@ main {
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
+  transition: background 0.18s ease;
 }
+.btn-aplicar:hover { background: #00376a; }
 
-/* ============================================================
-   RESPONSIVO — sidebar vira bloco abaixo da pesquisa
-   ============================================================ */
-@media (max-width: 1024px) {
+/* RESPONSIVO — aplica a laptops e menores (igual ao home) */
+@media (max-width: 1366px) {
 
-  .sidebar-filtro {
-    position: static;
-    width: 90%;
-    margin: 10px auto 20px auto;
-    display: none;
-    /* só aparece quando clicar no botão */
-  }
-
-  main {
-    margin-left: 0;
+  .filtro_icone {
+    cursor: pointer;
+    display: block;
   }
 
   .btn-toggle-filtro {
     display: flex;
   }
+
+  /* garantir que o aside fique no fluxo da página (empurra a main) */
+  .sidebar-filtro {
+    position: static;                 /* no fluxo, abaixo do título */
+    width: 90%;
+    margin: 10px auto 20px auto;
+    display: none;                    /* controlado pela classe .open */
+    padding: 20px;
+    z-index: auto;                     /* remover sobreposição */
+  }
+
+  /* quando aberto, só mostra — permanece no fluxo */
+  .sidebar-filtro.open {
+    display: block;
+    position: static;
+  }
+
+  /* garantir que o main não seja sobreposto */
+  .sidebar-filtro + main,
+  .sidebar-filtro ~ main {
+    margin-top: 0;
+    clear: both;
+  }
+
+  main {
+    margin-top: 10px;
+    width: 100%;
+  }
 }
 
+/* manter adaptações móveis já existentes */
 @media (max-width: 480px) {
   .botao-criar-forum {
     top: auto;

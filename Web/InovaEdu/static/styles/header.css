@@ -114,15 +114,14 @@ a{
 .campo_pesq{
     display: flex;
     justify-self: center;
-    align-items: center ;
+    justify-content: center;
 }
   
 .pesquisa{
     display: flex;
+    justify-content: center;
     text-align: center;
     height: 30px;
-    width: 500px;
-    margin-right: 10px;
     max-width: 600px;
     border-radius: 10px;
     border: 2px solid var(--azul-Senac);
@@ -151,9 +150,74 @@ main{
     }
 }
 
-@media (min-width: 1024px) {
+/* RESPONSIVIDADE: menu colapsável e ajustes mobile */
 
-    #site-nav a{
-        margin: 0% 5%;
-    }
+/* estilo do botão hamburger (hidden por desktop) */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+  align-items: center;
+  justify-content: center;
+  color: var(--branco-Senac);
+}
+.hamburger .bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--branco-Senac);
+  position: relative;
+}
+.hamburger .bar::before,
+.hamburger .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--branco-Senac);
+}
+.hamburger .bar::before { top: -6px; }
+.hamburger .bar::after  { top: 6px; }
+
+
+/* transformar nav em painel colapsável abaixo do header em telas pequenas */
+@media (max-width: 768px) {
+
+  /* mostrar hamburger */
+  .hamburger { display: inline-flex; }
+
+  /* esconder nav por padrão e posicionar abaixo do header quando aberto */
+  #site-nav.Paginas {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 60px; /* coloca abaixo do header */
+    background: var(--azul-Senac);
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    z-index: 900;
+    width: 100%;
+  }
+
+  /* quando header recebe a classe nav-open, mostra o nav */
+  header.nav-open #site-nav.Paginas {
+    display: flex;
+  }
+
+  /* ajustar alguns elementos do header em mobile */
+  header {
+    height: 60px;
+    padding: 0 12px;
+  }
+  .logo { width: 40px; height: 40px; margin: 8px 6px; }
+  .texto_InovaEdu { display: none; }
+  .Paginas { gap: 12px; font-size: 15px; }
 }

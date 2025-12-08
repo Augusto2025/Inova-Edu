@@ -9,40 +9,25 @@
         {% include "partials/header.html" %}
     {% endblock %}
 
+    <div class="rota">Página: Foruns</div>
+
     <div class="titulo">
-        <div class="titulo-left">
-            <p>Todos os Foruns</p>
-        </div>
-        <div class="titulo-right">
-            <!-- <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro" /> -->
-            {% if usuario.tipo == "Professor" %}
-                <a href="{% url 'criar_forum' %}" class="botao-criar-forum">+ Criar fórum</a>
-            {% endif %}
-        </div>
+        <p>Todos os Foruns</p>
+        <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro" />
     </div>
-    
-    
-    {% if query %}
-    {% for Forum in foruns %}
-    {% empty %}
-    <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-    {% endfor %}
-    {% endif %}
-    
-    <!-- SIDEBAR DE FILTRO (igual ao da outra página) -->
+
+    <!-- moved: aside deve ficar IMEDIATAMENTE aqui, abaixo da .titulo e antes do restante -->
     <aside class="sidebar-filtro">
         <h3 style="justify-self: center; color: #004A8D;">Filtros</h3>
+
         <form class="campo_pesq" method="get" action="{% url 'forum_blocos' %}">
             <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
             {% if query %}
                 <a href="{% url 'forum_blocos' %}" >Limpar</a>
             {% endif %}
-            <div class="btn-toggle-filtro" onclick="
-                const f = document.querySelector('.sidebar-filtro');
-                f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
-                <img class="filtro_icone" src="{% static 'img/famicons_filter.svg' %}" alt="filtro">
-            </div>
+            <div class="btn-toggle-filtro"></div>
         </form>
+
         <form method="get" action="{% url 'forum_blocos' %}">
             <div class="campo-filtro">
                 <label>Data de criação:</label>
@@ -61,6 +46,20 @@
             <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
         </form>
     </aside>
+
+    <div style="display:flex; justify-content:flex-end; width:100%; max-width:1000px; margin: 0 auto;">
+        {% if usuario.tipo == "Professor" %}
+            <a href="{% url 'criar_forum' %}" class="botao-criar-forum">+ Criar fórum</a>
+        {% endif %}
+    </div>
+
+    {% if query %}
+    {% for Forum in foruns %}
+    {% empty %}
+    <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
+    {% endfor %}
+    {% endif %}
+
     <main>
         {% for Forum in foruns  %}
             <section>
@@ -73,6 +72,23 @@
             </section>
         {% endfor %}
     </main>
+
+    <!-- adicionar/atualizar este script mínimo para alternar a classe .open -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filtroBtn = document.getElementById('filtroBtn');
+        const sidebar = document.querySelector('.sidebar-filtro');
+        if (filtroBtn && sidebar) {
+            filtroBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+                if (sidebar.classList.contains('open')) sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        const btn = document.querySelector('.btn-toggle-filtro');
+        if (btn && sidebar) btn.addEventListener('click', () => sidebar.classList.toggle('open'));
+    });
+    </script>
 
 {% endblock %}
 

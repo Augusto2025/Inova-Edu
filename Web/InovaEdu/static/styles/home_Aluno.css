@@ -61,6 +61,7 @@ body {
     height: 20px;
     margin-left: 20px;
     align-self: center;
+    display: none; /* escondido por padrão */
 }
 
 /* ===========================================================
@@ -72,7 +73,7 @@ body {
     position: fixed;
     top: 180px;      /* ajuste se quiser subir/descer */
     left: 20px;      /* distância da borda */
-    width: 300px;
+    width: 260px;
     background: #ffffff;
     padding: 25px 20px;
     border-radius: 16px;
@@ -208,6 +209,45 @@ body {
     }
 }
 
+/* substituir o bloco anterior de laptop por este (aplica a laptop e telas menores até 1366px) */
+@media (max-width: 1366px) {
+
+    /* mostrar o ícone em laptops e menores */
+    .filtro_icone {
+        cursor: pointer;
+        display: block;
+    }
+
+    /* sidebar vira parte do fluxo e começa oculto (será mostrado ao adicionar .open) */
+    .sidebar-filtro {
+        position: static;
+        width: 90%;
+        margin: 10px auto 20px auto;
+        display: none;
+        padding: 20px;
+        z-index: 2;
+    }
+
+    /* classe que exibe o filtro quando aberta */
+    .sidebar-filtro.open {
+        display: block;
+    }
+
+    .titulo {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .campo_pesq {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .blocos {
+        margin-top: 10px;
+    }
+}
 
 /* Mobile */
 @media (max-width: 600px) {

@@ -2,9 +2,13 @@
 {% load static %}
 
 {% block content %}
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
+
+    <div class="rota">Página: Cursos > Turmas > Repositório</div>
 
     <div class="titulo">
         <p>Repositório</p>

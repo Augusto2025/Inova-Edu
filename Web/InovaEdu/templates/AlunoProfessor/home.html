@@ -9,9 +9,12 @@
         {% include "partials/header.html" %}
     {% endblock %}
 
+    <!-- campo de rota: indica em qual página está -->
+    <div class="rota">Página: Cursos</div>
+
     <div class="titulo">
         <p>Cursos</p>
-        <img class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
+        <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
     </div>
 
     
@@ -110,6 +113,30 @@
         {% endif %}
         {% endfor %}
     </main>   
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filtroBtn = document.getElementById('filtroBtn');
+            const sidebar = document.querySelector('.sidebar-filtro');
+
+            if (filtroBtn && sidebar) {
+                filtroBtn.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                    if (sidebar.classList.contains('open')) {
+                        sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
+            // manter compatibilidade com o botão já existente (.btn-toggle-filtro)
+            const btn = document.querySelector('.btn-toggle-filtro');
+            if (btn && sidebar) {
+                btn.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                });
+            }
+        });
+    </script>
 
 {% endblock %}
 
