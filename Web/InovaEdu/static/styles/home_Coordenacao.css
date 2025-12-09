@@ -1,182 +1,633 @@
+/* ======= CORES PADRÃO ======= */
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
-    --azul-Senac: #1A6F9D;
-    --cinza-Senac: #D9D9D9;
-    --azul_Claro-Senac: #177bda;
-    --fonte-principal: "Kadwa", sans-serif;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
 }
 
+/* ======= RESET ======= */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-principal);
 }
 
+/* ======= BODY ======= */
 body {
-    font-family: var(--fonte-principal);
-    background-color: var(--branco-Senac);
+  background-color: var(--cinza-Senac);
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* HEADER */
+/* ======= IMAGEM ======= */
+
+
+/* ======= HEADER ======= */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px;
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
 }
 
 .header h1 {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .header nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
+  list-style: none;
+  display: flex;
+  gap: 20px;
 }
 
 .header nav ul li a {
-    color: var(--branco-Senac);
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s;
+  color: var(--branco-Senac);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
 .header nav ul li a:hover {
-    color: var(--laranja-Senac);
+  color: var(--laranja-Senac);
 }
 
-/* PARALLAX HERO */
-.parallax.hero {
-    height: 450px;
-    background-image: url('parallax1.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--branco-Senac);
-    position: relative;
-    min-height: calc(70vh - 90px);
+/* ======= CONTAINER main ======= */
 
+.maincontainer {
+  display: flex;
+  padding: auto;
 }
 
-.conteudo-parallax {
-    background-color: rgba(0,0,0,0.5);
-    padding: 30px 50px;
-    border-radius: 12px;
+/* ======= CONTAINER PRINCIPAL ======= */
+.section-wrapper {
+  display: flex;
+  gap: 40px;
+  padding: 20px;
+  align-items: flex-start;
+  flex: 1;
 }
 
-/* CARDS HOME */
+/* ======= COLUNA DE CARDS ======= */
 .cards-home {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    padding: 50px 20px;
-    background-color: var(--cinza-Senac);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  padding-right: 20px;
+  border-right: 2px solid #ccc;
+  margin: 10px;
 }
 
 .card {
-    background-color: var(--branco-Senac);
-    width: 250px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    text-align: center;
-    padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
+  background-color: var(--branco-Senac);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .card img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    margin-bottom: 15px;
-    border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
 }
 
 .card h3 {
-    color: var(--azul-Senac);
-    margin-bottom: 10px;
+  color: var(--azul-Senac);
+  font-size: 1.3rem;
+  margin-bottom: 10px;
 }
 
 .card p {
-    color: #333;
-    font-size: 14px;
-    margin-bottom: 15px;
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
 }
 
 .botao-card {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background-color 0.3s;
+  text-decoration: none;
+  background-color: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 .botao-card:hover {
-    background-color: var(--azul_Claro-Senac);
+  background-color: var(--azul_Claro-Senac);
 }
 
-/* PARALLAX SEÇÃO 2 */
-.parallax.parallax2 {
-    height: 300px;
-    background-image: url('parallax2.jpg');
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--branco-Senac);
-    text-align: center;
+/* ======= COLUNA DE LISTAS (DIREITA) ======= */
+.container_usuario {
+  flex: 1;
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.parallax.parallax2 .conteudo-parallax {
-    background-color: rgba(0,0,0,0.4);
-    padding: 20px 40px;
-    border-radius: 12px;
+/* Título da lista */
+.titulo_lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 22px;
+  color: var(--azul-Senac);
+  border-bottom: 3px solid var(--laranja-Senac);
 }
 
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    
+.btn-add {
+  background-color: var(--laranja-Senac);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
 }
 
-/* RESPONSIVIDADE */
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
+.btn-add:hover {
+  background-color: #d67c12;
+}
 
-    .cards-home {
-        flex-direction: column;
-        align-items: center;
-    }
+/* ======= LISTAS GERAIS ======= */
+.lista_conteudo {
+  display: none;
+  /* Todas começam escondidas */
+}
 
-    .parallax.hero,
-    .parallax.parallax2 {
-        height: 250px;
-    }
+.lista_conteudo ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  max-height: 850px;
+  /* altura máxima */
+  overflow-y: auto;
+  /* ativa rolagem vertical */
+  overflow-x: hidden;
+  /* evita barra lateral horizontal */
+}
+
+.lista_conteudo li {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-Senac);
+  align-items: center;
+  font-size: 20px;
+}
+
+.lista_conteudo li.cabecalho {
+  font-weight: bold;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  border-radius: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+
+.lista_conteudo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+/* Ações (editar/excluir) */
+.acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.botao-editar {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #da190b;
+}
+
+.botao-editar:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+.botao-excluir {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.botao-excluir:hover {
+  background-color: #da190b;
+}
+
+
+/* ======= MODAL ======= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-conteudo {
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  width: 550px;
+  position: relative;
+  animation: aparecer 0.3s ease;
+}
+
+@keyframes aparecer {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.fechar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Formulário dentro do modal */
+form {
+  width: 100%;
+  margin-top: 15px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 6px;
+  color: black;
+}
+
+form input,
+form textarea,
+form select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--azul-Senac);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+form button[type="submit"] {
+  background-color: var(--azul-Senac);
+  color: #fff;
+}
+
+form button[type="submit"]:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+/* form button[type="button"] {
+  background-color: #ccc;
+} */
+
+form button[type="button"]:hover {
+  background-color: var(--cinza-Senac);
+}
+
+/* ======= LISTA DE CURSOS ======= */
+
+.titulo_curso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  font-size: 22px;
+  color: var(--azul-Senac);
+  border-bottom: 3px solid var(--laranja-Senac);
+}
+
+.btncurso {
+  background-color: var(--laranja-Senac);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btncurso:hover {
+  background-color: #d67c12;
+}
+
+
+.lista_curso {
+  display: blok;
+  /* inicia escondida */
+}
+
+.lista_curso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista_curso li {
+  display: grid;
+  grid-template-columns: 0.8fr 1.5fr 1.2fr 1.2fr 2fr 1fr;
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+}
+
+.lista_curso li.cabecalho {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.lista_curso li:not(.cabecalho):hover {
+  background-color: #8dc0f0;
+  color: black;
+}
+
+.lista_curso img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.lista_curso select {
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* =========== Turma======= */
+
+/* ======= LISTA DE TURMAS ======= */
+
+
+#listaTurma .lista_curso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#listaTurma .lista_curso li {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr 1fr;
+  /* Código | Curso | Turno | Ações */
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  font-size: 14px;
+}
+
+#listaTurma .lista_curso li.cabecalho {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+#listaTurma .lista_curso li:not(.cabecalho):hover {
+  background-color: #8dc0f0;
+  color: black;
+}
+
+#listaTurma .acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#listaTurma .acoes button:first-child {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaTurma .acoes button:first-child:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+#listaTurma .acoes button:last-child {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaTurma .acoes button:last-child:hover {
+  background-color: #da190b;
+}
+
+
+
+/* ====================CURSO============================== */
+
+/* ======= LISTA DE CURSOS ======= */
+#listaCurso .lista_curso ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#listaCurso .lista_curso li {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.8fr 2fr 1fr;
+  /* 6 colunas */
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  font-size: 14px;
+}
+
+#listaCurso .lista_curso li.cabecalho {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+#listaCurso .lista_curso li:not(.cabecalho):hover {
+  background-color: #8dc0f0;
+  color: black;
+}
+
+#listaCurso .lista_curso img {
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+#listaCurso .acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#listaCurso .acoes button:first-child {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaCurso .acoes button:first-child:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+#listaCurso .acoes button:last-child {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#listaCurso .acoes button:last-child:hover {
+  background-color: #da190b;
+}
+
+
+/* modal curso====== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #fff;
+  width: 50%;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.close {
+  float: right;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+/* ======= FOOTER ======= */
+.footer-fixo {
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  text-align: center;
+  padding: 15px 0;
+  margin-top: auto;
+}
+
+/* ======= RESPONSIVO ======= */
+/* Ajustes para notebook */
+@media (min-width: 992px) and (max-width: 1199px) {
+    /* seu CSS para o notebook aqui */
+}
+
+@media (max-width: 990px) {
+  .section-wrapper {
+    flex-direction: column;
+  }
+
+  .cards-home {
+    width: 100%;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .container_usuario {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .lista_conteudo li {
+    grid-template-columns: repeat(4, 1fr);
+    font-size: 12px;
+  }
+
+  .lista_curso li {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

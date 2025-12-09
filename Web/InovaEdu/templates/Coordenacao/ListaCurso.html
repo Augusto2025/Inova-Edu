@@ -28,7 +28,6 @@
 
 
     <main class="container_usuario">
-
     
         <section class="lista-completa">
             <ul>
@@ -58,14 +57,14 @@
                         <span>{{ curso.descricao_curso }}</span>
                         <span class="acoes">
                          
-                        {% comment %} </span>
+                            {% comment %} </span>
 
-                            <button type="button" onclick="window.location.href='{% url 'editar_curso' turma.pk %}'">Editar</button>
-                            <button type="button" onclick="window.location.href='{% url 'excluir_curso' turma.pk %}'">Excluir</button>
+                                <button type="button" onclick="window.location.href='{% url 'editar_curso' turma.pk %}'">Editar</button>
+                                <button type="button" onclick="window.location.href='{% url 'excluir_curso' turma.pk %}'">Excluir</button>
 
-                        <span class="acoes"> {% endcomment %}
-         
-            </span>
+                            <span class="acoes"> {% endcomment %}
+            
+                        </span>
 
 
 

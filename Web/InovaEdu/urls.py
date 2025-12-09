@@ -3,6 +3,7 @@ from config import settings
 from django.conf.urls.static import static
 from . import views
 
+
 urlpatterns = [
     path('', views.login),
     # Aluno e Professor
@@ -23,7 +24,6 @@ urlpatterns = [
     path('cadastroCurso/', views.cadastroCurso, name='cadastroCurso'),
     path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
     path('listaturma/', views.listaturma, name='listaturma'),
-    path('enviar/',views.enviarUsuario,name='enviar'),
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('enviarturma/', views.enviarturma, name='enviarturma'),
     path('criar_curso', views.criar_curso, name='criar_curso'),

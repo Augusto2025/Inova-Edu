@@ -5,11 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - coordenação</title>
-    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}">
+    <title>Home - Coordenação</title>
+    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
 </head>
 <body>
-    <!-- Header -->
+    <!-- HEADER -->
     <header class="header">
         <h1>INOVA EDU</h1>
         <nav>
@@ -21,43 +21,232 @@
         </nav>
     </header>
 
-    
-    <section class="parallax hero">
-        <div class="conteudo-parallax">
-            <h2>Bem-vinda à coordenação</h2>
-            <p>Aqui você vai cadastrar Usuários, cursos, turmas e alunos de forma rápida e fácil</p>
-        </div>
-    </section>
-
-    <!-- Seções cards -->
-    <section class="cards-home">
-
-        <div class="card">
-            <img src="{% static 'img/curso.jpg' %}" alt="Cursos">
-            <h3>Cursos</h3>
-            <p>Veja a lista de cursos disponíveis</p>
-            <a href="{% url 'cadastroCurso' %}" class="botao-card">Acessar</a>
-        </div>
+    <!-- SEÇÃO PRINCIPAL -->
+    <main class="maincontainer">
+ <div class="card">
+                <img src="{% static 'img/users-solid-full.svg' %}" alt="Usuário">
+                <h3>Usuário</h3>
+                <p>Adicione novos usuários à plataforma</p>
+                <a href="#" class="botao-card" onclick="mostrarLista('listaUsuario')">Acessar</a>
+            </div>
+        <aside class="menu-lateral">
+            <div class="cards-home">
         
-        <div class="card">
-            <img src="{% static 'img/turma.jpg' %}" alt="Turmas">
-            <h3>Turmas</h3>
-            <p>Gerencie suas turmas e horários</p>
-            <a href="{% url 'cadastroTurma' %}" class="botao-card">Acessar</a>
+           
+        
+            <div class="card">
+                <img src="{% static 'img/chalkboard-user-solid-full.svg' %}" alt="Cursos">
+                <h3>Cursos</h3>
+                <p>Veja a lista de cursos disponíveis</p>
+                <a href="#" class="botao-card" onclick="mostrarLista('listaCurso')">Acessar</a>
+            </div>
+        
+            <div class="card">
+                <img src="{% static 'img/user-graduate-solid-full.svg' %}" alt="Turmas">
+                <h3>Turmas</h3>
+                <p>Gerencie suas turmas e horários</p>
+                <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
+            </div>
+        
+            <div class="card">
+                <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
+                <h3>Perfil</h3>
+                <p>Gerencie seu perfil</p>
+                <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
+            </div>
+        
+            </div>
+        </aside>
+
+       <div id="imagemFundo" class="imagem-fundo">
+            <img src="{% static 'img/img_fundo.avif' %}" alt="Imagem de fundo">
         </div>
+
+
+
+
+        <section class="section-wrapper">
+
+            <!-- LISTAS (LADO DIREITO) -->
+            <!-- USUÁRIO -->
+            <section class="container_usuario lista_conteudo" id="listaUsuario" style="display:none;">
+                <div class="titulo_lista">
+                    <p>Lista Usuário</p>
+                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+                </div>
+
+                <!-- Modal Cadastro -->
+                <div id="modalCadastro" class="modal">
+                    <div class="modal-conteudo">
+                        <span class="fechar" id="fecharModal">&times;</span>
+                        <div class="titulo_lista">
+                            <p>Cadastro Usuário</p>
+                        </div>
+                        <form action="{% url 'home_Coordenacao' %}" method="POST" ...>
+
+                            {% csrf_token %}
+                            <label for="nome">Primeiro Nome:</label>
+                            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+                            <label for="Sobrenome">Sobrenome:</label>
+                            <input type="text" id="Sobrenome" name="Sobrenome" required placeholder="Digite seu sobrenome">
+                            <label for="Email">Email:</label>
+                            <input type="email" id="Email" name="Email" required placeholder="exemplo@gmail.com">
+                            <label for="Senha">Senha:</label>
+                            <input type="password" id="Senha" name="Senha" required placeholder="***********">
+                            <label for="descricao">Descrição:</label>
+                            <textarea id="descricao" name="descricao" rows="4" placeholder="Lorem ipsum dolor sit amet...."></textarea>
+                            <label for="imagem">Imagem:</label>
+                            <input type="file" id="imagem" name="imagem" accept="image/*">
+                            <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
+                            <select id="tipoCadastro" name="tipoCadastro" required>
+                                <option value="" disabled selected>Selecione uma opção</option>
+                                <option value="professor">Professor</option>
+                                <option value="aluno">Aluno</option>
+                                <option value="coordenacao">Coordenação</option>
+                            </select>
+                            <button type="submit">Salvar</button>
+                            <button type="button" id="cancelarModal">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista Usuário -->
+                <section class="lista-completa">
+                    <ul>
+                        <li class="cabecalho">
+                            <span>Nome</span>
+                            <span>Sobrenome</span>
+                            <span>Email</span>
+                            <span>Senha</span>
+                            <span>Descrição</span>
+                            <span>Imagem</span>
+                            <span>Tipo de Usuário</span>
+                            <span class="acoes">Ações</span>
+                        </li>
+                        {% for usuario in usuarios %}
+                        <li>
+                            <span>{{ usuario.nome }}</span>
+                            <span>{{ usuario.sobrenome }}</span>
+                            <span>{{ usuario.email }}</span>
+                            <span>••••••</span>
+                            <span>{{ usuario.descricao }}</span>
+                            {% if usuario.imagem %}
+                            <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
+                            {% else %}
+                            <span><img src="{% static 'img/default_user.png' %}" alt="Sem foto"></span>
+                            {% endif %}
+                            <span>{{ usuario.tipo }}</span>
+                            <span class="acoes">
+
+                                <form action="{% url 'excluir_usuario' usuario.idusuario %}" 
+                                    method="POST" 
+                                    style="display:inline;">
+                                    <button type="button" class="botao-editar">Editar</button>
+                                        {% csrf_token %}
+                                    <button type="submit" class="botao-excluir"
+                                        onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                        Excluir
+                                    </button>
+                                </form>
+                            
+                            </span>
+                            
+                        </li>
+                        {% empty %}
+                        <li><span>Nenhum usuário cadastrado ainda.</span></li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </section>
+
+            <!-- CURSOS -->
+            <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+                <div class="titulolista">
+                    <p>Lista de Cursos</p>
+                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+                </div>
+                <section class="lista_curso">
+                    <ul>
+                        <li class="cabecalho">
+                            <span>Nome</span>
+                            <span>Data Início</span>
+                            <span>Data Término</span>
+                            <span>Imagem</span>
+                            <span>Descrição</span>
+                            <span class="acoes">Ações</span>
+                        </li>
+                        {% for curso in cursos %}
+                        <li>
+                            <span>{{ curso.nome_curso }}</span>
+                            <span>{{ curso.data_inicio }}</span>
+                            <span>{{ curso.data_final }}</span>
+                            <span>
+                                {% if curso.imagem %}
+                                <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
+                                {% else %}-{% endif %}
+                            </span>
+                            <span>{{ curso.descricao_curso }}</span>
+                            <span class="acoes">
+                                <button type="button" onclick="window.location.href='{% url 'editar_curso' curso.pk %}'">Editar</button>
+                                <button type="button" onclick="window.location.href='{% url 'excluir_curso' curso.pk %}'">Excluir</button>
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li><span>Nenhum curso cadastrado.</span></li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </section>
+
+            <!-- TURMAS -->
+            <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
+                <div class="titulo_lista"><p>Lista de Turmas</p>
+                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+                </div>
+                <section class="lista_curso">
+                    <ul>
+                        <li class="cabecalho">
+                            <span>Nome Turma</span>
+                            <span>Curso</span>
+                            <span>Data Início</span>
+                            <span>Data Fim</span>
+                            <span class="acoes">Ações</span>
+                        </li>
+                        {% for turma in turmas %}
+                        <li>
+                            <span>{{ turma.nome_turma }}</span>
+                            <span>{{ turma.curso.nome_curso }}</span>
+                            <span>{{ turma.data_inicio }}</span>
+                            <span>{{ turma.data_fim }}</span>
+                            <span class="acoes">
+                                <button type="button">Editar</button>
+                                <button type="button">Excluir</button>
+                            </span>
+                        </li>
+                        {% empty %}
+                        <li><span>Nenhuma turma cadastrada.</span></li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </section>
+
+            <!-- PERFIL -->
+            <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
+                <div class="titulo_lista"><p>Perfil</p></div>
+                <p>Gerencie suas informações de perfil aqui.</p>
+            </section>
+
+        </section>
+    </main>
+
+    <!-- SCRIPT PARA MODAL E MOSTRAR LISTAS -->
     
-        <div class="card">
-            <img src="{% static 'img/usuario.jpg' %}" alt="Usuario">
-            <h3>Usuario</h3>
-            <p>Adicione novos usuários à plataforma</p>
-            <a href="{% url 'cadastro_Aluno' %}" class="botao-card">Acessar</a>
 
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 Plataforma Senac - Todos os direitos reservados</p>
+    <!-- FOOTER -->
+    <footer class="footer-fixo">
+        <p>&copy; 2025 Desenvolvido por Alcides, Augusto e Clariane</p>
     </footer>
+
+    <script src="{% static 'scripts/home_coordenacao.js' %}"></script>
 </body>
 </html>

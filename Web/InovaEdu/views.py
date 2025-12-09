@@ -277,8 +277,7 @@ def criar_evento(request):
 def cadastro(request):
     return render(request, 'Coordenacao/cadastro_Aluno.html')
 
-def home_Coordenacao(request):
-    return render (request, 'Coordenacao/home_Coordenacao.html')
+
 
 
 def cadastroCurso(request):
@@ -295,7 +294,6 @@ def lista_usuario(request):
     usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
     return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
 
-def enviarUsuario(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         sobrenome = request.POST.get('Sobrenome')
@@ -319,16 +317,18 @@ def enviarUsuario(request):
             imagem = imagem
         )
 
-        usuario.save()
-        
-        return redirect('lista_usuario') #redireciona para pagina de listagem
+        return redirect('home_Coordenacao')  # Volta para a mesma tela
 
-    return render(request, 'Coordenacao/cadastro_usuario.html')
+    return render(request, 'Coordenacao/home_Coordenacao.html', {
+        'usuarios': usuarios
+    })
+
 
 def excluir_usuario(request, idusuario):
-    usuario = get_object_or_404(Usuario, pk=idusuario)
+    usuario = Usuario.objects.get(idusuario=idusuario)
     usuario.delete()
-    return redirect('lista_usuario')
+    return redirect('Coordenacao/home_Coordenacao')
+
 
 
 # Turma
