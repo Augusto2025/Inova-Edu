@@ -25,6 +25,9 @@ body {
   min-height: 100vh;
 }
 
+/* ======= IMAGEM ======= */
+
+
 /* ======= HEADER ======= */
 .header {
   display: flex;
@@ -58,7 +61,7 @@ body {
 
 /* ======= CONTAINER main ======= */
 
-.maincontainer{
+.maincontainer {
   display: flex;
   padding: auto;
 }
@@ -177,9 +180,12 @@ body {
   list-style: none;
   padding: 0;
   margin-top: 10px;
-  max-height: 850px;  /* altura máxima */
-  overflow-y: auto;   /* ativa rolagem vertical */
-  overflow-x: hidden; /* evita barra lateral horizontal */
+  max-height: 850px;
+  /* altura máxima */
+  overflow-y: auto;
+  /* ativa rolagem vertical */
+  overflow-x: hidden;
+  /* evita barra lateral horizontal */
 }
 
 .lista_conteudo li {
@@ -200,7 +206,7 @@ body {
   top: 0;
   z-index: 10;
 }
-  
+
 
 .lista_conteudo img {
   width: 50px;
@@ -366,9 +372,6 @@ form button[type="button"]:hover {
 }
 
 
-
-
-
 .lista_curso {
   display: blok;
   /* inicia escondida */
@@ -417,66 +420,67 @@ form button[type="button"]:hover {
 /* =========== Turma======= */
 
 /* ======= LISTA DE TURMAS ======= */
-/* ======= LISTA DE TURMAS ======= */
+
 
 #listaTurma .lista_curso ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 #listaTurma .lista_curso li {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr 1fr; /* Código | Curso | Turno | Ações */
-    gap: 5px;
-    padding: 12px;
-    border-bottom: 1px solid #e0e0e0;
-    align-items: center;
-    font-size: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr 1fr;
+  /* Código | Curso | Turno | Ações */
+  gap: 5px;
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  font-size: 14px;
 }
 
 #listaTurma .lista_curso li.cabecalho {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    font-weight: bold;
-    border-radius: 6px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
 }
 
 #listaTurma .lista_curso li:not(.cabecalho):hover {
-    background-color: #8dc0f0;
-    color: black;
+  background-color: #8dc0f0;
+  color: black;
 }
 
 #listaTurma .acoes {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
 #listaTurma .acoes button:first-child {
-    padding: 5px 12px;
-    background-color: var(--azul-Senac);
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 #listaTurma .acoes button:first-child:hover {
-    background-color: var(--azul_Claro-Senac);
+  background-color: var(--azul_Claro-Senac);
 }
 
 #listaTurma .acoes button:last-child {
-    padding: 5px 12px;
-    background-color: #f44336;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 #listaTurma .acoes button:last-child:hover {
-    background-color: #da190b;
+  background-color: #da190b;
 }
 
 
@@ -556,28 +560,28 @@ form button[type="button"]:hover {
 
 /* modal curso====== */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background: #fff;
-    width: 50%;
-    margin: 5% auto;
-    padding: 20px;
-    border-radius: 10px;
+  background: #fff;
+  width: 50%;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 .close {
-    float: right;
-    font-size: 25px;
-    cursor: pointer;
+  float: right;
+  font-size: 25px;
+  cursor: pointer;
 }
 
 
@@ -597,6 +601,11 @@ form button[type="button"]:hover {
 }
 
 /* ======= RESPONSIVO ======= */
+/* Ajustes para notebook */
+@media (min-width: 992px) and (max-width: 1199px) {
+    /* seu CSS para o notebook aqui */
+}
+
 @media (max-width: 990px) {
   .section-wrapper {
     flex-direction: column;
@@ -622,5 +631,3 @@ form button[type="button"]:hover {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-
-

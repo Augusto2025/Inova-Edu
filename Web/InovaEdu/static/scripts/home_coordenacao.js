@@ -36,6 +36,3 @@ function mostrarLista(id) {
         lista.style.display = 'block';
     }
 }
-
-
-// cadastro usuario ================
