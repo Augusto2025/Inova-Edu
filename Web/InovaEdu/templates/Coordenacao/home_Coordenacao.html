@@ -13,11 +13,11 @@
     <header class="header">
         <h1>INOVA EDU</h1>
         <nav>
-            <ul>
+            {% comment %} <ul>
                 <li><a href="#">Cursos</a></li>
                 <li><a href="#">Turmas</a></li>
                 <li><a href="#">Usuario</a></li>
-            </ul>
+            </ul> {% endcomment %}
         </nav>
     </header>
 
@@ -104,9 +104,9 @@
                             <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
                             <select id="tipoCadastro" name="tipoCadastro" required>
                                 <option value="" disabled selected>Selecione uma opção</option>
-                                <option value="professor">Professor</option>
-                                <option value="aluno">Aluno</option>
-                                <option value="coordenacao">Coordenação</option>
+                                <option value="Professor">Professor</option>
+                                <option value="Aluno">Aluno</option>
+                                <option value="Coordenacao">Coordenação</option>
                             </select>
                             <button type="submitsalvar">Salvar</button>
                             <button type="buttoncancelar" id="cancelarModal">Cancelar</button>

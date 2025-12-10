@@ -278,7 +278,32 @@ def cadastro(request):
     return render(request, 'Coordenacao/cadastro_Aluno.html')
 
 def home_Coordenacao(request):
-    return render(request, 'Coordenacao/home_Coordenacao.html')
+    usuarios = Usuario.objects.all()
+
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        sobrenome = request.POST.get('Sobrenome')
+        email = request.POST.get('Email')
+        senha = request.POST.get('Senha')
+        descricao = request.POST.get('descricao')
+        tipo = request.POST.get('tipoCadastro')
+        imagem = request.FILES.get('imagem')
+
+        Usuario.objects.create(
+            nome=nome,
+            sobrenome=sobrenome,
+            email=email,
+            senha=senha,
+            descricao=descricao,
+            tipo=tipo,
+            imagem=imagem
+        )
+
+        return redirect('home_Coordenacao')  # Volta para a mesma tela
+
+    return render(request, 'Coordenacao/home_Coordenacao.html', {
+        'usuarios': usuarios
+    })
 
 def cadastroCurso(request):
     return render(request, 'Coordenacao/cadastroCurso.html')
