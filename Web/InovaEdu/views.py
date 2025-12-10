@@ -405,9 +405,30 @@ def home_Coordenacao(request):
 
 
 def excluir_usuario(request, idusuario):
-    usuario = Usuario.objects.get(idusuario=idusuario)
+    usuario = get_object_or_404(Usuario, idusuario=idusuario)
     usuario.delete()
-    return redirect('Coordenacao/home_Coordenacao')
+    return redirect('home_Coordenacao') 
+
+
+def editar_usuario(request, idusuario):
+    usuario = Usuario.objects.get(idusuario=idusuario)
+
+    if request.method == "POST":
+        usuario.nome = request.POST.get("nome")
+        usuario.sobrenome = request.POST.get("sobrenome")
+        usuario.email = request.POST.get("email")
+        usuario.senha = request.POST.get("senha")
+        usuario.descricao = request.POST.get("descricao")
+        usuario.tipo = request.POST.get("tipoCadastro")
+
+        if 'imagem' in request.FILES:
+            usuario.imagem = request.FILES['imagem']
+
+        usuario.save()
+        return redirect('home_Coordenacao')
+
+    return redirect('home_Coordenacao')
+
 
 
 

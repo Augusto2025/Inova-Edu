@@ -21,6 +21,7 @@ urlpatterns = [
     path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
     path('listaturma/', views.listaturma, name='listaturma'),
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
+    path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
     path('forum/<int:forum_id>/', views.forum_chat, name='forum'),
     path('enviarturma/', views.enviarturma, name='enviarturma'),
     path('criar_curso', views.criar_curso, name='criar_curso'),
