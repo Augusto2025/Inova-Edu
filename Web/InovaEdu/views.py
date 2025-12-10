@@ -277,8 +277,8 @@ def criar_evento(request):
 def cadastro(request):
     return render(request, 'Coordenacao/cadastro_Aluno.html')
 
-
-
+def home_Coordenacao(request):
+    return render(request, 'Coordenacao/home_Coordenacao.html')
 
 def cadastroCurso(request):
     return render(request, 'Coordenacao/cadastroCurso.html')
