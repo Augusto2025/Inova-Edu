@@ -25,7 +25,22 @@ body {
   min-height: 100vh;
 }
 
-/* ======= IMAGEM ======= */
+/* =======INICIAL IMAGEM ======= */
+
+.painel-imagem {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.painel-imagem img {
+  max-width: 500%;
+  /* opacity: 0.8; */
+}
+
+
 
 
 /* ======= HEADER ======= */
@@ -63,14 +78,16 @@ body {
 
 .maincontainer {
   display: flex;
+  /* gap: 20px; */
   padding: auto;
+  width: 100%;
 }
 
 /* ======= CONTAINER PRINCIPAL ======= */
 .section-wrapper {
   display: flex;
   gap: 40px;
-  padding: 20px;
+  padding: 5px;
   align-items: flex-start;
   flex: 1;
 }
@@ -80,10 +97,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 300px;
-  padding-right: 20px;
-  border-right: 2px solid #ccc;
-  margin: 10px;
+  /* width: 300px; */
+  /* padding-right: 20px; */
+  /* border-right: 2px solid #ccc; */
+  margin: 5px;
 }
 
 .card {
@@ -92,7 +109,7 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: center;
-  width: 250px;
+  width: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,11 +207,13 @@ body {
 
 .lista_conteudo li {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  padding: 12px;
-  border-bottom: 1px solid var(--cinza-Senac);
+  grid-template-columns: 1.5fr 1.5fr 2fr 1fr 2.5fr 1fr 1.5fr 1fr;
+  gap: 10px;
   align-items: center;
-  font-size: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 8px;
 }
 
 .lista_conteudo li.cabecalho {
@@ -220,36 +239,104 @@ body {
 .acoes {
   display: flex;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
+ 
 }
 
+/* Faz os botões dentro do form ficarem lado a lado */
+.acoes form {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;   /* Remove margens extras */
+}
+
+/* Botão Editar */
 .botao-editar {
-  padding: 5px 12px;
   background-color: var(--azul-Senac);
   color: #fff;
   border: none;
+  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #da190b;
 }
 
 .botao-editar:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
+
+/* Botão Excluir */
 .botao-excluir {
-  padding: 5px 12px;
-  background-color: #f44336;
+  background-color: red;
   color: #fff;
   border: none;
+  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.botao-excluir:hover {
-  background-color: #da190b;
+.botao-excluir:hover{
+  background-color: rgb(248, 39, 39);
 }
+
+/*========== Modal Editar ================ */
+#modalEditar {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+#modalEditar .modal-conteudo {
+  background: white;
+  padding: 25px;
+  width: 450px;
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
+#modalEditar .fechar {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+/* Form */
+#modalEditar form input,
+#modalEditar form select,
+#modalEditar form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+#modalEditar form button {
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+#modalEditar form button[type="submit"] {
+  background-color: var(--azul-Senac);
+  color: white;
+}
+
+#cancelarEditar {
+  background-color: red;
+  color: white;
+}
+
+
 
 
 /* ======= MODAL ======= */
@@ -328,20 +415,20 @@ form button {
   margin-right: 10px;
 }
 
-form button[type="submit"] {
+form button[type="submitsalvar"] {
   background-color: var(--azul-Senac);
   color: #fff;
 }
 
-form button[type="submit"]:hover {
+form button[type="submitsalvar"]:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-/* form button[type="button"] {
+form button[type="buttoncancelar"] {
   background-color: #ccc;
-} */
+}
 
-form button[type="button"]:hover {
+form button[type="buttoncancelar"]:hover {
   background-color: var(--cinza-Senac);
 }
 
@@ -417,7 +504,7 @@ form button[type="button"]:hover {
   border: 1px solid #ccc;
 }
 
-/* =========== Turma======= */
+
 
 /* ======= LISTA DE TURMAS ======= */
 
@@ -603,7 +690,7 @@ form button[type="button"]:hover {
 /* ======= RESPONSIVO ======= */
 /* Ajustes para notebook */
 @media (min-width: 992px) and (max-width: 1199px) {
-    /* seu CSS para o notebook aqui */
+  /* seu CSS para o notebook aqui */
 }
 
 @media (max-width: 990px) {

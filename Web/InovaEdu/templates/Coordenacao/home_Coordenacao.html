@@ -23,44 +23,48 @@
 
     <!-- SEÇÃO PRINCIPAL -->
     <main class="maincontainer">
- <div class="card">
-                <img src="{% static 'img/users-solid-full.svg' %}" alt="Usuário">
-                <h3>Usuário</h3>
-                <p>Adicione novos usuários à plataforma</p>
-                <a href="#" class="botao-card" onclick="mostrarLista('listaUsuario')">Acessar</a>
-            </div>
+
+        <!-- IMAGEM INICIAL -->
+        <div id="painelImagem" class="painel-imagem">
+            <img src="{% static 'img/in vaEdu.png' %}" alt="Logo Inova">
+        </div>
+       
+        
         <aside class="menu-lateral">
             <div class="cards-home">
-        
-           
-        
-            <div class="card">
-                <img src="{% static 'img/chalkboard-user-solid-full.svg' %}" alt="Cursos">
-                <h3>Cursos</h3>
-                <p>Veja a lista de cursos disponíveis</p>
-                <a href="#" class="botao-card" onclick="mostrarLista('listaCurso')">Acessar</a>
-            </div>
-        
-            <div class="card">
-                <img src="{% static 'img/user-graduate-solid-full.svg' %}" alt="Turmas">
-                <h3>Turmas</h3>
-                <p>Gerencie suas turmas e horários</p>
-                <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
-            </div>
-        
-            <div class="card">
-                <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
-                <h3>Perfil</h3>
-                <p>Gerencie seu perfil</p>
-                <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
-            </div>
-        
+
+                <div class="card">
+                    <img src="{% static 'img/users-solid-full.svg' %}" alt="Usuário">
+                    <h3>Usuário</h3>
+                    <p>Adicione novos usuários à plataforma</p>
+                    <a href="#" class="botao-card" onclick="mostrarLista('listaUsuario')">Acessar</a>
+                </div>
+            
+                <div class="card">
+                    <img src="{% static 'img/chalkboard-user-solid-full.svg' %}" alt="Cursos">
+                    <h3>Cursos</h3>
+                    <p>Veja a lista de cursos disponíveis</p>
+                    <a href="#" class="botao-card" onclick="mostrarLista('listaCurso')">Acessar</a>
+                </div>
+            
+                <div class="card">
+                    <img src="{% static 'img/user-graduate-solid-full.svg' %}" alt="Turmas">
+                    <h3>Turmas</h3>
+                    <p>Gerencie suas turmas e horários</p>
+                    <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
+                </div>
+            
+                <div class="card">
+                    <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
+                    <h3>Perfil</h3>
+                    <p>Gerencie seu perfil</p>
+                    <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
+                </div>
+            
             </div>
         </aside>
 
-       <div id="imagemFundo" class="imagem-fundo">
-            <img src="{% static 'img/img_fundo.avif' %}" alt="Imagem de fundo">
-        </div>
+      
 
 
 
@@ -104,11 +108,56 @@
                                 <option value="aluno">Aluno</option>
                                 <option value="coordenacao">Coordenação</option>
                             </select>
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarModal">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarModal">Cancelar</button>
                         </form>
                     </div>
                 </div>
+
+               <!-- Modal Editar Usuário -->
+                <div id="modalEditar" class="modal">
+                    <div class="modal-conteudo">
+                        <span class="fechar" id="fecharEditar">&times;</span>
+                        <div class="titulo_lista">
+                            <p>Editar Usuário</p>
+                        </div>
+                        <form id="formEditarUsuario" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" id="idusuarioEdit" name="idusuario">
+                            
+                            <label for="nomeEdit">Primeiro Nome:</label>
+                            <input type="text" id="nomeEdit" name="nome" required placeholder="Digite seu nome">
+
+                            <label for="SobrenomeEdit">Sobrenome:</label>
+                            <input type="text" id="SobrenomeEdit" name="sobrenome" required placeholder="Digite seu sobrenome">
+
+                            <label for="EmailEdit">Email:</label>
+                            <input type="email" id="EmailEdit" name="email" required placeholder="exemplo@gmail.com">
+
+                            <label for="SenhaEdit">Senha:</label>
+                            <input type="password" id="SenhaEdit" name="senha" required placeholder="***********">
+
+                            <label for="descricaoEdit">Descrição:</label>
+                            <textarea id="descricaoEdit" name="descricao" rows="4" placeholder="Lorem ipsum dolor sit amet...."></textarea>
+
+                            <label for="imagemEdit">Imagem:</label>
+                            <input type="file" id="imagemEdit" name="imagem" accept="image/*">
+
+                            <label for="tipoCadastroEdit">Escolha sua opção de cadastro:</label>
+                            <select id="tipoCadastroEdit" name="tipoCadastro" required>
+                                <option value="" disabled selected>Selecione uma opção</option>
+                                <option value="professor">Professor</option>
+                                <option value="aluno">Aluno</option>
+                                <option value="coordenacao">Coordenação</option>
+                            </select>
+
+                            <button type="submit">Salvar</button>
+                            <button type="button" id="cancelarEditar">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
+
+
 
                 <!-- Lista Usuário -->
                 <section class="lista-completa">
@@ -136,20 +185,16 @@
                             <span><img src="{% static 'img/default_user.png' %}" alt="Sem foto"></span>
                             {% endif %}
                             <span>{{ usuario.tipo }}</span>
-                            <span class="acoes">
 
-                                <form action="{% url 'excluir_usuario' usuario.idusuario %}" 
-                                    method="POST" 
-                                    style="display:inline;">
-                                    <button type="button" class="botao-editar">Editar</button>
-                                        {% csrf_token %}
-                                    <button type="submit" class="botao-excluir"
-                                        onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
-                                        Excluir
-                                    </button>
+                           <span class="acoes">
+                                <button type="button" class="botao-editar">Editar</button>
+
+                                <form action="{% url 'excluir_usuario' usuario.idusuario %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="botao-excluir" onclick="return confirm('Tem certeza?')">Excluir</button>
                                 </form>
-                            
                             </span>
+
                             
                         </li>
                         {% empty %}
@@ -161,11 +206,11 @@
 
             <!-- CURSOS -->
             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
-                <div class="titulolista">
+                <div class="titulo_lista">
                     <p>Lista de Cursos</p>
                     <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
                 </div>
-                <section class="lista_curso">
+                <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
                             <span>Nome</span>
@@ -200,10 +245,11 @@
 
             <!-- TURMAS -->
             <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
-                <div class="titulo_lista"><p>Lista de Turmas</p>
+                <div class="titulo_lista">
+                    <p>Lista de Turmas</p>
                     <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
                 </div>
-                <section class="lista_curso">
+                <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
                             <span>Nome Turma</span>
