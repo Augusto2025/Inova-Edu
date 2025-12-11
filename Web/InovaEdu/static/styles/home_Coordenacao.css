@@ -29,15 +29,15 @@ body {
 
 .painel-imagem {
   width: 100%;
-  height: 100%;
+  /* height: 300%; Ou defina uma altura específica, ex: 300px */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Centraliza horizontal */
+  align-items: center;     /* Centraliza vertical */
 }
 
 .painel-imagem img {
-  max-width: 500%;
-  /* opacity: 0.8; */
+  max-width: 100%;
+  height: auto;
 }
 
 
@@ -45,34 +45,22 @@ body {
 
 /* ======= HEADER ======= */
 .header {
+  width: 100%;
+  background-color: var(--azul-Senac); /* ou a cor que quiser */
+  padding: 10px 20px;
+
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* tudo alinhado para o lado esquerdo */
   align-items: center;
-  padding: 20px 50px;
-  background-color: var(--azul-Senac);
-  color: var(--branco-Senac);
+  gap: 20px; /* espaço entre itens, caso adicione mais depois */
 }
 
-.header h1 {
-  font-size: 24px;
+.header img {
+  width: 140px; /* ajuste o tamanho que desejar */
+  height: auto;
+  display: block;
 }
 
-.header nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.header nav ul li a {
-  color: var(--branco-Senac);
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s;
-}
-
-.header nav ul li a:hover {
-  color: var(--laranja-Senac);
-}
 
 /* ======= CONTAINER main ======= */
 
