@@ -72,7 +72,7 @@ section:hover {
 
 .rota {
     width: 100%;
-    text-align: center;
+    margin-left: 20px;
     color: var(--azul-Senac);
     font-size: 14px;
     font-weight: 600;

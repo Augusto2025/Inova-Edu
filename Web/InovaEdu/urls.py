@@ -6,8 +6,11 @@ from . import views
 
 urlpatterns = [
     path('', views.homePage),
-    # Aluno e Professor
     path('login/', views.login, name='login'),
+    path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
+    path("pedir_email/", views.pedir_email, name="pedir_email"),
+    path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
+    # Aluno e Professor
     path('home/', views.home, name='home'),
     path("repositorio/", views.repositorio, name="repositorio"),
     path("perfil/", views.perfil, name="perfil"),
@@ -29,11 +32,6 @@ urlpatterns = [
     path('criar_curso', views.criar_curso, name='criar_curso'),
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
-    path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
-    path("pedir_email/", views.pedir_email, name="pedir_email"),
-    path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
-    
-    
 ]
 
 if settings.DEBUG:  
