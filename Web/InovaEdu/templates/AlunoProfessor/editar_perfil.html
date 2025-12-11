@@ -58,23 +58,6 @@
             </div>
 
             <button type="button" class="salvar" onclick="salvarRedeSocial()">Adicionar Link</button>
-
-            <div class="campo">
-                <label>Links adicionados</label>
-                <ul id="lista-redes-editar" style="list-style-type: none; padding-left: 0;"></ul>
-            </div>
-            <style>
-                .btn-remover {
-                    background-color: red;
-                    color: white;
-                    border: none;
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                    cursor: pointer;
-                    margin-left: 10px;
-                }
-            </style>
         </div>
 
         <div class="botoes">
@@ -84,61 +67,6 @@
 
     </form>
 </main>
-
-<script>
-    function carregarLinksEditar() {
-        let lista = document.getElementById("lista-redes-editar");
-        lista.innerHTML = "";
-
-        let links = JSON.parse(localStorage.getItem("links_redes")) || [];
-
-        if (links.length === 0) {
-            lista.innerHTML = "<li>Nenhum link cadastrado.</li>";
-            return;
-        }
-
-        links.forEach((link, index) => {
-            let li = document.createElement("li");
-            li.innerHTML = `
-                <span>${link}</span>
-                <button class="btn-remover" onclick="removerLink(${index})">X</button>
-            `;
-            lista.appendChild(li);
-        });
-    }
-
-    function salvarRedeSocial() {
-        const link = document.getElementById("redeSocialInput").value;
-
-        if (!link) {
-            alert("Insira um link.");
-            return;
-        }
-
-        let links = JSON.parse(localStorage.getItem("links_redes")) || [];
-        links.push(link);
-
-        localStorage.setItem("links_redes", JSON.stringify(links));
-
-        document.getElementById("redeSocialInput").value = "";
-        carregarLinksEditar();
-
-        alert("Link adicionado!");
-    }
-
-    function removerLink(index) {
-        let links = JSON.parse(localStorage.getItem("links_redes")) || [];
-
-        links.splice(index, 1);
-
-        localStorage.setItem("links_redes", JSON.stringify(links));
-
-        carregarLinksEditar();
-        alert("Link removido!");
-    }
-
-    document.addEventListener("DOMContentLoaded", carregarLinksEditar);
-</script>
 
 {% include "partials/footer.html" %}
 {% endblock %}
