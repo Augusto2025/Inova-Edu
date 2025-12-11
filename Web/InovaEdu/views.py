@@ -7,6 +7,7 @@ import json
 from django.shortcuts import HttpResponse
 from django.contrib.auth.decorators import login_required
 
+
 def login(request):
     # ele pega o que tem dentro do form
     if request.method == 'GET':
@@ -40,6 +41,16 @@ def login(request):
         })
     
 # --------------- Telas aluno e professor ---------------
+def reSenha(request):
+    if request.method == "POST":
+        senha1 = request.POST.get("senha1")
+        senha2 = request.POST.get("senha")
+        
+        if senha1 == senha2:
+            request.user.set_password(senha1)
+            request.user.save()
+
+    return render(request, "reSenha.html")
 
 def home(request):
     query = request.GET.get("q", "").strip()
@@ -318,36 +329,6 @@ def cadastroTurma(request):
 def lista_usuario(request):
     usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
     return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
-
-    if request.method == 'POST':
-        nome = request.POST.get('nome')
-        sobrenome = request.POST.get('Sobrenome')
-        email = request.POST.get('Email')
-        senha = request.POST.get('Senha')
-        descricao = request.POST.get('descricao')
-        tipo = request.POST.get('tipoCadastro')
-        imagem = request.FILES.get('imagem')
-
-        # imagem = request.FILES.get('imagem')
-
-        # Criar e salva o usuario
-
-        usuario = Usuario(
-            nome = nome,
-            sobrenome = sobrenome,
-            email = email,
-            senha = senha,
-            descricao = descricao,
-            tipo = tipo,
-            imagem = imagem
-        )
-
-        return redirect('home_Coordenacao')  # Volta para a mesma tela
-
-    return render(request, 'Coordenacao/home_Coordenacao.html', {
-        'usuarios': usuarios
-    })
-
 
 def excluir_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, idusuario=idusuario)

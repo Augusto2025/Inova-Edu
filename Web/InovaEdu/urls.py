@@ -28,8 +28,9 @@ urlpatterns = [
     path('enviarturma/', views.enviarturma, name='enviarturma'),
     path('criar_curso', views.criar_curso, name='criar_curso'),
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
-    path('lista/', views.lista_usuario, name="lista_usuario"),
-] 
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
+    path('reSenha', views.reSenha, name='reSenha'),
+]
 
 if settings.DEBUG:  
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
