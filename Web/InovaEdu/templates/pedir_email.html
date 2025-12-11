@@ -1,20 +1,17 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static 'img/Logo Laranja.svg' %}" type="image/png">
-    <link rel="stylesheet" href="{% static 'styles/codigo.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/codigoEmail.css' %}">
     <title>Inova Edu</title>
 </head>
 
 <body>
-
     <form class="card_login" method="POST">
         {% csrf_token %}
-
-        <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="logo">
         <h1>Insira seu email</h1>
 
         <!-- Corrigido: era type="password" -->
@@ -29,9 +26,7 @@
         {% if sucesso %}
             <p style="color:green; margin-top:10px; font-size:16px;">{{ sucesso }}</p>
         {% endif %}
-        
         <button type="submit"><a href="verificar_codigo">Confirmar</a></button>
     </form>
-
 </body>
 </html>

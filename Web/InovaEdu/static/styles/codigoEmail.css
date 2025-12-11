@@ -63,7 +63,6 @@ button {
     width: 100%;
     padding: 18px; /* botão maior */
     background: var(--azul-Senac);
-    color: var(--branco-Senac);
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -71,8 +70,9 @@ button {
     font-weight: bold;
 }
 
-button:hover {
-    background: #658db6;
+button a{
+    color: #FFF;
+    text-decoration: none;
 }
 
 .senha {
