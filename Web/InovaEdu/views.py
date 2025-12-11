@@ -6,6 +6,10 @@ from django.utils import timezone
 import json
 from django.shortcuts import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.contrib import messages
+import random
 
 
 def login(request):
@@ -426,3 +430,54 @@ def lista_curso(request):
     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
 
 
+
+
+def pedir_email(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        # Gerar código de 6 dígitos
+        codigo = random.randint(100000, 999999)
+
+        # Salvar na session
+        request.session["rec_email"] = email
+        request.session["rec_codigo"] = str(codigo)
+
+        # Enviar email
+        send_mail(
+            subject="Código de verificação",
+            message=f"Seu código é: {codigo}",
+            from_email="mneto8141@gmail.com",
+            recipient_list=[email],
+        )
+
+        return redirect("verificar_codigo")
+
+    return render(request, "pedir_email.html")
+
+def verificar_codigo(request):
+    if request.method == "POST":
+        codigo_digitado = request.POST.get("codigo")
+        codigo_real = request.session.get("rec_codigo")
+
+        if codigo_digitado == codigo_real:
+            return redirect("redefinir_senha")
+
+        return render(request, "verificar_codigo.html", { "erro": "Código incorreto" })
+
+    return render(request, "verificar_codigo.html")
+
+
+def redefinir_senha(request):
+    if request.method == "POST":
+        senha1 = request.POST.get("senha1")
+        senha2 = request.POST.get("senha2")
+
+        if senha1 != senha2:
+            return render(request, "redefinir_senha.html", {
+                "mensagem": "As senhas não coincidem!"
+            })
+
+        return redirect("login")
+
+    return render(request, "redefinir_senha.html")

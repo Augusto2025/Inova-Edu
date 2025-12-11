@@ -1,29 +1,30 @@
-{% load static %}
+<!-- Django removido -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static 'img/Logo Laranja.svg' %}" type="image/png">
-    <link rel="stylesheet" href="{% static 'styles/reSenha.css' %}">
+    <link rel="icon" href="Logo Laranja.svg" type="image/png">
+    <link rel="stylesheet" href="codigo.css">
+
     <title>Inova Edu</title>
 </head>
 
 <body>
 
     <form class="card_login" onsubmit="return salvarSenha(event)">
-        <h1>Redefinir senha</h1>
+        <img class="logo" src="Logo Laranja.svg" alt="logo">
+        <h1>Confirmar codigo</h1>
 
-        <input type="password" placeholder="Nova senha" id="senha1">
-        <input type="password" placeholder="Confirmar senha" id="senha2">
+        <input type="password" placeholder="******" id="senha1">
+        <p>enviamos um codigo ao  seu email</p>
 
         <p id="mensagem" style="display:none; margin-top:10px; font-size:16px;"></p>
 
         <button type="submit">Confirmar</button>
     </form>
 
-
-    <script src="{% static 'scripts/salvar_senha.js' %}"></script>
+    <script src="scripts/salvar_senha.js"></script>
 
 </body>
 </html>
