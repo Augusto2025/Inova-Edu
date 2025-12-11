@@ -35,9 +35,39 @@
                 {{ usuario.descricao|default:"Sem descrição." }}
             </div>
 
+            <div class="info-card">
+                <p><strong>Redes sociais:</strong></p>
+                <ul id="lista-redes" style="list-style-type: none; padding-left: 0;"></ul>
+                <style>
+                    #lista-redes a {
+                        margin-bottom: 8px;
+                        color: #4295e2ff;
+                    }
+                </style>
+            </div>
+
             <a href="{% url 'editar_perfil' %}" class="Editar_Perfil">Editar Perfil</a>
         </section>
     </main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let area = document.getElementById("lista-redes");
+
+        let links = JSON.parse(localStorage.getItem("links_redes")) || [];
+
+        if (links.length === 0) {
+            area.innerHTML = "<li>Nenhum link cadastrado.</li>";
+            return;
+        }
+
+        links.forEach(link => {
+            let li = document.createElement("li");
+            li.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
+            area.appendChild(li);
+        });
+    });
+</script>
 
 {% endblock %}
 

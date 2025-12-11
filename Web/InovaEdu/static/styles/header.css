@@ -221,3 +221,24 @@ main{
   .texto_InovaEdu { display: none; }
   .Paginas { gap: 12px; font-size: 15px; }
 }
+
+/* canvas do header (estrelas cadentes) */
+/* canvas ocupa todo o header atrás do conteúdo */
+#header-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* garantir que o conteúdo do header fique acima do canvas */
+header > .hamburger,
+header > .logo_e_texto,
+header > #site-nav,
+header > div {
+  position: relative;
+  z-index: 2;
+}

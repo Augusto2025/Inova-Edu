@@ -95,7 +95,7 @@ main {
 
 .campo input,
 .campo textarea {
-    width: 100%;
+    width: 93%;
     padding: 12px;
     border-radius: 10px;
     border: 2px solid var(--cinza-Senac);
