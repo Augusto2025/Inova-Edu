@@ -45,6 +45,7 @@ main{
 section {
   background: white;
   width: 100%;
+  height: 100px;
   padding: 10px;
   border-radius: 18px;
   padding-bottom: 20px;
@@ -58,13 +59,12 @@ section:hover {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-
 .titulo-forum {
-  margin: 20px 0 8px 0;
+  text-align: center;
   color: var(--azul-Senac);
-  border-bottom: 3px solid var(--laranja-Senac);
   padding-bottom: 6px;
   width: 250px;
+  margin: 0%;
 }
 
 .campo_pesq {
@@ -95,7 +95,6 @@ section .Botao_entrar_forum {
   border: none;
   border-radius: 23px;
   background: #004A8D;
-  margin-top: 20px;
 }
 
 .data_criacao {

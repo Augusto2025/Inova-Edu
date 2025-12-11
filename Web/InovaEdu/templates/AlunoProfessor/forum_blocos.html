@@ -63,7 +63,10 @@
     <main>
         {% for Forum in foruns  %}
             <section>
-                <p class="titulo-forum">{{ Forum.nome }}</p>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <p class="titulo-forum">{{ Forum.nome }}</p>
+                    <div class="borda" style="width: 80px; height: 3px; background: #F7941D; margin: 8px 15px; border: none;"></div>
+                </div>
                 <div class="data_criacao">
                     <p>Data de Criação:</p>
                     <p>{{ Forum.data_criacao }}</p>

@@ -9,9 +9,13 @@
   --transition: .2s ease;
 }
 
-body {
-  background: var(--bg);
-  font-family: "Poppins", sans-serif;
+body{
+  margin: 0;
+  padding: 0;
+  background-image: url("../img/Fundo.png"); /* sobe 1 nível de css/ para img/ */
+  background-size: cover;       /* opcional: ajusta ao viewport */
+  background-repeat: no-repeat; /* opcional: não repetir */
+  background-position: center;
 }
 
 /* CONTAINER PRINCIPAL ------------------------------------------------------ */

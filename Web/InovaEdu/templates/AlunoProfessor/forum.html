@@ -5,38 +5,45 @@
     <link rel="stylesheet" href="{% static 'styles/forum.css' %}">
     <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+    {% include "partials/header.html" %}
 
-    <div class="rota">Página: Foruns > Chat de Conversa</div>
+    <div class="rota">Página: Cursos</div>
 
-    <div class="titulo">
-        <p>{{ forum.nome }}</p>
+    <div class="forum-header">
+        <div class="forum-info">
+            <div class="forum-icon">💬</div>
+            <h1>{{ forum.nome }}</h1>
+        </div>
     </div>
 
-    <div class="main" >
+    <div class="chat-container">
+
         <div class="mensagens">
             {% for msg in mensagens %}
-                <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
-                    <strong>{{ msg.autor.nome }}:</strong>
-                    <div class="conteudo">{{ msg.conteudo }}</div>
-                     <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
-                 </div>
+                <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}">
+                    <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
+                        <div class="msg-header">
+                            <strong>{{ msg.autor.nome }}</strong>
+                            <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
+                        </div>
+                        <div class="msg-content">{{ msg.conteudo }}</div>
+                    </div>
+                </div>
             {% empty %}
-                <p>Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
+                <p class="empty">Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
             {% endfor %}
         </div>
-        
-        <form method="POST">
+
+        <form method="POST" class="chat-input-area">
             {% csrf_token %}
-            <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off" maxlength="100000">
+            <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off">
             <button type="submit">Enviar</button>
         </form>
+
     </div>
 
 {% endblock %}
 
 {% block footer %}
-    {% include "partials/footer.html" %}
+{% include "partials/footer.html" %}
 {% endblock %}
