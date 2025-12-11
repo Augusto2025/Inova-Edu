@@ -44,7 +44,6 @@ def login(request):
             'senha': ''
         })
     
-# --------------- Telas aluno e professor ---------------
 def reSenha(request):
     if request.method == "POST":
         senha1 = request.POST.get("senha1")
@@ -55,6 +54,7 @@ def reSenha(request):
             request.user.save()
 
     return render(request, "reSenha.html")
+# --------------- Telas aluno e professor ---------------
 
 def home(request):
     query = request.GET.get("q", "").strip()

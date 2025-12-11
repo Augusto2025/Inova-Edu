@@ -5,7 +5,7 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.login),
+    path('', views.homePage),
     # Aluno e Professor
     path('login/', views.login, name='login'),
     path('home/', views.home, name='home'),
@@ -29,10 +29,6 @@ urlpatterns = [
     path('criar_curso', views.criar_curso, name='criar_curso'),
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
-    path('upload/', views.upload_arquivo, name='upload_arquivo'),
-    path('pasta/<int:pasta_id>/', views.abrir_pasta, name='abrir_pasta'),
-    path('pasta/<int:pasta_id>/criar_pasta/', views.criar_pasta, name='criar_pasta'),  # Certifique-se de que essa linha existe
-    path('pasta/<int:pasta_id>/criar_arquivo/', views.criar_arquivo, name='criar_arquivo'),
     path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),
     path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
