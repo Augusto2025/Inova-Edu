@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,12 +126,12 @@ USE_TZ = True
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-STATIC_URL = '/static/'
+# Pasta onde collectstatic vai copiar os arquivos para produção
+STATIC_ROOT = BASE_DIR / 'Web/staticfiles'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+# Só necessário se você tiver uma pasta global 'static' fora das apps
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'InovaEdu', 'static'),
+    BASE_DIR / 'Web/InovaEdu/static',
 ]
 
 
