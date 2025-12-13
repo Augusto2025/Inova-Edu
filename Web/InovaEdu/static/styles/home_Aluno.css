@@ -118,7 +118,7 @@
     display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
-    margin: 25px 0px;
+    margin: 25px auto;
     gap: 26px;
 }
 

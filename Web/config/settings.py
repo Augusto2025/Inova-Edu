@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv 
 import secrets
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -13,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
-# 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -73,7 +74,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('ENGINE'),
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('NAME'),
         'USER': os.environ.get('USER'),
         'HOST': os.environ.get('HOST'),
