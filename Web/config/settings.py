@@ -133,7 +133,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Só é necessário se você tiver uma pasta global 'static' fora das apps
 STATICFILES_DIRS = [
-    BASE_DIR / 'Web/static',  # Ou a pasta onde você armazena arquivos estáticos
+    BASE_DIR / 'Web/InovaEdu',  # Ou a pasta onde você armazena arquivos estáticos
 ]
 
 
