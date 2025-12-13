@@ -125,15 +125,12 @@ USE_TZ = True
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# URL base para arquivos estáticos
 STATIC_URL = '/static/'
 
-# Pasta onde collectstatic vai copiar os arquivos para produção
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Só é necessário se você tiver uma pasta global 'static' fora das apps
 STATICFILES_DIRS = [
-    BASE_DIR / 'InovaEdu/static',
+    os.path.join(BASE_DIR, 'InovaEdu', 'static'),
 ]
 
 
