@@ -263,7 +263,7 @@ body{
 }
 
 .rota {
-  width: 100%;
+  width: 60%;
   margin-left: 20px;
   color: var(--azul-Senac);
   font-size: 14px;
@@ -286,7 +286,7 @@ body{
   }
 
   .sidebar {
-      width: 100%;
+      width: 98%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -306,11 +306,11 @@ body{
   }
 
   .calendar-card {
-      width: 100%;
+      width: 95%;
   }
 
   .event-panel {
-      width: 100%;
+      width: 95%;
       margin-top: 15px;
   }
 }
