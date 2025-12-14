@@ -12,20 +12,6 @@
    LAYOUT GERAL
    =========================================================== */ 
 
-.titulo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.titulo p {
-    color: var(--azul-Senac);
-    font-size: 26px;
-    font-weight: 600;
-    border-bottom: 4px solid var(--laranja-Senac);
-}
-
 /* BARRA DE PESQUISA + ICONE FILTRO */
 .campo_pesq {
     display: flex;

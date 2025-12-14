@@ -19,7 +19,7 @@ body{
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 40px;
+    margin: 40px 0px;
 }
 
 .titulo p {
@@ -52,6 +52,11 @@ main {
     align-items: center;
     justify-self: center;
     flex-wrap: wrap;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin: 25px auto;
+    gap: 26px;
     min-height: calc(81vh - 90px);
     gap: 30px;
 }
@@ -71,7 +76,7 @@ section:hover {
 }
 
 .rota {
-    width: 100%;
+    width: 60%;
     margin-left: 20px;
     color: var(--azul-Senac);
     font-size: 14px;

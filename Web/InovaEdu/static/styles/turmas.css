@@ -66,11 +66,12 @@ section .Botao_entrar_curso{
 }
 
 .accordion-container {
-    width: 90%;
+    width: 96%;
     margin: 20px auto;
 }
 
 .accordion-item {
+    width: 100%;
     background: #fff;
     border-radius: 8px;
     margin-bottom: 12px;
@@ -79,7 +80,7 @@ section .Botao_entrar_curso{
 }
 
 .accordion-header {
-    width: 1000px;
+    width: 100%;
     background: #005eb8;
     color: white;
     border: none;

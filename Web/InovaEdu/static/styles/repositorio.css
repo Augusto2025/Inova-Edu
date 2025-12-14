@@ -1,0 +1,142 @@
+/* TÍTULO */
+.titulo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 20px;
+}
+
+.titulo p {
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--azul-Senac);
+}
+
+/* CONTAINER PRINCIPAL */
+.turma-repositorio {
+    width: 70%;
+    max-width: 1000px;
+    background: #ffffff;
+    margin: 0 auto 40px;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-height: calc(80vh - 90px);
+}
+
+/* TÍTULO DO CURSO */
+.turma-repositorio h3 {
+    font-size: 1.5em;
+    color: #2c3e50;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+/* SEÇÕES */
+.pastas, .arquivos {
+    background: #f9fafc;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.pastas h4, .arquivos h4 {
+    font-size: 1.2em;
+    color: #34495e;
+    margin-bottom: 15px;
+}
+
+/* LISTAS */
+.lista-pastas, .lista-arquivos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ITENS */
+.pasta-item, .arquivo-item {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-left: 5px solid transparent;
+    transition: all 0.25s ease;
+}
+
+.pasta-item {
+    border-left-color: #2980b9;
+}
+
+.arquivo-item {
+    border-left-color: #3498db;
+}
+
+.pasta-item:hover, .arquivo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* INFO DA PASTA */
+.pasta-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pasta-info img {
+    width: 36px;
+}
+
+/* LINKS */
+.pasta-link,
+.arquivo-item a {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.arquivo-item a {
+    color: #3498db;
+}
+
+.pasta-link:hover,
+.arquivo-item a:hover {
+    text-decoration: underline;
+}
+
+/* METADADOS */
+.pasta-info p,
+.arquivo-item p {
+    font-size: 0.85em;
+    color: #7f8c8d;
+}
+
+.pasta-info p strong,
+.arquivo-item p strong {
+    color: #2c3e50;
+}
+
+/* VAZIO */
+.sem-pasta,
+.sem-arquivo {
+    padding: 15px;
+    text-align: center;
+    font-style: italic;
+    color: #95a5a6;
+    background: #ffffff;
+    border-radius: 10px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 900px) {
+    .turma-repositorio {
+        width: 90%;
+        padding: 20px;
+    }
+}

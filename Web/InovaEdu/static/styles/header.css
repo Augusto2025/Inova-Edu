@@ -65,7 +65,7 @@ header a {
     justify-content: center;
     width: 100px;
     font-size: 16px;
-    gap: 100px;
+    gap: 50px;
 }
 
 /* Apenas links do NAV usam estilo próprio */
@@ -93,7 +93,6 @@ a{
     display: flex;
     justify-content: space-between;
     justify-self: center;
-    margin: 30px;
     width: 50%;
 }
 
