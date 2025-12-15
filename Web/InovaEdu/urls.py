@@ -19,15 +19,19 @@ urlpatterns = [
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     # Coordenação
-    path('home_Coordenacao', views.home_Coordenacao, name="home_Coordenacao"),
+    path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
+    path('criar_curso', views.criar_curso, name='criar_curso'),
     path('cadastro_Aluno/', views.cadastro, name='cadastro_Aluno'),
     path('cadastroCurso/', views.cadastroCurso, name='cadastroCurso'),
     path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
     path('listaturma/', views.listaturma, name='listaturma'),
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
+    path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
+    path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
+
     path('enviarturma/', views.enviarturma, name='enviarturma'),
-    path('criar_curso', views.criar_curso, name='criar_curso'),
-    path('curso/lista/', views.lista_curso, name='ListaCurso'),
+    
+    # path('curso/lista/', views.lista_curso, name='ListaCurso'),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),

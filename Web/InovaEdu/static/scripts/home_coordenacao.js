@@ -40,7 +40,7 @@ function mostrarLista(id) {
     document.getElementById("painelImagem").style.display = "none";
 }
 
-
+// ====== EDITAR ======
 const botoesEditar = document.querySelectorAll('.botao-editar');
 const modalEditar = document.getElementById('modalEditar');
 const fecharEditar = document.getElementById('fecharEditar');
@@ -72,3 +72,32 @@ cancelarEditar.addEventListener('click', () => modalEditar.style.display = 'none
 window.addEventListener('click', (e) => {
     if(e.target == modalEditar) modalEditar.style.display = 'none';
 });
+
+
+
+// ===== MODAL CADASTRO CURSO =====
+const abrirModalCurso = document.getElementById('abrirModalCurso');
+const modalCurso = document.getElementById('modalCadastroCurso');
+const fecharModalCurso = document.getElementById('fecharModalCurso');
+const cancelarModalCurso = document.getElementById('cancelarModalCurso');
+
+abrirModalCurso.addEventListener('click', function(e) {
+    e.preventDefault();
+    modalCurso.style.display = 'flex';
+});
+
+fecharModalCurso.addEventListener('click', () => {
+    modalCurso.style.display = 'none';
+});
+
+cancelarModalCurso.addEventListener('click', () => {
+    modalCurso.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === modalCurso) {
+        modalCurso.style.display = 'none';
+    }
+});
+
+

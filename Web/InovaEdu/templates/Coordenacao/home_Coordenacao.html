@@ -11,26 +11,14 @@
 <body>
     <!-- HEADER -->
     <header class="header">
-        <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
-
-        <nav>
-            {% comment %} <ul>
-                <li><a href="#">Cursos</a></li>
-                <li><a href="#">Turmas</a></li>
-                <li><a href="#">Usuario</a></li>
-            </ul> {% endcomment %}
-        </nav>
+        <a href="{% url 'home_Coordenacao' %}">
+            <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
+        </a>
     </header>
 
     <!-- SEÇÃO PRINCIPAL -->
     <main class="maincontainer">
 
-        <!-- IMAGEM INICIAL -->
-        <div id="painelImagem" class="painel-imagem">
-            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
-        </div>
-       
-        
         <aside class="menu-lateral">
             <div class="cards-home">
 
@@ -65,10 +53,10 @@
             </div>
         </aside>
 
-      
-
-
-
+         <!-- IMAGEM INICIAL -->
+         <div id="painelImagem" class="painel-imagem">
+            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
+        </div>
 
         <section class="section-wrapper">
 
@@ -174,7 +162,7 @@
                             <span class="acoes">Ações</span>
                         </li>
                         {% for usuario in usuarios %}
-                        <li>
+                        <li data-id="{{ usuario.idusuario }}">
                             <span>{{ usuario.nome }}</span>
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
@@ -205,11 +193,13 @@
                 </section>
             </section>
 
+
+
             <!-- CURSOS -->
             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+                    <a href="#" class="btn-add" id="abrirModalCurso">Cadastro</a>
                 </div>
                 <section class="lista-completa">
                     <ul>
@@ -233,8 +223,16 @@
                             </span>
                             <span>{{ curso.descricao_curso }}</span>
                             <span class="acoes">
-                                <button type="button" onclick="window.location.href='{% url 'editar_curso' curso.pk %}'">Editar</button>
-                                <button type="button" onclick="window.location.href='{% url 'excluir_curso' curso.pk %}'">Excluir</button>
+                                <button type="button" class="botao-editar">Editar</button>
+                            
+                                <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="botao-excluir"
+                                            onclick="return confirm('Tem certeza?')">
+                                        Excluir
+                                    </button>
+                                </form>
                             </span>
                         </li>
                         {% empty %}
@@ -243,6 +241,109 @@
                     </ul>
                 </section>
             </section>
+
+            <!-- MODAL CADASTRO CURSO -->
+            <div id="modalCadastroCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharModalCurso">&times;</span>
+
+                    <div class="titulo_lista">
+                        <p>Cadastro de Curso</p>
+                    </div>
+
+                    <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <label for="nome_curso">Nome do Curso:</label>
+                        <input type="text" id="nome_curso" name="nome_curso" required>
+
+                        <label for="data_inicio">Data de Início:</label>
+                        <input type="date" id="data_inicio" name="data_inicio">
+
+                        <label for="data_final">Data de Término:</label>
+                        <input type="date" id="data_final" name="data_final">
+
+                        <label for="imagem">Imagem do Curso:</label>
+                        <input type="file" id="imagem" name="imagem" accept="image/*">
+
+                        <label for="descricao_curso">Descrição:</label>
+                        <textarea id="descricao_curso" name="descricao_curso" rows="4"></textarea>
+
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarModalCurso">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="modalEditarCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharEditarCurso">&times;</span>
+            
+                    <h3>Editar Curso</h3>
+            
+                    <form id="formEditarCurso" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+            
+                        <input type="hidden" name="idcurso" id="idcursoEdit">
+            
+                        <label>Nome do Curso</label>
+                        <input type="text" name="nome_curso" id="nomeCursoEdit" required>
+            
+                        <label>Data Início</label>
+                        <input type="date" name="data_inicio" id="dataInicioEdit">
+            
+                        <label>Data Término</label>
+                        <input type="date" name="data_final" id="dataFinalEdit">
+            
+                        <label>Descrição</label>
+                        <textarea name="descricao_curso" id="descricaoEdit"></textarea>
+            
+                        <label>Imagem (opcional)</label>
+                        <input type="file" name="imagem">
+            
+                        <button type="submit">Salvar</button>
+                        <button type="button" id="cancelarEditarCurso">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <!-- TURMAS -->
             <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
