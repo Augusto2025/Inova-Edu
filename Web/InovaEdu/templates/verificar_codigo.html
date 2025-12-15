@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{% static 'img/Logo Laranja.svg' %}" type="image/png">
+    <link rel="icon" href="{% static 'img/Logo Laranja.svg' %}">
     <link rel="stylesheet" href="{% static 'styles/codigoEmail.css' %}">
     <title>Inova Edu</title>
 </head>
@@ -15,21 +15,15 @@
         {% csrf_token %}
         
         <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="logo">
-        <h1>verificar codigo</h1>
+        <h1>Verificar código</h1>
 
-        <input type="" placeholder="******" name="codigo" id="email" required>
+        <input type="text" name="codigo" placeholder="******" required>
 
-        <!-- MENSAGEM DE ERRO -->
         {% if erro %}
-            <p style="color:red; margin-top:10px; font-size:16px;">{{ erro }}</p>
+            <p style="color:red; margin-top:10px;">{{ erro }}</p>
         {% endif %}
 
-        <!-- MENSAGEM DE SUCESSO -->
-        {% if sucesso %}
-            <p style="color:green; margin-top:10px; font-size:16px;">{{ sucesso }}</p>
-        {% endif %}
-
-        <button type="submit"><a href="reSenha">Confirmar</a></button>
+        <button type="submit">Confirmar</button>
     </form>
 
 </body>

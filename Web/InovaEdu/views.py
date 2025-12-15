@@ -39,35 +39,38 @@ def login(request):
             'senha': ''
         })
     
-def reSenha(request):
-    if request.method == "POST":
-        senha1 = request.POST.get("senha1")
-        senha2 = request.POST.get("senha")
-        
-        if senha1 == senha2:
-            request.user.set_password(senha1)
-            request.user.save()
-
-    return render(request, "reSenha.html")
-
 def pedir_email(request):
     if request.method == "POST":
         email = request.POST.get("email")
 
+        # Verifica se o email existe no banco
+        usuario = Usuario.objects.filter(email=email).first()
+        if not usuario:
+            return render(request, "pedir_email.html", {
+                "erro": "Email inexistente"
+            })
+
         # Gerar código de 6 dígitos
         codigo = random.randint(100000, 999999)
 
-        # Salvar na session
+        # Salvar na sessão
         request.session["rec_email"] = email
         request.session["rec_codigo"] = str(codigo)
 
-        # Enviar email
-        send_mail(
-            subject="Código de verificação",
-            message=f"Seu código é: {codigo}",
-            from_email="mneto8141@gmail.com",
-            recipient_list=[email],
-        )
+        # Tenta enviar email
+        try:
+            send_mail(
+                subject="Código de verificação",
+                message=f"Seu código é: {codigo}",
+                from_email="seuemail@gmail.com",  # Use aqui o email correto
+                recipient_list=[email],
+                fail_silently=False
+            )
+        except Exception as e:
+            # Captura erro de autenticação ou outros problemas SMTP
+            return render(request, "pedir_email.html", {
+                "erro": f"Não foi possível enviar o email. Verifique o servidor e a senha: {str(e)}"
+            })
 
         return redirect("verificar_codigo")
 
@@ -75,16 +78,14 @@ def pedir_email(request):
 
 def verificar_codigo(request):
     if request.method == "POST":
-        codigo_digitado = request.POST.get("codigo")
-        codigo_real = request.session.get("rec_codigo")
-
-        if codigo_digitado == codigo_real:
+        if request.POST.get("codigo") == request.session.get("rec_codigo"):
             return redirect("redefinir_senha")
 
-        return render(request, "verificar_codigo.html", { "erro": "Código incorreto" })
+        return render(request, "verificar_codigo.html", {
+            "erro": "Código incorreto"
+        })
 
     return render(request, "verificar_codigo.html")
-
 
 def redefinir_senha(request):
     if request.method == "POST":
@@ -93,9 +94,16 @@ def redefinir_senha(request):
 
         if senha1 != senha2:
             return render(request, "redefinir_senha.html", {
-                "mensagem": "As senhas não coincidem!"
+                "erro": "As senhas não coincidem"
             })
 
+        email = request.session.get("rec_email")
+        usuario = Usuario.objects.get(email=email)
+
+        usuario.senha = senha1
+        usuario.save()
+
+        request.session.flush()
         return redirect("login")
 
     return render(request, "redefinir_senha.html")

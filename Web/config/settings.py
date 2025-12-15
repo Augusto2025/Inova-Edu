@@ -80,11 +80,6 @@ DATABASES = {
         'HOST': os.environ.get('HOST'),
         'PORT': os.environ.get('PORT'),
         'PASSWORD': os.environ.get('PASSWORD'),
-        # 'OPTIONS':{
-        #     'ssl':{
-        #         'CA': 
-        #     }
-        # }
     }
 }
 
