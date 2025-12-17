@@ -295,6 +295,7 @@ def cadastro(request):
 def home_Coordenacao(request):
     usuarios = Usuario.objects.all()
     cursos = Curso.objects.all() 
+    turmas = Turma.objects.select_related('curso').all()
 
 
     if request.method == 'POST':
@@ -321,6 +322,7 @@ def home_Coordenacao(request):
     return render(request, 'Coordenacao/home_Coordenacao.html', {
         'usuarios': usuarios,
         'cursos': cursos, 
+        'turmas': turmas, 
     })
 
 def cadastroCurso(request):
@@ -369,38 +371,6 @@ def editar_usuario(request, idusuario):
 
 
 
-
-# Turma
-
-def enviarturma(request):
-    if request.method == "POST":
-        codigo_turma = request.POST.get("codigo_turma")
-        turno = request.POST.get("turno")
-        curso_id = request.POST.get("curso")
-
-        curso = Curso.objects.get(idcurso=curso_id)
-        
-        Turma.objects.create(
-            codigo_turma=codigo_turma,
-            turno=turno,
-            curso=curso
-        )
-
-        return redirect('listaturma')
-
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
-
-
-def listaturma(request):
-    turmas = Turma.objects.all()
-    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
-
-
-
-
-
-
 # Curso
 
 def criar_curso(request):
@@ -426,12 +396,33 @@ def criar_curso(request):
 
         return redirect('home_Coordenacao')
 
+def editar_curso(request):
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=request.POST.get("idcurso"))
+
+        curso.nome_curso = request.POST.get("nome_curso")
+        curso.data_inicio = request.POST.get("data_inicio")
+        curso.data_final = request.POST.get("data_final")
+        curso.descricao_curso = request.POST.get("descricao_curso")
+
+        if request.FILES.get("imagem"):
+            curso.imagem = request.FILES.get("imagem")
+
+        curso.save()
+
+        # ✅ mensagem de sucesso
+        messages.success(request, "Curso editado com sucesso!")
+
+    # ✅ continua na mesma página
+    return redirect("home_Coordenacao")
 
 
 def excluir_curso(request, idcurso):
-    curso = get_object_or_404(Curso, idcurso=idcurso)
-    curso.delete()
-    return redirect('Coordenacao/home_Coordenacao')
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=idcurso)
+        curso.delete()
+        return redirect(request.META.get('HTTP_REFERER', 'home_Coordenacao'))
+
 
 
 
@@ -446,6 +437,64 @@ def excluir_curso(request, idcurso):
 # def lista_curso(request):
 #     cursos = Curso.objects.all()
 #     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
+
+# Turma
+
+def criar_turma(request):
+    if request.method == 'POST':
+        codigo_turma = request.POST.get('codigo_turma')
+        turno = request.POST.get('turno')
+        ano = request.POST.get('ano')
+        curso_id = request.POST.get('curso_id')
+
+        curso = get_object_or_404(Curso, idcurso=curso_id)
+
+        Turma.objects.create(
+            codigo_turma=codigo_turma,
+            turno=turno,
+            ano=ano,
+            curso=curso
+        )
+
+        return redirect('home_Coordenacao')  # permanece na página
+
+
+
+def editar_turma(request):
+    if request.method == "POST":
+        turma = get_object_or_404(Turma, idturma=request.POST.get('idturma'))
+
+        turma.codigo_turma = request.POST.get('codigo_turma')
+        turma.turno = request.POST.get('turno')
+        turma.ano = request.POST.get('ano')
+        turma.curso_id = request.POST.get('curso')
+
+        turma.save()
+
+        messages.success(request, "Editado com sucesso!")
+
+    return redirect('home_Coordenacao')
+
+
+def excluir_turma(request, idturma):
+    if request.method == "POST":
+        turma = get_object_or_404(Turma, idturma=idturma)
+        turma.delete()
+    return redirect('home_Coordenacao')
+
+
+
+
+def listaturma(request):
+    turmas = Turma.objects.all()
+    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
+
+
+
+
+
+
+
 
 
 

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
 </head>
 <body>
+
     <!-- HEADER -->
     <header class="header">
         <a href="{% url 'home_Coordenacao' %}">
@@ -140,8 +141,8 @@
                                 <option value="coordenacao">Coordenação</option>
                             </select>
 
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarEditar">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarEditar">Cancelar</button>
                         </form>
                     </div>
                 </div>
@@ -196,7 +197,7 @@
 
 
             <!-- CURSOS -->
-            <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
                     <a href="#" class="btn-add" id="abrirModalCurso">Cadastro</a>
@@ -209,7 +210,7 @@
                             <span>Data Término</span>
                             <span>Imagem</span>
                             <span>Descrição</span>
-                            <span class="acoes">Ações</span>
+                           <span class="acoes">Ações</span>
                         </li>
                         {% for curso in cursos %}
                         <li>
@@ -223,8 +224,17 @@
                             </span>
                             <span>{{ curso.descricao_curso }}</span>
                             <span class="acoes">
-                                <button type="button" class="botao-editar">Editar</button>
-                            
+                                <button
+                                    type="button"
+                                    class="btn-editar-curso"
+                                    data-id="{{ curso.idcurso }}"
+                                    data-nome="{{ curso.nome_curso }}"
+                                    data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
+                                    data-final="{{ curso.data_final|date:'Y-m-d' }}"
+                                    data-descricao="{{ curso.descricao_curso }}">
+                                    Editar
+                                </button>
+
                                 <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit"
@@ -275,108 +285,171 @@
                 </div>
             </div>
 
+            {% comment %} EDITAR CURSO {% endcomment %}
             <div id="modalEditarCurso" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditarCurso">&times;</span>
             
-                    <h3>Editar Curso</h3>
+                    <div class="titulo_lista">
+                        <p>Editar Curso</p>
+                    </div>
             
-                    <form id="formEditarCurso" method="POST" enctype="multipart/form-data">
+                    <form action="{% url 'editar_curso' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
             
-                        <input type="hidden" name="idcurso" id="idcursoEdit">
+                        <input type="hidden" name="idcurso" id="edit_idcurso">
             
-                        <label>Nome do Curso</label>
-                        <input type="text" name="nome_curso" id="nomeCursoEdit" required>
+                        <label>Nome do Curso:</label>
+                        <input type="text" id="edit_nome_curso" name="nome_curso" required>
             
-                        <label>Data Início</label>
-                        <input type="date" name="data_inicio" id="dataInicioEdit">
+                        <label>Data de Início:</label>
+                        <input type="date" id="edit_data_inicio" name="data_inicio">
             
-                        <label>Data Término</label>
-                        <input type="date" name="data_final" id="dataFinalEdit">
+                        <label>Data de Término:</label>
+                        <input type="date" id="edit_data_final" name="data_final">
             
-                        <label>Descrição</label>
-                        <textarea name="descricao_curso" id="descricaoEdit"></textarea>
+                        <label>Imagem do Curso:</label>
+                        <input type="file" id="edit_imagem" name="imagem" accept="image/*">
             
-                        <label>Imagem (opcional)</label>
-                        <input type="file" name="imagem">
+                        <label>Descrição:</label>
+                        <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
             
-                        <button type="submit">Salvar</button>
-                        <button type="button" id="cancelarEditarCurso">Cancelar</button>
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarCurso">Cancelar</button>
                     </form>
                 </div>
             </div>
             
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            
 
             <!-- TURMAS -->
             <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Turmas</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+                    <a href="#" class="btn-add" id="abrirModalTurma">Cadastro</a>
                 </div>
                 <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
-                            <span>Nome Turma</span>
+                            <span>Codigo_turma</span>
+                            <span>Turno</span>
+                            <span>Ano</span>
                             <span>Curso</span>
-                            <span>Data Início</span>
-                            <span>Data Fim</span>
                             <span class="acoes">Ações</span>
                         </li>
                         {% for turma in turmas %}
                         <li>
-                            <span>{{ turma.nome_turma }}</span>
+                            <span>{{ turma.codigo_turma }}</span>
+                            <span>{{ turma.turno }}</span>
+                            <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
-                            <span>{{ turma.data_inicio }}</span>
-                            <span>{{ turma.data_fim }}</span>
                             <span class="acoes">
-                                <button type="button">Editar</button>
-                                <button type="button">Excluir</button>
+                                
+                                <button type="button"
+                                    class="btn-editar-turma"
+                                    data-id="{{ turma.idturma }}"
+                                    data-codigo="{{ turma.codigo_turma }}"
+                                    data-turno="{{ turma.turno }}"
+                                    data-ano="{{ turma.ano }}"
+                                    data-curso="{{ turma.curso.idcurso }}">
+                                    Editar
+                                </button>
+
+                                
+                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
+                                        Excluir
+                                    </button>
+                                </form>
+                                
                             </span>
                         </li>
                         {% empty %}
                         <li><span>Nenhuma turma cadastrada.</span></li>
                         {% endfor %}
+
                     </ul>
                 </section>
             </section>
+
+            <div id="modalCadastroTurma" class="modal" style="display:none;">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharModalTurma">&times;</span>
+            
+                    <h3>Cadastro de Turma</h3>
+            
+                    <form action="{% url 'criar_turma' %}" method="POST">
+                        {% csrf_token %}
+            
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo_turma" required>
+            
+                        <label>Turno</label>
+                        <input type="text" name="turno">
+            
+                        <label>Ano</label>
+                        <input type="number" name="ano" required>
+            
+                        <label>Curso</label>
+                        <select name="curso_id" required>
+                            <option value="">Selecione</option>
+                            {% for curso in cursos %}
+                                <option value="{{ curso.idcurso }}">{{ curso.nome_curso }}</option>
+                            {% endfor %}
+                        </select>
+            
+                        <div style="margin-top:15px;">
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarModalTurma">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="modalEditarTurma" class="modal">
+                <div class="modal-conteudo">
+                    <span id="fecharEditarTurma" class="fechar">&times;</span>
+            
+                    <h3>Editar Turma</h3>
+            
+                    <form method="POST" action="{% url 'editar_turma' %}">
+                        {% csrf_token %}
+            
+                        <input type="hidden" name="idturma" id="idTurmaEdit">
+            
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo_turma" id="codigoTurmaEdit" required>
+            
+                        <label>Turno</label>
+                        <input type="text" name="turno" id="turnoEdit">
+            
+                        <label>Ano</label>
+                        <input type="number" name="ano" id="anoEdit">
+            
+                        <label>Curso</label>
+                        <select name="curso" id="cursoEdit">
+                            {% for curso in cursos %}
+                                <option value="{{ curso.idcurso }}">{{ curso.nome_curso }}</option>
+                            {% endfor %}
+                        </select>
+            
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarTurma">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+            
+
+            
+
+
+
+
+
+
+
 
             <!-- PERFIL -->
             <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
