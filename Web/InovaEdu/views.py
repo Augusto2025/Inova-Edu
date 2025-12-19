@@ -288,9 +288,9 @@ def criar_evento(request):
 
     return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
 
-# --------------- Telas Coordenação ---------------
-def cadastro(request):
-    return render(request, 'Coordenacao/cadastro_Aluno.html')
+
+
+# --------------- TELAS COORDENAÇÃO ---------------
 
 def home_Coordenacao(request):
     usuarios = Usuario.objects.all()
@@ -325,19 +325,11 @@ def home_Coordenacao(request):
         'turmas': turmas, 
     })
 
-def cadastroCurso(request):
-    return render(request, 'Coordenacao/cadastroCurso.html')
+
 
 def homePage(request):
     return render(request, 'homePage.html')
 
-def cadastroTurma(request):
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
-
-def lista_usuario(request):
-    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
-    return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
 
 def excluir_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, idusuario=idusuario)
@@ -371,7 +363,7 @@ def editar_usuario(request, idusuario):
 
 
 
-# Curso
+# CURSO
 
 def criar_curso(request):
     if request.method == 'POST':
@@ -426,19 +418,7 @@ def excluir_curso(request, idcurso):
 
 
 
-
-
-
-
-
-
-
-
-# def lista_curso(request):
-#     cursos = Curso.objects.all()
-#     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
-
-# Turma
+# TURMA
 
 def criar_turma(request):
     if request.method == 'POST':
@@ -484,12 +464,7 @@ def excluir_turma(request, idturma):
 
 
 
-
-def listaturma(request):
-    turmas = Turma.objects.all()
-    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
-
-
+# EMAIL
 
 
 
