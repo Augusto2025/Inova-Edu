@@ -23,8 +23,8 @@ urlpatterns = [
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
     
-    path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
+    path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('turma/editar/', views.editar_turma, name='editar_turma'),
 
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
