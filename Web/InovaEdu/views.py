@@ -174,8 +174,131 @@ def editar_perfil(request):
 
     return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
 
-def repositorio(request):
-    return render(request, 'AlunoProfessor/repositorio.html')
+def repositorio(request, turma_id):
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, email=email)
+    turma = get_object_or_404(Turma, idturma=turma_id)
+
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
+
+    if request.method == 'POST' and can_modify:
+        if 'nome_pasta' in request.POST:
+            nome_pasta = request.POST.get('nome_pasta', '').strip()
+            if nome_pasta:
+                Pasta.objects.create(
+                    nome=nome_pasta,
+                    criada_por=usuario,
+                    turma=turma
+                )
+        elif 'arquivo' in request.FILES:
+            arquivo = request.FILES['arquivo']
+            nome_arquivo = request.POST.get('nome_arquivo', '').strip() or arquivo.name
+            Arquivo.objects.create(
+                nome=nome_arquivo,
+                arquivo=arquivo,
+                enviado_por=usuario,
+                turma=turma
+            )
+        elif 'edit_pasta' in request.POST:
+            pasta_id = request.POST.get('pasta_id')
+            novo_nome = request.POST.get('novo_nome', '').strip()
+            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma)
+            if pasta.criada_por == usuario and novo_nome:
+                pasta.nome = novo_nome
+                pasta.save()
+        elif 'delete_arquivo' in request.POST:
+            arquivo_id = request.POST.get('arquivo_id')
+            arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
+            if arquivo.enviado_por == usuario:
+                arquivo.delete()
+        elif 'delete_pasta' in request.POST:
+            print("Tentando excluir pasta")
+            pasta_id = request.POST.get('pasta_id')
+            print("pasta_id:", pasta_id)
+            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma, pasta_pai=None)
+            if pasta.criada_por == usuario:
+                pasta.delete()
+        return redirect('repositorio', turma_id=turma_id)
+
+    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
+    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
+
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'turma': turma,
+        'pastas': pastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'path': [],
+        'can_modify': can_modify,
+    })
+
+
+def repositorio_pasta(request, pasta_id):
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, email=email)
+    pasta = get_object_or_404(Pasta, id=pasta_id)
+
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=pasta.turma).exists()
+
+    # Construir o caminho (breadcrumbs)
+    path = []
+    current = pasta
+    while current:
+        path.insert(0, current)
+        current = current.pasta_pai
+
+    if request.method == 'POST' and can_modify:
+        if 'nome_pasta' in request.POST:
+            nome_pasta = request.POST.get('nome_pasta', '').strip()
+            if nome_pasta:
+                Pasta.objects.create(
+                    nome=nome_pasta,
+                    criada_por=usuario,
+                    turma=pasta.turma,
+                    pasta_pai=pasta
+                )
+        elif 'arquivo' in request.FILES:
+            arquivo = request.FILES['arquivo']
+            nome_arquivo = request.POST.get('nome_arquivo', '').strip() or arquivo.name
+            Arquivo.objects.create(
+                nome=nome_arquivo,
+                arquivo=arquivo,
+                enviado_por=usuario,
+                turma=pasta.turma,
+                pasta=pasta
+            )
+        elif 'edit_pasta' in request.POST:
+            pasta_id = request.POST.get('pasta_id')
+            novo_nome = request.POST.get('novo_nome', '').strip()
+            pasta = get_object_or_404(Pasta, id=pasta_id, pasta_pai=pasta)
+            if pasta.criada_por == usuario and novo_nome:
+                pasta.nome = novo_nome
+                pasta.save()
+        elif 'delete_arquivo' in request.POST:
+            arquivo_id = request.POST.get('arquivo_id')
+            arquivo = get_object_or_404(Arquivo, id=arquivo_id, pasta=pasta)
+            if arquivo.enviado_por == usuario:
+                arquivo.delete()
+        return redirect('repositorio_pasta', pasta_id=pasta_id)
+
+    subpastas = Pasta.objects.filter(pasta_pai=pasta)
+    arquivos = Arquivo.objects.filter(pasta=pasta)
+
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'turma': pasta.turma,
+        'pasta_atual': pasta,
+        'path': path,
+        'pastas': subpastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'can_modify': can_modify,
+    })
 
 
 def calendario(request):

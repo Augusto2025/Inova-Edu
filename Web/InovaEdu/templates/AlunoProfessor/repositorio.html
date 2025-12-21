@@ -9,35 +9,94 @@
         {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="rota">Página: Cursos > Turmas > Repositório</div>
+    <div class="rota">Página: Cursos > Turmas > Repositório{% for p in path %} > {{ p.nome }}{% endfor %}</div>
 
     <div class="titulo">
         <p>Repositório</p>
     </div>
 
+    {% if can_modify %}
+    <div class="acoes-repositorio">
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
+    </div>
+    {% endif %}
+
+    <!-- Modal Criar Pasta -->
+    <div id="modal-criar-pasta" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modal-criar-pasta')">&times;</span>
+            <h4>Criar Pasta</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="nome_pasta" placeholder="Nome da pasta" required>
+                <button type="submit">Criar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Enviar Arquivo -->
+    <div id="modal-upload" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modal-upload')">&times;</span>
+            <h4>Enviar Arquivo</h4>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="arquivo" required>
+                <input type="text" name="nome_arquivo" placeholder="Nome do arquivo (opcional)">
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Pasta -->
+    <div id="modal-edit-pasta" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal('modal-edit-pasta')">&times;</span>
+            <h4>Editar Pasta</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" id="edit_pasta_id" name="pasta_id" value="">
+                <input type="text" name="novo_nome" placeholder="Novo nome da pasta" required>
+                <button type="submit" name="edit_pasta">Salvar</button>
+            </form>
+        </div>
+    </div>
+
     <div class="turma-repositorio">
-        <h3>Nome do Curso - Código da Turma (Turno)</h3>
+        <h3>{{ turma.curso.nome_curso }} - {{ turma.codigo_turma }} ({{ turma.turno }}){% for p in path %} > {{ p.nome }}{% endfor %}</h3>
+        {% if path %}
+            {% if path|length > 1 %}
+                <a href="{% url 'repositorio_pasta' path.0.id %}">Voltar</a>
+            {% else %}
+                <a href="{% url 'repositorio' turma.idturma %}">Voltar ao repositório principal</a>
+            {% endif %}
+        {% endif %}
 
         <!-- Pastas -->
         <div class="pastas">
             <h4>Pastas</h4>
             <ul class="lista-pastas">
+                {% for pasta in pastas %}
                 <li class="pasta-item">
                     <div class="pasta-info">
-                        {% comment %} <img src={% static 'img/icone de past.png' %}> {% endcomment %}
-                        <a class="pasta-link" href="#">📁 Nome da Pasta</a>
-                        <p><strong>Criada por:</strong> Usuário - <strong>Em:</strong> 01/01/2024</p>
+                        <a class="pasta-link" href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
+                        <p><strong>Criada por:</strong> {{ pasta.criada_por.nome }} - <strong>Em:</strong> {{ pasta.criada_em|date:"d/m/Y" }}</p>
                     </div>
-                </li>
-
-                <li class="pasta-item">
-                    <div class="pasta-info">
-                        <a class="pasta-link" href="#">📁 Outra Pasta</a>
-                        <p><strong>Criada por:</strong> Usuário - <strong>Em:</strong> 05/01/2024</p>
+                    {% if can_modify %}
+                    <div class="pasta-actions">
+                        <button type="button" onclick="abrirModalEdit('modal-edit-pasta', {{ pasta.id }})">✏️</button>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="pasta_id" value="{{ pasta.id }}">
+                            <button type="submit" name="delete_pasta" onclick="return confirm('Excluir pasta?')">🗑️</button>
+                        </form>
                     </div>
+                    {% endif %}
                 </li>
-
+                {% empty %}
                 <li class="sem-pasta">Nenhuma pasta</li>
+                {% endfor %}
             </ul>
         </div>
 
@@ -45,24 +104,52 @@
         <div class="arquivos">
             <h4>Arquivos</h4>
             <ul class="lista-arquivos">
+                {% for arquivo in arquivos %}
                 <li class="arquivo-item">
-                    <a href="#" download>
-                        📄 Nome do Arquivo
-                    </a>
-                    <p><strong>Criado por:</strong> Usuário - <strong>Em:</strong> 02/02/2024</p>
+                    <div class="arquivo-info">
+                        <a href="{{ arquivo.arquivo.url }}" download>
+                            📄 {{ arquivo.nome }}
+                        </a>
+                        <p><strong>Criado por:</strong> {{ arquivo.enviado_por.nome }} - <strong>Em:</strong> {{ arquivo.enviado_em|date:"d/m/Y" }}</p>
+                    </div>
+                    {% if can_modify %}
+                    <div class="pasta-actions">
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="arquivo_id" value="{{ arquivo.id }}">
+                            <button type="submit" name="delete_arquivo" onclick="return confirm('Excluir arquivo?')">🗑️</button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </li>
-
-                <li class="arquivo-item">
-                    <a href="#" download>
-                        📄 Outro Arquivo
-                    </a>
-                    <p><strong>Criado por:</strong> Usuário - <strong>Em:</strong> 03/02/2024</p>
-                </li>
-
+                {% empty %}
                 <li class="sem-arquivo">Nenhum arquivo</li>
+                {% endfor %}
             </ul>
         </div>
     </div>
+
+<script>
+function abrirModal(id) {
+    document.getElementById(id).style.display = 'block';
+}
+
+function abrirModalEdit(id, pastaId) {
+    document.getElementById('edit_pasta_id').value = pastaId;
+    abrirModal(id);
+}
+
+function fecharModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+</script>
 
 {% endblock %}
 

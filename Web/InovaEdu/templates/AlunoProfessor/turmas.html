@@ -30,7 +30,7 @@
                     <section class="turma-card">
                         <p><strong>Código:</strong> {{ Turma.codigo_turma }}</p>
                         <p><strong>Turno:</strong> {{ Turma.turno }}</p>
-                        <a class="Botao_entrar_curso" href="{% url 'repositorio' %}">Entrar</a>
+                        <a class="Botao_entrar_curso" href="{% url 'repositorio' Turma.idturma %}">Entrar</a>
                     </section>
                 {% endfor %}
             </div>

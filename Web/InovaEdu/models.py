@@ -176,6 +176,37 @@ class Mensagem(models.Model):
         return f'{nome_autor}: {self.conteudo[:30]}'
 
 
+class Pasta(models.Model):
+    nome = models.CharField(max_length=100)
+    criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    pasta_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subpastas')
+
+    class Meta:
+        managed = True
+        db_table = 'pasta'
+
+    def __str__(self):
+        return self.nome
+
+
+class Arquivo(models.Model):
+    nome = models.CharField(max_length=100)
+    arquivo = models.FileField(upload_to='repositorio/')
+    enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    enviado_em = models.DateTimeField(auto_now_add=True)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        managed = True
+        db_table = 'arquivo'
+
+    def __str__(self):
+        return self.nome
+
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
