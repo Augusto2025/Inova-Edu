@@ -154,7 +154,7 @@
                         {% if can_modify %}
                         <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}" class="checkbox-arquivos" style="display: none;">
                         {% endif %}
-                        <a href="{{ arquivo.arquivo.url }}" download>
+                        <a href="{{ arquivo.arquivo.url }}" download="{{ arquivo.nome }}">
                             📄 {{ arquivo.nome }}
                         </a>
                         <p><strong>Criado por:</strong> {{ arquivo.enviado_por.nome }} - <strong>Em:</strong> {{ arquivo.enviado_em|date:"d/m/Y" }}</p>
