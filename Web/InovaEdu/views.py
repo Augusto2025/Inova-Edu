@@ -6,6 +6,9 @@ from django.utils import timezone
 import json
 from django.core.mail import send_mail
 import random
+from django.contrib import messages
+import cloudinary.uploader
+import re
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -39,38 +42,35 @@ def login(request):
             'senha': ''
         })
     
+def reSenha(request):
+    if request.method == "POST":
+        senha1 = request.POST.get("senha1")
+        senha2 = request.POST.get("senha")
+        
+        if senha1 == senha2:
+            request.user.set_password(senha1)
+            request.user.save()
+
+    return render(request, "reSenha.html")
+
 def pedir_email(request):
     if request.method == "POST":
         email = request.POST.get("email")
 
-        # Verifica se o email existe no banco
-        usuario = Usuario.objects.filter(email=email).first()
-        if not usuario:
-            return render(request, "pedir_email.html", {
-                "erro": "Email inexistente"
-            })
-
         # Gerar código de 6 dígitos
         codigo = random.randint(100000, 999999)
 
-        # Salvar na sessão
+        # Salvar na session
         request.session["rec_email"] = email
         request.session["rec_codigo"] = str(codigo)
 
-        # Tenta enviar email
-        try:
-            send_mail(
-                subject="Código de verificação",
-                message=f"Seu código é: {codigo}",
-                from_email="seuemail@gmail.com",  # Use aqui o email correto
-                recipient_list=[email],
-                fail_silently=False
-            )
-        except Exception as e:
-            # Captura erro de autenticação ou outros problemas SMTP
-            return render(request, "pedir_email.html", {
-                "erro": f"Não foi possível enviar o email. Verifique o servidor e a senha: {str(e)}"
-            })
+        # Enviar email
+        send_mail(
+            subject="Código de verificação",
+            message=f"Seu código é: {codigo}",
+            from_email="mneto8141@gmail.com",
+            recipient_list=[email],
+        )
 
         return redirect("verificar_codigo")
 
@@ -78,14 +78,16 @@ def pedir_email(request):
 
 def verificar_codigo(request):
     if request.method == "POST":
-        if request.POST.get("codigo") == request.session.get("rec_codigo"):
+        codigo_digitado = request.POST.get("codigo")
+        codigo_real = request.session.get("rec_codigo")
+
+        if codigo_digitado == codigo_real:
             return redirect("redefinir_senha")
 
-        return render(request, "verificar_codigo.html", {
-            "erro": "Código incorreto"
-        })
+        return render(request, "verificar_codigo.html", { "erro": "Código incorreto" })
 
     return render(request, "verificar_codigo.html")
+
 
 def redefinir_senha(request):
     if request.method == "POST":
@@ -94,16 +96,9 @@ def redefinir_senha(request):
 
         if senha1 != senha2:
             return render(request, "redefinir_senha.html", {
-                "erro": "As senhas não coincidem"
+                "mensagem": "As senhas não coincidem!"
             })
 
-        email = request.session.get("rec_email")
-        usuario = Usuario.objects.get(email=email)
-
-        usuario.senha = senha1
-        usuario.save()
-
-        request.session.flush()
         return redirect("login")
 
     return render(request, "redefinir_senha.html")
@@ -182,8 +177,269 @@ def editar_perfil(request):
 
     return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
 
-def repositorio(request):
-    return render(request, 'AlunoProfessor/repositorio.html')
+# Função para limpar nomes de arquivos e deixar válidos para Cloudinary
+def sanitize_filename(filename):
+    # Remove caracteres que não são letras, números, _, -, .
+    return re.sub(r'[^A-Za-z0-9._-]', '_', filename)
+
+def repositorio(request, turma_id):
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, email=email)
+    turma = get_object_or_404(Turma, idturma=turma_id)
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
+
+    if request.method == 'POST' and can_modify:
+
+        # Criar nova pasta
+        if 'nome_pasta' in request.POST:
+            nome_pasta = request.POST.get('nome_pasta', '').strip()
+            if nome_pasta:
+                if Pasta.objects.filter(nome=nome_pasta, turma=turma, pasta_pai=None).exists():
+                    messages.error(request, f"Já existe uma pasta com o nome '{nome_pasta}' nesta localização.")
+                else:
+                    Pasta.objects.create(
+                        nome=nome_pasta,
+                        criada_por=usuario,
+                        turma=turma
+                    )
+
+        # Upload de arquivo simples
+        elif 'arquivo' in request.FILES:
+            arquivo_file = request.FILES['arquivo']
+
+            if arquivo_file.size == 0:
+                messages.error(request, "O arquivo enviado está vazio.")
+            else:
+                nome_arquivo = request.POST.get('nome_arquivo', '').strip() or arquivo_file.name
+                nome_arquivo = sanitize_filename(nome_arquivo)
+                if Arquivo.objects.filter(nome=nome_arquivo, turma=turma, pasta=None).exists():
+                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' nesta localização.")
+                else:
+                    upload_result = cloudinary.uploader.upload(
+                        arquivo_file,
+                        resource_type='auto',
+                        public_id=f"turma_{turma.idturma}/{nome_arquivo}",
+                        overwrite=True
+                    )
+                    Arquivo.objects.create(
+                        nome=nome_arquivo,
+                        arquivo=upload_result['public_id'],
+                        enviado_por=usuario,
+                        turma=turma
+                    )
+
+        # Upload de múltiplos arquivos com estrutura de pastas
+        elif 'upload_pasta' in request.POST:
+            arquivos = request.FILES.getlist('arquivos')
+            for arquivo_file in arquivos:
+                if arquivo_file.size == 0:
+                    messages.error(request, f"O arquivo '{arquivo_file.name}' está vazio e não foi enviado.")
+                    continue
+
+                caminho = getattr(arquivo_file, 'webkitRelativePath', arquivo_file.name)
+                partes = caminho.split('/')
+                pasta_atual = None
+                for parte in partes[:-1]:
+                    pasta, created = Pasta.objects.get_or_create(
+                        nome=parte,
+                        turma=turma,
+                        pasta_pai=pasta_atual,
+                        criada_por=usuario,
+                        defaults={'nome': parte, 'turma': turma, 'pasta_pai': pasta_atual, 'criada_por': usuario}
+                    )
+                    pasta_atual = pasta
+
+                nome_arquivo = sanitize_filename(partes[-1])
+                public_id_path = f"turma_{turma.idturma}/{'/'.join([sanitize_filename(p) for p in partes])}"
+
+                if Arquivo.objects.filter(nome=nome_arquivo, turma=turma, pasta=pasta_atual).exists():
+                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' na pasta de destino.")
+                else:
+                    upload_result = cloudinary.uploader.upload(
+                        arquivo_file,
+                        resource_type='auto',
+                        public_id=public_id_path,
+                        overwrite=True
+                    )
+                    Arquivo.objects.create(
+                        nome=nome_arquivo,
+                        arquivo=upload_result['public_id'],
+                        enviado_por=usuario,
+                        turma=turma,
+                        pasta=pasta_atual
+                    )
+
+        # Editar pasta
+        elif 'edit_pasta' in request.POST:
+            pasta_id = request.POST.get('pasta_id')
+            novo_nome = request.POST.get('novo_nome', '').strip()
+            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma)
+            if pasta.criada_por == usuario and novo_nome:
+                if Pasta.objects.filter(nome=novo_nome, turma=turma, pasta_pai=pasta.pasta_pai).exclude(id=pasta.id).exists():
+                    messages.error(request, f"Já existe uma pasta com o nome '{novo_nome}' nesta localização.")
+                else:
+                    pasta.nome = novo_nome
+                    pasta.save()
+
+        # Deletar arquivo único
+        elif 'delete_arquivo' in request.POST:
+            arquivo_id = request.POST['delete_arquivo']
+            arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
+            if arquivo.enviado_por == usuario:
+                arquivo.delete()
+
+        # Deletar múltiplos arquivos selecionados
+        elif 'delete_arquivos_selecionados' in request.POST:
+            ids = request.POST.getlist('arquivos_selecionados')
+            for arquivo_id in ids:
+                arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
+                if arquivo.enviado_por == usuario:
+                    arquivo.delete()
+
+        # Deletar pasta única
+        elif 'delete_pasta' in request.POST:
+            pasta_id = request.POST['delete_pasta']
+            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma, pasta_pai=None)
+            if pasta.criada_por == usuario:
+                pasta.delete()
+
+        # Deletar múltiplas pastas selecionadas
+        elif 'delete_pastas_selecionadas' in request.POST:
+            ids = request.POST.getlist('pastas_selecionadas')
+            for pasta_id in ids:
+                pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma, pasta_pai=None)
+                if pasta.criada_por == usuario:
+                    pasta.delete()
+
+        return redirect('repositorio', turma_id=turma_id)
+
+    # GET
+    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
+    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
+
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'turma': turma,
+        'pastas': pastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'path': [],
+        'can_modify': can_modify,
+    })
+
+
+def repositorio_pasta(request, pasta_id):
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, email=email)
+    pasta = get_object_or_404(Pasta, id=pasta_id)
+
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=pasta.turma).exists()
+
+    # Construir o caminho (breadcrumbs)
+    path = []
+    current = pasta
+    while current:
+        path.insert(0, current)
+        current = current.pasta_pai
+
+    if request.method == 'POST' and can_modify:
+        if 'nome_pasta' in request.POST:
+            nome_pasta = request.POST.get('nome_pasta', '').strip()
+            if nome_pasta:
+                if Pasta.objects.filter(nome=nome_pasta, turma=pasta.turma, pasta_pai=pasta).exists():
+                    messages.error(request, f"Já existe uma pasta com o nome '{nome_pasta}' nesta localização.")
+                else:
+                    Pasta.objects.create(
+                        nome=nome_pasta,
+                        criada_por=usuario,
+                        turma=pasta.turma,
+                        pasta_pai=pasta
+                    )
+        elif 'arquivo' in request.FILES:
+            arquivo = request.FILES['arquivo']
+            nome_arquivo = request.POST.get('nome_arquivo', '').strip() or arquivo.name
+            if Arquivo.objects.filter(nome=nome_arquivo, turma=pasta.turma, pasta=pasta).exists():
+                messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' nesta localização.")
+            else:
+                Arquivo.objects.create(
+                    nome=nome_arquivo,
+                    arquivo=arquivo,
+                    enviado_por=usuario,
+                    turma=pasta.turma,
+                    pasta=pasta
+                )
+        elif 'upload_pasta' in request.POST:
+            arquivos = request.FILES.getlist('arquivos')
+            for arquivo in arquivos:
+                caminho = getattr(arquivo, 'webkitRelativePath', arquivo.name)
+                partes = caminho.split('/')
+                pasta_atual = pasta  # começa da pasta atual
+                for parte in partes[:-1]:
+                    subpasta, created = Pasta.objects.get_or_create(
+                        nome=parte,
+                        turma=pasta.turma,
+                        pasta_pai=pasta_atual,
+                        criada_por=usuario,
+                        defaults={'nome': parte, 'turma': pasta.turma, 'pasta_pai': pasta_atual, 'criada_por': usuario}
+                    )
+                    pasta_atual = subpasta
+                nome_arquivo = partes[-1]
+                if Arquivo.objects.filter(nome=nome_arquivo, turma=pasta.turma, pasta=pasta_atual).exists():
+                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' na pasta de destino.")
+                else:
+                    Arquivo.objects.create(
+                        nome=nome_arquivo,
+                        arquivo=arquivo,
+                        enviado_por=usuario,
+                        turma=pasta.turma,
+                        pasta=pasta_atual
+                    )
+        elif 'edit_pasta' in request.POST:
+            pasta_id = request.POST.get('pasta_id')
+            novo_nome = request.POST.get('novo_nome', '').strip()
+            pasta = get_object_or_404(Pasta, id=pasta_id, pasta_pai=pasta)
+            if pasta.criada_por == usuario and novo_nome:
+                if Pasta.objects.filter(nome=novo_nome, turma=pasta.turma, pasta_pai=pasta.pasta_pai).exclude(id=pasta.id).exists():
+                    messages.error(request, f"Já existe uma pasta com o nome '{novo_nome}' nesta localização.")
+                else:
+                    pasta.nome = novo_nome
+                    pasta.save()
+        elif 'delete_arquivo' in request.POST:
+            arquivo_id = request.POST['delete_arquivo']
+            arquivo = get_object_or_404(Arquivo, id=arquivo_id, pasta=pasta)
+            if arquivo.enviado_por == usuario:
+                arquivo.delete()
+        elif 'delete_arquivos_selecionados' in request.POST:
+            ids = request.POST.getlist('arquivos_selecionados')
+            for arquivo_id in ids:
+                arquivo = get_object_or_404(Arquivo, id=arquivo_id, pasta=pasta)
+                if arquivo.enviado_por == usuario:
+                    arquivo.delete()
+        elif 'delete_pastas_selecionadas' in request.POST:
+            ids = request.POST.getlist('pastas_selecionadas')
+            for pasta_id in ids:
+                subpasta = get_object_or_404(Pasta, id=pasta_id, pasta_pai=pasta)
+                if subpasta.criada_por == usuario:
+                    subpasta.delete()
+        return redirect('repositorio_pasta', pasta_id=pasta_id)
+
+    subpastas = Pasta.objects.filter(pasta_pai=pasta)
+    arquivos = Arquivo.objects.filter(pasta=pasta)
+
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'turma': pasta.turma,
+        'pasta_atual': pasta,
+        'path': path,
+        'pastas': subpastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'can_modify': can_modify,
+    })
 
 
 def calendario(request):
