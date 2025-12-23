@@ -48,12 +48,9 @@ body{
 
 main {
     display: flex;
-    justify-content: center;  /* CENTRALIZA os cards */
+    justify-content: center;
     align-items: center;
     justify-self: center;
-    flex-wrap: wrap;
-    display: flex;
-    align-items: flex-start;
     flex-wrap: wrap;
     margin: 25px auto;
     gap: 26px;

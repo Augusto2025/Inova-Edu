@@ -14,19 +14,13 @@
         {% csrf_token %}
         <h1>Insira seu email</h1>
 
-        <!-- Corrigido: era type="password" -->
-        <input type="email" placeholder="Email" name="email" id="email" required>
+        <input type="email" placeholder="Email" name="email" required>
 
-        <!-- MENSAGEM DE ERRO -->
         {% if erro %}
-            <p style="color:red; margin-top:10px; font-size:16px;">{{ erro }}</p>
+            <p style="color:red; margin-top:10px;">{{ erro }}</p>
         {% endif %}
 
-        <!-- MENSAGEM DE SUCESSO -->
-        {% if sucesso %}
-            <p style="color:green; margin-top:10px; font-size:16px;">{{ sucesso }}</p>
-        {% endif %}
-        <button type="submit"><a href="verificar_codigo">Confirmar</a></button>
+        <button type="submit">Confirmar</button>
     </form>
 </body>
 </html>

@@ -16,6 +16,7 @@ class Usuario(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=100, blank=True, null=True)
 
     class Meta:
+        managed = True
         db_table = 'usuario'
 
     def __str__(self):
@@ -35,6 +36,7 @@ class Curso(models.Model):
     usuario = models.ForeignKey(Usuario, models.SET_NULL, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'curso'
 
     def __str__(self):
@@ -52,6 +54,7 @@ class Turma(models.Model):
     curso = models.ForeignKey(Curso, models.CASCADE, db_column='ID_Curso')
 
     class Meta:
+        managed = True
         db_table = 'turma'
 
     def __str__(self):
@@ -70,6 +73,7 @@ class Projeto(models.Model):
     curso = models.ForeignKey(Curso, models.CASCADE, db_column='ID_Curso', blank=True, null=True)
 
     class Meta:
+        managed = True
         db_table = 'projeto'
 
     def __str__(self):
@@ -85,6 +89,7 @@ class UsuarioDaTurma(models.Model):
     id_turma = models.ForeignKey(Turma, models.CASCADE, db_column='ID_Turma')
 
     class Meta:
+        managed = False
         db_table = 'usuario_da_turma'
         unique_together = (('id_usuario', 'id_turma'),)
 
@@ -105,6 +110,7 @@ class Eventos(models.Model):
     usuario = models.ForeignKey(Usuario, models.SET_NULL, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'eventos'
 
     def __str__(self):
@@ -121,6 +127,7 @@ class Forum(models.Model):
     usuario = models.ForeignKey(Usuario, models.SET_NULL, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
+        managed = True
         db_table = 'forum'
 
     def __str__(self):
