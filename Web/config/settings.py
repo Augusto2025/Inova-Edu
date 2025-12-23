@@ -1,21 +1,28 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import dj_database_url
 import secrets
 
-# Carrega variáveis do .env
-load_dotenv()
+# --- Diretórios e .env ---
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=BASE_DIR / '.env')  # força leitura do .env
 
-# Caminho base do projeto (Web/config/settings.py -> raiz do projeto)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+import cloudinary
 
-# Segurança
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+
+# --- Segurança ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['*']  # Ajuste para produção se necessário
+DEBUG = True
+ALLOWED_HOSTS = []
 
-# Aplicativos instalados
+# --- Aplicativos instalados ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,12 +31,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'InovaEdu',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
-# Middleware
+# --- Middleware ---
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve arquivos estáticos no deploy
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -38,8 +46,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# URLs e Templates
+# --- URLConf e Templates ---
 ROOT_URLCONF = 'config.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -50,7 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'InovaEdu.context_processors.usuario',
+                'InovaEdu.context_processors.usuario'
             ],
         },
     },
@@ -58,16 +67,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Banco de dados
+# --- Banco de dados ---
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('NAME'),
+        'USER': os.environ.get('USER'),
+        'HOST': os.environ.get('HOST'),
+        'PORT': os.environ.get('PORT'),
+        'PASSWORD': os.environ.get('PASSWORD'),
+    }
 }
 
-# Emails
+# --- Email ---
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
@@ -75,36 +87,32 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-# Senhas
+# --- Validação de senha ---
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internacionalização
+# --- Internacionalização ---
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
-STATIC_URL = '/static/'  # obrigatório
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # collectstatic vai colocar os arquivos aqui
-STATICFILES_DIRS = [
-    BASE_DIR / 'InovaEdu' / 'static',  # pasta onde estão seus arquivos estáticos
-]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# --- Static files ---
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'InovaEdu/static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Default primary key
+# --- Default primary key ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Sessões e login
+# --- Sessão e login ---
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/home'
+
+# --- Storages ---
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
