@@ -34,6 +34,3 @@ urlpatterns = [
     path('curso/lista/', views.lista_curso, name='ListaCurso'),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
 ]
-
-if settings.DEBUG:  
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
