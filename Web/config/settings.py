@@ -7,17 +7,15 @@ import secrets
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=BASE_DIR / '.env')  # força leitura do .env
 
-# --- Configurações AWS / Tebi ---
-os.environ['AWS_ACCESS_KEY_ID'] = os.getenv("TEBI_ACCESS_KEY")
-os.environ['AWS_SECRET_ACCESS_KEY'] = os.getenv("TEBI_SECRET_KEY")
-AWS_STORAGE_BUCKET_NAME = os.getenv("TEBI_BUCKET_NAME")
-os.environ['AWS_STORAGE_BUCKET_NAME'] = AWS_STORAGE_BUCKET_NAME
-AWS_S3_ENDPOINT_URL = "https://s3.tebi.io"
-AWS_DEFAULT_ACL = "public-read"
-AWS_QUERYSTRING_AUTH = False
-AWS_S3_REGION_NAME = 'us-east-1'
-AWS_S3_USE_SSL = True
-AWS_S3_SIGNATURE_VERSION = 's3'
+import cloudinary
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
 
 # --- Segurança ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
@@ -33,21 +31,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'InovaEdu',
-    'storages',  # para S3
+    'cloudinary',
+    'cloudinary_storage',
 ]
-
-# --- Armazenamento de arquivos ---
-try:
-    from InovaEdu.storage import TebiStorage
-    test_storage = TebiStorage()
-    DEFAULT_FILE_STORAGE = "InovaEdu.storage.TebiStorage"
-    from django.core.files.storage import default_storage
-    default_storage._wrapped = test_storage
-except Exception as e:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.tebi.io'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
-MEDIA_ROOT = ''
 
 # --- Middleware ---
 MIDDLEWARE = [
@@ -127,3 +113,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/home'
+
+# --- Storages ---
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

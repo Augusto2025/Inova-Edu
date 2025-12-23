@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -71,7 +72,7 @@ class AuthUserUserPermissions(models.Model):
 
 class Usuario(models.Model):
     idusuario = models.AutoField(db_column='idUsuario', primary_key=True)
-    imagem = models.ImageField(db_column='imagem_usuario', upload_to='usuarios/', blank=True, null=True)
+    imagem = CloudinaryField('imagem_usuario', db_column='imagem_usuario', blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=11)
     nome = models.CharField(db_column='Nome', max_length=20)
     sobrenome = models.CharField(db_column='Sobrenome', max_length=20)
@@ -87,7 +88,7 @@ class Usuario(models.Model):
 class Curso(models.Model):
     idcurso = models.AutoField(db_column='idCurso', primary_key=True)
     nome_curso = models.CharField(db_column='Nome_curso', max_length=45)
-    imagem = models.ImageField(db_column='imagem_curso' , upload_to='curso/', blank=True, null= True)
+    imagem = CloudinaryField('imagem_curso', db_column='imagem_curso', blank=True, null=True)
     descricao_curso = models.CharField(db_column='Descricao_curso', max_length=100, blank=True, null=True)
     data_inicio = models.DateField(db_column='Data_inicio', blank=True, null=True)
     data_final = models.DateField(db_column='Data_final', blank=True, null=True)
@@ -111,6 +112,7 @@ class Turma(models.Model):
     class Meta:
         db_table = 'turma'
 
+
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
@@ -120,6 +122,7 @@ class Projeto(models.Model):
 
     class Meta:
         db_table = 'projeto'
+
 
 class UsuarioDaTurma(models.Model):
     id = models.BigAutoField(primary_key=True) 
@@ -139,7 +142,6 @@ class Eventos(models.Model):
     data_do_evento = models.DateField(db_column='Data_do_evento')
     descricao = models.CharField(db_column='Descricao', max_length=100)
     endereco = models.CharField(db_column='Endereco', max_length=30)
-    
     usuario = models.ForeignKey(
         Usuario,
         models.DO_NOTHING,
@@ -152,6 +154,7 @@ class Eventos(models.Model):
         managed = False
         db_table = 'eventos'
 
+
 class Forum(models.Model):
     idforum = models.AutoField(db_column='idForum', primary_key=True)
     nome = models.CharField(db_column='Nome', max_length=30)
@@ -160,6 +163,7 @@ class Forum(models.Model):
 
     class Meta:
         db_table = 'forum'
+
 
 class Mensagem(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='ID_Forum', related_name='mensagens')
@@ -193,7 +197,7 @@ class Pasta(models.Model):
 
 class Arquivo(models.Model):
     nome = models.CharField(max_length=100)
-    arquivo = models.FileField(upload_to='repositorio/')
+    arquivo = CloudinaryField('arquivo', blank=True, null=True)
     enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(auto_now_add=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
