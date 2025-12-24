@@ -343,8 +343,7 @@
                             <span>{{ turma.turno }}</span>
                             <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
-                            <span class="acoes">
-                                
+                            <span class="acoes acoes-turma">
                                 <button type="button"
                                     class="btn-editar-turma"
                                     data-id="{{ turma.idturma }}"
@@ -355,16 +354,15 @@
                                     Editar
                                 </button>
 
-                                
-                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST" style="display:inline;">
+                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST">
                                     {% csrf_token %}
                                     <button type="submit"
                                             onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
                                         Excluir
                                     </button>
                                 </form>
-                                
                             </span>
+
                         </li>
                         {% empty %}
                         <li><span>Nenhuma turma cadastrada.</span></li>
