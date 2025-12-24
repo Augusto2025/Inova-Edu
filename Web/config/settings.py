@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 import secrets
 
 # --- Diretórios e .env ---
@@ -69,14 +70,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Banco de dados ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('NAME'),
-        'USER': os.environ.get('USER'),
-        'HOST': os.environ.get('HOST'),
-        'PORT': os.environ.get('PORT'),
-        'PASSWORD': os.environ.get('PASSWORD'),
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
 
 # --- Email ---
