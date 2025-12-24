@@ -12,7 +12,6 @@ urlpatterns = [
     path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
     # Aluno e Professor
     path('home/', views.home, name='home'),
-    path("repositorio/", views.repositorio, name="repositorio"),
     path("perfil/", views.perfil, name="perfil"),
     path("calendario/", views.calendario, name="calendario"),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
