@@ -21,7 +21,7 @@ cloudinary.config(
 # --- Segurança ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["inova-edu.onrender.com"]
 
 # --- Aplicativos instalados ---
 INSTALLED_APPS = [
