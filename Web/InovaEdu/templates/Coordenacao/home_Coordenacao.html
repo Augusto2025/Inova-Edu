@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Coordenação</title>
-    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
+    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}">
 </head>
 <body>
 
@@ -15,7 +15,22 @@
         <a href="{% url 'home_Coordenacao' %}">
             <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
         </a>
+
+        {% comment %} <nav class="header-links">
+            <a href="#">Perfil</a>
+        </nav> {% endcomment %}
+
+        <div class="headerperfil">
+            <img src="{% static 'img/user-solid-full.svg' %}"
+                alt="Perfil"
+                class="icone-perfil"
+                onclick="mostrarLista('listaPerfil')">
+
+            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+        </div>
+
     </header>
+
 
     <!-- SEÇÃO PRINCIPAL -->
     <main class="maincontainer">
@@ -44,12 +59,12 @@
                     <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
                 </div>
             
-                <div class="card">
+                {% comment %} <div class="card">
                     <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
                     <h3>Perfil</h3>
                     <p>Gerencie seu perfil</p>
                     <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
-                </div>
+                </div> {% endcomment %}
             
             </div>
         </aside>
@@ -440,20 +455,64 @@
             </div>
             
 
-            
-
-
-
-
-
-
-
 
             <!-- PERFIL -->
+
             <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
-                <div class="titulo_lista"><p>Perfil</p></div>
-                <p>Gerencie suas informações de perfil aqui.</p>
+                <div class="titulo_lista">
+                    <p>Perfil da Coordenação</p>
+                    <a href="#" class="btn-add" onclick="mostrarLista('editarPerfil')">Editar</a>
+                </div>
+
+                <div class="perfil-card">
+                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-img">
+
+                    <p><strong>Nome:</strong> {{ usuario_logado.first_name }}</p>
+                    <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
+                    <p><strong>Tipo:</strong> Coordenação</p>
+
+                    <p><strong>Descrição:</strong></p>
+                    <p class="descricao">
+                        {{ usuario_logado.descricao|default:"Coordenação responsável pela gestão do sistema." }}
+                    </p>
+                </div>
             </section>
+
+            {% comment %} EDITAR PERFIL ==== {% endcomment %}
+
+           <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
+                <div class="titulo_lista">
+                    <p>Editar Perfil</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="perfil-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="editar_perfil">
+
+                    <label>Nome</label>
+                    <input type="text" name="nome" value="{{ usuario_logado.first_name }}" required>
+
+                    <label>Email</label>
+                    <input type="email" name="email" value="{{ usuario_logado.email }}" required>
+
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="4">{{ usuario_logado.descricao }}</textarea>
+
+                    <label>Imagem</label>
+                    <input type="file" name="imagem">
+
+                    <div style="margin-top:15px;">
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" onclick="mostrarLista('listaPerfil')">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+
+
+
+
+
+
 
         </section>
     </main>

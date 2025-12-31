@@ -75,6 +75,37 @@ body {
   display: block;
 }
 
+.headerperfil img {
+  width: 32px;
+  /* padrão fixo */
+  height: 32px;
+  /* mantém quadrado */
+  object-fit: contain;
+  /* não estica a imagem */
+}
+
+
+.headerperfil {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* opcional – só estética */
+.headerperfilr img {
+  width: 32px;
+  height: 32px;
+}
+
+.btn-sair {
+  background-color: #c62828;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
 
 /* ======= CONTAINER main ======= */
 
@@ -93,6 +124,28 @@ body {
   align-items: flex-start;
   flex: 1;
 }
+
+/* ======= PERFIL CARD ======= */
+.perfil-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+}
+
+.perfil-img {
+  width: 120px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.perfil-form input,
+.perfil-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
 
 /* ======= COLUNA DE CARDS ======= */
 .cards-home {
@@ -549,16 +602,18 @@ form button[type="buttoncancelar"]:hover {
 }
 
 .acoes-turma {
-    display: flex;
-    flex-direction: row;   /* lado a lado */
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  /* lado a lado */
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
 }
 
 .acoes-turma button {
-    min-width: 80px;       /* mesmo tamanho */
-    height: 32px;
+  min-width: 80px;
+  /* mesmo tamanho */
+  height: 32px;
 }
 
 
