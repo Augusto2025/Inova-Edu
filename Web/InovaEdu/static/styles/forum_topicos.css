@@ -1,0 +1,101 @@
+/* GRID DE TÓPICOS */
+.grid-topicos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  padding: 0 10px;
+  min-height: calc(81vh - 150px);
+}
+
+/* CARD DE TÓPICO */
+.card-topico {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 160px;  
+  height: auto;       
+}
+
+.card-topico:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* TÍTULO DO TÓPICO */
+.titulo-topico {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--azul-Senac);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+/* DESCRIÇÃO DO TÓPICO */
+.resumo-topico {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 16px;
+  line-height: 1.4;
+  display: block;
+  overflow-wrap: break-word;
+  max-height: none; /* permite crescer */
+}
+
+/* BOTÃO "ENTRAR NA CONVERSA" */
+.botao-ver-topico {
+  display: inline-block;
+  padding: 10px 16px;
+  background: var(--azul-Senac);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.botao-ver-topico:hover {
+  background: #f77a1c;
+}
+
+/* MENSAGEM QUANDO NÃO HÁ TÓPICOS */
+.sem-topicos {
+  text-align: center;
+  color: #777;
+  margin-top: 40px;
+  font-size: 16px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .grid-topicos {
+    gap: 16px;
+  }
+
+  .card-topico {
+    padding: 16px 12px;
+    min-height: 140px;
+  }
+
+  .titulo-topico {
+    font-size: 16px;
+  }
+
+  .resumo-topico {
+    font-size: 13px;
+  }
+
+  .botao-ver-topico {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}

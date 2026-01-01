@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
+
+{% include "partials/header.html" %}
+
+<div class="barra-topo">
+    <div class="rota">
+        Página: {{ forum.nome }}
+    </div>
+</div>
+
+<div class="titulo">
+    <p>Tópicos do fórum</p>
+</div>
+
+<div class="grid-topicos">
+    {% if topicos %}
+        {% for topico in topicos %}
+            <div class="card-topico">
+                <!-- Título do tópico -->
+                <h3 class="titulo-topico">{{ topico.titulo }}</h3>
+
+                <!-- Descrição do tópico -->
+                {% if topico.descricao %}
+                    <p class="resumo-topico">{{ topico.descricao }}</p>
+                {% endif %}
+
+                <!-- Botão para entrar na conversa -->
+                <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                    Entrar na Conversa
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="sem-topicos">Nenhum tópico encontrado neste fórum.</p>
+    {% endif %}
+</div>
+
+
+{% include "partials/footer.html" %}
+{% endblock %}

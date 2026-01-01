@@ -2,45 +2,53 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/forum.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/forum.css' %}">
+<link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
-    {% include "partials/header.html" %}
+{% include "partials/header.html" %}
 
-    <div class="rota">Página: Todos os foruns > Forum</div>
+<div class="rota">Página: Todos os fóruns > {{ forum.nome }}</div>
 
-    <div class="forum-header">
-        <div class="forum-info">
-            <div class="forum-icon">💬</div>
-            <h1>{{ forum.nome }}</h1>
-        </div>
-    </div>
+<!-- Forum Header: título + tópico atual -->
+<div class="forum-header">
+    <div class="forum-info">
+        <div class="forum-icon">💬</div>
+        <div class="forum-textos">
+            <h1 class="forum-titulo">{{ forum.nome }}</h1>
 
-    <div class="chat-container">
-
-        <div class="mensagens">
-            {% for msg in mensagens %}
-                <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}">
-                    <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
-                        <div class="msg-header">
-                            <strong>{{ msg.autor.nome }}</strong>
-                            <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
-                        </div>
-                        <div class="msg-content">{{ msg.conteudo }}</div>
-                    </div>
+            {% if topico_selecionado %}
+                <div class="forum-topicos">
+                    <strong>Tópico:</strong> {{ topico_selecionado.titulo }}
                 </div>
-            {% empty %}
-                <p class="empty">Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
-            {% endfor %}
+            {% endif %}
         </div>
-
-        <form method="POST" class="chat-input-area">
-            {% csrf_token %}
-            <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off">
-            <button type="submit">Enviar</button>
-        </form>
-
     </div>
+</div>
+
+<!-- Chat container -->
+<div class="chat-container">
+    <div class="mensagens">
+        {% for msg in mensagens %}
+            <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}">
+                <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
+                    <div class="msg-header">
+                        <strong>{{ msg.autor.nome }}</strong>
+                        <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
+                    </div>
+                    <div class="msg-content">{{ msg.conteudo }}</div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="empty">Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="chat-input-area">
+        {% csrf_token %}
+        <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off">
+        <button type="submit">Enviar</button>
+    </form>
+</div>
 
 {% endblock %}
 

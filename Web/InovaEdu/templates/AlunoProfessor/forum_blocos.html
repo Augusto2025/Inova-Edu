@@ -9,11 +9,22 @@
         {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="rota">Página: Todos os foruns</div>
+    <div class="rota" style="display: flex; justify-content: space-between; align-items: center;">
+        <p>Página: Todos os fóruns</p>
+
+        <div class="acoes-topo">
+            <a href="{% url 'criar_forum' %}" class="botao-criar-forum">
+                + Criar Tópico
+            </a>
+            <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro" />
+        </div>
+    </div>
+
+    
+
 
     <div class="titulo">
-        <p>Todos os Foruns</p>
-        <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro" />
+        <p>Temas dos fóruns</p>
     </div>
 
     <!-- moved: aside deve ficar IMEDIATAMENTE aqui, abaixo da .titulo e antes do restante -->
@@ -47,12 +58,6 @@
         </form>
     </aside>
 
-    <div style="display:flex; justify-content:flex-end; width:100%; max-width:1000px; margin: 0 auto;">
-        {% if usuario.tipo == "Professor" %}
-            <a href="{% url 'criar_forum' %}" class="botao-criar-forum">+ Criar fórum</a>
-        {% endif %}
-    </div>
-
     {% if query %}
     {% for Forum in foruns %}
     {% empty %}
@@ -71,7 +76,7 @@
                     <p>Data de Criação:</p>
                     <p>{{ Forum.data_criacao }}</p>
                 </div>
-                <a class="Botao_entrar_forum" href="{% url 'forum' Forum.idforum %}">Entrar</a>
+                <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">Entrar</a>
             </section>
         {% endfor %}
     </main>

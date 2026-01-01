@@ -15,6 +15,7 @@ urlpatterns = [
     path("perfil/", views.perfil, name="perfil"),
     path("calendario/", views.calendario, name="calendario"),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
+    path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
     path('forum/<int:forum_id>/', views.forum_chat, name='forum'),
     path('forum/criar/', views.criar_forum, name='criar_forum'),
     path('calendario/criar/', views.criar_evento, name='criar_evento'),

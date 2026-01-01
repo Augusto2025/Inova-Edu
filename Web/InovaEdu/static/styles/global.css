@@ -73,11 +73,17 @@ section:hover {
 }
 
 .rota {
-    width: 60%;
+    width: 97%;
     margin-left: 20px;
     color: var(--azul-Senac);
     font-size: 14px;
     font-weight: 600;
     margin-top: 12px;
     margin-bottom: 6px;
+}
+
+@media (max-width: 600px) {
+    .rota {
+        width: 92%;
+    }
 }

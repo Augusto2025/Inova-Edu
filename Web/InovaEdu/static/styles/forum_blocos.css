@@ -1,75 +1,117 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: #f8f9fb;
-  background-image: url("../img/Fundo.png"); 
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.titulo-forum {
-  width: 100%;
-  font-size: 20px;
-  margin-bottom: 8px;
-}
-
-.data_criacao {
-  width: 100%;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-/* estilo do botão criar - fixo no canto da tela */
-.botao-criar-forum {
-  position: fixed;
-  width: 315px;
-  top: 580px;
-  left: 20px;
-  display: inline-flex;
+/* ===================== */
+/* TÍTULO E AÇÕES DO TOPO */
+/* ===================== */
+.titulo {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border-radius: 8px;
+  max-width: 1000px;
+  margin: 0 auto 20px auto;
+}
+
+.acoes-topo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ===================== */
+/* BOTÃO CRIAR TÓPICO */
+/* ===================== */
+.botao-criar-forum {
+  position: static;
+  padding: 10px 18px;
+  border-radius: 10px;
   background: var(--laranja-Senac);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.12);
-  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-main{
-  margin-bottom: 40px;
+.botao-criar-forum:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
 }
 
+/* ===================== */
+/* GRID DE FÓRUNS (CARDS) */
+/* ===================== */
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto 40px auto;
+  padding: 0 10px;
+}
+
+/* ===================== */
+/* CARD DE FÓRUM */
 section {
-  flex-direction: column;
-  background: white;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   text-align: center;
-  width: 400px;
-  height: 170px;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  transition: transform 0.20s ease, box-shadow 0.20s ease;
-  justify-content: space-between;       
-  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: default;
+  min-height: 160px;
+  height: auto;
 }
 
 section:hover {
   transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* TÍTULO DO FÓRUM */
 .titulo-forum {
-  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
   color: var(--azul-Senac);
-  padding-bottom: 6px;
-  width: 250px;
-  margin: 0%;
+  margin-bottom: 12px;
+  line-height: 1.3;
 }
 
+/* DESCRIÇÃO DO FÓRUM */
+.data_criacao, .descricao-forum {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  overflow-wrap: break-word;
+  display: block;
+  max-height: none; /* permite crescer conforme o texto */
+}
+
+section .Botao_entrar_forum {
+  align-self: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  background: #004A8D;
+  padding: 10px 16px; 
+  font-size: 16px;
+  text-decoration: none;
+  width: 70%;
+  transition: background 0.2s ease;
+}
+
+section .Botao_entrar_forum:hover {
+  background: #f77a1c;
+}
+
+
+/* ===================== */
+/* PESQUISA */
+/* ===================== */
 .campo_pesq {
   display: flex;
   align-items: center;
@@ -87,42 +129,20 @@ section:hover {
   font-size: 15px;
 }
 
-section .Botao_entrar_forum {
-  align-self: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--branco-Senac);
-  border: none;
-  border-radius: 23px;
-  background: #004A8D;
-  width: 60%;
-  max-width: none;
-  height: 36px;
-  border-radius: 10px;
-  margin-top: 6px;
-}
-
-.data_criacao {
-  width: 190px;
-  font-size: 15px;
-}
-
-.data_criacao p {
-  color: gray;
-  margin: 0%;
-}
-
-/* ícone do filtro - escondido por padrão */
+/* ===================== */
+/* ÍCONE FILTRO */
+/* ===================== */
 .filtro_icone {
   width: 30px;
   flex-shrink: 0;
   display: none;
-  margin-left: 20px;
-  align-self: center;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
-/* SIDEBAR: usar mesmo estilo do home */
+/* ===================== */
+/* SIDEBAR FILTRO */
+/* ===================== */
 .sidebar-filtro {
   position: fixed;
   top: 180px;
@@ -135,7 +155,6 @@ section .Botao_entrar_forum {
   z-index: 20;
 }
 
-/* título interno */
 .sidebar-filtro h3 {
   margin: 0 0 12px 0;
   text-align: center;
@@ -144,7 +163,6 @@ section .Botao_entrar_forum {
   font-weight: 700;
 }
 
-/* campos de filtro */
 .campo-filtro {
   margin-bottom: 16px;
   display: flex;
@@ -159,15 +177,13 @@ section .Botao_entrar_forum {
 }
 
 .campo-filtro input,
-.campo-filtro select{
+.campo-filtro select {
   padding: 10px;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
   font-size: 14px;
-  box-sizing: border-box;
 }
 
-/* botão aplicar igual ao home */
 .btn-aplicar {
   width: 100%;
   padding: 12px;
@@ -180,40 +196,29 @@ section .Botao_entrar_forum {
   font-weight: 600;
   transition: background 0.18s ease;
 }
-.btn-aplicar:hover { background: #00376a; }
 
-/* RESPONSIVO — aplica a laptops e menores (igual ao home) */
+.btn-aplicar:hover {
+  background: #00376a;
+}
+
+/* ===================== */
+/* RESPONSIVO - LAPTOP */
+/* ===================== */
 @media (max-width: 1366px) {
   .filtro_icone {
-    cursor: pointer;
     display: block;
   }
 
-  .btn-toggle-filtro {
-    display: flex;
-  }
-
-  /* garantir que o aside fique no fluxo da página (empurra a main) */
   .sidebar-filtro {
-    position: static;                 /* no fluxo, abaixo do título */
+    position: static;
     width: 90%;
     margin: 10px auto 20px auto;
-    display: none;                    /* controlado pela classe .open */
+    display: none;
     padding: 20px;
-    z-index: auto;                     /* remover sobreposição */
   }
 
-  /* quando aberto, só mostra — permanece no fluxo */
   .sidebar-filtro.open {
     display: block;
-    position: static;
-  }
-
-  /* garantir que o main não seja sobreposto */
-  .sidebar-filtro + main,
-  .sidebar-filtro ~ main {
-    margin-top: 0;
-    clear: both;
   }
 
   main {
@@ -222,17 +227,29 @@ section .Botao_entrar_forum {
   }
 }
 
-/* manter adaptações móveis já existentes */
+/* ===================== */
+/* MOBILE */
+/* ===================== */
 @media (max-width: 480px) {
-  .botao-criar-forum {
-    top: auto;
-    bottom: 18px;
-    right: 18px;
-    padding: 10px 14px;
-    border-radius: 12px;
-  }
-
   .filtro_icone {
     width: 26px;
+  }
+
+  section {
+    min-height: 140px;
+    padding: 16px 12px;
+  }
+
+  .titulo-forum {
+    font-size: 16px;
+  }
+
+  .data_criacao, .descricao-forum {
+    font-size: 13px;
+  }
+
+  section .Botao_entrar_forum {
+    font-size: 13px;
+    padding: 8px 12px;
   }
 }

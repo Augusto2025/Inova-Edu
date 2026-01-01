@@ -486,6 +486,17 @@ def forum_blocos(request):
         }
     )
 
+def forum_topicos(request, idforum):
+    forum = get_object_or_404(Forum, idforum=idforum)
+    topicos = Topico.objects.filter(forum=forum)
+
+    context = {
+        'forum': forum,
+        'topicos': topicos,
+    }
+
+    return render(request, 'AlunoProfessor/forum_topicos.html', context)
+
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
 
@@ -504,14 +515,24 @@ def turmas(request, curso_id):
 
 
 def forum_chat(request, forum_id):
-    # pegar usuário logado via session
     email = request.session.get('usuario_email')
     if not email:
-        return redirect('login')  # usuário não logado
+        return redirect('login')
 
-    usuario = Usuario.objects.get(email=email)  # instância do usuário real
-
+    usuario = Usuario.objects.get(email=email)
     forum = Forum.objects.get(pk=forum_id)
+
+    # Pega tópico da query string
+    topico_id = request.GET.get('topico')
+    if topico_id:
+        try:
+            topico_selecionado = Topico.objects.get(pk=topico_id, forum=forum)
+        except Topico.DoesNotExist:
+            topico_selecionado = None
+    else:
+        # Se não houver query string, pega o primeiro tópico do fórum
+        topico_selecionado = forum.topicos.first()  # usa related_name 'topicos'
+
     mensagens = Mensagem.objects.filter(forum=forum).order_by('criado_em')
 
     if request.method == 'POST':
@@ -519,12 +540,19 @@ def forum_chat(request, forum_id):
         if conteudo.strip():
             Mensagem.objects.create(
                 forum=forum,
-                autor=usuario,  # aqui passamos a instância correta
+                autor=usuario,
                 conteudo=conteudo
             )
-        return redirect('forum', forum_id=forum.idforum)
+        redirect_url = f'/forum/{forum.idforum}/'
+        return redirect(redirect_url)
 
-    return render(request, 'AlunoProfessor/forum.html', {'forum': forum, 'mensagens': mensagens})
+    return render(request, 'AlunoProfessor/forum.html', {
+        'forum': forum,
+        'topico_selecionado': topico_selecionado,
+        'mensagens': mensagens
+    })
+
+
 
 def criar_forum(request):
     email = request.session.get('usuario_email')
@@ -535,9 +563,6 @@ def criar_forum(request):
         usuario = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
         return redirect('login')
-
-    if usuario.tipo != 'Professor':
-        return redirect('forum_blocos')
 
     if request.method == 'POST':
         nome = request.POST.get('nome', '').strip()

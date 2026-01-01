@@ -157,14 +157,23 @@ class Eventos(models.Model):
 
 
 class Forum(models.Model):
-    idforum = models.AutoField(db_column='idForum', primary_key=True)
-    nome = models.CharField(db_column='Nome', max_length=30)
-    data_criacao = models.DateField(db_column='Data_criacao')
-    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
+    idforum = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=30)
+    data_criacao = models.DateField()
+    usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         db_table = 'forum'
 
+
+class Topico(models.Model):
+    idtopico = models.AutoField(primary_key=True)
+    forum = models.ForeignKey(Forum,on_delete=models.CASCADE,related_name='topicos')
+    descricao = models.TextField(blank=True, null=True)
+    titulo = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'topico'
 
 class Mensagem(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='ID_Forum', related_name='mensagens')
