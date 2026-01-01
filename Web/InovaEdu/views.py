@@ -290,40 +290,59 @@ def criar_evento(request):
 
 
 
-# --------------- TELAS COORDENAÇÃO ---------------
+# ================ TELAS COORDENAÇÃO ====================
 
 def home_Coordenacao(request):
+    email_sessao = request.session.get('usuario_email')
+
+    if not email_sessao:
+        return redirect('login')
+
+    usuario_logado = get_object_or_404(Usuario, email=email_sessao)
+
     usuarios = Usuario.objects.all()
-    cursos = Curso.objects.all() 
+    cursos = Curso.objects.all()
     turmas = Turma.objects.select_related('curso').all()
 
-
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        sobrenome = request.POST.get('Sobrenome')
-        email = request.POST.get('Email')
-        senha = request.POST.get('Senha')
-        descricao = request.POST.get('descricao')
-        tipo = request.POST.get('tipoCadastro')
-        imagem = request.FILES.get('imagem')
+        acao = request.POST.get('acao')
 
-        Usuario.objects.create(
-            nome=nome,
-            sobrenome=sobrenome,
-            email=email,
-            senha=senha,
-            descricao=descricao,
-            tipo=tipo,
-            imagem=imagem
-        )
+       
+        # EDITAR PERFIL ==========================
+        if acao == 'editar_perfil':
+            usuario_logado.nome = request.POST.get('nome')
+            usuario_logado.sobrenome = request.POST.get('sobrenome')
+            usuario_logado.email = request.POST.get('email')
+            usuario_logado.descricao = request.POST.get('descricao')
 
-        return redirect('home_Coordenacao')  # Volta para a mesma tela
+            if request.FILES.get('imagem'):
+                usuario_logado.imagem = request.FILES.get('imagem')
+
+            usuario_logado.save()
+            return redirect('home_Coordenacao')
+
+
+        #  CADASTRAR USUÁRIO ==========================
+       
+        if acao == 'cadastrar_usuario':
+            Usuario.objects.create(
+                nome=request.POST.get('nome'),
+                sobrenome=request.POST.get('Sobrenome'),
+                email=request.POST.get('Email'),
+                senha=request.POST.get('Senha'),
+                descricao=request.POST.get('descricao'),
+                tipo=request.POST.get('tipoCadastro'),  # OBRIGATÓRIO
+                imagem=request.FILES.get('imagem')
+            )
+            return redirect('home_Coordenacao')
 
     return render(request, 'Coordenacao/home_Coordenacao.html', {
         'usuarios': usuarios,
-        'cursos': cursos, 
-        'turmas': turmas, 
+        'cursos': cursos,
+        'turmas': turmas,
+        'usuario_logado': usuario_logado,
     })
+
 
 
 

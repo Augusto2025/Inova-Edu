@@ -76,12 +76,11 @@ body {
 }
 
 .headerperfil img {
-  width: 32px;
-  /* padrão fixo */
-  height: 32px;
-  /* mantém quadrado */
-  object-fit: contain;
-  /* não estica a imagem */
+  width: 32px; /* padrão fixo */
+  height: 32px; /* mantém quadrado */
+  object-fit: contain; /* não estica a imagem */
+  background-color: white;
+  border-radius: 24px
 }
 
 

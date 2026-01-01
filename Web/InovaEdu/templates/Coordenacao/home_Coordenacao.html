@@ -467,20 +467,21 @@
                 <div class="perfil-card">
                     <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-img">
 
-                    <p><strong>Nome:</strong> {{ usuario_logado.first_name }}</p>
+                    <p><strong>Nome:</strong> {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}</p>
                     <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
-                    <p><strong>Tipo:</strong> Coordenação</p>
+                    <p><strong>Tipo:</strong> {{ usuario_logado.tipo }}</p>
 
                     <p><strong>Descrição:</strong></p>
                     <p class="descricao">
-                        {{ usuario_logado.descricao|default:"Coordenação responsável pela gestão do sistema." }}
+                        {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
                     </p>
+
                 </div>
             </section>
 
-            {% comment %} EDITAR PERFIL ==== {% endcomment %}
+            <!-- PERFIL EDITAR -->
 
-           <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
+            <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
                 <div class="titulo_lista">
                     <p>Editar Perfil</p>
                 </div>
@@ -490,13 +491,16 @@
                     <input type="hidden" name="acao" value="editar_perfil">
 
                     <label>Nome</label>
-                    <input type="text" name="nome" value="{{ usuario_logado.first_name }}" required>
+                    <input type="text" name="nome" value="{{ usuario_logado.nome }}" required>
+
+                    <label>Sobrenome</label>
+                    <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}" required>
 
                     <label>Email</label>
                     <input type="email" name="email" value="{{ usuario_logado.email }}" required>
 
                     <label>Descrição</label>
-                    <textarea name="descricao" rows="4">{{ usuario_logado.descricao }}</textarea>
+                    <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
 
                     <label>Imagem</label>
                     <input type="file" name="imagem">
@@ -506,7 +510,9 @@
                         <button type="buttoncancelar" onclick="mostrarLista('listaPerfil')">Cancelar</button>
                     </div>
                 </form>
+
             </section>
+
 
 
 
