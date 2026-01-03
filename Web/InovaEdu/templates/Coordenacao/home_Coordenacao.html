@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Coordenação</title>
-    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
 </head>
 <body>
 
@@ -183,7 +183,11 @@
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
                             <span>••••••</span>
-                            <span>{{ usuario.descricao }}</span>
+                            <img src="{% static 'img/arrow-up-right-from-square-solid-full.svg' %}"
+                                class="icon-descricao"
+                                alt="Ver descrição"
+                                data-descricao="{{ usuario.descricao|escapejs }}">
+
                             {% if usuario.imagem %}
                             <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
                             {% else %}
@@ -237,7 +241,11 @@
                                 <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
                                 {% else %}-{% endif %}
                             </span>
-                            <span>{{ curso.descricao_curso }}</span>
+                            <img src="{% static 'img/arrow-up-right-from-square-solid-full.svg' %}"
+                                class="icon-descricao"
+                                alt="Ver descrição"
+                                data-descricao="{{ curso.descricao|escapejs }}">
+
                             <span class="acoes">
                                 <button
                                     type="button"
@@ -514,16 +522,9 @@
             </section>
 
 
-
-
-
-
-
-
         </section>
     </main>
 
-    <!-- SCRIPT PARA MODAL E MOSTRAR LISTAS -->
     
 
     <!-- FOOTER -->
@@ -531,6 +532,17 @@
         <p>&copy; 2025 Desenvolvido por Alcides, Augusto e Clariane</p>
     </footer>
 
-    <script src="{% static 'scripts/home_coordenacao.js' %}"></script>
+    <script src="{% static 'scripts/home_coordenacao.js' %}"></script> 
+    <script src="{% static 'scripts/modal_descricao.js' %}"></script> 
+
+
+    <div id="modalDescricao" class="modal">
+        <div class="modal-content">
+            <span class="fechar-descricao">&times;</span>
+            <h3>Descrição</h3>
+            <p id="textoDescricao"></p>
+        </div>
+    </div>
+
 </body>
 </html>

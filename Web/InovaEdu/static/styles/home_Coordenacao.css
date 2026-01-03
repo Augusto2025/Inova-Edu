@@ -284,9 +284,33 @@ body {
 .lista_conteudo img {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   object-fit: cover;
   margin: 0 auto;
+  margin-left: 30px;
+
+}
+
+
+
+/* ======= MODAL DESCRIÇÃO ======= */
+
+#modalDescricao .modal-content {
+    background-color: #ffffff;
+    width: 320px;
+    max-width: 90%;
+    padding: 16px;
+    border-radius: 10px;
+
+    border-top: 5px solid #1A6F9D; /* identidade visual */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+
+.fechar-descricao {
+    float: right;
+    cursor: pointer;
+    font-size: 22px;
 }
 
 /* Ações (editar/excluir) */
