@@ -43,26 +43,28 @@
     <script>
         document.querySelectorAll('.accordion-header').forEach(header => {
             header.addEventListener('click', () => {
-    
+
                 const content = header.nextElementSibling;
                 const icon = header.querySelector('.icon');
-    
-                const isOpen = content.style.display === "block";
-    
-                // Fecha todos os acordions antes de abrir o clicado
-                document.querySelectorAll('.accordion-content').forEach(c => c.style.display = "none");
-                document.querySelectorAll('.accordion-header .icon').forEach(i => i.textContent = "+");
-    
-                // Abre apenas o que foi clicado
+                const isOpen = content.classList.contains('open');
+
+                // fecha todos
+                document.querySelectorAll('.accordion-content').forEach(c => {
+                    c.classList.remove('open');
+                });
+                document.querySelectorAll('.accordion-header .icon').forEach(i => {
+                    i.textContent = "+";
+                });
+
+                // abre somente se estava fechado
                 if (!isOpen) {
-                    content.style.display = "flex";
+                    content.classList.add('open');
                     icon.textContent = "−";
                 }
             });
         });
     </script>
-    
-    
+
 {% endblock %}
 
 {% block footer %}

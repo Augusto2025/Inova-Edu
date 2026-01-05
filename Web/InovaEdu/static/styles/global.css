@@ -38,13 +38,6 @@ body{
     margin: 0 auto 20px auto;
 }
 
-.pesquisa {
-    flex: 1;
-    padding: 10px 15px;
-    border-radius: 10px;
-    border: 2px solid var(--azul-Senac);
-    font-size: 15px;
-}
 
 main {
     display: flex;
@@ -80,6 +73,8 @@ section:hover {
     font-weight: 600;
     margin-top: 12px;
     margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
 }
 
 @media (max-width: 600px) {

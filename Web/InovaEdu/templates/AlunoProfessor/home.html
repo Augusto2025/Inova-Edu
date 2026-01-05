@@ -10,60 +10,66 @@
     {% endblock %}
 
     <!-- campo de rota: indica em qual página está -->
-    <div class="rota">Página: Cursos</div>
+    <div class="rota">Página: Cursos
 
-    <div class="titulo">
-        <p>Cursos</p>
         <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
     </div>
 
+    <div class="titulo">
+        <p>Cursos</p>
+    </div>
+
     
-    {% if query %}
-    {% for Curso in curso %}
-    {% empty %}
-        <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-    {% endfor %}
+    {% if curso|length == 0 %}
+        <p style="margin: 20px; text-align:center;">
+            Nenhum resultado encontrado.
+        </p>
     {% endif %}
+
     
-    <aside class="sidebar-filtro">
-        <h3 style="justify-self: center; color: #004A8D;">Filtros</h3>
-        <form class="campo_pesq" method="get" action="{% url 'home' %}">
-            <input class="pesquisa" name="q" type="search" placeholder="Pesquisar" value="{{ query }}" autofocus/>
-            {% if query %}
-                <a style="color: #004A8D;" href="{% url 'home' %}" >Limpar</a>
-            {% endif %}
-            <div class="btn-toggle-filtro" onclick="
-                const f = document.querySelector('.sidebar-filtro');
-                f.style.display = (f.style.display === 'block') ? 'none' : 'block';">
-            </div>
-        </form>
+    <aside class="sidebar-filtro" id="sidebarFiltro">
+        <h3 style="text-align: center; color: #004A8D;">Filtros</h3>
 
         <form method="get" action="{% url 'home' %}">
-            <!-- FILTRO: Data de início -->
+
+            <!-- PESQUISA -->
+            <input class="pesquisa"
+                name="q"
+                type="search"
+                placeholder="Pesquisar"
+                value="{{ query }}">
+
+            {% if query %}
+                <a style="color:#004A8D" href="{% url 'home' %}">Limpar</a>
+            {% endif %}
+
+            <!-- DATA INÍCIO -->
             <div class="campo-filtro">
                 <label>Data de início:</label>
                 <input type="date" name="inicio" value="{{ request.GET.inicio }}">
             </div>
-        
-            <!-- FILTRO: Data final -->
+
+            <!-- DATA FINAL -->
             <div class="campo-filtro">
                 <label>Data final:</label>
                 <input type="date" name="fim" value="{{ request.GET.fim }}">
             </div>
-        
-            <!-- FILTRO: Ordenação -->
+
+            <!-- ORDENAÇÃO -->
             <div class="campo-filtro">
                 <label>Ordenar por:</label>
                 <select name="ordenar">
                     <option value="">Padrão</option>
-                    <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>Nome (A → Z)</option>
-                    <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Nome (Z → A)</option>
+                    <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>A → Z</option>
+                    <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Z → A</option>
                 </select>
             </div>
-        
-            <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
+
+            <button type="submit" class="btn-aplicar">Aplicar filtros</button>
         </form>
     </aside>
+
+
     <main class="blocos">
         {% for Curso in curso %}
         {% if Curso.imagem %}
@@ -115,28 +121,17 @@
     </main>   
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const filtroBtn = document.getElementById('filtroBtn');
-            const sidebar = document.querySelector('.sidebar-filtro');
+            const sidebar = document.getElementById('sidebarFiltro');
 
             if (filtroBtn && sidebar) {
-                filtroBtn.addEventListener('click', function () {
-                    sidebar.classList.toggle('open');
-                    if (sidebar.classList.contains('open')) {
-                        sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            }
-
-            // manter compatibilidade com o botão já existente (.btn-toggle-filtro)
-            const btn = document.querySelector('.btn-toggle-filtro');
-            if (btn && sidebar) {
-                btn.addEventListener('click', function () {
+                filtroBtn.addEventListener('click', () => {
                     sidebar.classList.toggle('open');
                 });
             }
         });
-    </script>
+        </script>
 
 {% endblock %}
 

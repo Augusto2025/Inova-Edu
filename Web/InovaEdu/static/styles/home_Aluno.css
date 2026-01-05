@@ -28,6 +28,8 @@
     border-radius: 10px;
     border: 2px solid var(--azul-Senac);
     font-size: 15px;
+    margin: 0 auto 20px auto;
+    width: 100%;
 }
 
 .btn-toggle-filtro {

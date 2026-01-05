@@ -1,24 +1,14 @@
 {% load static %}
-<!-- Fonte do Google Icons atualizada -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
 <style>
     /* ANIMAÇÃO DE PULSAÇÃO */
     @keyframes pulse {
-        0% {
-            transform: scale(1);
-            box-shadow: 0 0 0 rgba(0, 150, 255, 0.4);
-        }
-        50% {
-            transform: scale(1.12);
-            box-shadow: 0 0 16px rgba(0, 150, 255, 0.6);
-        }
-        100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 rgba(0, 150, 255, 0.4);
-        }
+        0% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 150, 255, 0.4); }
+        50% { transform: scale(1.12); box-shadow: 0 0 16px rgba(0, 150, 255, 0.6); }
+        100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 150, 255, 0.4); }
     }
-    
+
     .chatbot-icon {
         position: fixed;
         bottom: 20px;
@@ -44,7 +34,7 @@
         justify-content: center;
         animation: pulse 1.4s infinite ease-in-out;
     }
-    
+
     .chatbox {
         position: fixed;
         bottom: 90px;
@@ -53,7 +43,7 @@
         background: #fff;
         border: 1px solid #c8c8c8;
         border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         display: none;
         flex-direction: column;
     }
@@ -67,7 +57,7 @@
         align-items: center;
         border-bottom: 1px solid #ddd;
     }
-    
+
     .bot-icon {
         width: 30px;
         height: 30px;
@@ -92,16 +82,10 @@
         transition: all 0.2s ease;
     }
 
-    .chat-option:hover {
-        background: #e3ebf7;
-        transform: translateX(3px);
-    }
-
-    .chat-option:active {
-        transform: scale(0.97);
-        background: #d6e4f5;
-    }
-
+    .chat-option:hover { background: #e3ebf7; transform: translateX(3px); }
+    .chat-option:active { transform: scale(0.97); background: #d6e4f5; }
+    .chat-option.selected { background: #d0e6ff !important; transform: scale(0.98); }
+    .chat-option::before { content: attr(data-index) ". "; font-weight: bold; color: #0a66c2; }
 
     .chat-message {
         background: #f0f2f5;
@@ -109,7 +93,6 @@
         border-radius: 6px;
         margin-bottom: 8px;
         font-size: 14px;
-        cursor: pointer;
     }
 
     .chat-footer {
@@ -136,33 +119,10 @@
         justify-content: center;
     }
 
-    .send-icon {
-        width: 22px;
-        height: 24px;
-        object-fit: contain;
-        transition: transform 0.2s;
-    }
+    .send-icon { width: 22px; height: 24px; object-fit: contain; transition: transform 0.2s; }
+    .chat-footer button:hover .send-icon { transform: scale(1.1); }
 
-    .chat-footer button:hover .send-icon {
-        transform: scale(1.1);
-    }
-
-    .chat-option::before {
-        content: attr(data-index) ". ";
-        font-weight: bold;
-        color: #0a66c2;
-    }
-
-    .chat-option.selected {
-        background: #d0e6ff !important;
-        transform: scale(0.98);
-    }
-
-    /* dica no input */
-    .chat-footer input::placeholder {
-        color: #7a8ca5;
-    }
-
+    /* BOTÃO LIMPAR CONVERSA */
     .clear-btn {
         width: 100%;
         border: none;
@@ -174,25 +134,15 @@
         border-top: 1px solid #ddd;
         transition: background 0.2s ease, color 0.2s ease;
     }
-
-    .clear-btn:hover {
-        background: #e7edf5;
-        color: #084c94;
-    }
-
-    .clear-btn:active {
-        background: #dbe6f3;
-    }
-
-
+    .clear-btn:hover { background: #e7edf5; color: #084c94; }
+    .clear-btn:active { background: #dbe6f3; }
 </style>
 
-<!-- Ícone flutuante do chat atualizado -->
+<!-- Ícone flutuante com pulsação -->
 <div class="chatbot-icon" id="chatbotIcon" aria-label="Abrir chat">
-    {% comment %} <span class="material-symbols-outlined">
-        smart_toy
-    </span> {% endcomment %}
-    <img src="{% static 'img/Robo.png' %}" alt="bot" class="bot-icon">
+    <div class="chatbot-pulse">
+        <img src="{% static 'img/Robo.png' %}" alt="bot" class="bot-icon">
+    </div>
 </div>
 
 <!-- Caixa do chat -->
