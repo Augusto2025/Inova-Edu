@@ -227,6 +227,33 @@ body {
   border-bottom: 3px solid var(--laranja-Senac);
 }
 
+.guia-centro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 2px solid var(--laranja-Senac);
+  border-radius: 0 0 10px 10px;
+}
+
+.guia-centro input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  width: 300px;
+}
+
+/* .guia-centro i {
+  color: orange;
+} */
+
+
+
+
+
+
+
 .btn-add {
   background-color: var(--laranja-Senac);
   color: #fff;
@@ -280,11 +307,27 @@ body {
   z-index: 10;
 }
 
+.col-descricao {
+  display: flex;
+  align-items: center;      /* centro vertical */
+  justify-content: center;  /* centro horizontal */
+  width: 100%;
+  height: 100%;
+}
+
+.icon-descricao {
+  cursor: pointer;
+  /* color: #ff7a00; */
+  font-size: 24px;
+}
+
+
+
 
 .lista_conteudo img {
   width: 50px;
   height: 50px;
-  /* border-radius: 50%; */
+  border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;
   margin-left: 30px;

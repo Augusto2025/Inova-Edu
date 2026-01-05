@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Coordenação</title>
     <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -76,12 +78,17 @@
 
         <section class="section-wrapper">
 
-            <!-- LISTAS (LADO DIREITO) -->
             <!-- USUÁRIO -->
             <section class="container_usuario lista_conteudo" id="listaUsuario" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista Usuário</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar Usuário">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModal">+ Cadastro</a>
                 </div>
 
                 <!-- Modal Cadastro -->
@@ -183,11 +190,10 @@
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
                             <span>••••••</span>
-                            <img src="{% static 'img/arrow-up-right-from-square-solid-full.svg' %}"
-                                class="icon-descricao"
-                                alt="Ver descrição"
-                                data-descricao="{{ usuario.descricao|escapejs }}">
-
+                            <i class="fa-solid fa-align-center icon-descricao"
+                            title="Ver descrição"
+                            data-descricao="{{ usuario.descricao|escapejs }}"></i>
+                         
                             {% if usuario.imagem %}
                             <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
                             {% else %}
@@ -219,8 +225,16 @@
              <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
-                    <a href="#" class="btn-add" id="abrirModalCurso">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar o Curso">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModalCurso">+ Cadastro</a>
                 </div>
+
+
                 <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
@@ -241,10 +255,9 @@
                                 <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
                                 {% else %}-{% endif %}
                             </span>
-                            <img src="{% static 'img/arrow-up-right-from-square-solid-full.svg' %}"
-                                class="icon-descricao"
-                                alt="Ver descrição"
-                                data-descricao="{{ curso.descricao|escapejs }}">
+                            <i class="fa-solid fa-align-center icon-descricao"
+                            title="Ver descrição"
+                            data-descricao="{{ curso.descricao|escapejs }}"></i>>
 
                             <span class="acoes">
                                 <button
@@ -349,8 +362,16 @@
             <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Turmas</p>
-                    <a href="#" class="btn-add" id="abrirModalTurma">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar a Turma">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModalTurma">+ Cadastro</a>
                 </div>
+
+
                 <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
