@@ -74,7 +74,7 @@
         {% for Curso in curso %}
         {% if Curso.imagem %}
             <section class="cards_curso">
-                <img class="imagem_curso" src="{{ Curso.imagem.url }}" alt="Imagem do curso" />
+                {% comment %} <img class="imagem_curso" src="{{ Curso.imagem.url }}" alt="Imagem do curso" /> {% endcomment %}
                 <p>{{ Curso.nome_curso }}</p>
                 <div class="borda"></div>
                 <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>

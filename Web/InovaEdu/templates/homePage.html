@@ -9,18 +9,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{% static 'styles/homePage.css' %}?=V1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <title>Inova Edu</title>
     </head>
+    <body>
 
     <!-- HERO PARALLAX -->
+    <div class="botoeslogin">
+        <a href="/login" class="btn-acao">
+            <i class="fa-solid fa-user"></i> Login
+        </a>
+    </div>
     <div class="parallax"
-        style="background-image: url('{% static "img/imgtransparente.png" %}')">
-
-        <div class="botoeslogin">
-            <a href="/login" class="btn-acao">Login</a>
-        </div>
-
-        <h1>Bem-vindo ao Repositório do Senac ✨</h1>
+    style="background-image: url('{% static "img/imgtransparente.png" %}')">
+    
+    
+        <img class="logo" src="{% static 'img/LOGO_AZUL.png' %}" style="width: 700px;">
+        <h1 style="font-size: 30px;">Bem-vindo ao Repositório Inova Edu</h1>
     </div>
 
     <!-- SEÇÃO 1 -->
@@ -30,16 +35,19 @@
 
         <div class="cards">
             <div class="card">
+                <i class="fa-solid fa-lightbulb fa-2x"></i>
                 <h3>Projetos</h3>
                 <p>Acompanhar todos os projetos desenvolvidos pelas turmas.</p>
             </div>
 
             <div class="card">
-                <h3>Portfólio</h3>
+                <i class="fa-solid fa-folder-open fa-2x"></i>
+                <h3>Repositórios</h3>
                 <p>Veja as criações, ideias e trabalhos organizados.</p>
             </div>
 
             <div class="card">
+                <i class="fa-solid fa-users fa-2x"></i>
                 <h3>Turmas</h3>
                 <p>Uma seção de projetos de turmas da área da tecnologia.</p>
             </div>
@@ -59,11 +67,13 @@
 
         <div class="cards">
             <div class="card">
+                <i class="fa-solid fa-comments fa-2x"></i>
                 <h3>Fórum</h3>
                 <p>Compartilhar conhecimentos, estudos, inspirações e aprendizados.</p>
             </div>
 
             <div class="card">
+                <i class="fa-solid fa-calendar-days fa-2x"></i>
                 <h3>Calendário</h3>
                 <p>Visualizar os projetos que serão apresentados.</p>
             </div>
@@ -75,4 +85,6 @@
         &copy; 2025 Desenvolvido por Alcides, Augusto e Clariane
     </footer>
 
+    </body>
+    </html>
 {% endblock %}

@@ -71,10 +71,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Banco de dados ---
 DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-    )
+    'default': {
+        'ENGINE': os.environ.get('ENGINE'),
+        'NAME': os.environ.get('NAME'),
+        'USER': os.environ.get('USER'),
+        'HOST': os.environ.get('HOST'),
+        'PORT': os.environ.get('PORT'),
+        'PASSWORD': os.environ.get('PASSWORD'),
+    }
 }
 
 # --- Email ---

@@ -7,6 +7,7 @@
   margin: 0 auto 40px auto;
   padding: 0 10px;
   min-height: calc(81vh - 150px);
+  justify-items: center;
 }
 
 /* CARD DE TÓPICO */
@@ -21,8 +22,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  min-height: 160px;  
-  height: auto;       
+  height: 400px;
+  width: 300px;
 }
 
 .card-topico:hover {
@@ -47,7 +48,7 @@
   line-height: 1.4;
   display: block;
   overflow-wrap: break-word;
-  max-height: none; /* permite crescer */
+  max-height: none;
 }
 
 /* BOTÃO "ENTRAR NA CONVERSA" */

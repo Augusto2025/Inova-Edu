@@ -31,45 +31,33 @@ body {
     background: rgba(0, 0, 0, 0.5);
     padding: 20px 40px;
     border-radius: 10px;
-    font-size: 3rem;
-    margin-top: 80px;               
+    font-size: 3rem;            
 }
 
-/* container dos botões */
 .botoeslogin {
-    display: flex;
-    justify-content: center;            
-    margin: 30px 0;
-    position: absolute;          
-    top: 5px ;
-    right:2px;
-    padding: 10px;
-
+    position: fixed;      
+    top: 20px;            
+    right: 20px;          
+    z-index: 9999;        
 }
 
 .btn-acao {
-    padding: 12px 30px;
+    display: flex;        
+    align-items: center;
+    gap: 8px;             
+    padding: 12px 25px;
     font-size: 16px;
     border-radius: 10px;
     text-decoration: none;
     color: white;
     font-weight: bold;
-    transition: 0.3s;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s;
 }
 
-/* botão azul de login */
-.btn-acao {
-    background-color: #1A6F9D;
-}
-
-.btn-loacaogin:hover {
+.btn-acao:hover {
     background-color: #155a80;
 }
-
-
-
-
-
 
 /* Seções de Conteúdo */
 section {
@@ -121,4 +109,8 @@ footer {
     background: #222;
     color: white;
     margin-top: 40px;
+}
+
+h3, h2, .descricao, .card p, .card i{
+    color: #155a80;
 }
