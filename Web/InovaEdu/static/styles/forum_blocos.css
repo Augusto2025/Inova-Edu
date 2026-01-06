@@ -42,8 +42,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   max-width: 1000px;
-  margin: 0 auto 40px auto;
-  padding: 0 10px;
+  margin: 40px;
 }
 
 /* ===================== */
@@ -61,6 +60,7 @@ section {
   cursor: default;
   min-height: 160px;
   height: auto;
+  max-width: 590px;
 }
 
 section:hover {
@@ -223,7 +223,7 @@ section .Botao_entrar_forum:hover {
 
   main {
     margin-top: 10px;
-    width: 100%;
+    width: 90%;
   }
 }
 

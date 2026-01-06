@@ -14,16 +14,15 @@
 .card-topico {
   background: #ffffff;
   border-radius: 16px;
-  padding: 20px 18px;
+  padding: 20px 35px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   height: 400px;
-  width: 300px;
+  max-width: 420px; 
 }
 
 .card-topico:hover {

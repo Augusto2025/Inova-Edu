@@ -66,13 +66,11 @@ section:hover {
 }
 
 .rota {
-    width: 97%;
-    margin-left: 20px;
+    width: 96%;
     color: var(--azul-Senac);
     font-size: 14px;
     font-weight: 600;
-    margin-top: 12px;
-    margin-bottom: 6px;
+    margin: 20px;
     display: flex;
     justify-content: space-between;
 }
