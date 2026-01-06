@@ -7,30 +7,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Coordenação</title>
     <link rel="stylesheet" href="{% static 'styles/home_Coordenacao.css' %}?=V1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 </head>
 <body>
+
     <!-- HEADER -->
     <header class="header">
-        <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
+        <a href="{% url 'home_Coordenacao' %}">
+            <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
+        </a>
 
-        <nav>
-            {% comment %} <ul>
-                <li><a href="#">Cursos</a></li>
-                <li><a href="#">Turmas</a></li>
-                <li><a href="#">Usuario</a></li>
-            </ul> {% endcomment %}
-        </nav>
+        {% comment %} <nav class="header-links">
+            <a href="#">Perfil</a>
+        </nav> {% endcomment %}
+
+        <div class="headerperfil">
+            <img src="{% static 'img/user-solid-full.svg' %}"
+                alt="Perfil"
+                class="icone-perfil"
+                onclick="mostrarLista('listaPerfil')">
+
+            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+        </div>
+
     </header>
+
 
     <!-- SEÇÃO PRINCIPAL -->
     <main class="maincontainer">
 
-        <!-- IMAGEM INICIAL -->
-        <div id="painelImagem" class="painel-imagem">
-            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
-        </div>
-       
-        
         <aside class="menu-lateral">
             <div class="cards-home">
 
@@ -55,29 +61,34 @@
                     <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
                 </div>
             
-                <div class="card">
+                {% comment %} <div class="card">
                     <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
                     <h3>Perfil</h3>
                     <p>Gerencie seu perfil</p>
                     <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
-                </div>
+                </div> {% endcomment %}
             
             </div>
         </aside>
 
-      
-
-
-
+         <!-- IMAGEM INICIAL -->
+         <div id="painelImagem" class="painel-imagem">
+            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
+        </div>
 
         <section class="section-wrapper">
 
-            <!-- LISTAS (LADO DIREITO) -->
             <!-- USUÁRIO -->
             <section class="container_usuario lista_conteudo" id="listaUsuario" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista Usuário</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar Usuário">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModal">+ Cadastro</a>
                 </div>
 
                 <!-- Modal Cadastro -->
@@ -107,7 +118,7 @@
                                 <option value="" disabled selected>Selecione uma opção</option>
                                 <option value="Professor">Professor</option>
                                 <option value="Aluno">Aluno</option>
-                                <option value="Coordenacao">Coordenação</option>
+                                <option value="Coordenador">Coordenação</option>
                             </select>
                             <button type="submitsalvar">Salvar</button>
                             <button type="buttoncancelar" id="cancelarModal">Cancelar</button>
@@ -147,13 +158,13 @@
                             <label for="tipoCadastroEdit">Escolha sua opção de cadastro:</label>
                             <select id="tipoCadastroEdit" name="tipoCadastro" required>
                                 <option value="" disabled selected>Selecione uma opção</option>
-                                <option value="professor">Professor</option>
-                                <option value="aluno">Aluno</option>
-                                <option value="coordenacao">Coordenação</option>
+                                <option value="Professor">Professor</option>
+                                <option value="Aluno">Aluno</option>
+                                <option value="Coordenador">Coordenação</option>
                             </select>
 
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarEditar">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarEditar">Cancelar</button>
                         </form>
                     </div>
                 </div>
@@ -174,12 +185,15 @@
                             <span class="acoes">Ações</span>
                         </li>
                         {% for usuario in usuarios %}
-                        <li>
+                        <li data-id="{{ usuario.idusuario }}">
                             <span>{{ usuario.nome }}</span>
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
                             <span>••••••</span>
-                            <span>{{ usuario.descricao }}</span>
+                            <i class="fa-solid fa-align-center icon-descricao"
+                            title="Ver descrição"
+                            data-descricao="{{ usuario.descricao|escapejs }}"></i>
+                         
                             {% if usuario.imagem %}
                             <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
                             {% else %}
@@ -205,12 +219,22 @@
                 </section>
             </section>
 
+
+
             <!-- CURSOS -->
-            <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar o Curso">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModalCurso">+ Cadastro</a>
                 </div>
+
+
                 <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
@@ -219,7 +243,7 @@
                             <span>Data Término</span>
                             <span>Imagem</span>
                             <span>Descrição</span>
-                            <span class="acoes">Ações</span>
+                           <span class="acoes">Ações</span>
                         </li>
                         {% for curso in cursos %}
                         <li>
@@ -231,10 +255,30 @@
                                 <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
                                 {% else %}-{% endif %}
                             </span>
-                            <span>{{ curso.descricao_curso }}</span>
+                            <i class="fa-solid fa-align-center icon-descricao"
+                            title="Ver descrição"
+                            data-descricao="{{ curso.descricao|escapejs }}"></i>>
+
                             <span class="acoes">
-                                <button type="button" onclick="window.location.href='{% url 'editar_curso' curso.pk %}'">Editar</button>
-                                <button type="button" onclick="window.location.href='{% url 'excluir_curso' curso.pk %}'">Excluir</button>
+                                <button
+                                    type="button"
+                                    class="btn-editar-curso"
+                                    data-id="{{ curso.idcurso }}"
+                                    data-nome="{{ curso.nome_curso }}"
+                                    data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
+                                    data-final="{{ curso.data_final|date:'Y-m-d' }}"
+                                    data-descricao="{{ curso.descricao_curso }}">
+                                    Editar
+                                </button>
+
+                                <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="botao-excluir"
+                                            onclick="return confirm('Tem certeza?')">
+                                        Excluir
+                                    </button>
+                                </form>
                             </span>
                         </li>
                         {% empty %}
@@ -244,49 +288,264 @@
                 </section>
             </section>
 
+            <!-- MODAL CADASTRO CURSO -->
+            <div id="modalCadastroCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharModalCurso">&times;</span>
+
+                    <div class="titulo_lista">
+                        <p>Cadastro de Curso</p>
+                    </div>
+
+                    <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <label for="nome_curso">Nome do Curso:</label>
+                        <input type="text" id="nome_curso" name="nome_curso" required>
+
+                        <label for="data_inicio">Data de Início:</label>
+                        <input type="date" id="data_inicio" name="data_inicio">
+
+                        <label for="data_final">Data de Término:</label>
+                        <input type="date" id="data_final" name="data_final">
+
+                        <label for="imagem">Imagem do Curso:</label>
+                        <input type="file" id="imagem" name="imagem" accept="image/*">
+
+                        <label for="descricao_curso">Descrição:</label>
+                        <textarea id="descricao_curso" name="descricao_curso" rows="4"></textarea>
+
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarModalCurso">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+
+            {% comment %} EDITAR CURSO {% endcomment %}
+            <div id="modalEditarCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharEditarCurso">&times;</span>
+            
+                    <div class="titulo_lista">
+                        <p>Editar Curso</p>
+                    </div>
+            
+                    <form action="{% url 'editar_curso' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+            
+                        <input type="hidden" name="idcurso" id="edit_idcurso">
+            
+                        <label>Nome do Curso:</label>
+                        <input type="text" id="edit_nome_curso" name="nome_curso" required>
+            
+                        <label>Data de Início:</label>
+                        <input type="date" id="edit_data_inicio" name="data_inicio">
+            
+                        <label>Data de Término:</label>
+                        <input type="date" id="edit_data_final" name="data_final">
+            
+                        <label>Imagem do Curso:</label>
+                        <input type="file" id="edit_imagem" name="imagem" accept="image/*">
+            
+                        <label>Descrição:</label>
+                        <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
+            
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarCurso">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+            
+            
+
             <!-- TURMAS -->
             <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Turmas</p>
-                    <a href="#" class="btn-add" id="abrirModal">Cadastro</a>
+
+                    <div class="guia-centro">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Pesquisar a Turma">
+                    </div>
+
+                    <a href="#" class="btn-add" id="abrirModalTurma">+ Cadastro</a>
                 </div>
+
+
                 <section class="lista-completa">
                     <ul>
                         <li class="cabecalho">
-                            <span>Nome Turma</span>
+                            <span>Codigo_turma</span>
+                            <span>Turno</span>
+                            <span>Ano</span>
                             <span>Curso</span>
-                            <span>Data Início</span>
-                            <span>Data Fim</span>
                             <span class="acoes">Ações</span>
                         </li>
                         {% for turma in turmas %}
                         <li>
-                            <span>{{ turma.nome_turma }}</span>
+                            <span>{{ turma.codigo_turma }}</span>
+                            <span>{{ turma.turno }}</span>
+                            <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
-                            <span>{{ turma.data_inicio }}</span>
-                            <span>{{ turma.data_fim }}</span>
-                            <span class="acoes">
-                                <button type="button">Editar</button>
-                                <button type="button">Excluir</button>
+                            <span class="acoes acoes-turma">
+                                <button type="button"
+                                    class="btn-editar-turma"
+                                    data-id="{{ turma.idturma }}"
+                                    data-codigo="{{ turma.codigo_turma }}"
+                                    data-turno="{{ turma.turno }}"
+                                    data-ano="{{ turma.ano }}"
+                                    data-curso="{{ turma.curso.idcurso }}">
+                                    Editar
+                                </button>
+
+                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
+                                        Excluir
+                                    </button>
+                                </form>
                             </span>
+
                         </li>
                         {% empty %}
                         <li><span>Nenhuma turma cadastrada.</span></li>
                         {% endfor %}
+
                     </ul>
                 </section>
             </section>
 
+            <div id="modalCadastroTurma" class="modal" style="display:none;">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharModalTurma">&times;</span>
+            
+                    <h3>Cadastro de Turma</h3>
+            
+                    <form action="{% url 'criar_turma' %}" method="POST">
+                        {% csrf_token %}
+            
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo_turma" required>
+            
+                        <label>Turno</label>
+                        <input type="text" name="turno">
+            
+                        <label>Ano</label>
+                        <input type="number" name="ano" required>
+            
+                        <label>Curso</label>
+                        <select name="curso_id" required>
+                            <option value="">Selecione</option>
+                            {% for curso in cursos %}
+                                <option value="{{ curso.idcurso }}">{{ curso.nome_curso }}</option>
+                            {% endfor %}
+                        </select>
+            
+                        <div style="margin-top:15px;">
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarModalTurma">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="modalEditarTurma" class="modal">
+                <div class="modal-conteudo">
+                    <span id="fecharEditarTurma" class="fechar">&times;</span>
+            
+                    <h3>Editar Turma</h3>
+            
+                    <form method="POST" action="{% url 'editar_turma' %}">
+                        {% csrf_token %}
+            
+                        <input type="hidden" name="idturma" id="idTurmaEdit">
+            
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo_turma" id="codigoTurmaEdit" required>
+            
+                        <label>Turno</label>
+                        <input type="text" name="turno" id="turnoEdit">
+            
+                        <label>Ano</label>
+                        <input type="number" name="ano" id="anoEdit">
+            
+                        <label>Curso</label>
+                        <select name="curso" id="cursoEdit">
+                            {% for curso in cursos %}
+                                <option value="{{ curso.idcurso }}">{{ curso.nome_curso }}</option>
+                            {% endfor %}
+                        </select>
+            
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarTurma">Cancelar</button>
+                    </form>
+                </div>
+            </div>
+            
+
+
             <!-- PERFIL -->
+
             <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
-                <div class="titulo_lista"><p>Perfil</p></div>
-                <p>Gerencie suas informações de perfil aqui.</p>
+                <div class="titulo_lista">
+                    <p>Perfil da Coordenação</p>
+                    <a href="#" class="btn-add" onclick="mostrarLista('editarPerfil')">Editar</a>
+                </div>
+
+                <div class="perfil-card">
+                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-img">
+
+                    <p><strong>Nome:</strong> {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}</p>
+                    <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
+                    <p><strong>Tipo:</strong> {{ usuario_logado.tipo }}</p>
+
+                    <p><strong>Descrição:</strong></p>
+                    <p class="descricao">
+                        {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
+                    </p>
+
+                </div>
             </section>
+
+            <!-- PERFIL EDITAR -->
+
+            <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
+                <div class="titulo_lista">
+                    <p>Editar Perfil</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="perfil-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="editar_perfil">
+
+                    <label>Nome</label>
+                    <input type="text" name="nome" value="{{ usuario_logado.nome }}" required>
+
+                    <label>Sobrenome</label>
+                    <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}" required>
+
+                    <label>Email</label>
+                    <input type="email" name="email" value="{{ usuario_logado.email }}" required>
+
+                    <label>Descrição</label>
+                    <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
+
+                    <label>Imagem</label>
+                    <input type="file" name="imagem">
+
+                    <div style="margin-top:15px;">
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" onclick="mostrarLista('listaPerfil')">Cancelar</button>
+                    </div>
+                </form>
+
+            </section>
+
 
         </section>
     </main>
 
-    <!-- SCRIPT PARA MODAL E MOSTRAR LISTAS -->
     
 
     <!-- FOOTER -->
@@ -294,6 +553,17 @@
         <p>&copy; 2025 Desenvolvido por Alcides, Augusto e Clariane</p>
     </footer>
 
-    <script src="{% static 'scripts/home_coordenacao.js' %}"></script>
+    <script src="{% static 'scripts/home_coordenacao.js' %}"></script> 
+    <script src="{% static 'scripts/modal_descricao.js' %}"></script> 
+
+
+    <div id="modalDescricao" class="modal">
+        <div class="modal-content">
+            <span class="fechar-descricao">&times;</span>
+            <h3>Descrição</h3>
+            <p id="textoDescricao"></p>
+        </div>
+    </div>
+
 </body>
 </html>

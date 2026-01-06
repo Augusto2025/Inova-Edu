@@ -40,7 +40,7 @@ function mostrarLista(id) {
     document.getElementById("painelImagem").style.display = "none";
 }
 
-
+// ====== EDITAR ======
 const botoesEditar = document.querySelectorAll('.botao-editar');
 const modalEditar = document.getElementById('modalEditar');
 const fecharEditar = document.getElementById('fecharEditar');
@@ -71,4 +71,113 @@ cancelarEditar.addEventListener('click', () => modalEditar.style.display = 'none
 
 window.addEventListener('click', (e) => {
     if(e.target == modalEditar) modalEditar.style.display = 'none';
+});
+
+
+
+// ===== MODAL CADASTRO CURSO =====
+const abrirModalCurso = document.getElementById('abrirModalCurso');
+const modalCurso = document.getElementById('modalCadastroCurso');
+const fecharModalCurso = document.getElementById('fecharModalCurso');
+const cancelarModalCurso = document.getElementById('cancelarModalCurso');
+
+abrirModalCurso.addEventListener('click', function(e) {
+    e.preventDefault();
+    modalCurso.style.display = 'flex';
+});
+
+fecharModalCurso.addEventListener('click', () => {
+    modalCurso.style.display = 'none';
+});
+
+cancelarModalCurso.addEventListener('click', () => {
+    modalCurso.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === modalCurso) {
+        modalCurso.style.display = 'none';
+    }
+});
+
+// ===== MODAL EDITAR CURSO =====
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalEditarCurso = document.getElementById("modalEditarCurso");
+    const fecharEditarCurso = document.getElementById("fecharEditarCurso");
+    const cancelarEditarCurso = document.getElementById("cancelarEditarCurso");
+
+    document.querySelectorAll(".btn-editar-curso").forEach(botao => {
+        botao.addEventListener("click", function () {
+
+            document.getElementById("edit_idcurso").value = this.dataset.id;
+            document.getElementById("edit_nome_curso").value = this.dataset.nome;
+            document.getElementById("edit_data_inicio").value = this.dataset.inicio || "";
+            document.getElementById("edit_data_final").value = this.dataset.final || "";
+            document.getElementById("edit_descricao_curso").value = this.dataset.descricao || "";
+
+            modalEditarCurso.style.display = "flex";
+        });
+    });
+
+    fecharEditarCurso.onclick = () => modalEditarCurso.style.display = "none";
+    cancelarEditarCurso.onclick = () => modalEditarCurso.style.display = "none";
+
+});
+
+
+
+// ===== MODAL TURMA =====
+const abrirTurma = document.getElementById("abrirModalTurma");
+const modalTurma = document.getElementById("modalCadastroTurma");
+const fecharTurma = document.getElementById("fecharModalTurma");
+const cancelarTurma = document.getElementById("cancelarModalTurma");
+
+abrirTurma.onclick = function (e) {
+    e.preventDefault();
+    modalTurma.style.display = "flex";
+};
+
+fecharTurma.onclick = function () {
+    modalTurma.style.display = "none";
+};
+
+cancelarTurma.onclick = function () {
+    modalTurma.style.display = "none";
+};
+
+window.addEventListener("click", function (e) {
+    if (e.target === modalTurma) {
+        modalTurma.style.display = "none";
+    }
+});
+
+// ===== MODAL EDITAR TURMA =====
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("modalEditarTurma");
+    const fechar = document.getElementById("fecharEditarTurma");
+    const cancelar = document.getElementById("cancelarEditarTurma");
+
+    document.querySelectorAll(".btn-editar-turma").forEach(btn => {
+        btn.addEventListener("click", function () {
+
+            document.getElementById("idTurmaEdit").value = this.dataset.id;
+            document.getElementById("codigoTurmaEdit").value = this.dataset.codigo;
+            document.getElementById("turnoEdit").value = this.dataset.turno;
+            document.getElementById("anoEdit").value = this.dataset.ano;
+            document.getElementById("cursoEdit").value = this.dataset.curso;
+
+            modal.style.display = "flex";
+        });
+    });
+
+    fechar.onclick = () => modal.style.display = "none";
+    cancelar.onclick = () => modal.style.display = "none";
+
+    window.onclick = (e) => {
+        if (e.target === modal) modal.style.display = "none";
+    };
 });

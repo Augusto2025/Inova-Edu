@@ -24,15 +24,20 @@ urlpatterns = [
     path('repositorio/<int:turma_id>/', views.repositorio, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
     # Coordenação
-    path('home_Coordenacao', views.home_Coordenacao, name="home_Coordenacao"),
-    path('cadastro_Aluno/', views.cadastro, name='cadastro_Aluno'),
-    path('cadastroCurso/', views.cadastroCurso, name='cadastroCurso'),
-    path('cadastroTurma/',views.cadastroTurma, name='cadastroTurma'),
-    path('listaturma/', views.listaturma, name='listaturma'),
+    path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
+    path('criar_curso/', views.criar_curso, name='criar_curso'),
+    path('criar_turma/', views.criar_turma, name='criar_turma'),
+    
+    path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
+    path("curso/editar/", views.editar_curso, name="editar_curso"),
+    path('turma/editar/', views.editar_turma, name='editar_turma'),
+
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
-    path('enviarturma/', views.enviarturma, name='enviarturma'),
-    path('criar_curso', views.criar_curso, name='criar_curso'),
-    path('curso/lista/', views.lista_curso, name='ListaCurso'),
+    path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
+    path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
+
+
+
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
 ]
 

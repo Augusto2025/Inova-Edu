@@ -623,51 +623,67 @@ def criar_evento(request):
 
     return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
 
-# --------------- Telas Coordenação ---------------
-def cadastro(request):
-    return render(request, 'Coordenacao/cadastro_Aluno.html')
+
+
+# ================ TELAS COORDENAÇÃO ====================
 
 def home_Coordenacao(request):
+    email_sessao = request.session.get('usuario_email')
+
+    if not email_sessao:
+        return redirect('login')
+
+    usuario_logado = get_object_or_404(Usuario, email=email_sessao)
+
     usuarios = Usuario.objects.all()
+    cursos = Curso.objects.all()
+    turmas = Turma.objects.select_related('curso').all()
 
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        sobrenome = request.POST.get('Sobrenome')
-        email = request.POST.get('Email')
-        senha = request.POST.get('Senha')
-        descricao = request.POST.get('descricao')
-        tipo = request.POST.get('tipoCadastro')
-        imagem = request.FILES.get('imagem')
+        acao = request.POST.get('acao')
 
-        Usuario.objects.create(
-            nome=nome,
-            sobrenome=sobrenome,
-            email=email,
-            senha=senha,
-            descricao=descricao,
-            tipo=tipo,
-            imagem=imagem
-        )
+       
+        # EDITAR PERFIL ==========================
+        if acao == 'editar_perfil':
+            usuario_logado.nome = request.POST.get('nome')
+            usuario_logado.sobrenome = request.POST.get('sobrenome')
+            usuario_logado.email = request.POST.get('email')
+            usuario_logado.descricao = request.POST.get('descricao')
 
-        return redirect('home_Coordenacao')  # Volta para a mesma tela
+            if request.FILES.get('imagem'):
+                usuario_logado.imagem = request.FILES.get('imagem')
+
+            usuario_logado.save()
+            return redirect('home_Coordenacao')
+
+
+        #  CADASTRAR USUÁRIO ==========================
+       
+        if acao == 'cadastrar_usuario':
+            Usuario.objects.create(
+                nome=request.POST.get('nome'),
+                sobrenome=request.POST.get('Sobrenome'),
+                email=request.POST.get('Email'),
+                senha=request.POST.get('Senha'),
+                descricao=request.POST.get('descricao'),
+                tipo=request.POST.get('tipoCadastro'),  # OBRIGATÓRIO
+                imagem=request.FILES.get('imagem')
+            )
+            return redirect('home_Coordenacao')
 
     return render(request, 'Coordenacao/home_Coordenacao.html', {
-        'usuarios': usuarios
+        'usuarios': usuarios,
+        'cursos': cursos,
+        'turmas': turmas,
+        'usuario_logado': usuario_logado,
     })
 
-def cadastroCurso(request):
-    return render(request, 'Coordenacao/cadastroCurso.html')
+
+
 
 def homePage(request):
     return render(request, 'homePage.html')
 
-def cadastroTurma(request):
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
-
-def lista_usuario(request):
-    usuarios = Usuario.objects.all() #buscar todos os usuarios do banco
-    return render(request, "Coordenacao/ListaUsuario.html", {'usuarios':usuarios})
 
 def excluir_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, idusuario=idusuario)
@@ -679,6 +695,10 @@ def editar_usuario(request, idusuario):
     usuario = Usuario.objects.get(idusuario=idusuario)
 
     if request.method == "POST":
+        # Verifica se os dados estão sendo passados corretamente
+        print(request.POST)
+        print(request.FILES)
+
         usuario.nome = request.POST.get("nome")
         usuario.sobrenome = request.POST.get("sobrenome")
         usuario.email = request.POST.get("email")
@@ -697,69 +717,169 @@ def editar_usuario(request, idusuario):
 
 
 
-# Turma
-
-def enviarturma(request):
-    if request.method == "POST":
-        codigo_turma = request.POST.get("codigo_turma")
-        turno = request.POST.get("turno")
-        curso_id = request.POST.get("curso")
-
-        curso = Curso.objects.get(idcurso=curso_id)
-        
-        Turma.objects.create(
-            codigo_turma=codigo_turma,
-            turno=turno,
-            curso=curso
-        )
-
-        return redirect('listaturma')
-
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/cadastroTurma.html', {'cursos': cursos})
-
-
-def listaturma(request):
-    turmas = Turma.objects.all()
-    return render(request, 'Coordenacao/ListaTurma.html', {'turmas': turmas})
-
-
-
-
-
-
-# Curso
-
+# CURSO
 
 def criar_curso(request):
     if request.method == 'POST':
 
-        # pega o email salvo na sessão na hora do login
         email_usuario = request.session.get('usuario_email')
-
         if not email_usuario:
-            return redirect('login')  # não está logado
+            return redirect('login')
 
-        # pega o usuário na sua tabela Usuario
-        usuario = Usuario.objects.get(email=email_usuario)
+        try:
+            usuario = Usuario.objects.get(email=email_usuario)
+        except Usuario.DoesNotExist:
+            return redirect('login')
 
-        imagem = request.FILES.get('imagem')
-
-        curso = Curso(
-            nome_curso=request.POST['nome_curso'],
-            descricao_curso=request.POST['descricao_curso'],
+        Curso.objects.create(
+            nome_curso=request.POST.get('nome_curso'),
+            descricao_curso=request.POST.get('descricao_curso'),
             data_inicio=request.POST.get('data_inicio'),
             data_final=request.POST.get('data_final'),
-            usuario=usuario,
-            imagem=imagem
+            imagem=request.FILES.get('imagem'),
+            usuario=usuario
         )
 
+        return redirect('home_Coordenacao')
+
+def editar_curso(request):
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=request.POST.get("idcurso"))
+
+        curso.nome_curso = request.POST.get("nome_curso")
+        curso.data_inicio = request.POST.get("data_inicio")
+        curso.data_final = request.POST.get("data_final")
+        curso.descricao_curso = request.POST.get("descricao_curso")
+
+        if request.FILES.get("imagem"):
+            curso.imagem = request.FILES.get("imagem")
+
         curso.save()
-        return redirect('ListaCurso')
 
-    return render(request, 'Coordenacao/ListaCurso.html')  # GET
+        # ✅ mensagem de sucesso
+        messages.success(request, "Curso editado com sucesso!")
+
+    # ✅ continua na mesma página
+    return redirect("home_Coordenacao")
 
 
+def excluir_curso(request, idcurso):
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=idcurso)
+        curso.delete()
+        return redirect(request.META.get('HTTP_REFERER', 'home_Coordenacao'))
+
+
+
+
+# TURMA
+
+def criar_turma(request):
+    if request.method == 'POST':
+        codigo_turma = request.POST.get('codigo_turma')
+        turno = request.POST.get('turno')
+        ano = request.POST.get('ano')
+        curso_id = request.POST.get('curso_id')
+
+        curso = get_object_or_404(Curso, idcurso=curso_id)
+
+        Turma.objects.create(
+            codigo_turma=codigo_turma,
+            turno=turno,
+            ano=ano,
+            curso=curso
+        )
+
+        return redirect('home_Coordenacao')  # permanece na página
+
+
+
+def editar_turma(request):
+    if request.method == "POST":
+        turma = get_object_or_404(Turma, idturma=request.POST.get('idturma'))
+
+        turma.codigo_turma = request.POST.get('codigo_turma')
+        turma.turno = request.POST.get('turno')
+        turma.ano = request.POST.get('ano')
+        turma.curso_id = request.POST.get('curso')
+
+        turma.save()
+
+        messages.success(request, "Editado com sucesso!")
+
+    return redirect('home_Coordenacao')
+
+
+def excluir_turma(request, idturma):
+    if request.method == "POST":
+        turma = get_object_or_404(Turma, idturma=idturma)
+        turma.delete()
+    return redirect('home_Coordenacao')
+
+
+
+# EMAIL
+
+
+
+
+
+<<<<<<< HEAD
 def lista_curso(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
+=======
+
+
+
+
+def pedir_email(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        # Gerar código de 6 dígitos
+        codigo = random.randint(100000, 999999)
+
+        # Salvar na session
+        request.session["rec_email"] = email
+        request.session["rec_codigo"] = str(codigo)
+
+        # Enviar email
+        send_mail(
+            subject="Código de verificação",
+            message=f"Seu código é: {codigo}",
+            from_email="mneto8141@gmail.com",
+            recipient_list=[email],
+        )
+
+        return redirect("verificar_codigo")
+
+    return render(request, "pedir_email.html")
+
+def verificar_codigo(request):
+    if request.method == "POST":
+        codigo_digitado = request.POST.get("codigo")
+        codigo_real = request.session.get("rec_codigo")
+
+        if codigo_digitado == codigo_real:
+            return redirect("redefinir_senha")
+
+        return render(request, "verificar_codigo.html", { "erro": "Código incorreto" })
+
+    return render(request, "verificar_codigo.html")
+
+
+def redefinir_senha(request):
+    if request.method == "POST":
+        senha1 = request.POST.get("senha1")
+        senha2 = request.POST.get("senha2")
+
+        if senha1 != senha2:
+            return render(request, "redefinir_senha.html", {
+                "mensagem": "As senhas não coincidem!"
+            })
+
+        return redirect("login")
+
+    return render(request, "redefinir_senha.html")
+>>>>>>> nova_usuario_lista
