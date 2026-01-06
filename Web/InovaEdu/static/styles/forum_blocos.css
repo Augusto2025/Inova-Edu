@@ -27,6 +27,7 @@
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-style: none;
 }
 
 .botao-criar-forum:hover {
@@ -199,6 +200,70 @@ section .Botao_entrar_forum:hover {
 
 .btn-aplicar:hover {
   background: #00376a;
+}
+
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;              /* ESCONDIDO */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-overlay.open {
+  display: flex;              /* APARECE */
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal-content input {
+  width: 94%;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-content textarea {
+  width: 98%;
+  max-width: 100%;
+  resize: vertical;   /* só permite aumentar para baixo */
+}
+
+.modal-actions button{
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  background: var(--laranja-Senac);
+  padding: 10px 16px; 
+  font-size: 16px;
+  text-decoration: none;
+  width: 70%;
+  transition: background 0.2s ease;
 }
 
 /* ===================== */

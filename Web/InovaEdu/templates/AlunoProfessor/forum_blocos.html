@@ -13,21 +13,47 @@
         <p>Página: Todos os fóruns</p>
 
         <div class="acoes-topo">
-            <a href="{% url 'criar_forum' %}" class="botao-criar-forum">
-                + Criar Tópico
-            </a>
+            <button id="abrirModalForum" class="botao-criar-forum" type="button">
+                + Criar Fórum
+            </button>                                
             <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro" />
         </div>
     </div>
 
-    
+    <!-- MODAL CRIAR FÓRUM -->
+    <div id="modalCriarForum" class="modal-overlay">
+        <div class="modal-content">
+
+            <h2>Criar novo fórum</h2>
+
+            <form method="POST" action="{% url 'criar_forum' %}">
+                {% csrf_token %}
+
+                <label>Nome do fórum</label>
+                <input name="nome" required>
+
+                <label>Título do primeiro tópico</label>
+                <input name="titulo_topico" required>
+
+                <label>Descrição do tópico</label>
+                <textarea name="descricao_topico"></textarea>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Criar</button>
+                    <button type="button" id="fecharModalForum" class="btn-secondary">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 
 
     <div class="titulo">
         <p>Temas dos fóruns</p>
     </div>
 
-    <!-- moved: aside deve ficar IMEDIATAMENTE aqui, abaixo da .titulo e antes do restante -->
     <aside class="sidebar-filtro">
         <h3 style="justify-self: center; color: #004A8D;">Filtros</h3>
 
@@ -80,6 +106,37 @@
             </section>
         {% endfor %}
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        
+            // MODAL CRIAR FÓRUM
+            const abrirModal = document.getElementById('abrirModalForum');
+            const fecharModal = document.getElementById('fecharModalForum');
+            const modal = document.getElementById('modalCriarForum');
+        
+            if (abrirModal && modal) {
+                abrirModal.addEventListener('click', function () {
+                    modal.classList.add('open');
+                });
+            }
+        
+            if (fecharModal && modal) {
+                fecharModal.addEventListener('click', function () {
+                    modal.classList.remove('open');
+                });
+            }
+        
+            // Fechar clicando fora do modal
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>       
 
     <!-- adicionar/atualizar este script mínimo para alternar a classe .open -->
     <script>

@@ -554,6 +554,7 @@ def forum_chat(request, forum_id):
 
 
 
+
 def criar_forum(request):
     email = request.session.get('usuario_email')
     if not email:
@@ -566,16 +567,32 @@ def criar_forum(request):
 
     if request.method == 'POST':
         nome = request.POST.get('nome', '').strip()
-        if nome:
-            Forum.objects.create(
-                nome=nome,
-                data_criacao=timezone.now().date(),
-                usuario=usuario
-            )
-            return redirect('forum_blocos')
-        # se quiser, pode adicionar mensagem de erro no contexto
+        titulo_topico = request.POST.get('titulo_topico', '').strip()
+        descricao_topico = request.POST.get('descricao_topico', '').strip()
 
-    return render(request, 'AlunoProfessor/criar_forum.html', {'usuario': usuario})
+        if not nome or not titulo_topico:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+            return redirect('forum_blocos')
+
+        # 1️⃣ Cria o Fórum
+        forum = Forum.objects.create(
+            nome=nome,
+            data_criacao=timezone.now().date(),
+            usuario=usuario
+        )
+
+        # 2️⃣ Cria o primeiro Tópico
+        Topico.objects.create(
+            forum=forum,
+            titulo=titulo_topico,
+            descricao=descricao_topico
+        )
+
+        messages.success(request, 'Fórum criado com sucesso!')
+        return redirect('forum_blocos')
+
+    # 🚫 Não renderiza template próprio (modal cuida disso)
+    return redirect('forum_blocos')
 
 def criar_evento(request):
     email = request.session.get('usuario_email')
