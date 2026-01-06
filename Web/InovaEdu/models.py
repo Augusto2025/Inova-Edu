@@ -73,13 +73,8 @@ class AuthUserUserPermissions(models.Model):
 
 class Usuario(models.Model):
     idusuario = models.AutoField(db_column='idUsuario', primary_key=True)
-<<<<<<< HEAD
     imagem = CloudinaryField('imagem_usuario', db_column='imagem_usuario', blank=True, null=True)
     tipo = models.CharField(db_column='Tipo', max_length=11)
-=======
-    imagem = models.ImageField(db_column='imagem_usuario', upload_to='usuarios/', blank=True, null=True)
-    tipo = models.CharField(db_column='Tipo', max_length=15)
->>>>>>> nova_usuario_lista
     nome = models.CharField(db_column='Nome', max_length=20)
     sobrenome = models.CharField(db_column='Sobrenome', max_length=20)
     email = models.CharField(db_column='Email', max_length=45)
