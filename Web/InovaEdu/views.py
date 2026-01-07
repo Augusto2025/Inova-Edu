@@ -552,8 +552,47 @@ def forum_chat(request, forum_id):
         'mensagens': mensagens
     })
 
+def editar_forum(request, forum_id):
+    forum = get_object_or_404(Forum, pk=forum_id)
+    email_logado = request.session.get('usuario_email')
 
+    # Só permite editar se o usuário logado for o criador
+    if not forum.usuario or email_logado != forum.usuario.email:
+        return redirect('forum_blocos')
 
+    topico = forum.topicos.first()
+
+    if request.method == "POST":
+        forum_nome = request.POST.get("nome", "").strip()
+        topico_titulo = request.POST.get("titulo", "").strip()
+        topico_descricao = request.POST.get("descricao", "").strip()
+
+        if forum_nome:
+            forum.nome = forum_nome
+            forum.save()
+
+        if topico:
+            topico.titulo = topico_titulo
+            topico.descricao = topico_descricao
+            topico.save()
+
+        return redirect('forum_blocos')
+
+    return redirect('forum_blocos')
+
+def excluir_forum(request, forum_id):
+    if request.method == "POST":
+        forum = get_object_or_404(Forum, pk=forum_id)
+        usuario_email = request.session.get('usuario_email')
+
+        # Só permite excluir se for o dono
+        if forum.usuario and forum.usuario.email == usuario_email:
+            forum.delete()
+            messages.success(request, "Fórum excluído com sucesso!")
+        else:
+            messages.error(request, "Você não tem permissão para excluir este fórum.")
+
+    return redirect('forum_blocos')  # volta para a página principal
 
 def criar_forum(request):
     email = request.session.get('usuario_email')

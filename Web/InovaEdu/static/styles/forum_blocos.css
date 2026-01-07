@@ -246,6 +246,7 @@ section .Botao_entrar_forum:hover {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 30px;
 }
 
 .modal-content textarea {
@@ -265,6 +266,26 @@ section .Botao_entrar_forum:hover {
   width: 70%;
   transition: background 0.2s ease;
 }
+
+.acoes-forum button {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px; /* tamanho do ícone */
+  color: #004A8D;  /* cor do ícone */
+  margin-right: 8px;
+  transition: color 0.2s;
+}
+
+.acoes-forum button:hover {
+  color: #F7941D; /* cor ao passar o mouse */
+}
+
+.acoes-forum button i {
+  pointer-events: none; /* garante que o clique funcione no botão */
+}
+
 
 /* ===================== */
 /* RESPONSIVO - LAPTOP */
