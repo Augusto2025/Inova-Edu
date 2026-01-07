@@ -208,11 +208,12 @@ class Pasta(models.Model):
 
 class Arquivo(models.Model):
     nome = models.CharField(max_length=100)
-    arquivo = CloudinaryField('arquivo', resource_type='raw')
-    enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    arquivo = models.CharField(max_length=255)
+    resource_type = models.CharField(max_length=20, default='auto')
+    enviado_por = models.ForeignKey('Usuario', on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(auto_now_add=True)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-    pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
+    turma = models.ForeignKey('Turma', on_delete=models.CASCADE)
+    pasta = models.ForeignKey('Pasta', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         managed = True
@@ -225,7 +226,7 @@ class Arquivo(models.Model):
     def download_url(self):
         url, _ = cloudinary_url(
             self.arquivo.public_id,
-            resource_type="raw",
+            resource_type=self.resource_type,
             attachment=self.nome
         )
         return url
