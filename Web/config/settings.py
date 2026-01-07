@@ -119,4 +119,3 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # --- media files ---
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'

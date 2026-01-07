@@ -41,5 +41,8 @@ urlpatterns = [
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
 ]
 
-if settings.DEBUG:  
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG and hasattr(settings, 'MEDIA_ROOT'):
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
