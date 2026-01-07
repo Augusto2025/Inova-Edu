@@ -85,7 +85,7 @@
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar Usuário">
+                        <input type="text" id="pesquisarUsuario" placeholder="Pesquisar Usuário">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModal">+ Cadastro</a>
@@ -178,7 +178,7 @@
                             <span>Nome</span>
                             <span>Sobrenome</span>
                             <span>Email</span>
-                            <span>Senha</span>
+                            {% comment %} <span>Senha</span> {% endcomment %}
                             <span>Descrição</span>
                             <span>Imagem</span>
                             <span>Tipo de Usuário</span>
@@ -189,7 +189,7 @@
                             <span>{{ usuario.nome }}</span>
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
-                            <span>••••••</span>
+                            {% comment %} <span>••••••</span> {% endcomment %}
                             <i class="fa-solid fa-align-center icon-descricao"
                             title="Ver descrição"
                             data-descricao="{{ usuario.descricao|escapejs }}"></i>
@@ -222,13 +222,13 @@
 
 
             <!-- CURSOS -->
-             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+            <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar o Curso">
+                        <input type="text" id="pesquisarCurso" placeholder="Pesquisar o Curso">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModalCurso">+ Cadastro</a>
@@ -257,7 +257,7 @@
                             </span>
                             <i class="fa-solid fa-align-center icon-descricao"
                             title="Ver descrição"
-                            data-descricao="{{ curso.descricao|escapejs }}"></i>>
+                            data-descricao="{{ curso.descricao|escapejs }}"></i>
 
                             <span class="acoes">
                                 <button
@@ -365,7 +365,7 @@
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar a Turma">
+                        <input type="text" id="pesquisarTurma" placeholder="Pesquisar a Turma">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModalTurma">+ Cadastro</a>
