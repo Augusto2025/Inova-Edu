@@ -237,9 +237,12 @@ section .Botao_entrar_forum:hover {
 }
 
 .modal-content input {
-  width: 94%;
-  padding: 10px;
+  width: 92%;
   margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid var(--azul-Senac);
+  font-size: 15px;
 }
 
 .modal-actions {
@@ -250,9 +253,14 @@ section .Botao_entrar_forum:hover {
 }
 
 .modal-content textarea {
-  width: 98%;
+  width: 93%;
   max-width: 100%;
-  resize: vertical;   /* só permite aumentar para baixo */
+  resize: vertical;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid var(--azul-Senac);
+  font-size: 15px;
 }
 
 .modal-actions button{
