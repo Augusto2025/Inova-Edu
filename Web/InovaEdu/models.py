@@ -190,6 +190,7 @@ class Mensagem(models.Model):
         return f'{nome_autor}: {self.conteudo[:30]}'
 
 
+
 class Pasta(models.Model):
     nome = models.CharField(max_length=100)
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
