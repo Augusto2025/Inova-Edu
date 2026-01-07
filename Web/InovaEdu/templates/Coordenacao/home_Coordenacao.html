@@ -61,12 +61,12 @@
                     <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
                 </div>
             
-                {% comment %} <div class="card">
+               {% comment %} <div class="card">
                     <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
-                    <h3>Perfil</h3>
-                    <p>Gerencie seu perfil</p>
+                    <h3>usuario e turma</h3>
+                    <p>usuario e turma</p>
                     <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
-                </div> {% endcomment %}
+                </div>  {% endcomment %}
             
             </div>
         </aside>
@@ -487,26 +487,27 @@
 
             <!-- PERFIL -->
 
-            <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
-                <div class="titulo_lista">
+            <section class="perfil-coord-container lista_conteudo" id="listaPerfil" style="display:none;">
+                <div class="perfil-coord-header">
                     <p>Perfil da Coordenação</p>
-                    <a href="#" class="btn-add" onclick="mostrarLista('editarPerfil')">Editar</a>
                 </div>
-
-                <div class="perfil-card">
-                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-img">
-
+            
+                <div class="perfil-coord-card">
+                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
+            
                     <p><strong>Nome:</strong> {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}</p>
                     <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
                     <p><strong>Tipo:</strong> {{ usuario_logado.tipo }}</p>
-
-                    <p><strong>Descrição:</strong></p>
-                    <p class="descricao">
+            
+                    <p class="perfil-coord-desc-title"><strong>Descrição:</strong></p>
+                    <p class="perfil-coord-desc">
                         {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
                     </p>
+                    <a href="#" class="perfil-coord-btn" onclick="mostrarLista('editarPerfil')">Editar</a>
 
                 </div>
             </section>
+            
 
             <!-- PERFIL EDITAR -->
 

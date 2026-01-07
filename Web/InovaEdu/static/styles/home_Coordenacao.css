@@ -18,7 +18,11 @@
 
 /* ======= BODY ======= */
 body {
-  background-color: var(--cinza-Senac);
+  background-image: url("../img/Fundo.png");
+  background-size: cover;        /* preenche a tela */
+  background-position: center;   /* centraliza */
+  background-repeat: no-repeat;  /* não repete */
+
   color: #333;
   display: flex;
   flex-direction: column;
@@ -124,26 +128,136 @@ body {
   flex: 1;
 }
 
-/* ======= PERFIL CARD ======= */
-.perfil-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
+/* ======= PERFIL ======= */
+
+
+/* Container */
+.perfil-coord-container {
+  max-width: 880px;
+  margin: 60px auto;
+  padding: 0 24px;
 }
 
-.perfil-img {
-  width: 120px;
+/* Cabeçalho */
+.perfil-coord-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 4px solid var(--laranja-Senac);
+  padding-bottom: 16px;
+  position: relative;
+  top: 20px;
+  
+}
+
+.perfil-coord-header p {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--azul-Senac);
+  margin: 0;
+}
+
+/* Botão editar */
+.perfil-coord-btn {
+  background-color: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 14px 30px;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+  position: relative;
+  top: 20px;
+}
+
+.perfil-coord-btn:hover {
+  background-color: #d67c12;
+}
+
+/* Card */
+.perfil-coord-card {
+  background-color: var(--branco-Senac);
+  border-radius: 28px;
+  padding: 80px 60px 60px; /* espaço maior onde fica a foto */
+  text-align: center;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* Imagem */
+.perfil-coord-img {
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
-  margin-bottom: 15px;
+  object-fit: contain;
+  background-color: var(--branco-Senac);
+  border: 8px solid var(--laranja-Senac);
+  margin-bottom: 30px;
 }
 
-.perfil-form input,
-.perfil-form textarea {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 12px;
+/* Textos gerais */
+.perfil-coord-card p {
+  font-size: 20px;
+  color: #444;
+  margin: 14px 0;
 }
+
+.perfil-coord-card strong {
+  color: var(--azul-Senac);
+}
+
+/* Tipo (badge) */
+.perfil-coord-card p:nth-of-type(3) {
+  display: inline-block;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  padding: 12px 32px;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 26px 0;
+}
+
+/* Título da descrição */
+.perfil-coord-desc-title {
+  margin-top: 30px;
+  font-size: 20px;
+  color: var(--azul-Senac);
+}
+
+/* Descrição */
+.perfil-coord-desc {
+  background-color: var(--cinza-Senac);
+  padding: 28px;
+  border-radius: 16px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #333;
+}
+
+.perfil-coord-card p:nth-of-type(3) strong {
+  color: #fff;                     /* texto branco */
+  background-color: var(--azul-Senac); /* fundo azul */
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ======= COLUNA DE CARDS ======= */
@@ -327,8 +441,8 @@ body {
 
 
 .lista_conteudo img {
-  width: 50px;
-  height: 50px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;
