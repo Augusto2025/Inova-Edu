@@ -10,8 +10,10 @@ from django.contrib import messages
 import re
 from cloudinary import uploader
 from cloudinary.utils import cloudinary_url
+from cloudinary.uploader import upload as cloudinary_upload
 
 def login(request):
+    # ele pega o que tem dentro do form
     if request.method == 'GET':
         return render(request, 'login.html', {
             'erro': '',
@@ -19,27 +21,28 @@ def login(request):
             'senha': ''
         })
 
+    #  transforma o que tinha nos inputs em dados
     Email = request.POST.get('email')
     Senha = request.POST.get('senha')
+
+    # utiliza do usuário somente o email e a senha
     usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
 
+    # verificar se o usuario é professor aluno ou coordenador
     if usuario:
+        # pegando pelo email
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
             return redirect('home_Coordenacao')
-        elif usuario.tipo in ['Aluno', 'Professor']:
+        elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
             return redirect('home')
-        else:
-            # caso o tipo do usuário seja algo inesperado
-            messages.error(request, 'Tipo de usuário inválido.')
-            return render(request, 'login.html', {'erro': 'Tipo de usuário inválido.', 'email': Email, 'senha': ''})
+    # se ele não for, ele manda um erro e volta pro login
     else:
         return render(request, 'login.html', {
             'erro': 'Usuário ou senha inválidos.',
             'email': Email,
             'senha': ''
         })
-
     
 def reSenha(request):
     if request.method == "POST":
@@ -197,15 +200,24 @@ def sanitize_filename(filename):
     return re.sub(r'[^A-Za-z0-9._-]', '_', filename)
 
 def upload_para_cloudinary(arquivo_file, public_id):
-    resultado = uploader.upload(
+    resultado = cloudinary_upload(
         arquivo_file,
-        resource_type='auto',  # Cloudinary detecta automaticamente
+        resource_type='raw',  # para qualquer tipo de arquivo
         public_id=public_id,
         overwrite=True
     )
-    # Retorna o public_id e o resource_type detectado
+    
     resource_type = resultado.get('resource_type', 'raw')
-    return resultado['public_id'], resource_type
+    public_id_str = str(resultado['public_id'])
+
+    # Gerar URL para download
+    url, _ = cloudinary_url(
+        public_id_str,
+        resource_type=resource_type,  # 'raw' garante que arquivos não-imagem funcionem
+        version=resultado.get('version')
+    )
+
+    return public_id_str, resource_type, url
 
 def repositorio(request, turma_id):
     email = request.session.get('usuario_email')
@@ -218,7 +230,7 @@ def repositorio(request, turma_id):
 
     if request.method == 'POST' and can_modify:
 
-        # Criar nova pasta
+        # ------------------- Criar nova pasta -------------------
         if 'nome_pasta' in request.POST:
             nome_pasta = request.POST.get('nome_pasta', '').strip()
             if nome_pasta:
@@ -231,7 +243,7 @@ def repositorio(request, turma_id):
                         turma=turma
                     )
 
-        # Upload de arquivo simples
+        # ------------------- Upload de arquivo simples -------------------
         elif 'arquivo' in request.FILES:
             arquivo_file = request.FILES['arquivo']
 
@@ -244,17 +256,18 @@ def repositorio(request, turma_id):
                     messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' nesta localização.")
                 else:
                     public_id = f"turma_{turma.idturma}/{nome_arquivo}"
-                    pid, rtype = upload_para_cloudinary(arquivo_file, public_id)
+                    pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id)
 
                     Arquivo.objects.create(
                         nome=nome_arquivo,
                         arquivo=pid,
                         resource_type=rtype,
                         enviado_por=usuario,
-                        turma=turma
+                        turma=turma,
+                        url=url
                     )
 
-        # Upload de múltiplos arquivos com estrutura de pastas
+        # ------------------- Upload múltiplos arquivos com pastas -------------------
         elif 'upload_pasta' in request.POST:
             arquivos = request.FILES.getlist('arquivos')
             for arquivo_file in arquivos:
@@ -266,30 +279,32 @@ def repositorio(request, turma_id):
                 partes = caminho.split('/')
                 pasta_atual = None
                 for parte in partes[:-1]:
-                    pasta, _ = Pasta.objects.get_or_create(
+                    pasta_atual, _ = Pasta.objects.get_or_create(
                         nome=parte,
                         turma=turma,
                         pasta_pai=pasta_atual,
                         criada_por=usuario
                     )
-                    pasta_atual = pasta
 
                 nome_arquivo = sanitize_filename(partes[-1])
                 public_id_path = f"turma_{turma.idturma}/{'/'.join([sanitize_filename(p) for p in partes])}"
+
                 if Arquivo.objects.filter(nome=nome_arquivo, turma=turma, pasta=pasta_atual).exists():
                     messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' na pasta de destino.")
-                else:
-                    pid, rtype = upload_para_cloudinary(arquivo_file, public_id_path)
-                    Arquivo.objects.create(
-                        nome=nome_arquivo,
-                        arquivo=pid,
-                        resource_type=rtype,
-                        enviado_por=usuario,
-                        turma=turma,
-                        pasta=pasta_atual
-                    )
+                    continue
 
-        # Editar pasta
+                pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id_path)
+                Arquivo.objects.create(
+                    nome=nome_arquivo,
+                    arquivo=pid,
+                    resource_type=rtype,
+                    enviado_por=usuario,
+                    turma=turma,
+                    pasta=pasta_atual,
+                    url=url
+                )
+
+        # ------------------- Editar pasta -------------------
         elif 'edit_pasta' in request.POST:
             pasta_id = request.POST.get('pasta_id')
             novo_nome = request.POST.get('novo_nome', '').strip()
@@ -301,14 +316,14 @@ def repositorio(request, turma_id):
                     pasta.nome = novo_nome
                     pasta.save()
 
-        # Deletar arquivo único
+        # ------------------- Deletar arquivo único -------------------
         elif 'delete_arquivo' in request.POST:
             arquivo_id = request.POST['delete_arquivo']
             arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
             if arquivo.enviado_por == usuario:
                 arquivo.delete()
 
-        # Deletar múltiplos arquivos
+        # ------------------- Deletar múltiplos arquivos -------------------
         elif 'delete_arquivos_selecionados' in request.POST:
             ids = request.POST.getlist('arquivos_selecionados')
             for arquivo_id in ids:
@@ -316,14 +331,21 @@ def repositorio(request, turma_id):
                 if arquivo.enviado_por == usuario:
                     arquivo.delete()
 
-        # Deletar pasta única
+        # ------------------- Deletar todos os arquivos -------------------
+        elif 'delete_todos_arquivos' in request.POST:
+            arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
+            for arquivo in arquivos:
+                if arquivo.enviado_por == usuario:
+                    arquivo.delete()
+
+        # ------------------- Deletar pasta única -------------------
         elif 'delete_pasta' in request.POST:
             pasta_id = request.POST['delete_pasta']
             pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma, pasta_pai=None)
             if pasta.criada_por == usuario:
                 pasta.delete()
 
-        # Deletar múltiplas pastas
+        # ------------------- Deletar múltiplas pastas -------------------
         elif 'delete_pastas_selecionadas' in request.POST:
             ids = request.POST.getlist('pastas_selecionadas')
             for pasta_id in ids:
@@ -345,7 +367,6 @@ def repositorio(request, turma_id):
         'path': [],
         'can_modify': can_modify,
     })
-
 
 def repositorio_pasta(request, pasta_id):
     email = request.session.get('usuario_email')
