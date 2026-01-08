@@ -12,7 +12,6 @@ from cloudinary import uploader
 from cloudinary.utils import cloudinary_url
 
 def login(request):
-    # ele pega o que tem dentro do form
     if request.method == 'GET':
         return render(request, 'login.html', {
             'erro': '',
@@ -20,28 +19,27 @@ def login(request):
             'senha': ''
         })
 
-    #  transforma o que tinha nos inputs em dados
     Email = request.POST.get('email')
     Senha = request.POST.get('senha')
-
-    # utiliza do usuário somente o email e a senha
     usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
 
-    # verificar se o usuario é professor aluno ou coordenador
     if usuario:
-        # pegando pelo email
         request.session['usuario_email'] = usuario.email
         if usuario.tipo == 'Coordenador':
             return redirect('home_Coordenacao')
-        elif usuario.tipo == 'Aluno' or usuario.tipo == 'Professor':
+        elif usuario.tipo in ['Aluno', 'Professor']:
             return redirect('home')
-    # se ele não for, ele manda um erro e volta pro login
+        else:
+            # caso o tipo do usuário seja algo inesperado
+            messages.error(request, 'Tipo de usuário inválido.')
+            return render(request, 'login.html', {'erro': 'Tipo de usuário inválido.', 'email': Email, 'senha': ''})
     else:
         return render(request, 'login.html', {
             'erro': 'Usuário ou senha inválidos.',
             'email': Email,
             'senha': ''
         })
+
     
 def reSenha(request):
     if request.method == "POST":
