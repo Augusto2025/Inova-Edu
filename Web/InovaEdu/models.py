@@ -4,9 +4,6 @@ from cloudinary.models import CloudinaryField
 from cloudinary.utils import cloudinary_url
 
 
-# =========================
-# USUÁRIO (perfil estendido)
-# =========================
 class Usuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     imagem = CloudinaryField('imagem_usuario', blank=True, null=True)
