@@ -1,17 +1,97 @@
 from django.db import models
-from django.contrib.auth.models import User
 from cloudinary.models import CloudinaryField
 from cloudinary.utils import cloudinary_url
+from django.contrib.auth.models import User
+
+# =========================
+# AUTENTICAÇÃO (não gerenciados)
+# =========================
+class AuthGroup(models.Model):
+    name = models.CharField(unique=True, max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'AuthGroup'
 
 
+class AuthGroupPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    group_id = models.IntegerField()
+    permission_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'AuthGroupPermissions'
+        unique_together = (('group_id', 'permission_id'),)
+
+
+class AuthPermission(models.Model):
+    name = models.CharField(max_length=255)
+    content_type_id = models.IntegerField()
+    codename = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'AuthPermission'
+        unique_together = (('content_type_id', 'codename'),)
+
+
+class AuthUser(models.Model):
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.IntegerField()
+    username = models.CharField(unique=True, max_length=150)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.CharField(max_length=254)
+    is_staff = models.IntegerField()
+    is_active = models.IntegerField()
+    date_joined = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'AuthUser'
+
+
+class AuthUserGroups(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user_id = models.IntegerField()
+    group_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'AuthUserGroups'
+        unique_together = (('user_id', 'group_id'),)
+
+
+class AuthUserUserPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user_id = models.IntegerField()
+    permission_id = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'AuthUserUserPermissions'
+        unique_together = (('user_id', 'permission_id'),)
+
+
+# =========================
+# USUÁRIO
+# =========================
 class Usuario(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     imagem = CloudinaryField('imagem_usuario', blank=True, null=True)
     tipo = models.CharField(max_length=20)
+    nome = models.CharField(max_length=20)
+    sobrenome = models.CharField(max_length=20)
+    email = models.CharField(max_length=45)
+    senha = models.CharField(max_length=30)
     descricao = models.CharField(max_length=100, blank=True, null=True)
 
+    class Meta:
+        db_table = 'Usuario'
+
     def __str__(self):
-        return self.user.username
+        return self.nome
 
 
 # =========================
@@ -23,7 +103,10 @@ class Curso(models.Model):
     descricao_curso = models.CharField(max_length=100, blank=True, null=True)
     data_inicio = models.DateField(blank=True, null=True)
     data_final = models.DateField(blank=True, null=True)
-    criador = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = 'Curso'
 
     def __str__(self):
         return self.nome_curso
@@ -34,9 +117,12 @@ class Curso(models.Model):
 # =========================
 class Turma(models.Model):
     codigo_turma = models.CharField(max_length=11)
-    turno = models.CharField(max_length=10, blank=True, null=True)
+    turno = models.CharField(max_length=5, blank=True, null=True)
     ano = models.IntegerField()
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'Turma'
 
     def __str__(self):
         return self.codigo_turma
@@ -51,6 +137,9 @@ class Projeto(models.Model):
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'Projeto'
+
     def __str__(self):
         return self.nome_projeto
 
@@ -63,6 +152,7 @@ class UsuarioDaTurma(models.Model):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
 
     class Meta:
+        db_table = 'UsuarioDaTurma'
         unique_together = ('usuario', 'turma')
 
     def __str__(self):
@@ -72,13 +162,16 @@ class UsuarioDaTurma(models.Model):
 # =========================
 # EVENTOS
 # =========================
-class Evento(models.Model):
+class Eventos(models.Model):
     nome_do_evento = models.CharField(max_length=30)
     hora_do_evento = models.TimeField()
     data_do_evento = models.DateField()
     descricao = models.CharField(max_length=100)
-    endereco = models.CharField(max_length=50)
+    endereco = models.CharField(max_length=30)
     usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = 'Eventos'
 
     def __str__(self):
         return self.nome_do_evento
@@ -89,20 +182,20 @@ class Evento(models.Model):
 # =========================
 class Forum(models.Model):
     nome = models.CharField(max_length=30)
-    data_criacao = models.DateField(auto_now_add=True)
-    criador = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    data_criacao = models.DateField()
+    usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, null=True, blank=True)
 
-    def __str__(self):
-        return self.nome
+    class Meta:
+        db_table = 'Forum'
 
 
 class Topico(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='topicos')
-    titulo = models.CharField(max_length=100)
     descricao = models.TextField(blank=True, null=True)
+    titulo = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.titulo
+    class Meta:
+        db_table = 'Topico'
 
 
 class Mensagem(models.Model):
@@ -111,8 +204,12 @@ class Mensagem(models.Model):
     conteudo = models.TextField()
     criado_em = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'Mensagem'
+
     def __str__(self):
-        return f'{self.autor} - {self.conteudo[:30]}'
+        nome_autor = getattr(self.autor, "nome", str(self.autor.id))
+        return f'{nome_autor}: {self.conteudo[:30]}'
 
 
 # =========================
@@ -123,13 +220,10 @@ class Pasta(models.Model):
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     criada_em = models.DateTimeField(auto_now_add=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-    pasta_pai = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='subpastas'
-    )
+    pasta_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subpastas')
+
+    class Meta:
+        db_table = 'Pasta'
 
     def __str__(self):
         return self.nome
@@ -142,6 +236,9 @@ class Arquivo(models.Model):
     enviado_em = models.DateTimeField(auto_now_add=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        db_table = 'Arquivo'
 
     def __str__(self):
         return self.nome
