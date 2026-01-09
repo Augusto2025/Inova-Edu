@@ -11,6 +11,10 @@ body {
     line-height: 1.6;
 }
 
+.logo{
+    width: 400px;
+}
+
 /* Seções Parallax */
 .parallax {
     height: 75vh;
@@ -113,4 +117,10 @@ footer {
 
 h3, h2, .descricao, .card p, .card i{
     color: #155a80;
+}
+
+@media (max-width: 450px) {
+    .logo{
+        width: 300px;
+    }
 }
