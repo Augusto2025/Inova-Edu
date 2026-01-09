@@ -18,11 +18,7 @@
 
 /* ======= BODY ======= */
 body {
-  background-image: url("../img/Fundo.png");
-  background-size: cover;        /* preenche a tela */
-  background-position: center;   /* centraliza */
-  background-repeat: no-repeat;  /* não repete */
-
+  background-color: var(--cinza-Senac);
   color: #333;
   display: flex;
   flex-direction: column;
@@ -128,132 +124,280 @@ body {
   flex: 1;
 }
 
-/* ======= PERFIL ======= */
-
+/* ======= PERFIL CARD ======= */
 
 /* Container */
 .perfil-coord-container {
-  max-width: 880px;
+  max-width: 900px;
   margin: 60px auto;
   padding: 0 24px;
 }
 
-/* Cabeçalho */
+/* Header */
 .perfil-coord-header {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-bottom: 30px;
+  text-align: center;
   border-bottom: 4px solid var(--laranja-Senac);
   padding-bottom: 16px;
-  position: relative;
-  top: 20px;
-  
+  margin-bottom: 40px;
 }
 
 .perfil-coord-header p {
   font-size: 32px;
   font-weight: bold;
   color: var(--azul-Senac);
-  margin: 0;
 }
 
-/* Botão editar */
-.perfil-coord-btn {
-  background-color: var(--laranja-Senac);
+/* Card */
+.perfil-coord-card {
+  background: var(--branco-Senac);
+  border-radius: 28px;
+  padding: 50px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* Layout principal */
+.perfil-coord-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-areas:
+    "foto info"
+    "descricao descricao"
+    "acoes acoes";
+  gap: 30px;
+}
+
+/* Foto */
+.perfil-coord-foto {
+  grid-area: foto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.perfil-coord-img {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 8px solid var(--laranja-Senac);
+  object-fit: contain;
+}
+
+/* Informações */
+.perfil-coord-info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.perfil-nome {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--azul-Senac);
+  margin-bottom: 12px;
+}
+
+.perfil-coord-info p {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #444;
+}
+
+/* Tipo (badge) */
+.perfil-tipo {
+  margin-top: 16px;
+}
+
+.perfil-tipo strong {
+  background: var(--azul-Senac);
   color: var(--branco-Senac);
-  padding: 14px 30px;
+  padding: 10px 26px;
+  border-radius: 22px;
+  font-size: 15px;
+}
+
+/* Descrição */
+.perfil-coord-descricao {
+  grid-area: descricao;
+}
+
+.perfil-coord-desc-title {
+  font-size: 20px;
+  color: var(--azul-Senac);
+  margin-bottom: 10px;
+}
+
+.perfil-coord-desc {
+  background: var(--cinza-Senac);
+  padding: 26px;
+  border-radius: 16px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Ações */
+.perfil-coord-acoes {
+  grid-area: acoes;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.perfil-coord-btn {
+  background: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 14px 36px;
   border-radius: 26px;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
   transition: 0.3s;
-  position: relative;
-  top: 20px;
 }
 
 .perfil-coord-btn:hover {
   background-color: #d67c12;
 }
 
-/* Card */
-.perfil-coord-card {
-  background-color: var(--branco-Senac);
-  border-radius: 28px;
-  padding: 80px 60px 60px; /* espaço maior onde fica a foto */
+
+
+
+
+
+
+
+/* ===== EDITAR PERFIL – CSS PRÓPRIO ===== */
+/* Container */
+.editar-perfil-container {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.editar-perfil-header {
   text-align: center;
+  border-bottom: 4px solid var(--laranja-Senac);
+  padding-bottom: 16px;
+  margin-bottom: 40px;
+}
+
+.editar-perfil-header p {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--azul-Senac);
+}
+
+/* Card */
+.editar-perfil-card {
+  background: var(--branco-Senac);
+  border-radius: 28px;
+  padding: 50px;
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
 }
 
-/* Imagem */
-.perfil-coord-img {
+/* Layout */
+.editar-perfil-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+}
+
+/* Foto */
+.editar-perfil-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editar-perfil-img {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  object-fit: contain;
-  background-color: var(--branco-Senac);
   border: 8px solid var(--laranja-Senac);
-  margin-bottom: 30px;
+  object-fit: contain;
+  margin-bottom: 16px;
 }
 
-/* Textos gerais */
-.perfil-coord-card p {
-  font-size: 20px;
-  color: #444;
-  margin: 14px 0;
-}
-
-.perfil-coord-card strong {
-  color: var(--azul-Senac);
-}
-
-/* Tipo (badge) */
-.perfil-coord-card p:nth-of-type(3) {
-  display: inline-block;
-  background-color: var(--azul-Senac);
+.editar-perfil-upload {
+  background: var(--azul-Senac);
   color: var(--branco-Senac);
-  padding: 12px 32px;
-  border-radius: 26px;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 26px 0;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-/* Título da descrição */
-.perfil-coord-desc-title {
-  margin-top: 30px;
-  font-size: 20px;
+/* Form */
+.editar-perfil-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid inputs */
+.editar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+/* Inputs */
+.editar-perfil-input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Labels */
+.editar-perfil-form label {
+  font-size: 14px;
+  font-weight: 600;
   color: var(--azul-Senac);
+  margin-bottom: 6px;
+  display: block;
 }
 
 /* Descrição */
-.perfil-coord-desc {
-  background-color: var(--cinza-Senac);
-  padding: 28px;
+.editar-descricao {
+  margin-top: 26px;
+}
+
+.editar-perfil-textarea {
+  width: 100%;
+  min-height: 120px;
+  max-height: 160px;
+  resize: none;
+  overflow-y: auto;
+  padding: 16px;
   border-radius: 16px;
-  font-size: 18px;
-  line-height: 1.7;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+
+/* Ações */
+.editar-perfil-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.editar-perfil-btn {
+  background: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 14px 32px;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.editar-perfil-btn.cancelar {
+  background: #ccc;
   color: #333;
 }
-
-.perfil-coord-card p:nth-of-type(3) strong {
-  color: #fff;                     /* texto branco */
-  background-color: var(--azul-Senac); /* fundo azul */
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -262,15 +406,13 @@ body {
 
 /* ======= COLUNA DE CARDS ======= */
 .cards-home {
-  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 30px 0;
-  justify-content: center;
   /* width: 300px; */
   /* padding-right: 20px; */
   /* border-right: 2px solid #ccc; */
+  margin: 5px;
 }
 
 .card {
@@ -404,7 +546,7 @@ body {
 
 .lista_conteudo li {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 2fr 1.5fr 1fr 1.5fr 1fr;
+  grid-template-columns: 1.5fr 1.5fr 2fr 1fr 2.5fr 1fr 1.5fr 1fr;
   gap: 10px;
   align-items: center;
   padding: 10px;
@@ -440,9 +582,9 @@ body {
 
 
 
-.lista_conteudo img {
-  width: 150px;
-  height: 150px;
+.lista_conteudo img:not(.perfil-coord-img)   {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;

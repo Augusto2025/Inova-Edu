@@ -491,57 +491,136 @@
                 <div class="perfil-coord-header">
                     <p>Perfil da Coordenação</p>
                 </div>
-            
-                <div class="perfil-coord-card">
-                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
-            
-                    <p><strong>Nome:</strong> {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}</p>
-                    <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
-                    <p><strong>Tipo:</strong> {{ usuario_logado.tipo }}</p>
-            
-                    <p class="perfil-coord-desc-title"><strong>Descrição:</strong></p>
-                    <p class="perfil-coord-desc">
-                        {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
-                    </p>
-                    <a href="#" class="perfil-coord-btn" onclick="mostrarLista('editarPerfil')">Editar</a>
+
+                <div class="perfil-coord-card perfil-coord-layout">
+
+                    <!-- FOTO -->
+                    <div class="perfil-coord-foto">
+                        <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
+                    </div>
+
+                    <!-- DADOS -->
+                    <div class="perfil-coord-info">
+                        <p class="perfil-nome">
+                            {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}
+                        </p>
+
+                        <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
+
+                        <p class="perfil-tipo">
+                            <strong>{{ usuario_logado.tipo }}</strong>
+                        </p>
+                    </div>
+
+                    <!-- DESCRIÇÃO -->
+                    <div class="perfil-coord-descricao">
+                        <p class="perfil-coord-desc-title"><strong>Descrição:</strong></p>
+                        <p class="perfil-coord-desc">
+                            {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
+                        </p>
+                    </div>
+
+                    <!-- AÇÕES -->
+                    <div class="perfil-coord-acoes">
+                        <a href="#" class="perfil-coord-btn" onclick="mostrarLista('editarPerfil')">
+                            Editar
+                        </a>
+                    </div>
 
                 </div>
             </section>
-            
+
 
             <!-- PERFIL EDITAR -->
 
-            <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
-                <div class="titulo_lista">
-                    <p>Editar Perfil</p>
+            <section class="editar-perfil-container" id="editarPerfil" style="display:none;">
+                <div class="editar-perfil-header">
+                    <p>Editar Perfil da Coordenação</p>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" class="perfil-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="acao" value="editar_perfil">
+                <div class="editar-perfil-card editar-perfil-layout">
 
-                    <label>Nome</label>
-                    <input type="text" name="nome" value="{{ usuario_logado.nome }}" required>
+                    <!-- FOTO -->
+                    <div class="editar-perfil-foto">
+                        <img src="{% static 'img/user-solid-full.svg' %}" class="editar-perfil-img">
 
-                    <label>Sobrenome</label>
-                    <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}" required>
-
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ usuario_logado.email }}" required>
-
-                    <label>Descrição</label>
-                    <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
-
-                    <label>Imagem</label>
-                    <input type="file" name="imagem">
-
-                    <div style="margin-top:15px;">
-                        <button type="submitsalvar">Salvar</button>
-                        <button type="buttoncancelar" onclick="mostrarLista('listaPerfil')">Cancelar</button>
+                        <label class="editar-perfil-upload">
+                            Alterar foto
+                            <input type="file" name="foto" hidden>
+                        </label>
                     </div>
-                </form>
 
+                    <!-- FORM -->
+                    <form method="POST" enctype="multipart/form-data" class="editar-perfil-form">
+                        {% csrf_token %}
+
+                        <div class="editar-grid">
+
+                            <div>
+                                <label>Nome</label>
+                                <input type="text" name="nome"
+                                    value="{{ usuario_logado.nome }}"
+                                    class="editar-perfil-input">
+                            </div>
+
+                            <div>
+                                <label>Sobrenome</label>
+                                <input type="text" name="sobrenome"
+                                    value="{{ usuario_logado.sobrenome }}"
+                                    class="editar-perfil-input">
+                            </div>
+
+                            <div>
+                                <label>Email</label>
+                                <input type="email" name="email"
+                                    value="{{ usuario_logado.email }}"
+                                    class="editar-perfil-input">
+                            </div>
+
+                            <div>
+                                <label>Tipo</label>
+                                <select name="tipo" class="editar-perfil-input">
+                                    <option value="Coordenação" {% if usuario_logado.tipo == "Coordenação" %}selected{% endif %}>Coordenação</option>
+                                    <option value="Professor" {% if usuario_logado.tipo == "Professor" %}selected{% endif %}>Professor</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- DESCRIÇÃO -->
+                        <div class="editar-descricao">
+                            <label>Descrição</label>
+                            <textarea name="descricao" class="editar-perfil-textarea">{{ usuario_logado.descricao }}</textarea>
+                        </div>
+
+                        <!-- AÇÕES -->
+                        <div class="editar-perfil-acoes">
+                            <button type="submit" class="editar-perfil-btn">Salvar</button>
+                           <button
+                                type="button"
+                                id="cancelarperfil"
+                                onclick="mostrarLista('listaPerfil')">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
             </section>
+
+
+
+            
+
+
+
+
+
+
+
+
+
+
 
 
         </section>

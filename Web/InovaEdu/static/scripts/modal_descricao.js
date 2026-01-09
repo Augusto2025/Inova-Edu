@@ -143,3 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+// IMG PERFIL
+
