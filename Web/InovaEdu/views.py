@@ -552,7 +552,47 @@ def forum_chat(request, forum_id):
         'mensagens': mensagens
     })
 
+def editar_forum(request, forum_id):
+    forum = get_object_or_404(Forum, pk=forum_id)
+    email_logado = request.session.get('usuario_email')
 
+    # Só permite editar se o usuário logado for o criador
+    if not forum.usuario or email_logado != forum.usuario.email:
+        return redirect('forum_blocos')
+
+    topico = forum.topicos.first()
+
+    if request.method == "POST":
+        forum_nome = request.POST.get("nome", "").strip()
+        topico_titulo = request.POST.get("titulo", "").strip()
+        topico_descricao = request.POST.get("descricao", "").strip()
+
+        if forum_nome:
+            forum.nome = forum_nome
+            forum.save()
+
+        if topico:
+            topico.titulo = topico_titulo
+            topico.descricao = topico_descricao
+            topico.save()
+
+        return redirect('forum_blocos')
+
+    return redirect('forum_blocos')
+
+def excluir_forum(request, forum_id):
+    if request.method == "POST":
+        forum = get_object_or_404(Forum, pk=forum_id)
+        usuario_email = request.session.get('usuario_email')
+
+        # Só permite excluir se for o dono
+        if forum.usuario and forum.usuario.email == usuario_email:
+            forum.delete()
+            messages.success(request, "Fórum excluído com sucesso!")
+        else:
+            messages.error(request, "Você não tem permissão para excluir este fórum.")
+
+    return redirect('forum_blocos')  # volta para a página principal
 
 def criar_forum(request):
     email = request.session.get('usuario_email')
@@ -566,16 +606,32 @@ def criar_forum(request):
 
     if request.method == 'POST':
         nome = request.POST.get('nome', '').strip()
-        if nome:
-            Forum.objects.create(
-                nome=nome,
-                data_criacao=timezone.now().date(),
-                usuario=usuario
-            )
-            return redirect('forum_blocos')
-        # se quiser, pode adicionar mensagem de erro no contexto
+        titulo_topico = request.POST.get('titulo_topico', '').strip()
+        descricao_topico = request.POST.get('descricao_topico', '').strip()
 
-    return render(request, 'AlunoProfessor/criar_forum.html', {'usuario': usuario})
+        if not nome or not titulo_topico:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+            return redirect('forum_blocos')
+
+        # 1️⃣ Cria o Fórum
+        forum = Forum.objects.create(
+            nome=nome,
+            data_criacao=timezone.now().date(),
+            usuario=usuario
+        )
+
+        # 2️⃣ Cria o primeiro Tópico
+        Topico.objects.create(
+            forum=forum,
+            titulo=titulo_topico,
+            descricao=descricao_topico
+        )
+
+        messages.success(request, 'Fórum criado com sucesso!')
+        return redirect('forum_blocos')
+
+    # 🚫 Não renderiza template próprio (modal cuida disso)
+    return redirect('forum_blocos')
 
 def criar_evento(request):
     email = request.session.get('usuario_email')

@@ -131,7 +131,6 @@ body {
     gap: 12px;
     position: sticky;
     bottom: 0;
-    background: var(--bg);
     padding: 12px 0;
 }
 

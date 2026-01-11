@@ -27,6 +27,7 @@
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-style: none;
 }
 
 .botao-criar-forum:hover {
@@ -42,8 +43,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   max-width: 1000px;
-  margin: 0 auto 40px auto;
-  padding: 0 10px;
+  margin: 40px;
 }
 
 /* ===================== */
@@ -61,6 +61,7 @@ section {
   cursor: default;
   min-height: 160px;
   height: auto;
+  max-width: 590px;
 }
 
 section:hover {
@@ -201,6 +202,99 @@ section .Botao_entrar_forum:hover {
   background: #00376a;
 }
 
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;              /* ESCONDIDO */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-overlay.open {
+  display: flex;              /* APARECE */
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal-content input {
+  width: 92%;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid var(--azul-Senac);
+  font-size: 15px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.modal-content textarea {
+  width: 93%;
+  max-width: 100%;
+  resize: vertical;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid var(--azul-Senac);
+  font-size: 15px;
+}
+
+.modal-actions button{
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  background: var(--laranja-Senac);
+  padding: 10px 16px; 
+  font-size: 16px;
+  text-decoration: none;
+  width: 70%;
+  transition: background 0.2s ease;
+}
+
+.acoes-forum button {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px; /* tamanho do ícone */
+  color: #004A8D;  /* cor do ícone */
+  margin-right: 8px;
+  transition: color 0.2s;
+}
+
+.acoes-forum button:hover {
+  color: #F7941D; /* cor ao passar o mouse */
+}
+
+.acoes-forum button i {
+  pointer-events: none; /* garante que o clique funcione no botão */
+}
+
+
 /* ===================== */
 /* RESPONSIVO - LAPTOP */
 /* ===================== */
@@ -223,7 +317,7 @@ section .Botao_entrar_forum:hover {
 
   main {
     margin-top: 10px;
-    width: 100%;
+    width: 90%;
   }
 }
 
