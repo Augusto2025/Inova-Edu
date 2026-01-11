@@ -105,6 +105,7 @@ section {
     color: #666;
 }
 
+/* Footer base */
 footer {
     text-align: center;
     padding: 20px;
@@ -113,40 +114,87 @@ footer {
     margin-top: 40px;
 }
 
-h3, h2, .descricao, .card p, .card i{
-    color: #155a80;
+/* Links do footer */
+.links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
+.group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-.links a{
+.links-senac, .ferramentas, .pessoal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 180px;
+}
+
+.links-senac p, .ferramentas p, .pessoal p {
+    font-size: 20px;
+    font-family: "Sanchez", serif;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.links a {
     font-family: "Sanchez", serif;
     color: white;
     text-decoration: none;
-    width: 200px;
-    font-size: 15px;
+    margin: 4px 0;
+    font-size: 14px;
+    transition: color 0.2s;
 }
 
-.links-senac, .ferramentas, .pessoal{
-    display: flex; 
-    flex-direction: column;
-    align-items: center;
-    width: 50%;
+.links a:hover {
+    color: #f77a1c;
 }
 
-.links-senac p, .ferramentas p, .pessoal p{
-    font-size: 25px;
-    font-family: "Sanchez", serif;
-    font-weight: bolder;
+/* Copyright */
+footer p {
+    margin-top: 20px;
+    font-size: 14px;
 }
 
-.group{
-    display: flex;
-    width: 50%;
-    justify-self: center;
+/* RESPONSIVO */
+@media (max-width: 900px) {
+    .group {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .links-senac, .ferramentas, .pessoal {
+        min-width: 100%;
+    }
+
+    .links-senac p, .ferramentas p, .pessoal p {
+        font-size: 18px;
+    }
+
+    .links a {
+        font-size: 13px;
+    }
 }
 
-h4 {
-    font-size: 30px;
-    margin-bottom: 15px;
-    font-family: "Sanchez", serif;
+@media (max-width: 480px) {
+    .links a {
+        font-size: 12px;
+    }
+
+    .links-senac p, .ferramentas p, .pessoal p {
+        font-size: 16px;
+    }
+
+    footer p {
+        font-size: 12px;
+    }
 }
