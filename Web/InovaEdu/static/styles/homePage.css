@@ -13,10 +13,6 @@ body {
     line-height: 1.6;
 }
 
-.logo{
-    width: 400px;
-}
-
 /* Seções Parallax */
 .parallax {
     height: 75vh;
