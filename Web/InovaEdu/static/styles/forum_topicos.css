@@ -10,7 +10,6 @@
   justify-items: center;
 }
 
-/* CARD DE TÓPICO */
 .card-topico {
   background: #ffffff;
   border-radius: 16px;
@@ -20,9 +19,10 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  height: 425px;
-  max-width: 420px; 
+  justify-content: space-between;
+  width: 360px;
+  max-width: 100%;
+  min-height: 330px;
 }
 
 .card-topico:hover {
@@ -67,7 +67,6 @@
   background: #f77a1c;
 }
 
-/* MENSAGEM QUANDO NÃO HÁ TÓPICOS */
 .sem-topicos {
   text-align: center;
   color: #777;
@@ -75,27 +74,27 @@
   font-size: 16px;
 }
 
-/* RESPONSIVO */
 @media (max-width: 480px) {
-  .grid-topicos {
-    gap: 16px;
-  }
-
   .card-topico {
-    padding: 16px 12px;
-    min-height: 140px;
+    padding: 16px;
+    min-height: auto;      
+    height: auto;
+    border-radius: 14px;
   }
 
   .titulo-topico {
     font-size: 16px;
+    margin-bottom: 8px;
   }
 
   .resumo-topico {
     font-size: 13px;
+    line-height: 1.35;
+    margin-bottom: 12px;
   }
 
   .botao-ver-topico {
     font-size: 13px;
-    padding: 8px 12px;
+    padding: 10px;       
   }
 }

@@ -169,3 +169,63 @@ body {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 600px) {
+
+  /* HEADER */
+  .forum-header {
+    margin-top: 20px;
+  }
+
+  .forum-info {
+    gap: 12px;
+  }
+
+  .forum-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .forum-header h1 {
+    font-size: 20px;
+  }
+
+  .forum-path {
+    font-size: 12px;
+  }
+
+  /* CHAT */
+  .mensagens {
+    padding: 14px;
+    height: calc(100vh - 220px); /* ocupa melhor a tela */
+    gap: 14px;
+  }
+
+  /* BOLHAS */
+  .msg {
+    max-width: 90%; /* mais espaço no mobile */
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .msg-header {
+    font-size: 11px;
+  }
+
+  /* INPUT */
+  .chat-input-area {
+    gap: 8px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .chat-input-area input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .chat-input-area button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}

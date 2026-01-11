@@ -8,8 +8,8 @@
 {% include "partials/header.html" %}
 
 <div class="barra-topo">
-    <div class="rota">
-        Página: {{ forum.nome }}
+    <div class="rota" style="justify-content: start;">
+        Página: <a href="{% url 'forum_blocos' %}"> Todos os fóruns </a> > Tópicos do fórum
     </div>
 </div>
 

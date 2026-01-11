@@ -43,7 +43,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   max-width: 1000px;
-  margin: 40px;
+  justify-items: center;
 }
 
 /* ===================== */
@@ -59,9 +59,9 @@ section {
   justify-content: space-between;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: default;
-  min-height: 160px;
+  min-height: 255px;
   height: auto;
-  max-width: 590px;
+  width: 330px;
 }
 
 section:hover {
