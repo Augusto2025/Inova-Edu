@@ -20,11 +20,8 @@
             <i class="fa-solid fa-user"></i> Login
         </a>
     </div>
-    <div class="parallax"
-    style="background-image: url('{% static "img/imgtransparente.png" %}')">
-    
-    
-        <img class="logo" src="{% static 'img/LOGO_AZUL.png' %}">
+    <div class="parallax" style="background-image: url('{% static "img/imgtransparente.png" %}')">
+        <img class="logo" src="{% static 'img/LOGO_AZUL.png' %}" style="width: 700px;">
         <h1 style="font-size: 30px;">Bem-vindo ao Repositório Inova Edu</h1>
     </div>
 
@@ -82,9 +79,38 @@
 
     <!-- FOOTER -->
     <footer>
-        &copy; 2025 Desenvolvido por Alcides, Augusto e Clariane
-    </footer>
+        <div class="links">
+            <h4>Links Úteis:</h4>
+            <div class="group">
+                <div class="links-senac">
+                    <p>Senac</p>
+                    <a href="https://cachola.senac.br/">Cachola</a>
+                    <a href="https://app.powerbi.com">Power BI</a>
+                    <a href="https://engage.cloud.microsoft/main/feed">Engage</a>
+                    <a href="https://orango.senac.br/">Orango</a>
+                    <a href="https://www.pa.senac.br/portal-aluno">Portal do Aluno</a>
+                    <a href="https://planner.cloud.microsoft">Planner</a>
+                </div>
+                <div class="ferramentas">
+                    <p>Utilitários </p>
+                    <a href="outlook.office.com">Outlook</a>
+                    <a href="https://word.cloud.microsoft/create/pt-br/document-editor/">Word</a>
+                    <a href="https://www.microsoft.com/pt-br/microsoft-365/excel?msockid=0f9c857371fb6f4b2dc990dc70836e35">Excel</a>
+                </div>
+                <div class="pessoal">
+                    <p>Para Alunos</p>
+                    <a href="https://onedrive.live.com">OneDrive</a>
+                    <a href="https://www.canva.com">Canva</a>
+                    <a href="https://discord.com">Discord</a>
+                    <a href="https://github.com">GitHub</a>
+                </div>
+            </div>
+        </div>
 
+        <p style="margin-top: 30px;">
+            &copy; 2025 Desenvolvido por Alcides, Augusto e Clariane
+        </p>
+    </footer>
     </body>
     </html>
 {% endblock %}

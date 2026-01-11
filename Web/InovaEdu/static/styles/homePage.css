@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Sanchez:ital@0;1&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -119,8 +121,36 @@ h3, h2, .descricao, .card p, .card i{
     color: #155a80;
 }
 
-@media (max-width: 450px) {
-    .logo{
-        width: 300px;
-    }
+
+.links a{
+    font-family: "Sanchez", serif;
+    color: white;
+    text-decoration: none;
+    width: 200px;
+    font-size: 15px;
+}
+
+.links-senac, .ferramentas, .pessoal{
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
+.links-senac p, .ferramentas p, .pessoal p{
+    font-size: 25px;
+    font-family: "Sanchez", serif;
+    font-weight: bolder;
+}
+
+.group{
+    display: flex;
+    width: 50%;
+    justify-self: center;
+}
+
+h4 {
+    font-size: 30px;
+    margin-bottom: 15px;
+    font-family: "Sanchez", serif;
 }
