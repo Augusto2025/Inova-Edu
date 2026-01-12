@@ -144,5 +144,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// IMG PERFIL
+// MENSAGEM
 
+setTimeout(() => {
+    const toast = document.querySelector('.toast-sucesso');
+    if (toast) {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+    }
+}, 3000); // 3 segundos

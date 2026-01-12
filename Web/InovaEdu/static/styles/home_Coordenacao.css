@@ -42,15 +42,36 @@ body {
   height: auto;
 }
 
-.mensagem-sucesso {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin: 15px;
-  font-weight: bold;
+.toast-sucesso {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+
+    background-color: #28a745;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+
+    font-weight: 600;
+    font-size: 14px;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    z-index: 9999;
+
+    animation: slideIn 0.4s ease;
 }
 
+/* Animação de entrada */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 
 
 /* ======= HEADER ======= */
@@ -619,6 +640,7 @@ body {
   gap: 10px;
   text-align: center;
   justify-content: space-around;
+  margin: 0 auto;
 
 }
 
@@ -915,36 +937,23 @@ form button[type="buttoncancelar"]:hover {
   color: black;
 }
 
-#listaTurma .acoes {
+/* #listaTurma .acoes {
   display: flex;
   gap: 30px;
   justify-content: center;
-  width: 100%;
+  margin: 0 auto;
 
 
-}
+} */
 
 .acoes-turma {
   display: flex;
-  flex-direction: row;
-  /* lado a lado */
+  flex-direction: row; /* lado a lado */
   gap: 8px;
   align-items: center;
   justify-content: center;
 }
 
-.acoes-turma button {
-  min-width: 80px;
-  /* mesmo tamanho */
-  height: 32px;
-}
-
-
-/* 
-  display: flex;
-  gap: 10px;
-  text-align: center;
-  justify-content: space-around; */
 
 #listaTurma .acoes button:first-child {
   padding: 5px 12px;

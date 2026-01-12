@@ -12,6 +12,16 @@
 </head>
 <body>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast-sucesso">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+
     <!-- HEADER -->
     <header class="header">
         <a href="{% url 'home_Coordenacao' %}">
@@ -98,31 +108,42 @@
                         <div class="titulo_lista">
                             <p>Cadastro Usuário</p>
                         </div>
-                        <form action="{% url 'home_Coordenacao' %}" method="POST" ...>
+                        <form action="{% url 'home_Coordenacao' %}" method="POST" enctype="multipart/form-data">
 
                             {% csrf_token %}
-                            <label for="nome">Primeiro Nome:</label>
-                            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
-                            <label for="Sobrenome">Sobrenome:</label>
-                            <input type="text" id="Sobrenome" name="Sobrenome" required placeholder="Digite seu sobrenome">
-                            <label for="Email">Email:</label>
-                            <input type="email" id="Email" name="Email" required placeholder="exemplo@gmail.com">
-                            <label for="Senha">Senha:</label>
-                            <input type="password" id="Senha" name="Senha" required placeholder="***********">
-                            <label for="descricao">Descrição:</label>
-                            <textarea id="descricao" name="descricao" rows="4" placeholder="Lorem ipsum dolor sit amet...."></textarea>
-                            <label for="imagem">Imagem:</label>
-                            <input type="file" id="imagem" name="imagem" accept="image/*">
-                            <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
-                            <select id="tipoCadastro" name="tipoCadastro" required>
-                                <option value="" disabled selected>Selecione uma opção</option>
+                            <input type="hidden" name="acao" value="cadastrar_usuario">
+
+                            <label>Primeiro Nome</label>
+                            <input type="text" name="nome" required>
+
+                            <label>Sobrenome</label>
+                            <input type="text" name="sobrenome" required>
+
+                            <label>Email</label>
+                            <input type="email" name="email" required>
+
+                            <label>Senha</label>
+                            <input type="password" name="senha" required>
+
+                            <label>Descrição</label>
+                            <textarea name="descricao"></textarea>
+
+                            <label>Imagem</label>
+                            <input type="file" name="imagem">
+
+                            <label>Tipo</label>
+                            <select name="tipoCadastro" required>
+                                <option value="">Selecione</option>
                                 <option value="Professor">Professor</option>
                                 <option value="Aluno">Aluno</option>
                                 <option value="Coordenador">Coordenação</option>
                             </select>
-                            <button type="submitsalvar">Salvar</button>
-                            <button type="buttoncancelar" id="cancelarModal">Cancelar</button>
+
+                            <button type="submit">Salvar</button>
+                            {% comment %} <button type="button" id="cancelarModal">Cancelar</button> {% endcomment %}
                         </form>
+
+
                     </div>
                 </div>
 
@@ -201,15 +222,29 @@
                             {% endif %}
                             <span>{{ usuario.tipo }}</span>
 
-                           <span class="acoes">
-                                <button type="button" class="botao-editar">Editar</button>
+                          <span class="acoes">
+                                <!-- EDITAR -->
+                                <button type="button"
+                                        class="botao-editar"
+                                        title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
 
-                                <form action="{% url 'excluir_usuario' usuario.idusuario %}" method="POST">
+                                <!-- EXCLUIR -->
+                                <form action="{% url 'excluir_usuario' usuario.idusuario %}"
+                                    method="POST"
+                                    class="form-excluir">
                                     {% csrf_token %}
-                                    <button type="submit" class="botao-excluir" onclick="return confirm('Tem certeza?')">Excluir</button>
-                                </form>
-                            </span>
 
+                                    <button type="submit"
+                                            class="botao-excluir"
+                                            title="Excluir"
+                                            onclick="return confirm('Tem certeza que deseja excluir?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+
+                            </span>
                             
                         </li>
                         {% empty %}
@@ -260,26 +295,38 @@
                             data-descricao="{{ curso.descricao|escapejs }}"></i>
 
                             <span class="acoes">
+                                <!-- EDITAR CURSO -->
                                 <button
                                     type="button"
                                     class="btn-editar-curso"
+                                    title="Editar curso"
                                     data-id="{{ curso.idcurso }}"
                                     data-nome="{{ curso.nome_curso }}"
                                     data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
                                     data-final="{{ curso.data_final|date:'Y-m-d' }}"
                                     data-descricao="{{ curso.descricao_curso }}">
-                                    Editar
+
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST" style="display:inline;">
+                                <!-- EXCLUIR CURSO -->
+                                <form action="{% url 'excluir_curso' curso.idcurso %}"
+                                    method="POST"
+                                    class="form-excluir"
+                                    style="display:inline;">
                                     {% csrf_token %}
+
                                     <button type="submit"
                                             class="botao-excluir"
-                                            onclick="return confirm('Tem certeza?')">
-                                        Excluir
+                                            title="Excluir curso"
+                                            onclick="return confirm('Tem certeza que deseja excluir este curso?')">
+
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
+
                             </span>
+
                         </li>
                         {% empty %}
                         <li><span>Nenhum curso cadastrado.</span></li>
@@ -388,24 +435,38 @@
                             <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
                             <span class="acoes acoes-turma">
-                                <button type="button"
+                                <!-- EDITAR TURMA -->
+                                <button
+                                    type="button"
                                     class="btn-editar-turma"
+                                    title="Editar turma"
                                     data-id="{{ turma.idturma }}"
                                     data-codigo="{{ turma.codigo_turma }}"
                                     data-turno="{{ turma.turno }}"
                                     data-ano="{{ turma.ano }}"
                                     data-curso="{{ turma.curso.idcurso }}">
-                                    Editar
+
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST">
+                                <!-- EXCLUIR TURMA -->
+                                <form action="{% url 'excluir_turma' turma.idturma %}"
+                                    method="POST"
+                                    class="form-excluir"
+                                    style="display:inline;">
                                     {% csrf_token %}
+
                                     <button type="submit"
+                                            class="botao-excluir"
+                                            title="Excluir turma"
                                             onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
-                                        Excluir
+
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
+
                             </span>
+
 
                         </li>
                         {% empty %}
@@ -551,59 +612,21 @@
                     </div>
 
                     <!-- FORM -->
-                    <form method="POST" enctype="multipart/form-data" class="editar-perfil-form">
+                    <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
+                        <input type="hidden" name="acao" value="editar_perfil">
 
-                        <div class="editar-grid">
+                        <input type="text" name="nome" value="{{ usuario_logado.nome }}">
+                        <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}">
+                        <input type="email" name="email" value="{{ usuario_logado.email }}">
+                        <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
 
-                            <div>
-                                <label>Nome</label>
-                                <input type="text" name="nome"
-                                    value="{{ usuario_logado.nome }}"
-                                    class="editar-perfil-input">
-                            </div>
+                        <input type="file" name="imagem">
 
-                            <div>
-                                <label>Sobrenome</label>
-                                <input type="text" name="sobrenome"
-                                    value="{{ usuario_logado.sobrenome }}"
-                                    class="editar-perfil-input">
-                            </div>
-
-                            <div>
-                                <label>Email</label>
-                                <input type="email" name="email"
-                                    value="{{ usuario_logado.email }}"
-                                    class="editar-perfil-input">
-                            </div>
-
-                            <div>
-                                <label>Tipo</label>
-                                <select name="tipo" class="editar-perfil-input">
-                                    <option value="Coordenação" {% if usuario_logado.tipo == "Coordenação" %}selected{% endif %}>Coordenação</option>
-                                    <option value="Professor" {% if usuario_logado.tipo == "Professor" %}selected{% endif %}>Professor</option>
-                                </select>
-                            </div>
-
-                        </div>
-
-                        <!-- DESCRIÇÃO -->
-                        <div class="editar-descricao">
-                            <label>Descrição</label>
-                            <textarea name="descricao" class="editar-perfil-textarea">{{ usuario_logado.descricao }}</textarea>
-                        </div>
-
-                        <!-- AÇÕES -->
-                        <div class="editar-perfil-acoes">
-                            <button type="submit" class="editar-perfil-btn">Salvar</button>
-                           <button
-                                type="button"
-                                id="cancelarperfil"
-                                onclick="mostrarLista('listaPerfil')">
-                                Cancelar
-                            </button>
-                        </div>
+                        <button type="submit">Salvar</button>
+                        <button type="button" onclick="mostrarLista('listaPerfil')">Cancelar</button>
                     </form>
+
 
                 </div>
             </section>
