@@ -25,6 +25,7 @@ urlpatterns = [
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('repositorio/<int:turma_id>/', views.repositorio, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
+    path('repositorio/<int:turma_id>/download/', views.download_repositorio, name='download_repositorio'),
     # Coordenação
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
     path('criar_curso/', views.criar_curso, name='criar_curso'),
