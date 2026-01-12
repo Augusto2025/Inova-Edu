@@ -58,8 +58,7 @@ body {
   width: 100%;
   background-color: var(--azul-Senac);
   /* ou a cor que quiser */
-  padding: 10px 20px;
-
+  padding: 0 20px;
   display: flex;
   justify-content: flex-start;
   /* tudo alinhado para o lado esquerdo */
@@ -69,7 +68,7 @@ body {
 }
 
 .header img {
-  width: 150px;
+  width: 50px;
   /* ajuste o tamanho que desejar */
   height: auto;
   display: block;
