@@ -6,7 +6,7 @@ import secrets
 
 # --- Diretórios e .env ---
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(dotenv_path=BASE_DIR / '.env')  # força leitura do .env
+load_dotenv()  # força leitura do .env
 
 import cloudinary
 

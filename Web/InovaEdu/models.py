@@ -171,9 +171,10 @@ class Forum(models.Model):
 
 class Topico(models.Model):
     idtopico = models.AutoField(primary_key=True)
-    forum = models.ForeignKey(Forum,on_delete=models.CASCADE,related_name='topicos')
-    descricao = models.TextField(blank=True, null=True)
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='topicos')
     titulo = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)  # <--- adiciona aqui
 
     class Meta:
         managed = True

@@ -12,10 +12,9 @@
     <!-- Card do login -->
     <form class="card_login" action="" method="POST">
         {% csrf_token %}
-            <a href="{% url "home" %}">
-                <img src="{% static 'img/LOGO_AZUL.png' %}" style="width: 300px; margin-bottom: 45px;">
+            <a href="{% url "homePage" %}">
+                <img src="{% static 'img/Logo_azul_icone.png' %}" style="width: 150px;">
             </a>
-            <h1>Login</h1>
             <input type="text" placeholder="Email" name="email" value="{{ email|default:'' }}">
             <input type="password" placeholder="Senha" name="senha" value="{{ senha|default:'' }}">
             <button type="submit">Entrar</button>

@@ -317,7 +317,7 @@ section .Botao_entrar_forum:hover {
   }
 
   main {
-    margin: auto;
+    margin: 40px auto;
     width: 90%;
   }
 }

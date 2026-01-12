@@ -31,13 +31,13 @@
                 {% csrf_token %}
 
                 <label>Nome do fórum</label>
-                <input name="nome" required>
+                <input name="nome" required required maxlength="40">
 
                 <label>Título do primeiro tópico</label>
-                <input name="titulo_topico" required>
+                <input name="titulo_topico" required maxlength="30">
 
                 <label>Descrição do tópico</label>
-                <textarea name="descricao_topico"></textarea>
+                <textarea name="descricao_topico" maxlength="300"></textarea>
 
                 <div class="modal-actions">
                     <button type="submit" class="btn-primary">Criar</button>

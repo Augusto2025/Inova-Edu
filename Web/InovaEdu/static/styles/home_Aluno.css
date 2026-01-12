@@ -181,11 +181,6 @@
         display: none; /* só aparece quando clicar no botão */
     }
 
-    /* Conteúdo volta para o centro */
-    .blocos {
-        margin-left: 0;
-    }
-
     /* Botão de filtro aparece no mobile */
     .btn-toggle-filtro {
         display: flex;
@@ -193,7 +188,7 @@
 }
 
 /* substituir o bloco anterior de laptop por este (aplica a laptop e telas menores até 1366px) */
-@media (max-width: 1366px) {
+@media (max-width: 1440px) {
 
     /* mostrar o ícone em laptops e menores */
     .filtro_icone {

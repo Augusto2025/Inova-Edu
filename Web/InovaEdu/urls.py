@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     path('', views.homePage),
+    path('homePage/', views.homePage, name='homePage'),
     path('login/', views.login, name='login'),
     path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),
@@ -16,6 +17,9 @@ urlpatterns = [
     path("calendario/", views.calendario, name="calendario"),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
     path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
+    path('forum/<int:idforum>/topico/criar/', views.criar_topico, name='criar_topico'),
+    path('topico/editar/<int:id>/', views.editar_topico, name='editar_topico'),
+    path('topico/excluir/<int:id>/', views.excluir_topico, name='excluir_topico'),
     path('forum/<int:forum_id>/', views.forum_chat, name='forum'),
     path('forum/criar/', views.criar_forum, name='criar_forum'),
     path('forum/excluir/<int:forum_id>/', views.excluir_forum, name='excluir_forum'),

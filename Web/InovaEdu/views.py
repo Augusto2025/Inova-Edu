@@ -670,6 +670,59 @@ def forum_topicos(request, idforum):
     return render(request, 'AlunoProfessor/forum_topicos.html', context)
 
 
+def criar_topico(request, idforum):
+    forum = get_object_or_404(Forum, idforum=idforum)
+    usuario_email = request.session.get('usuario_email')
+    usuario = get_object_or_404(Usuario, email=usuario_email)
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo', '').strip()
+        descricao = request.POST.get('descricao', '').strip()
+
+        if titulo:
+            Topico.objects.create(
+                forum=forum,
+                titulo=titulo,
+                descricao=descricao,
+                usuario=usuario
+            )
+            messages.success(request, "Tópico criado com sucesso!")
+
+        return redirect('forum_topicos', idforum=forum.idforum)
+
+
+def editar_topico(request, id):
+    topico = get_object_or_404(Topico, idtopico=id)
+    usuario_email = request.session.get('usuario_email')
+
+    if not topico.usuario or topico.usuario.email != usuario_email:
+        messages.error(request, "Você não tem permissão para editar este tópico.")
+        return redirect('forum_topicos', idforum=topico.forum.idforum)
+
+    if request.method == 'POST':
+        topico.titulo = request.POST.get('titulo', '').strip()
+        topico.descricao = request.POST.get('descricao', '').strip()
+        topico.save()
+        messages.success(request, "Tópico atualizado com sucesso!")
+
+    return redirect('forum_topicos', idforum=topico.forum.idforum)
+
+
+def excluir_topico(request, id):
+    topico = get_object_or_404(Topico, idtopico=id)
+    usuario_email = request.session.get('usuario_email')
+
+    if not topico.usuario or topico.usuario.email != usuario_email:
+        messages.error(request, "Você não tem permissão para excluir este tópico.")
+        return redirect('forum_topicos', idforum=topico.forum.idforum)
+
+    if request.method == "POST":
+        topico.delete()
+        messages.success(request, "Tópico excluído com sucesso!")
+
+    return redirect('forum_topicos', idforum=topico.forum.idforum)
+
+
 def forum_chat(request, forum_id):
     email = request.session.get('usuario_email')
     if not email:
