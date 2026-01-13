@@ -309,6 +309,20 @@ def repositorio(request, turma_id):
         # ------------------- Upload múltiplos arquivos com pastas -------------------
         elif 'upload_pasta' in request.POST:
             arquivos = request.FILES.getlist('arquivos')
+
+            # 🔍 DETECÇÃO DE SUPORTE A PASTAS
+            sem_estrutura = all(
+                getattr(arquivo, 'webkitRelativePath', None) in (None, '')
+                for arquivo in arquivos
+            )
+
+            if sem_estrutura:
+                messages.warning(
+                    request,
+                    "Seu navegador não suporta envio de pastas com subpastas. "
+                    "Use Google Chrome / Edge ou envie um arquivo ZIP."
+                )
+
             for arquivo_file in arquivos:
                 if arquivo_file.size == 0:
                     messages.error(request, f"O arquivo '{arquivo_file.name}' está vazio e não foi enviado.")
@@ -833,7 +847,8 @@ def criar_forum(request):
         Topico.objects.create(
             forum=forum,
             titulo=titulo_topico,
-            descricao=descricao_topico
+            descricao=descricao_topico,
+            usuario=usuario
         )
 
         messages.success(request, 'Fórum criado com sucesso!')
