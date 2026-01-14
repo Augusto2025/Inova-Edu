@@ -814,20 +814,20 @@ form button {
   margin-right: 10px;
 }
 
-form button[type="submitsalvar"] {
+form button[type="submit"] {
   background-color: var(--azul-Senac);
   color: #fff;
 }
 
-form button[type="submitsalvar"]:hover {
+form button[type="submit"]:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-form button[type="buttoncancelar"] {
+form button[type="button"] {
   background-color: #ccc;
 }
 
-form button[type="buttoncancelar"]:hover {
+form button[type="button"]:hover {
   background-color: var(--cinza-Senac);
 }
 
