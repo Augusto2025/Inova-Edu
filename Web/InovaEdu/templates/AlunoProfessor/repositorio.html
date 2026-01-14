@@ -23,16 +23,16 @@
 </div>
 {% endif %}
 
-{% if can_modify %}
 <div class="acoes-repositorio">
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
+    {% if can_modify %}
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
+    {% endif %}
     <a href="{% url 'download_repositorio' turma.idturma %}" class="acao-btn">
         ⬇️ Baixar Repositório
     </a>
 </div>
-{% endif %}
 
 <!-- Modais (Criar Pasta, Upload, Editar) -->
 <!-- Modal Criar Pasta -->

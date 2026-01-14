@@ -747,33 +747,41 @@ def forum_chat(request, forum_id):
 
     # Pega tópico da query string
     topico_id = request.GET.get('topico')
+
     if topico_id:
         try:
             topico_selecionado = Topico.objects.get(pk=topico_id, forum=forum)
         except Topico.DoesNotExist:
             topico_selecionado = None
     else:
-        # Se não houver query string, pega o primeiro tópico do fórum
-        topico_selecionado = forum.topicos.first()  # usa related_name 'topicos'
+        topico_selecionado = forum.topicos.first()
 
-    mensagens = Mensagem.objects.filter(forum=forum).order_by('criado_em')
+    # Só busca mensagens se existir tópico
+    mensagens = []
+    if topico_selecionado:
+        mensagens = Mensagem.objects.filter(
+            topico=topico_selecionado
+        ).order_by('criado_em')
 
     if request.method == 'POST':
         conteudo = request.POST.get('conteudo')
-        if conteudo.strip():
+
+        if topico_selecionado and conteudo and conteudo.strip():
             Mensagem.objects.create(
-                forum=forum,
+                topico=topico_selecionado,
                 autor=usuario,
                 conteudo=conteudo
             )
-        redirect_url = f'/forum/{forum.idforum}/'
-        return redirect(redirect_url)
+
+        # 🔁 mantém o tópico após enviar mensagem
+        return redirect(f'/forum/{forum.idforum}/?topico={topico_selecionado.pk}')
 
     return render(request, 'AlunoProfessor/forum.html', {
         'forum': forum,
         'topico_selecionado': topico_selecionado,
         'mensagens': mensagens
     })
+
 
 def editar_forum(request, forum_id):
     forum = get_object_or_404(Forum, pk=forum_id)
