@@ -140,11 +140,11 @@ class UsuarioDaTurma(models.Model):
 
 class Eventos(models.Model):
     ideventos = models.AutoField(db_column='idEventos', primary_key=True)
-    nome_do_evento = models.CharField(db_column='Nome_do_evento', max_length=35)
+    nome_do_evento = models.CharField(db_column='Nome_do_evento', max_length=50)
     hora_do_evento = models.TimeField(db_column='Hora_do_evento')
     data_do_evento = models.DateField(db_column='Data_do_evento')
-    endereco = models.CharField(db_column='Endereco', max_length=50)
-    descricao = models.CharField(db_column='Descricao', max_length=200)
+    endereco = models.CharField(db_column='Endereco', max_length=100)
+    descricao = models.CharField(db_column='Descricao', max_length=250)
     usuario = models.ForeignKey(
         Usuario,
         models.DO_NOTHING,

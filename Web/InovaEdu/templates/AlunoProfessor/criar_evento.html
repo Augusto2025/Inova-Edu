@@ -19,7 +19,7 @@
         <form method="POST" class="criar-evento-form">
             {% csrf_token %}
             <label for="nome">Nome do evento</label>
-            <input id="nome" name="nome" type="text" required maxlength="35" value="{{ form.nome|default_if_none:'' }}">
+            <input id="nome" name="nome" type="text" required maxlength="50" value="{{ form.nome|default_if_none:'' }}">
 
             <label for="data">Data</label>
             <input id="data" name="data" type="date" required value="{{ form.data|default_if_none:'' }}">
@@ -28,10 +28,10 @@
             <input id="hora" name="hora" type="time" required value="{{ form.hora|default_if_none:'' }}">
 
             <label for="endereco">Endereço</label>
-            <input id="endereco" name="endereco" type="text" maxlength="50" value="{{ form.endereco|default_if_none:'' }}">
+            <input id="endereco" name="endereco" type="text" maxlength="100" value="{{ form.endereco|default_if_none:'' }}">
 
             <label for="descricao">Descrição</label>
-            <textarea id="descricao" name="descricao" rows="4" maxlength="200">{{ form.descricao|default_if_none:'' }}</textarea>
+            <textarea id="descricao" name="descricao" rows="4" maxlength="250">{{ form.descricao|default_if_none:'' }}</textarea>
 
             <div class="criar-evento-actions">
                 <button type="submit" class="btn-primary">Criar evento</button>
