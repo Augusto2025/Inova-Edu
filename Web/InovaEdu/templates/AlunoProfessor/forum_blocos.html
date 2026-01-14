@@ -85,13 +85,6 @@
         </form>
     </aside>
 
-    {% if query %}
-    {% for Forum in foruns %}
-    {% empty %}
-    <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-    {% endfor %}
-    {% endif %}
-
     <main>
         {% for Forum in foruns %}
             <section>
@@ -119,6 +112,17 @@
                     </div>
                 {% endif %}
             </section>
+
+            {% empty %}
+                {% if query %}
+                    <p style="text-align:center; margin-top:40px;">
+                        Nenhum resultado encontrado.
+                    </p>
+                {% else %}
+                    <p style="text-align:center; margin-top:40px;">
+                        Nenhum fórum criado até o momento.
+                    </p>
+                {% endif %}
         {% endfor %}
     </main>
 

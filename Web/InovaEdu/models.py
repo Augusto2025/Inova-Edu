@@ -181,8 +181,17 @@ class Topico(models.Model):
         db_table = 'topico'
 
 class Mensagem(models.Model):
-    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='ID_Forum', related_name='mensagens')
-    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='ID_Usuario')
+    topico = models.ForeignKey(
+        Topico,
+        on_delete=models.CASCADE,
+        related_name='mensagens',
+        db_column='ID_Topico'
+    )
+    autor = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        db_column='ID_Usuario'
+    )
     conteudo = models.TextField(db_column='Conteudo')
     criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
 

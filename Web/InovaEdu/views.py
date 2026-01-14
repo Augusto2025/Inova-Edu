@@ -309,6 +309,20 @@ def repositorio(request, turma_id):
         # ------------------- Upload múltiplos arquivos com pastas -------------------
         elif 'upload_pasta' in request.POST:
             arquivos = request.FILES.getlist('arquivos')
+
+            # 🔍 DETECÇÃO DE SUPORTE A PASTAS
+            sem_estrutura = all(
+                getattr(arquivo, 'webkitRelativePath', None) in (None, '')
+                for arquivo in arquivos
+            )
+
+            if sem_estrutura:
+                messages.warning(
+                    request,
+                    "Seu navegador não suporta envio de pastas com subpastas. "
+                    "Use Google Chrome / Edge ou envie um arquivo ZIP."
+                )
+
             for arquivo_file in arquivos:
                 if arquivo_file.size == 0:
                     messages.error(request, f"O arquivo '{arquivo_file.name}' está vazio e não foi enviado.")
@@ -733,33 +747,41 @@ def forum_chat(request, forum_id):
 
     # Pega tópico da query string
     topico_id = request.GET.get('topico')
+
     if topico_id:
         try:
             topico_selecionado = Topico.objects.get(pk=topico_id, forum=forum)
         except Topico.DoesNotExist:
             topico_selecionado = None
     else:
-        # Se não houver query string, pega o primeiro tópico do fórum
-        topico_selecionado = forum.topicos.first()  # usa related_name 'topicos'
+        topico_selecionado = forum.topicos.first()
 
-    mensagens = Mensagem.objects.filter(forum=forum).order_by('criado_em')
+    # Só busca mensagens se existir tópico
+    mensagens = []
+    if topico_selecionado:
+        mensagens = Mensagem.objects.filter(
+            topico=topico_selecionado
+        ).order_by('criado_em')
 
     if request.method == 'POST':
         conteudo = request.POST.get('conteudo')
-        if conteudo.strip():
+
+        if topico_selecionado and conteudo and conteudo.strip():
             Mensagem.objects.create(
-                forum=forum,
+                topico=topico_selecionado,
                 autor=usuario,
                 conteudo=conteudo
             )
-        redirect_url = f'/forum/{forum.idforum}/'
-        return redirect(redirect_url)
+
+        # 🔁 mantém o tópico após enviar mensagem
+        return redirect(f'/forum/{forum.idforum}/?topico={topico_selecionado.pk}')
 
     return render(request, 'AlunoProfessor/forum.html', {
         'forum': forum,
         'topico_selecionado': topico_selecionado,
         'mensagens': mensagens
     })
+
 
 def editar_forum(request, forum_id):
     forum = get_object_or_404(Forum, pk=forum_id)
@@ -833,7 +855,8 @@ def criar_forum(request):
         Topico.objects.create(
             forum=forum,
             titulo=titulo_topico,
-            descricao=descricao_topico
+            descricao=descricao_topico,
+            usuario=usuario
         )
 
         messages.success(request, 'Fórum criado com sucesso!')

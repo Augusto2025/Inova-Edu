@@ -58,24 +58,26 @@
                     {% endif %}
                 </div>
 
-                <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
-                    Entrar na Conversa
-                </a>
-
-                {% if request.session.usuario_email == topico.usuario.email %}
-                    <div class="acoes-forum">
-                        <button class="btn-editar-topico"
-                                data-topico-id="{{ topico.idtopico }}"
-                                data-topico-titulo="{{ topico.titulo }}"
-                                data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="btn-excluir-topico"
-                                data-topico-id="{{ topico.idtopico }}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                {% endif %}
+                <div style="display: flex; flex-direction: column; justify-content: center;"> 
+                    <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                        Entrar na Conversa
+                    </a>
+    
+                    {% if request.session.usuario_email == topico.usuario.email %}
+                        <div class="acoes-forum">
+                            <button class="btn-editar-topico"
+                                    data-topico-id="{{ topico.idtopico }}"
+                                    data-topico-titulo="{{ topico.titulo }}"
+                                    data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="btn-excluir-topico"
+                                    data-topico-id="{{ topico.idtopico }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         {% endfor %}
     {% else %}

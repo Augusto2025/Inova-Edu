@@ -23,16 +23,16 @@
 </div>
 {% endif %}
 
-{% if can_modify %}
 <div class="acoes-repositorio">
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
-    <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
+    {% if can_modify %}
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
+    {% endif %}
     <a href="{% url 'download_repositorio' turma.idturma %}" class="acao-btn">
         ⬇️ Baixar Repositório
     </a>
 </div>
-{% endif %}
 
 <!-- Modais (Criar Pasta, Upload, Editar) -->
 <!-- Modal Criar Pasta -->
@@ -70,7 +70,7 @@
         <p style="font-size: 14px; color: #666;">Selecione uma pasta para enviar todos os arquivos e subpastas. Pastas vazias não serão criadas automaticamente - crie-as manualmente se necessário.</p>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="file" name="arquivos" multiple webkitdirectory required>
+            <input type="file" name="arquivos" webkitdirectory directory multiple required>
             <button type="submit" name="upload_pasta">Enviar</button>
         </form>
     </div>
