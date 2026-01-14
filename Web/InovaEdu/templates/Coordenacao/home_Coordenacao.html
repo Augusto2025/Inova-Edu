@@ -23,25 +23,34 @@
 
 
     <!-- HEADER -->
-    <header class="header">
-        <a href="{% url 'home_Coordenacao' %}">
-            <img src="{% static 'img/LOGOBRANCO.png' %}" alt="Logo Inova">
-        </a>
+    <div class="headerperfil">
 
-        {% comment %} <nav class="header-links">
-            <a href="#">Perfil</a>
-        </nav> {% endcomment %}
-
-        <div class="headerperfil">
-            <img src="{% static 'img/user-solid-full.svg' %}"
-                alt="Perfil"
-                class="icone-perfil"
-                onclick="mostrarLista('listaPerfil')">
-
-            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+        <!-- LOGO -->
+        <div class="logo-header">
+            <a href="{% url 'home_Coordenacao' %}">
+                <img src="{% static 'img/LOGOBRANCO.png' %}" alt="Logo" class="logo-img"> 
+            </a>
         </div>
 
-    </header>
+        <!-- AÇÕES À DIREITA -->
+        <div class="acoes-header">
+
+            <div class="perfil-usuario" onclick="mostrarLista('listaPerfil')">
+                {% if usuario_logado.imagem %}
+                    <img src="{{ usuario_logado.imagem.url }}"
+                        alt="Perfil"
+                        class="icone-perfil">
+                {% else %}
+                    <div class="icone-perfil icone-padrao">?</div>
+                {% endif %}
+            </div>
+
+
+            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+
+        </div>
+    </div>
+
 
 
     <!-- SEÇÃO PRINCIPAL -->
@@ -83,13 +92,13 @@
 
          <!-- IMAGEM INICIAL -->
          <div id="painelImagem" class="painel-imagem">
-            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
+            <img src="{% static 'img/LOGOAZUL.png' %}" alt="Logo Inova">
         </div>
 
         <section class="section-wrapper">
 
             <!-- USUÁRIO -->
-            <section class="container_usuario lista_conteudo" id="listaUsuario" style="display:none;">
+            <section class="container_usuario lista_conteudo " id="listaUsuario" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista Usuário</p>
 
@@ -139,8 +148,8 @@
                                 <option value="Coordenador">Coordenação</option>
                             </select>
 
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarModal">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarModal">Cancelar</button>
                         </form>
 
 
@@ -184,8 +193,8 @@
                                 <option value="Coordenador">Coordenação</option>
                             </select>
 
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarEditar">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarEditar">Cancelar</button>
                         </form>
                     </div>
                 </div>
@@ -257,7 +266,7 @@
 
 
             <!-- CURSOS -->
-            <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+            <section class="container_usuario lista_conteudo " id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
 
@@ -362,8 +371,8 @@
                         <label for="descricao_curso">Descrição:</label>
                         <textarea id="descricao_curso" name="descricao_curso" rows="4"></textarea>
 
-                        <button type="submit">Salvar</button>
-                        <button type="button" id="cancelarModalCurso">Cancelar</button>
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarModalCurso">Cancelar</button>
                     </form>
                 </div>
             </div>
@@ -397,8 +406,8 @@
                         <label>Descrição:</label>
                         <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
             
-                        <button type="submit">Salvar</button>
-                        <button type="button" id="cancelarEditarCurso">Cancelar</button>
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarCurso">Cancelar</button>
                     </form>
                 </div>
             </div>
@@ -504,8 +513,8 @@
                         </select>
             
                         <div style="margin-top:15px;">
-                            <button type="submit">Salvar</button>
-                            <button type="button" id="cancelarModalTurma">Cancelar</button>
+                            <button type="submitsalvar">Salvar</button>
+                            <button type="buttoncancelar" id="cancelarModalTurma">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -538,17 +547,24 @@
                             {% endfor %}
                         </select>
             
-                        <button type="submit">Salvar</button>
-                        <button type="button" id="cancelarEditarTurma">Cancelar</button>
+                        <button type="submitsalvar">Salvar</button>
+                        <button type="buttoncancelar" id="cancelarEditarTurma">Cancelar</button>
                     </form>
                 </div>
             </div>
+
+
+
+
+
+
+
             
 
 
             <!-- PERFIL -->
 
-            <section class="perfil-coord-container lista_conteudo" id="listaPerfil" style="display:none;">
+            <section class="perfil-coord-container lista_conteudo  " id="listaPerfil" style="display:none;">
                 <div class="perfil-coord-header">
                     <p>Perfil da Coordenação</p>
                 </div>
@@ -557,7 +573,11 @@
 
                     <!-- FOTO -->
                     <div class="perfil-coord-foto">
-                        <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
+                        {% if usuario_logado.imagem %}
+                            <img src="{{ usuario_logado.imagem.url }}" class="perfil-coord-img">
+                        {% else %}
+                            <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
+                        {% endif %}
                     </div>
 
                     <!-- DADOS -->
@@ -583,18 +603,19 @@
 
                     <!-- AÇÕES -->
                     <div class="perfil-coord-acoes">
-                        <a href="#" class="perfil-coord-btn" onclick="mostrarLista('editarPerfil')">
+                        <button type="button"
+                                class="perfil-coord-btn"
+                                onclick="mostrarLista('editarPerfil')">
                             Editar
-                        </a>
+                        </button>
                     </div>
 
                 </div>
             </section>
 
-
             <!-- PERFIL EDITAR -->
 
-            <section class="editar-perfil-container" id="editarPerfil" style="display:none;">
+            <section class="editar-perfil-container lista_conteudo  " id="editarPerfil" style="display:none;">
                 <div class="editar-perfil-header">
                     <p>Editar Perfil da Coordenação</p>
                 </div>
@@ -603,11 +624,15 @@
 
                     <!-- FOTO -->
                     <div class="editar-perfil-foto">
-                        <img src="{% static 'img/user-solid-full.svg' %}" class="editar-perfil-img">
+                        {% if usuario_logado.imagem %}
+                            <img src="{{ usuario_logado.imagem.url }}" class="editar-perfil-img">
+                        {% else %}
+                            <img src="{% static 'img/user-solid-full.svg' %}" class="editar-perfil-img">
+                        {% endif %}
 
                         <label class="editar-perfil-upload">
                             Alterar foto
-                            <input type="file" name="foto" hidden>
+                            <input type="file" name="imagem" hidden>
                         </label>
                     </div>
 
@@ -621,12 +646,11 @@
                         <input type="email" name="email" value="{{ usuario_logado.email }}">
                         <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
 
-                        <input type="file" name="imagem">
-
                         <button type="submit">Salvar</button>
-                        <button type="button" onclick="mostrarLista('listaPerfil')">Cancelar</button>
+                        <button type="button" onclick="mostrarLista('listaPerfil')">
+                            Cancelar
+                        </button>
                     </form>
-
 
                 </div>
             </section>

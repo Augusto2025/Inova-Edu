@@ -38,93 +38,109 @@ body {
 }
 
 .painel-imagem img {
-  max-width: 100%;
+  max-width: 35%;
   height: auto;
 }
 
 .toast-sucesso {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
 
-    background-color: #28a745;
-    color: #fff;
-    padding: 14px 20px;
-    border-radius: 8px;
+  background-color: #28a745;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
 
-    font-weight: 600;
-    font-size: 14px;
+  font-weight: 600;
+  font-size: 14px;
 
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    z-index: 9999;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
 
-    animation: slideIn 0.4s ease;
+  animation: slideIn 0.4s ease;
 }
 
 /* Animação de entrada */
 @keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
-
 
 /* ======= HEADER ======= */
-.header {
+.headerperfil {
   width: 100%;
-  background-color: var(--azul-Senac);
-  /* ou a cor que quiser */
-  padding: 0 20px;
+  height: 60px;
+  background: var(--azul-Senac);
   display: flex;
-  justify-content: flex-start;
-  /* tudo alinhado para o lado esquerdo */
   align-items: center;
-  gap: 20px;
-  /* espaço entre itens, caso adicione mais depois */
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
-.header img {
-  width: 50px;
+/* LOGO */
+.logo-header {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 3%;
   /* ajuste o tamanho que desejar */
   height: auto;
   display: block;
 }
 
-.headerperfil img {
-  width: 32px; /* padrão fixo */
-  height: 32px; /* mantém quadrado */
-  object-fit: contain; /* não estica a imagem */
-  background-color: white;
-  border-radius: 24px
-}
-
-
-.headerperfil {
-  margin-left: auto;
+/* AÇÕES */
+.acoes-header {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* opcional – só estética */
-.headerperfilr img {
-  width: 32px;
-  height: 32px;
+/* PERFIL */
+.perfil-usuario {
+  cursor: pointer;
 }
 
+.icone-perfil {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.icone-padrao {
+  background: #e0e0e0;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* SAIR */
 .btn-sair {
-  background-color: #c62828;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 6px;
   text-decoration: none;
+  padding: 8px 16px;
+  background: #ff4d4d;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.3s;
 }
 
+.btn-sair:hover {
+  background: #d93636;
+}
 
 /* ======= CONTAINER main ======= */
 
@@ -255,6 +271,9 @@ body {
   line-height: 1.7;
 }
 
+
+
+
 /* Ações */
 .perfil-coord-acoes {
   grid-area: acoes;
@@ -276,13 +295,6 @@ body {
 .perfil-coord-btn:hover {
   background-color: #d67c12;
 }
-
-
-
-
-
-
-
 
 /* ===== EDITAR PERFIL – CSS PRÓPRIO ===== */
 /* Container */
@@ -328,7 +340,7 @@ body {
   align-items: center;
 }
 
-.editar-perfil-img {
+.editar-perfil img {
   width: 240px;
   height: 240px;
   border-radius: 50%;
@@ -418,11 +430,6 @@ body {
   background: #ccc;
   color: #333;
 }
-
-
-
-
-
 
 /* ======= COLUNA DE CARDS ======= */
 .cards-home {
@@ -526,12 +533,6 @@ body {
   color: orange;
 } */
 
-
-
-
-
-
-
 .btn-add {
   background-color: var(--laranja-Senac);
   color: #fff;
@@ -587,8 +588,8 @@ body {
 
 .col-descricao {
   display: flex;
-  align-items: center;      /* centro vertical */
-  justify-content: center;  /* centro horizontal */
+  align-items: center; /* centro vertical */
+  justify-content: center; /* centro horizontal */
   width: 100%;
   height: 100%;
 }
@@ -599,39 +600,32 @@ body {
   font-size: 24px;
 }
 
-
-
-
-.lista_conteudo img:not(.perfil-coord-img)   {
+.lista_conteudo img:not(.perfil-coord-img) {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;
   margin-left: 30px;
-
 }
-
-
 
 /* ======= MODAL DESCRIÇÃO ======= */
 
 #modalDescricao .modal-content {
-    background-color: #ffffff;
-    width: 320px;
-    max-width: 90%;
-    padding: 16px;
-    border-radius: 10px;
+  background-color: #ffffff;
+  width: 320px;
+  max-width: 90%;
+  padding: 16px;
+  border-radius: 10px;
 
-    border-top: 5px solid #1A6F9D; /* identidade visual */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-top: 5px solid #1a6f9d; /* identidade visual */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-
 .fechar-descricao {
-    float: right;
-    cursor: pointer;
-    font-size: 22px;
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
 }
 
 /* Ações (editar/excluir) */
@@ -641,7 +635,6 @@ body {
   text-align: center;
   justify-content: space-around;
   margin: 0 auto;
-
 }
 
 /* Faz os botões dentro do form ficarem lado a lado */
@@ -666,7 +659,6 @@ body {
 .botao-editar:hover {
   background-color: var(--azul_Claro-Senac);
 }
-
 
 /* Botão Excluir */
 .botao-excluir {
@@ -732,11 +724,6 @@ body {
   background-color: var(--azul-Senac);
   color: white;
 }
-
-
-
-
-
 
 /* ======= MODAL ======= */
 .modal {
@@ -814,20 +801,20 @@ form button {
   margin-right: 10px;
 }
 
-form button[type="submit"] {
+form button[type="submitsalvar"] {
   background-color: var(--azul-Senac);
   color: #fff;
 }
 
-form button[type="submit"]:hover {
+form button[type="submitsalvar"]:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-form button[type="button"] {
+form button[type="buttoncancelar"] {
   background-color: #ccc;
 }
 
-form button[type="button"]:hover {
+form button[type="buttoncancelar"]:hover {
   background-color: var(--cinza-Senac);
 }
 
@@ -856,7 +843,6 @@ form button[type="button"]:hover {
 .btncurso:hover {
   background-color: #d67c12;
 }
-
 
 .lista_curso {
   display: blok;
@@ -903,10 +889,7 @@ form button[type="button"]:hover {
   border: 1px solid #ccc;
 }
 
-
-
 /* ======= LISTA DE TURMAS ======= */
-
 
 #listaTurma .lista_curso ul {
   list-style: none;
@@ -954,7 +937,6 @@ form button[type="button"]:hover {
   justify-content: center;
 }
 
-
 #listaTurma .acoes button:first-child {
   padding: 5px 12px;
   background-color: var(--azul-Senac);
@@ -980,9 +962,6 @@ form button[type="button"]:hover {
 #listaTurma .acoes button:last-child:hover {
   background-color: #da190b;
 }
-
-
-
 
 /* ====================CURSO============================== */
 
@@ -1056,7 +1035,6 @@ form button[type="button"]:hover {
   background-color: #da190b;
 }
 
-
 /* modal curso====== */
 .modal {
   display: none;
@@ -1082,13 +1060,6 @@ form button[type="button"]:hover {
   font-size: 25px;
   cursor: pointer;
 }
-
-
-
-
-
-
-
 
 /* ======= FOOTER ======= */
 .footer-fixo {
