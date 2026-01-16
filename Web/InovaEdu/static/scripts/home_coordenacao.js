@@ -41,36 +41,48 @@ function mostrarLista(id) {
 }
 
 // ====== EDITAR ======
-const botoesEditar = document.querySelectorAll('.botao-editar');
-const modalEditar = document.getElementById('modalEditar');
-const fecharEditar = document.getElementById('fecharEditar');
-const cancelarEditar = document.getElementById('cancelarEditar');
-const formEditar = document.getElementById('formEditarUsuario');
+document.addEventListener("DOMContentLoaded", function () {
 
-botoesEditar.forEach(botao => {
-    botao.addEventListener('click', () => {
-        modalEditar.style.display = 'flex';
+    const botoesEditar = document.querySelectorAll('.botao-editar');
+    const modalEditar = document.getElementById('modalEditar');
+    const fecharEditar = document.getElementById('fecharEditar');
+    const cancelarEditar = document.getElementById('cancelarEditar');
+    const formEditar = document.getElementById('formEditarUsuario');
 
-        const li = botao.closest('li');
-        const idusuario = li.dataset.id; // vamos usar um atributo data-id no <li>
-        
-        document.getElementById('idusuarioEdit').value = idusuario;
-        document.getElementById('nomeEdit').value = li.children[0].textContent;
-        document.getElementById('SobrenomeEdit').value = li.children[1].textContent;
-        document.getElementById('EmailEdit').value = li.children[2].textContent;
-        document.getElementById('descricaoEdit').value = li.children[4].textContent;
-        document.getElementById('tipoCadastroEdit').value = li.children[6].textContent.toLowerCase();
+    botoesEditar.forEach(botao => {
+        botao.addEventListener('click', function () {
 
-        // Atualiza a action do form para a URL de edição
-        formEditar.action = `/usuarios/editar/${idusuario}/`;
+            modalEditar.style.display = 'flex';
+
+            const li = botao.closest('li');
+            if (!li) return;
+
+            const idusuario = li.dataset.id;
+
+            document.getElementById('idusuarioEdit').value = idusuario;
+            document.getElementById('nomeEdit').value = li.children[0].textContent;
+            document.getElementById('SobrenomeEdit').value = li.children[1].textContent;
+            document.getElementById('EmailEdit').value = li.children[2].textContent;
+
+            // descrição via data-descricao (mais seguro)
+            const desc = li.querySelector('.icon-descricao');
+            document.getElementById('descricaoEdit').value =
+                desc ? desc.dataset.descricao : '';
+
+            document.getElementById('tipoCadastroEdit').value =
+                li.children[5].textContent.trim();
+
+            formEditar.action = `/usuarios/editar/${idusuario}/`;
+        });
     });
-});
 
-fecharEditar.addEventListener('click', () => modalEditar.style.display = 'none');
-cancelarEditar.addEventListener('click', () => modalEditar.style.display = 'none');
+    fecharEditar.onclick = () => modalEditar.style.display = 'none';
+    cancelarEditar.onclick = () => modalEditar.style.display = 'none';
 
-window.addEventListener('click', (e) => {
-    if(e.target == modalEditar) modalEditar.style.display = 'none';
+    window.addEventListener('click', (e) => {
+        if (e.target === modalEditar) modalEditar.style.display = 'none';
+    });
+
 });
 
 
@@ -181,3 +193,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.target === modal) modal.style.display = "none";
     };
 });
+
+
+

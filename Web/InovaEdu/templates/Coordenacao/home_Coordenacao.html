@@ -12,26 +12,45 @@
 </head>
 <body>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast-sucesso">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+
     <!-- HEADER -->
-    <header class="header">
-        <a href="{% url 'home_Coordenacao' %}">
-            <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="Logo Inova">
-        </a>
+    <div class="headerperfil">
 
-        {% comment %} <nav class="header-links">
-            <a href="#">Perfil</a>
-        </nav> {% endcomment %}
-
-        <div class="headerperfil">
-            <img src="{% static 'img/user-solid-full.svg' %}"
-                alt="Perfil"
-                class="icone-perfil"
-                onclick="mostrarLista('listaPerfil')">
-
-            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+        <!-- LOGO -->
+        <div class="logo-header">
+            <a href="{% url 'home_Coordenacao' %}">
+                <img src="{% static 'img/LOGOBRANCO.png' %}" alt="Logo" class="logo-img"> 
+            </a>
         </div>
 
-    </header>
+        <!-- AÇÕES À DIREITA -->
+        <div class="acoes-header">
+
+            <div class="perfil-usuario" onclick="mostrarLista('listaPerfil')">
+                {% if usuario_logado.imagem %}
+                    <img src="{{ usuario_logado.imagem.url }}"
+                        alt="Perfil"
+                        class="icone-perfil">
+                {% else %}
+                    <div class="icone-perfil icone-padrao">?</div>
+                {% endif %}
+            </div>
+
+
+            <a href="{% url 'login' %}" class="btn-sair">Sair</a>
+
+        </div>
+    </div>
+
 
 
     <!-- SEÇÃO PRINCIPAL -->
@@ -61,31 +80,31 @@
                     <a href="#" class="botao-card" onclick="mostrarLista('listaTurma')">Acessar</a>
                 </div>
             
-                {% comment %} <div class="card">
+               {% comment %} <div class="card">
                     <img src="{% static 'img/user-solid-full.svg' %}" alt="Perfil">
-                    <h3>Perfil</h3>
-                    <p>Gerencie seu perfil</p>
+                    <h3>usuario e turma</h3>
+                    <p>usuario e turma</p>
                     <a href="#" class="botao-card" onclick="mostrarLista('listaPerfil')">Acessar</a>
-                </div> {% endcomment %}
+                </div>  {% endcomment %}
             
             </div>
         </aside>
 
          <!-- IMAGEM INICIAL -->
          <div id="painelImagem" class="painel-imagem">
-            <img src="{% static 'img/LOGO_AZUL.png' %}" alt="Logo Inova">
+            <img src="{% static 'img/LOGOAZUL.png' %}" alt="Logo Inova">
         </div>
 
         <section class="section-wrapper">
 
             <!-- USUÁRIO -->
-            <section class="container_usuario lista_conteudo" id="listaUsuario" style="display:none;">
+            <section class="container_usuario lista_conteudo " id="listaUsuario" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista Usuário</p>
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar Usuário">
+                        <input type="text" id="pesquisarUsuario" placeholder="Pesquisar Usuário">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModal">+ Cadastro</a>
@@ -98,31 +117,42 @@
                         <div class="titulo_lista">
                             <p>Cadastro Usuário</p>
                         </div>
-                        <form action="{% url 'home_Coordenacao' %}" method="POST" ...>
+                        <form action="{% url 'home_Coordenacao' %}" method="POST" enctype="multipart/form-data">
 
                             {% csrf_token %}
-                            <label for="nome">Primeiro Nome:</label>
-                            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
-                            <label for="Sobrenome">Sobrenome:</label>
-                            <input type="text" id="Sobrenome" name="Sobrenome" required placeholder="Digite seu sobrenome">
-                            <label for="Email">Email:</label>
-                            <input type="email" id="Email" name="Email" required placeholder="exemplo@gmail.com">
-                            <label for="Senha">Senha:</label>
-                            <input type="password" id="Senha" name="Senha" required placeholder="***********">
-                            <label for="descricao">Descrição:</label>
-                            <textarea id="descricao" name="descricao" rows="4" placeholder="Lorem ipsum dolor sit amet...."></textarea>
-                            <label for="imagem">Imagem:</label>
-                            <input type="file" id="imagem" name="imagem" accept="image/*">
-                            <label for="tipoCadastro">Escolha sua opção de cadastro:</label>
-                            <select id="tipoCadastro" name="tipoCadastro" required>
-                                <option value="" disabled selected>Selecione uma opção</option>
+                            <input type="hidden" name="acao" value="cadastrar_usuario">
+
+                            <label>Primeiro Nome</label>
+                            <input type="text" name="nome" required>
+
+                            <label>Sobrenome</label>
+                            <input type="text" name="sobrenome" required>
+
+                            <label>Email</label>
+                            <input type="email" name="email" required>
+
+                            <label>Senha</label>
+                            <input type="password" name="senha" required>
+
+                            <label>Descrição</label>
+                            <textarea name="descricao"></textarea>
+
+                            <label>Imagem</label>
+                            <input type="file" name="imagem">
+
+                            <label>Tipo</label>
+                            <select name="tipoCadastro" required>
+                                <option value="">Selecione</option>
                                 <option value="Professor">Professor</option>
                                 <option value="Aluno">Aluno</option>
                                 <option value="Coordenador">Coordenação</option>
                             </select>
+
                             <button type="submitsalvar">Salvar</button>
                             <button type="buttoncancelar" id="cancelarModal">Cancelar</button>
                         </form>
+
+
                     </div>
                 </div>
 
@@ -178,7 +208,7 @@
                             <span>Nome</span>
                             <span>Sobrenome</span>
                             <span>Email</span>
-                            <span>Senha</span>
+                            {% comment %} <span>Senha</span> {% endcomment %}
                             <span>Descrição</span>
                             <span>Imagem</span>
                             <span>Tipo de Usuário</span>
@@ -189,7 +219,7 @@
                             <span>{{ usuario.nome }}</span>
                             <span>{{ usuario.sobrenome }}</span>
                             <span>{{ usuario.email }}</span>
-                            <span>••••••</span>
+                            {% comment %} <span>••••••</span> {% endcomment %}
                             <i class="fa-solid fa-align-center icon-descricao"
                             title="Ver descrição"
                             data-descricao="{{ usuario.descricao|escapejs }}"></i>
@@ -201,15 +231,29 @@
                             {% endif %}
                             <span>{{ usuario.tipo }}</span>
 
-                           <span class="acoes">
-                                <button type="button" class="botao-editar">Editar</button>
+                          <span class="acoes">
+                                <!-- EDITAR -->
+                                <button type="button"
+                                        class="botao-editar"
+                                        title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
 
-                                <form action="{% url 'excluir_usuario' usuario.idusuario %}" method="POST">
+                                <!-- EXCLUIR -->
+                                <form action="{% url 'excluir_usuario' usuario.idusuario %}"
+                                    method="POST"
+                                    class="form-excluir">
                                     {% csrf_token %}
-                                    <button type="submit" class="botao-excluir" onclick="return confirm('Tem certeza?')">Excluir</button>
-                                </form>
-                            </span>
 
+                                    <button type="submit"
+                                            class="botao-excluir"
+                                            title="Excluir"
+                                            onclick="return confirm('Tem certeza que deseja excluir?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+
+                            </span>
                             
                         </li>
                         {% empty %}
@@ -222,13 +266,13 @@
 
 
             <!-- CURSOS -->
-             <section class="container_usuario lista_conteudo" id="listaCurso" style="display:none;">
+            <section class="container_usuario lista_conteudo " id="listaCurso" style="display:none;">
                 <div class="titulo_lista">
                     <p>Lista de Cursos</p>
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar o Curso">
+                        <input type="text" id="pesquisarCurso" placeholder="Pesquisar o Curso">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModalCurso">+ Cadastro</a>
@@ -257,29 +301,41 @@
                             </span>
                             <i class="fa-solid fa-align-center icon-descricao"
                             title="Ver descrição"
-                            data-descricao="{{ curso.descricao|escapejs }}"></i>>
+                            data-descricao="{{ curso.descricao|escapejs }}"></i>
 
                             <span class="acoes">
+                                <!-- EDITAR CURSO -->
                                 <button
                                     type="button"
                                     class="btn-editar-curso"
+                                    title="Editar curso"
                                     data-id="{{ curso.idcurso }}"
                                     data-nome="{{ curso.nome_curso }}"
                                     data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
                                     data-final="{{ curso.data_final|date:'Y-m-d' }}"
                                     data-descricao="{{ curso.descricao_curso }}">
-                                    Editar
+
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST" style="display:inline;">
+                                <!-- EXCLUIR CURSO -->
+                                <form action="{% url 'excluir_curso' curso.idcurso %}"
+                                    method="POST"
+                                    class="form-excluir"
+                                    style="display:inline;">
                                     {% csrf_token %}
+
                                     <button type="submit"
                                             class="botao-excluir"
-                                            onclick="return confirm('Tem certeza?')">
-                                        Excluir
+                                            title="Excluir curso"
+                                            onclick="return confirm('Tem certeza que deseja excluir este curso?')">
+
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
+
                             </span>
+
                         </li>
                         {% empty %}
                         <li><span>Nenhum curso cadastrado.</span></li>
@@ -365,7 +421,7 @@
 
                     <div class="guia-centro">
                         <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Pesquisar a Turma">
+                        <input type="text" id="pesquisarTurma" placeholder="Pesquisar a Turma">
                     </div>
 
                     <a href="#" class="btn-add" id="abrirModalTurma">+ Cadastro</a>
@@ -388,24 +444,38 @@
                             <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
                             <span class="acoes acoes-turma">
-                                <button type="button"
+                                <!-- EDITAR TURMA -->
+                                <button
+                                    type="button"
                                     class="btn-editar-turma"
+                                    title="Editar turma"
                                     data-id="{{ turma.idturma }}"
                                     data-codigo="{{ turma.codigo_turma }}"
                                     data-turno="{{ turma.turno }}"
                                     data-ano="{{ turma.ano }}"
                                     data-curso="{{ turma.curso.idcurso }}">
-                                    Editar
+
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <form action="{% url 'excluir_turma' turma.idturma %}" method="POST">
+                                <!-- EXCLUIR TURMA -->
+                                <form action="{% url 'excluir_turma' turma.idturma %}"
+                                    method="POST"
+                                    class="form-excluir"
+                                    style="display:inline;">
                                     {% csrf_token %}
+
                                     <button type="submit"
+                                            class="botao-excluir"
+                                            title="Excluir turma"
                                             onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
-                                        Excluir
+
+                                        <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
+
                             </span>
+
 
                         </li>
                         {% empty %}
@@ -482,65 +552,122 @@
                     </form>
                 </div>
             </div>
+
+
+
+
+
+
+
             
 
 
             <!-- PERFIL -->
 
-            <section class="container_usuario lista_conteudo" id="listaPerfil" style="display:none;">
-                <div class="titulo_lista">
+            <section class="perfil-coord-container lista_conteudo  " id="listaPerfil" style="display:none;">
+                <div class="perfil-coord-header">
                     <p>Perfil da Coordenação</p>
-                    <a href="#" class="btn-add" onclick="mostrarLista('editarPerfil')">Editar</a>
                 </div>
 
-                <div class="perfil-card">
-                    <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-img">
+                <div class="perfil-coord-card perfil-coord-layout">
 
-                    <p><strong>Nome:</strong> {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}</p>
-                    <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
-                    <p><strong>Tipo:</strong> {{ usuario_logado.tipo }}</p>
+                    <!-- FOTO -->
+                    <div class="perfil-coord-foto">
+                        {% if usuario_logado.imagem %}
+                            <img src="{{ usuario_logado.imagem.url }}" class="perfil-coord-img">
+                        {% else %}
+                            <img src="{% static 'img/user-solid-full.svg' %}" class="perfil-coord-img">
+                        {% endif %}
+                    </div>
 
-                    <p><strong>Descrição:</strong></p>
-                    <p class="descricao">
-                        {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
-                    </p>
+                    <!-- DADOS -->
+                    <div class="perfil-coord-info">
+                        <p class="perfil-nome">
+                            {{ usuario_logado.nome }} {{ usuario_logado.sobrenome }}
+                        </p>
+
+                        <p><strong>Email:</strong> {{ usuario_logado.email }}</p>
+
+                        <p class="perfil-tipo">
+                            <strong>{{ usuario_logado.tipo }}</strong>
+                        </p>
+                    </div>
+
+                    <!-- DESCRIÇÃO -->
+                    <div class="perfil-coord-descricao">
+                        <p class="perfil-coord-desc-title"><strong>Descrição:</strong></p>
+                        <p class="perfil-coord-desc">
+                            {{ usuario_logado.descricao|default:"Sem descrição cadastrada." }}
+                        </p>
+                    </div>
+
+                    <!-- AÇÕES -->
+                    <div class="perfil-coord-acoes">
+                        <button type="button"
+                                class="perfil-coord-btn"
+                                onclick="mostrarLista('editarPerfil')">
+                            Editar
+                        </button>
+                    </div>
 
                 </div>
             </section>
 
             <!-- PERFIL EDITAR -->
 
-            <section class="container_usuario lista_conteudo" id="editarPerfil" style="display:none;">
-                <div class="titulo_lista">
-                    <p>Editar Perfil</p>
+            <section class="editar-perfil-container lista_conteudo  " id="editarPerfil" style="display:none;">
+                <div class="editar-perfil-header">
+                    <p>Editar Perfil da Coordenação</p>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" class="perfil-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="acao" value="editar_perfil">
+                <div class="editar-perfil-card editar-perfil-layout">
 
-                    <label>Nome</label>
-                    <input type="text" name="nome" value="{{ usuario_logado.nome }}" required>
+                    <!-- FOTO -->
+                    <div class="editar-perfil-foto">
+                        {% if usuario_logado.imagem %}
+                            <img src="{{ usuario_logado.imagem.url }}" class="editar-perfil-img">
+                        {% else %}
+                            <img src="{% static 'img/user-solid-full.svg' %}" class="editar-perfil-img">
+                        {% endif %}
 
-                    <label>Sobrenome</label>
-                    <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}" required>
-
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ usuario_logado.email }}" required>
-
-                    <label>Descrição</label>
-                    <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
-
-                    <label>Imagem</label>
-                    <input type="file" name="imagem">
-
-                    <div style="margin-top:15px;">
-                        <button type="submitsalvar">Salvar</button>
-                        <button type="buttoncancelar" onclick="mostrarLista('listaPerfil')">Cancelar</button>
+                        <label class="editar-perfil-upload">
+                            Alterar foto
+                            <input type="file" name="imagem" hidden>
+                        </label>
                     </div>
-                </form>
 
+                    <!-- FORM -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="acao" value="editar_perfil">
+
+                        <input type="text" name="nome" value="{{ usuario_logado.nome }}">
+                        <input type="text" name="sobrenome" value="{{ usuario_logado.sobrenome }}">
+                        <input type="email" name="email" value="{{ usuario_logado.email }}">
+                        <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
+
+                        <button type="submit">Salvar</button>
+                        <button type="button" onclick="mostrarLista('listaPerfil')">
+                            Cancelar
+                        </button>
+                    </form>
+
+                </div>
             </section>
+
+
+
+            
+
+
+
+
+
+
+
+
+
+
 
 
         </section>

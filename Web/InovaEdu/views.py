@@ -928,6 +928,7 @@ def home_Coordenacao(request):
     turmas = Turma.objects.select_related('curso').all()
 
     if request.method == 'POST':
+        print(request.POST)
         acao = request.POST.get('acao')
 
        
@@ -950,14 +951,18 @@ def home_Coordenacao(request):
         if acao == 'cadastrar_usuario':
             Usuario.objects.create(
                 nome=request.POST.get('nome'),
-                sobrenome=request.POST.get('Sobrenome'),
-                email=request.POST.get('Email'),
-                senha=request.POST.get('Senha'),
+                sobrenome=request.POST.get('sobrenome'),
+                email=request.POST.get('email'),
+                senha=request.POST.get('senha'),
                 descricao=request.POST.get('descricao'),
-                tipo=request.POST.get('tipoCadastro'),  # OBRIGATÓRIO
+                tipo=request.POST.get('tipoCadastro'),
                 imagem=request.FILES.get('imagem')
             )
+
+            messages.success(request, "Usuário cadastrado com sucesso!")
             return redirect('home_Coordenacao')
+        
+        
 
     return render(request, 'Coordenacao/home_Coordenacao.html', {
         'usuarios': usuarios,
@@ -998,6 +1003,7 @@ def editar_usuario(request, idusuario):
             usuario.imagem = request.FILES['imagem']
 
         usuario.save()
+        print("SALVO COM SUCESSO")
         return redirect('home_Coordenacao')
 
     return redirect('home_Coordenacao')
@@ -1043,9 +1049,7 @@ def editar_curso(request):
             curso.imagem = request.FILES.get("imagem")
 
         curso.save()
-
-        # ✅ mensagem de sucesso
-        messages.success(request, "Curso editado com sucesso!")
+        print("SALVO COM SUCESSO")
 
     # ✅ continua na mesma página
     return redirect("home_Coordenacao")
