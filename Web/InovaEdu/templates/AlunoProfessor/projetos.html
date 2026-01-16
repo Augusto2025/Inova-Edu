@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block header %}
+    <!-- Estilo dos cards -->
+    <style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-self: center;
+        text-align: center;
+    }
+
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .card {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 15px;
+        width: 100%;
+        max-width: 800px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .card-image img {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .card-content {
+        flex: 1;
+        padding: 0 20px;
+    }
+
+    .card-title {
+        margin: 0 0 5px 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .card-description {
+        margin: 0;
+        color: #666;
+    }
+
+    .card-action {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-repositorio {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+    .btn-repositorio:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .card {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .card-image img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .card-content {
+            padding: 0;
+        }
+
+        .card-action {
+            justify-content: center;
+        }
+    }
+    </style>
+
+    {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="container">
+        <h1>Projetos da Turma {{ turma.codigo_turma }}</h1>
+
+        {% if projetos %}
+            <div class="cards-container">
+                {% for projeto in projetos %}
+                <div class="card">
+                    <!-- Imagem do projeto (placeholder caso não tenha) -->
+                    <div class="card-image">
+                        <img src="{% static 'img/project_placeholder.png' %}" alt="{{ projeto.nome_projeto }}">
+                    </div>
+
+                    <!-- Conteúdo central: nome e descrição -->
+                    <div class="card-content">
+                        <h2 class="card-title">{{ projeto.nome_projeto }}</h2>
+                        {% if projeto.descricao %}
+                            <p class="card-description">{{ projeto.descricao }}</p>
+                        {% else %}
+                            <p class="card-description">Sem descrição disponível</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botão para acessar o repositório -->
+                    <div class="card-action">
+                        <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="btn-repositorio">
+                            Ver Repositório
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Não há projetos cadastrados para esta turma.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}
+

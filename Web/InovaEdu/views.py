@@ -193,10 +193,52 @@ def turmas(request, curso_id):
         "turmas_por_ano": turmas_por_ano
     })
 
+def projetos_da_turma(request, turma_id):
+    # Busca a turma ou retorna 404
+    turma = get_object_or_404(Turma, idturma=turma_id)
+    
+    # Busca todos os projetos dessa turma
+    projetos = Projeto.objects.filter(turma=turma)
+
+    return render(request, 'AlunoProfessor/projetos.html', {
+        'turma': turma,
+        'projetos': projetos
+    })
+
 # Função para limpar nomes de arquivos e deixar válidos para Cloudinary
 def sanitize_filename(filename):
     # Remove caracteres que não são letras, números, _, -, .
     return re.sub(r'[^A-Za-z0-9._-]', '_', filename)
+
+def repositorio_projeto(request, projeto_id):
+    """
+    Acessa o repositório de um projeto específico.
+    """
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+
+    usuario = get_object_or_404(Usuario, email=email)
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    turma = projeto.turma
+
+    # Permissão: usuário da turma
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
+
+    # Reutiliza lógica de repositório
+    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
+    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
+
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'projeto': projeto,
+        'turma': turma,
+        'pastas': pastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'path': [],
+        'can_modify': can_modify,
+    })
+
 
 def repositorio(request, turma_id):
     email = request.session.get('usuario_email')
