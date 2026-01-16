@@ -952,7 +952,7 @@ form button[type="buttoncancelar"]:hover {
 .turma-item {
   display: grid;
   grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 1fr 1fr;
-  gap: 10px;
+  gap: 7%;
   padding: 12px;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
@@ -1070,7 +1070,7 @@ form button[type="buttoncancelar"]:hover {
 .curso-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-  gap: 10px;
+  gap: 105px;
   padding: 12px;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
