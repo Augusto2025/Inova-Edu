@@ -38,73 +38,109 @@ body {
 }
 
 .painel-imagem img {
-  max-width: 100%;
+  max-width: 35%;
   height: auto;
 }
 
-.mensagem-sucesso {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin: 15px;
-  font-weight: bold;
+.toast-sucesso {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  background-color: #28a745;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
+
+  font-weight: 600;
+  font-size: 14px;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+
+  animation: slideIn 0.4s ease;
 }
 
-
+/* Animação de entrada */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 
 /* ======= HEADER ======= */
-.header {
+.headerperfil {
   width: 100%;
-  background-color: var(--azul-Senac);
-  /* ou a cor que quiser */
-  padding: 10px 20px;
-
+  height: 60px;
+  background: var(--azul-Senac);
   display: flex;
-  justify-content: flex-start;
-  /* tudo alinhado para o lado esquerdo */
   align-items: center;
-  gap: 20px;
-  /* espaço entre itens, caso adicione mais depois */
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
-.header img {
-  width: 150px;
+/* LOGO */
+.logo-header {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 3%;
   /* ajuste o tamanho que desejar */
   height: auto;
   display: block;
 }
 
-.headerperfil img {
-  width: 32px; /* padrão fixo */
-  height: 32px; /* mantém quadrado */
-  object-fit: contain; /* não estica a imagem */
-  background-color: white;
-  border-radius: 24px
-}
-
-
-.headerperfil {
-  margin-left: auto;
+/* AÇÕES */
+.acoes-header {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* opcional – só estética */
-.headerperfilr img {
-  width: 32px;
-  height: 32px;
+/* PERFIL */
+.perfil-usuario {
+  cursor: pointer;
 }
 
+.icone-perfil {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.icone-padrao {
+  background: #e0e0e0;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* SAIR */
 .btn-sair {
-  background-color: #c62828;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 6px;
   text-decoration: none;
+  padding: 8px 16px;
+  background: #ff4d4d;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.3s;
 }
 
+.btn-sair:hover {
+  background: #d93636;
+}
 
 /* ======= CONTAINER main ======= */
 
@@ -125,26 +161,275 @@ body {
 }
 
 /* ======= PERFIL CARD ======= */
-.perfil-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
+
+/* Container */
+.perfil-coord-container {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 24px;
 }
 
-.perfil-img {
-  width: 120px;
+/* Header */
+.perfil-coord-header {
+  text-align: center;
+  border-bottom: 4px solid var(--laranja-Senac);
+  padding-bottom: 16px;
+  margin-bottom: 40px;
+}
+
+.perfil-coord-header p {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--azul-Senac);
+}
+
+/* Card */
+.perfil-coord-card {
+  background: var(--branco-Senac);
+  border-radius: 28px;
+  padding: 50px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* Layout principal */
+.perfil-coord-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-areas:
+    "foto info"
+    "descricao descricao"
+    "acoes acoes";
+  gap: 30px;
+}
+
+/* Foto */
+.perfil-coord-foto {
+  grid-area: foto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.perfil-coord-img {
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
-  margin-bottom: 15px;
+  border: 8px solid var(--laranja-Senac);
+  object-fit: contain;
 }
 
-.perfil-form input,
-.perfil-form textarea {
-  width: 100%;
-  padding: 8px;
+/* Informações */
+.perfil-coord-info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.perfil-nome {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--azul-Senac);
   margin-bottom: 12px;
 }
 
+.perfil-coord-info p {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #444;
+}
+
+/* Tipo (badge) */
+.perfil-tipo {
+  margin-top: 16px;
+}
+
+.perfil-tipo strong {
+  background: var(--azul-Senac);
+  color: var(--branco-Senac);
+  padding: 10px 26px;
+  border-radius: 22px;
+  font-size: 15px;
+}
+
+/* Descrição */
+.perfil-coord-descricao {
+  grid-area: descricao;
+}
+
+.perfil-coord-desc-title {
+  font-size: 20px;
+  color: var(--azul-Senac);
+  margin-bottom: 10px;
+}
+
+.perfil-coord-desc {
+  background: var(--cinza-Senac);
+  padding: 26px;
+  border-radius: 16px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+
+
+
+/* Ações */
+.perfil-coord-acoes {
+  grid-area: acoes;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.perfil-coord-btn {
+  background: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 14px 36px;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.perfil-coord-btn:hover {
+  background-color: #d67c12;
+}
+
+/* ===== EDITAR PERFIL – CSS PRÓPRIO ===== */
+/* Container */
+.editar-perfil-container {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.editar-perfil-header {
+  text-align: center;
+  border-bottom: 4px solid var(--laranja-Senac);
+  padding-bottom: 16px;
+  margin-bottom: 40px;
+}
+
+.editar-perfil-header p {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--azul-Senac);
+}
+
+/* Card */
+.editar-perfil-card {
+  background: var(--branco-Senac);
+  border-radius: 28px;
+  padding: 50px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+/* Layout */
+.editar-perfil-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 40px;
+}
+
+/* Foto */
+.editar-perfil-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editar-perfil img {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 8px solid var(--laranja-Senac);
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.editar-perfil-upload {
+  background: var(--azul-Senac);
+  color: var(--branco-Senac);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Form */
+.editar-perfil-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid inputs */
+.editar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+/* Inputs */
+.editar-perfil-input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Labels */
+.editar-perfil-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--azul-Senac);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Descrição */
+.editar-descricao {
+  margin-top: 26px;
+}
+
+.editar-perfil-textarea {
+  width: 100%;
+  min-height: 120px;
+  max-height: 160px;
+  resize: none;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+
+/* Ações */
+.editar-perfil-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.editar-perfil-btn {
+  background: var(--laranja-Senac);
+  color: var(--branco-Senac);
+  padding: 14px 32px;
+  border-radius: 26px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.editar-perfil-btn.cancelar {
+  background: #ccc;
+  color: #333;
+}
 
 /* ======= COLUNA DE CARDS ======= */
 .cards-home {
@@ -248,12 +533,6 @@ body {
   color: orange;
 } */
 
-
-
-
-
-
-
 .btn-add {
   background-color: var(--laranja-Senac);
   color: #fff;
@@ -309,8 +588,8 @@ body {
 
 .col-descricao {
   display: flex;
-  align-items: center;      /* centro vertical */
-  justify-content: center;  /* centro horizontal */
+  align-items: center; /* centro vertical */
+  justify-content: center; /* centro horizontal */
   width: 100%;
   height: 100%;
 }
@@ -321,39 +600,32 @@ body {
   font-size: 24px;
 }
 
-
-
-
-.lista_conteudo img {
+.lista_conteudo img:not(.perfil-coord-img) {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto;
   margin-left: 30px;
-
 }
-
-
 
 /* ======= MODAL DESCRIÇÃO ======= */
 
 #modalDescricao .modal-content {
-    background-color: #ffffff;
-    width: 320px;
-    max-width: 90%;
-    padding: 16px;
-    border-radius: 10px;
+  background-color: #ffffff;
+  width: 320px;
+  max-width: 90%;
+  padding: 16px;
+  border-radius: 10px;
 
-    border-top: 5px solid #1A6F9D; /* identidade visual */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-top: 5px solid #1a6f9d; /* identidade visual */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-
 .fechar-descricao {
-    float: right;
-    cursor: pointer;
-    font-size: 22px;
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
 }
 
 /* Ações (editar/excluir) */
@@ -362,7 +634,7 @@ body {
   gap: 10px;
   text-align: center;
   justify-content: space-around;
-
+  margin: 0 auto;
 }
 
 /* Faz os botões dentro do form ficarem lado a lado */
@@ -387,7 +659,6 @@ body {
 .botao-editar:hover {
   background-color: var(--azul_Claro-Senac);
 }
-
 
 /* Botão Excluir */
 .botao-excluir {
@@ -453,11 +724,6 @@ body {
   background-color: var(--azul-Senac);
   color: white;
 }
-
-
-
-
-
 
 /* ======= MODAL ======= */
 .modal {
@@ -578,7 +844,6 @@ form button[type="buttoncancelar"]:hover {
   background-color: #d67c12;
 }
 
-
 .lista_curso {
   display: blok;
   /* inicia escondida */
@@ -624,10 +889,7 @@ form button[type="buttoncancelar"]:hover {
   border: 1px solid #ccc;
 }
 
-
-
 /* ======= LISTA DE TURMAS ======= */
-
 
 #listaTurma .lista_curso ul {
   list-style: none;
@@ -658,36 +920,22 @@ form button[type="buttoncancelar"]:hover {
   color: black;
 }
 
-#listaTurma .acoes {
+/* #listaTurma .acoes {
   display: flex;
   gap: 30px;
   justify-content: center;
-  width: 100%;
+  margin: 0 auto;
 
 
-}
+} */
 
 .acoes-turma {
   display: flex;
-  flex-direction: row;
-  /* lado a lado */
+  flex-direction: row; /* lado a lado */
   gap: 8px;
   align-items: center;
   justify-content: center;
 }
-
-.acoes-turma button {
-  min-width: 80px;
-  /* mesmo tamanho */
-  height: 32px;
-}
-
-
-/* 
-  display: flex;
-  gap: 10px;
-  text-align: center;
-  justify-content: space-around; */
 
 #listaTurma .acoes button:first-child {
   padding: 5px 12px;
@@ -714,9 +962,6 @@ form button[type="buttoncancelar"]:hover {
 #listaTurma .acoes button:last-child:hover {
   background-color: #da190b;
 }
-
-
-
 
 /* ====================CURSO============================== */
 
@@ -790,7 +1035,6 @@ form button[type="buttoncancelar"]:hover {
   background-color: #da190b;
 }
 
-
 /* modal curso====== */
 .modal {
   display: none;
@@ -816,13 +1060,6 @@ form button[type="buttoncancelar"]:hover {
   font-size: 25px;
   cursor: pointer;
 }
-
-
-
-
-
-
-
 
 /* ======= FOOTER ======= */
 .footer-fixo {
