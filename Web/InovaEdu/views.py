@@ -742,6 +742,26 @@ def home_Coordenacao(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def homePage(request):
     return render(request, 'homePage.html')
 

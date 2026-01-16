@@ -144,27 +144,18 @@
 
                             <span>{{ usuario.tipo }}</span>
 
-                            <span class="usuario-acoes">
-                                <!-- EDITAR -->
-                                <button type="button"
-                                        class="btn-editar-usuario"
-                                        title="Editar">
+                           <span class="acoes-geral">
+                                <button type="button" class="btn-editar" title="Editar">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <!-- EXCLUIR -->
-                                <form action="{% url 'excluir_usuario' usuario.idusuario %}"
-                                    method="POST"
-                                    class="form-excluir-usuario">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="btn-excluir-usuario"
-                                            title="Excluir"
-                                            onclick="return confirm('Tem certeza que deseja excluir?')">
-                                        <i class="fa-solid fa-trash"></i>
+                                <form method="POST">
+                                    <button type="submit" class="btn-excluir" title="Excluir">
+                                    <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
                             </span>
+
                         </li>
 
                         {% empty %}
@@ -318,7 +309,7 @@
                             title="Ver descrição"
                             data-descricao="{{ curso.descricao|escapejs }}"></i>
 
-                            <span class="curso-acoes">
+                            <span class="acoes-geral">
                                 <!-- EDITAR -->
                                 <button
                                     type="button"
@@ -451,6 +442,7 @@
                             <span>Turno</span>
                             <span>Ano</span>
                             <span>Curso</span>
+                            <span>Usuários</span>
                             <span class="turma-acoes">Ações</span>
                         </li>
 
@@ -460,8 +452,19 @@
                             <span>{{ turma.turno }}</span>
                             <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
+                            <span class="turma-usuarios">
+                                <button
+                                    type="button"
+                                    class="btn-ver-usuarios"
+                                    title="Ver usuários da turma"
+                                    data-turma="{{ turma.idturma }}"
+                                    data-usuarios='{{ turma.usuarios_json|escapejs }}'>
+                                    <i class="fa-solid fa-users"></i>
+                                </button>
+                            </span>
 
-                            <span class="turma-acoes acoes-turma">
+
+                            <span class="acoes-geral">
                                 <!-- EDITAR -->
                                 <button
                                     type="button"
@@ -498,6 +501,24 @@
                     </ul>
                 </section>
             </section>
+
+            <div id="modalUsuariosTurma" class="modal" style="display:none;">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharUsuariosTurma">&times;</span>
+
+                    <h3>Usuários da Turma</h3>
+
+                    <ul id="listaUsuariosTurma" class="lista-usuarios-modal">
+                    <!-- preenchido via JS -->
+                    </ul>
+                </div>
+            </div>
+
+
+
+
+
+
 
 
             <div id="modalCadastroTurma" class="modal" style="display:none;">

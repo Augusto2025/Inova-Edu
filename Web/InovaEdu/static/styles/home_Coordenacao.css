@@ -637,40 +637,57 @@ body {
 }
 
 /* ===== AÇÕES ===== */
-.usuario-acoes {
+/* ===== AÇÕES GERAIS ===== */
+.acoes-geral {
   display: flex;
   gap: 8px;
   justify-content: center;
   align-items: center;
 }
 
-/* Editar */
-.btn-editar-usuario {
-  padding: 5px 12px;
-  background-color: var(--azul-Senac);
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* FORM DENTRO DAS AÇÕES */
+.acoes-geral form {
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
-.btn-editar-usuario:hover {
+/* BOTÕES GERAIS */
+.acoes-geral button {
+  padding: 6px 10px;
+  min-width: 36px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* EDITAR */
+.acoes-geral .btn-editar {
+  background-color: var(--azul-Senac);
+}
+
+.acoes-geral .btn-editar:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-/* Excluir */
-.btn-excluir-usuario {
-  padding: 5px 12px;
+/* EXCLUIR */
+.acoes-geral .btn-excluir {
   background-color: #f44336;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-.btn-excluir-usuario:hover {
+.acoes-geral .btn-excluir:hover {
   background-color: #da190b;
 }
+
+
+
+
+
 
 /* ===== VAZIO ===== */
 .usuario-vazio {
@@ -993,6 +1010,26 @@ form button[type="buttoncancelar"]:hover {
 }
 
 
+/* ===== MODAL PARA ESCOLHER A LISTA ===== */
+.btn-ver-usuarios {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--azul-Senac);
+  font-size: 16px;
+}
+
+.btn-ver-usuarios:hover {
+  color: var(--laranja-Senac);
+}
+
+.lista-usuarios-modal {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+
+
+
 
 /* ====================CURSO=============================================================*/
 
@@ -1004,7 +1041,6 @@ form button[type="buttoncancelar"]:hover {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 
 /* ===== LISTA ===== */
 .lista-curso-conteudo ul {
