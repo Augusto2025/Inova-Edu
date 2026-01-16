@@ -272,8 +272,6 @@ body {
 }
 
 
-
-
 /* Ações */
 .perfil-coord-acoes {
   grid-area: acoes;
@@ -502,7 +500,9 @@ body {
 }
 
 /* Título da lista */
-.titulo_lista {
+.titulo-usuario,
+.titulo-curso,
+.titulo-turma {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -512,22 +512,6 @@ body {
   border-bottom: 3px solid var(--laranja-Senac);
 }
 
-.guia-centro {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border-bottom: 2px solid var(--laranja-Senac);
-  border-radius: 0 0 10px 10px;
-}
-
-.guia-centro input {
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  width: 300px;
-}
 
 /* .guia-centro i {
   color: orange;
@@ -547,132 +531,155 @@ body {
   background-color: #d67c12;
 }
 
-/* ======= LISTAS GERAIS ======= */
-.lista_conteudo {
-  display: none;
-  /* Todas começam escondidas */
+/* ================== USUÁRIOS ====================================================================== */
+
+/* Container */
+.container-usuario {
+  flex: 1;
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.lista_conteudo ul {
+/* ============================== BUSCA GERAL =============================================== */ 
+.busca-geral {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 2px solid var(--laranja-Senac);
+  border-radius: 0 0 10px 10px;
+}
+
+.busca-geral i {
+  color: var(--azul-Senac);
+  font-size: 14px;
+}
+
+/* Input da busca */
+.busca-geral input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  width: 280px;
+}
+
+
+/* ===== BOTÃO GERAL DE CADASTRO ===== */
+.btn-add-geral {
+  background-color: var(--laranja-Senac);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  
+}
+
+.btn-add-geral:hover {
+  background-color: #d67c12;
+  transform: scale(1.03);
+}
+
+.btn-add-geral:active {
+  transform: scale(0.97);
+}
+
+
+/* ===== LISTA ===== */
+.lista-usuario-conteudo ul {
   list-style: none;
   padding: 0;
   margin-top: 10px;
   max-height: 850px;
-  /* altura máxima */
   overflow-y: auto;
-  /* ativa rolagem vertical */
-  overflow-x: hidden;
-  /* evita barra lateral horizontal */
 }
 
-.lista_conteudo li {
+/* ===== CABEÇALHO ===== */
+.usuario-cabecalho {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 2fr 1fr 2.5fr 1fr 1.5fr 1fr;
+  grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
   gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-  background-color: #fff;
-  border-radius: 8px;
-}
-
-.lista_conteudo li.cabecalho {
-  font-weight: bold;
+  padding: 12px;
   background-color: var(--azul-Senac);
   color: var(--branco-Senac);
+  font-weight: bold;
   border-radius: 6px;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.col-descricao {
-  display: flex;
-  align-items: center; /* centro vertical */
-  justify-content: center; /* centro horizontal */
-  width: 100%;
-  height: 100%;
+/* ===== ITEM ===== */
+.usuario-item {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fff;
+  font-size: 14px;
 }
 
-.icon-descricao {
-  cursor: pointer;
-  /* color: #ff7a00; */
-  font-size: 24px;
+.usuario-item:hover {
+  background-color: #8dc0f0;
 }
 
-.lista_conteudo img:not(.perfil-coord-img) {
-  width: 50px;
-  height: 50px;
+/* Imagem */
+.usuario-item img {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto;
-  margin-left: 30px;
 }
 
-/* ======= MODAL DESCRIÇÃO ======= */
-
-#modalDescricao .modal-content {
-  background-color: #ffffff;
-  width: 320px;
-  max-width: 90%;
-  padding: 16px;
-  border-radius: 10px;
-
-  border-top: 5px solid #1a6f9d; /* identidade visual */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.fechar-descricao {
-  float: right;
-  cursor: pointer;
-  font-size: 22px;
-}
-
-/* Ações (editar/excluir) */
-.acoes {
+/* ===== AÇÕES ===== */
+.usuario-acoes {
   display: flex;
-  gap: 10px;
-  text-align: center;
-  justify-content: space-around;
-  margin: 0 auto;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Faz os botões dentro do form ficarem lado a lado */
-.acoes form {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 0;
-  /* Remove margens extras */
-}
-
-/* Botão Editar */
-.botao-editar {
+/* Editar */
+.btn-editar-usuario {
+  padding: 5px 12px;
   background-color: var(--azul-Senac);
   color: #fff;
   border: none;
-  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.botao-editar:hover {
+.btn-editar-usuario:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-/* Botão Excluir */
-.botao-excluir {
-  background-color: red;
+/* Excluir */
+.btn-excluir-usuario {
+  padding: 5px 12px;
+  background-color: #f44336;
   color: #fff;
   border: none;
-  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.botao-excluir:hover {
-  background-color: rgb(248, 39, 39);
+.btn-excluir-usuario:hover {
+  background-color: #da190b;
 }
+
+/* ===== VAZIO ===== */
+.usuario-vazio {
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #666;
+}
+
 
 /*========== Modal Editar ================ */
 #modalEditar {
@@ -889,127 +896,68 @@ form button[type="buttoncancelar"]:hover {
   border: 1px solid #ccc;
 }
 
-/* ======= LISTA DE TURMAS ======= */
+/* ======= LISTA DE TURMAS ============================================================= */
 
-#listaTurma .lista_curso ul {
+/* Container principal */
+.container-turma {
+  flex: 1;
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== LISTA ===== */
+.lista-turma-conteudo ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin-top: 10px;
+  max-height: 850px;
+  overflow-y: auto;
 }
 
-#listaTurma .lista_curso li {
+/* ===== CABEÇALHO ===== */
+.turma-cabecalho {
   display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr 1fr;
-  /* Código | Curso | Turno | Ações */
-  gap: 5px;
+  grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 1fr 1fr;
+  gap: 10px;
   padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
-  align-items: center;
-  font-size: 14px;
-}
-
-#listaTurma .lista_curso li.cabecalho {
   background-color: var(--azul-Senac);
   color: var(--branco-Senac);
   font-weight: bold;
   border-radius: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-#listaTurma .lista_curso li:not(.cabecalho):hover {
-  background-color: #8dc0f0;
-  color: black;
-}
-
-/* #listaTurma .acoes {
-  display: flex;
-  gap: 30px;
-  justify-content: center;
-  margin: 0 auto;
-
-
-} */
-
-.acoes-turma {
-  display: flex;
-  flex-direction: row; /* lado a lado */
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-}
-
-#listaTurma .acoes button:first-child {
-  padding: 5px 12px;
-  background-color: var(--azul-Senac);
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#listaTurma .acoes button:first-child:hover {
-  background-color: var(--azul_Claro-Senac);
-}
-
-#listaTurma .acoes button:last-child {
-  padding: 5px 12px;
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#listaTurma .acoes button:last-child:hover {
-  background-color: #da190b;
-}
-
-/* ====================CURSO============================== */
-
-/* ======= LISTA DE CURSOS ======= */
-#listaCurso .lista_curso ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#listaCurso .lista_curso li {
+/* ===== LINHA ===== */
+.turma-item {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 0.8fr 2fr 0fr;
-  /* 6 colunas */
-  gap: 5px;
+  grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 1fr 1fr;
+  gap: 10px;
   padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
   align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fff;
   font-size: 14px;
 }
 
-#listaCurso .lista_curso li.cabecalho {
-  background-color: var(--azul-Senac);
-  color: var(--branco-Senac);
-  font-weight: bold;
-  border-radius: 6px;
-}
-
-#listaCurso .lista_curso li:not(.cabecalho):hover {
+.turma-item:hover {
   background-color: #8dc0f0;
-  color: black;
+  color: #000;
 }
 
-#listaCurso .lista_curso img {
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  object-fit: cover;
-  margin: 0 auto;
-}
-
-#listaCurso .acoes {
+/* ===== AÇÕES ===== */
+.turma-acoes {
   display: flex;
   gap: 10px;
   justify-content: center;
+  align-items: center;
 }
 
-#listaCurso .acoes button:first-child {
+/* Botão editar */
+.btn-editar-turma {
   padding: 5px 12px;
   background-color: var(--azul-Senac);
   color: #fff;
@@ -1018,11 +966,12 @@ form button[type="buttoncancelar"]:hover {
   cursor: pointer;
 }
 
-#listaCurso .acoes button:first-child:hover {
+.btn-editar-turma:hover {
   background-color: var(--azul_Claro-Senac);
 }
 
-#listaCurso .acoes button:last-child {
+/* Botão excluir */
+.btn-excluir-turma {
   padding: 5px 12px;
   background-color: #f44336;
   color: #fff;
@@ -1031,35 +980,158 @@ form button[type="buttoncancelar"]:hover {
   cursor: pointer;
 }
 
-#listaCurso .acoes button:last-child:hover {
+.btn-excluir-turma:hover {
   background-color: #da190b;
 }
 
-/* modal curso====== */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background: #fff;
-  width: 50%;
-  margin: 5% auto;
+/* ===== LISTA VAZIA ===== */
+.turma-vazia {
   padding: 20px;
-  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #666;
 }
 
-.close {
-  float: right;
-  font-size: 25px;
+
+
+/* ====================CURSO=============================================================*/
+
+/* Container */
+.container-curso {
+  flex: 1;
+  background-color: var(--branco-Senac);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ===== LISTA ===== */
+.lista-curso-conteudo ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  max-height: 850px;
+  overflow-y: auto;
+}
+
+/* ===== CABEÇALHO ===== */
+.curso-cabecalho {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  font-weight: bold;
+  border-radius: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ===== ITEM ===== */
+.curso-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.curso-item:hover {
+  background-color: #8dc0f0;
+}
+
+/* Imagem */
+.curso-item img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ===== AÇÕES ===== */
+.curso-acoes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Editar */
+.btn-editar-curso {
+  padding: 5px 12px;
+  background-color: var(--azul-Senac);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
 }
+
+.btn-editar-curso:hover {
+  background-color: var(--azul_Claro-Senac);
+}
+
+/* Excluir */
+.btn-excluir-curso {
+  padding: 5px 12px;
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-excluir-curso:hover {
+  background-color: #da190b;
+}
+
+/* ===== VAZIO ===== */
+.curso-vazio {
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #666;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ======= FOOTER ======= */
 .footer-fixo {
