@@ -216,6 +216,41 @@ def sanitize_filename(filename):
     # Substitui caracteres inválidos por _
     return re.sub(r'[^A-Za-z0-9._-]', '_', filename)
 
+def upload_para_cloudinary(arquivo_file, public_id):
+    resultado = cloudinary_upload(
+        arquivo_file,
+        resource_type='raw',  # para qualquer tipo de arquivo
+        public_id=public_id,
+        overwrite=True
+    )
+    
+    resource_type = resultado.get('resource_type', 'raw')
+    public_id_str = str(resultado['public_id'])
+
+    url = cloudinary_url(
+        public_id_str,
+        resource_type=resource_type,
+        version=resultado.get('version')
+    )[0]
+
+    return public_id_str, resource_type, url
+
+def adicionar_pasta_ao_zip(zip_file, turma, pasta=None, caminho=""):
+    arquivos = Arquivo.objects.filter(turma=turma, pasta=pasta)
+
+    for arquivo in arquivos:
+        r = requests.get(arquivo.url)
+        zip_file.writestr(f"{caminho}{arquivo.nome}", r.content)
+
+    subpastas = Pasta.objects.filter(turma=turma, pasta_pai=pasta)
+    for subpasta in subpastas:
+        adicionar_pasta_ao_zip(
+            zip_file,
+            turma,
+            subpasta,
+            f"{caminho}{subpasta.nome}/"
+        )
+
 def repositorio_projeto(request, projeto_id):
     """
     Acessa o repositório de um projeto específico.
