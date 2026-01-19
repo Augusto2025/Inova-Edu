@@ -85,6 +85,9 @@ class Usuario(models.Model):
         managed = True
         db_table = 'usuario'
 
+    def __str__(self):
+        return f"{self.nome} {self.sobrenome}"
+
 
 class Curso(models.Model):
     idcurso = models.AutoField(db_column='idCurso', primary_key=True)
@@ -101,7 +104,7 @@ class Curso(models.Model):
 
     def __str__(self):
         return self.nome_curso
-    
+
 
 class Turma(models.Model):
     idturma = models.AutoField(db_column='idTurma', primary_key=True)
@@ -113,6 +116,9 @@ class Turma(models.Model):
     class Meta:
         managed = True
         db_table = 'turma'
+
+    def __str__(self):
+        return self.codigo_turma
 
 
 class Projeto(models.Model):
@@ -126,6 +132,9 @@ class Projeto(models.Model):
         managed = True
         db_table = 'projeto'
 
+    def __str__(self):
+        return self.nome_projeto
+
 
 class UsuarioDaTurma(models.Model):
     id = models.BigAutoField(primary_key=True) 
@@ -137,41 +146,45 @@ class UsuarioDaTurma(models.Model):
         db_table = 'usuario_da_turma'
         unique_together = (('id_usuario', 'id_turma'),)
 
+    def __str__(self):
+        return f"{self.id_usuario} - {self.id_turma}"
+
 
 class Eventos(models.Model):
     ideventos = models.AutoField(db_column='idEventos', primary_key=True)
     nome_do_evento = models.CharField(db_column='Nome_do_evento', max_length=50)
     hora_do_evento = models.TimeField(db_column='Hora_do_evento')
     data_do_evento = models.DateField(db_column='Data_do_evento')
-    endereco = models.CharField(db_column='Endereco', max_length=100)
-    descricao = models.CharField(db_column='Descricao', max_length=250)
-    usuario = models.ForeignKey(
-        Usuario,
-        models.DO_NOTHING,
-        db_column='ID_Usuario',
-        blank=True,
-        null=True
-    )
+    descricao = models.CharField(db_column='Descricao', max_length=100)
+    endereco = models.CharField(db_column='Endereco', max_length=30)
+    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'eventos'
 
+    def __str__(self):
+        return self.nome_do_evento
+
 
 class Forum(models.Model):
     idforum = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=30)
-    data_criacao = models.DateField()
+    data_criacao = models.DateField(auto_now_add=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'forum'
 
+    def __str__(self):
+        return self.nome
+
 
 class Topico(models.Model):
     idtopico = models.AutoField(primary_key=True)
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='topicos')
+    descricao = models.TextField(blank=True, null=True)
     titulo = models.CharField(max_length=100)
     descricao = models.TextField(blank=True, null=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)  # <--- adiciona aqui
@@ -179,6 +192,10 @@ class Topico(models.Model):
     class Meta:
         managed = True
         db_table = 'topico'
+
+    def __str__(self):
+        return self.titulo
+
 
 class Mensagem(models.Model):
     topico = models.ForeignKey(
@@ -200,10 +217,10 @@ class Mensagem(models.Model):
         db_table = 'mensagem'
 
     def __str__(self):
-        nome_autor = getattr(self.autor, "username", getattr(self.autor, "nome", str(self.autor.id)))
-        return f'{nome_autor}: {self.conteudo[:30]}'
+        return f"{self.autor.nome}: {self.conteudo[:30]}"
 
 
+# ---------------------- Pasta ----------------------
 class Pasta(models.Model):
     nome = models.CharField(max_length=100)
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)

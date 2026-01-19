@@ -27,6 +27,8 @@ urlpatterns = [
     path('calendario/criar/', views.criar_evento, name='criar_evento'),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
+    path('turma/<int:turma_id>/projetos/', views.projetos_da_turma, name='projetos_da_turma'),
+    path('projeto/<int:projeto_id>/repositorio/', views.repositorio_projeto, name='repositorio_projeto'),
     path('repositorio/<int:turma_id>/', views.repositorio, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
     path('repositorio/<int:turma_id>/download/', views.download_repositorio, name='download_repositorio'),
@@ -42,8 +44,6 @@ urlpatterns = [
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
-
-
 
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
 ]

@@ -199,63 +199,51 @@ def turmas(request, curso_id):
         "turmas_por_ano": turmas_por_ano
     })
 
+def projetos_da_turma(request, turma_id):
+    # Busca a turma ou retorna 404
+    turma = get_object_or_404(Turma, idturma=turma_id)
+    
+    # Busca todos os projetos dessa turma
+    projetos = Projeto.objects.filter(turma=turma)
+
+    return render(request, 'AlunoProfessor/projetos.html', {
+        'turma': turma,
+        'projetos': projetos
+    })
+
+# Função para limpar nomes de arquivos e deixar válidos para Cloudinary
 def sanitize_filename(filename):
     # Substitui caracteres inválidos por _
     return re.sub(r'[^A-Za-z0-9._-]', '_', filename)
 
-def upload_para_cloudinary(arquivo_file, public_id):
-    resultado = cloudinary_upload(
-        arquivo_file,
-        resource_type='raw',  # para qualquer tipo de arquivo
-        public_id=public_id,
-        overwrite=True
-    )
-    
-    resource_type = resultado.get('resource_type', 'raw')
-    public_id_str = str(resultado['public_id'])
-
-    url = cloudinary_url(
-        public_id_str,
-        resource_type=resource_type,
-        version=resultado.get('version')
-    )[0]
-
-    return public_id_str, resource_type, url
-
-def adicionar_pasta_ao_zip(zip_file, turma, pasta=None, caminho=""):
-    arquivos = Arquivo.objects.filter(turma=turma, pasta=pasta)
-
-    for arquivo in arquivos:
-        r = requests.get(arquivo.url)
-        zip_file.writestr(f"{caminho}{arquivo.nome}", r.content)
-
-    subpastas = Pasta.objects.filter(turma=turma, pasta_pai=pasta)
-    for subpasta in subpastas:
-        adicionar_pasta_ao_zip(
-            zip_file,
-            turma,
-            subpasta,
-            f"{caminho}{subpasta.nome}/"
-        )
-
-def download_repositorio(request, turma_id):
+def repositorio_projeto(request, projeto_id):
+    """
+    Acessa o repositório de um projeto específico.
+    """
     email = request.session.get('usuario_email')
     if not email:
         return redirect('login')
 
-    turma = get_object_or_404(Turma, idturma=turma_id)
+    usuario = get_object_or_404(Usuario, email=email)
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    turma = projeto.turma
 
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        adicionar_pasta_ao_zip(zip_file, turma)
+    # Permissão: usuário da turma
+    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
 
-    buffer.seek(0)
+    # Reutiliza lógica de repositório
+    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
+    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
 
-    response = HttpResponse(buffer, content_type='application/zip')
-    response['Content-Disposition'] = (
-        f'attachment; filename="repositorio_turma_{turma.codigo_turma}.zip"'
-    )
-    return response
+    return render(request, 'AlunoProfessor/repositorio.html', {
+        'projeto': projeto,
+        'turma': turma,
+        'pastas': pastas,
+        'arquivos': arquivos,
+        'usuario': usuario,
+        'path': [],
+        'can_modify': can_modify,
+    })
 
 
 def repositorio(request, turma_id):
