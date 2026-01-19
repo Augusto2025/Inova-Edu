@@ -224,7 +224,6 @@ class Pasta(models.Model):
     nome = models.CharField(max_length=100)
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     criada_em = models.DateTimeField(auto_now_add=True)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subpastas')
 
@@ -242,7 +241,6 @@ class Arquivo(models.Model):
     resource_type = models.CharField(max_length=20, blank=True, null=True)
     enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(auto_now_add=True)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
     url = models.URLField(max_length=500, blank=True, null=True)
