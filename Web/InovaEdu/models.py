@@ -127,6 +127,7 @@ class Projeto(models.Model):
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
+    alunos = models.ManyToManyField(Usuario, blank=True, related_name='projetos')
 
     class Meta:
         managed = True
@@ -186,8 +187,7 @@ class Topico(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='topicos')
     descricao = models.TextField(blank=True, null=True)
     titulo = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True, null=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)  # <--- adiciona aqui
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)
 
     class Meta:
         managed = True
@@ -220,12 +220,12 @@ class Mensagem(models.Model):
         return f"{self.autor.nome}: {self.conteudo[:30]}"
 
 
-# ---------------------- Pasta ----------------------
 class Pasta(models.Model):
     nome = models.CharField(max_length=100)
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     criada_em = models.DateTimeField(auto_now_add=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subpastas')
 
     class Meta:
@@ -243,6 +243,7 @@ class Arquivo(models.Model):
     enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(auto_now_add=True)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
     url = models.URLField(max_length=500, blank=True, null=True)
 
@@ -261,48 +262,3 @@ class Arquivo(models.Model):
             attachment=self.nome
         )
         return url
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
-    change_message = models.TextField()
-    content_type_id = models.IntegerField(blank=True, null=True)
-    user_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'

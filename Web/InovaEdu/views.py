@@ -14,7 +14,7 @@ from cloudinary.uploader import upload as cloudinary_upload
 import io
 import zipfile
 import requests
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -199,6 +199,52 @@ def turmas(request, curso_id):
         "turmas_por_ano": turmas_por_ano
     })
 
+
+def gerenciar_alunos_projeto(request, projeto_id):
+    # Pega o projeto ou 404
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+
+    # Lista de todos os alunos disponíveis (pode filtrar por turma se quiser)
+    alunos_disponiveis = Usuario.objects.all()
+
+    if request.method == 'POST':
+        # Pega os alunos selecionados no formulário
+        selecionados = request.POST.getlist('alunos')  # lista de ids de usuários
+        # Substitui os alunos do projeto pelos selecionados
+        projeto.alunos.set(selecionados)
+        messages.success(request, "Alunos atualizados com sucesso!")
+        # Redireciona de volta para o repositório do projeto
+        return redirect('repositorio_projeto', projeto_id=projeto.idprojeto)
+
+    # Para GET, renderiza o template com os alunos atuais e disponíveis
+    return render(request, 'AlunoProfessor/gerenciar_alunos.html', {
+        'projeto': projeto,
+        'alunos_disponiveis': alunos_disponiveis,
+        'alunos_atual': projeto.alunos.all(),
+    })
+
+def api_alunos_projeto(request, projeto_id):
+    """
+    Retorna os dados de um projeto com os alunos disponíveis e os já cadastrados
+    """
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    
+    # Todos os alunos disponíveis (pode filtrar por turma se quiser)
+    alunos_disponiveis = Usuario.objects.all()
+
+    return JsonResponse({
+        'nome_projeto': projeto.nome_projeto,
+        'alunos_disponiveis': [
+            {
+                'id': aluno.idusuario,
+                'nome': aluno.nome,
+                'sobrenome': aluno.sobrenome
+            } 
+            for aluno in alunos_disponiveis
+        ],
+        'alunos_atual': [aluno.idusuario for aluno in projeto.alunos.all()]
+    })
+
 def projetos_da_turma(request, turma_id):
     # Busca a turma ou retorna 404
     turma = get_object_or_404(Turma, idturma=turma_id)
@@ -251,10 +297,38 @@ def adicionar_pasta_ao_zip(zip_file, turma, pasta=None, caminho=""):
             f"{caminho}{subpasta.nome}/"
         )
 
+
+def excluir_projeto(request, projeto_id):
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    turma_id = projeto.turma.idturma
+    projeto.delete()
+    messages.success(request, "Projeto excluído com sucesso!")
+    return redirect('projetos_da_turma', turma_id=turma_id)
+
+
+def cadastrar_projeto(request, turma_id):
+    turma = get_object_or_404(Turma, idturma=turma_id)
+    if request.method == 'POST':
+        nome = request.POST.get('nome_projeto')
+        descricao = request.POST.get('descricao', '')
+
+        if Projeto.objects.filter(nome_projeto=nome, turma=turma).exists():
+            messages.error(request, "Já existe um projeto com esse nome nesta turma.")
+        else:
+            projeto = Projeto.objects.create(nome_projeto=nome, descricao=descricao, turma=turma)
+
+            # Adicionar alunos selecionados (opcional)
+            alunos_ids = request.POST.getlist('alunos')  # espera uma lista de IDs de usuários
+            if alunos_ids:
+                projeto.alunos.set(alunos_ids)
+
+            messages.success(request, "Projeto cadastrado com sucesso!")
+            return redirect('detalhe_turma', turma_id=turma.idturma)
+
+    alunos = Usuario.objects.all()
+    return render(request, 'AlunoProfessor/cadastrar_projeto.html', {'turma': turma, 'alunos': alunos})
+
 def repositorio_projeto(request, projeto_id):
-    """
-    Acessa o repositório de um projeto específico.
-    """
     email = request.session.get('usuario_email')
     if not email:
         return redirect('login')
@@ -263,12 +337,79 @@ def repositorio_projeto(request, projeto_id):
     projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
     turma = projeto.turma
 
-    # Permissão: usuário da turma
+    # Permissão: usuário da turma pode modificar
     can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
 
-    # Reutiliza lógica de repositório
-    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
-    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
+    if request.method == 'POST' and can_modify:
+        # Criar pasta
+        if 'nome_pasta' in request.POST:
+            nome_pasta = request.POST.get('nome_pasta', '').strip()
+            if nome_pasta:
+                if Pasta.objects.filter(nome=nome_pasta, projeto=projeto, pasta_pai=None).exists():
+                    messages.error(request, f"Já existe uma pasta com o nome '{nome_pasta}' neste projeto.")
+                else:
+                    Pasta.objects.create(nome=nome_pasta, criada_por=usuario, projeto=projeto, turma=turma)
+
+        # Upload de arquivo
+        elif 'arquivo' in request.FILES:
+            arquivo_file = request.FILES['arquivo']
+            if arquivo_file.size == 0:
+                messages.error(request, "O arquivo enviado está vazio.")
+            else:
+                nome_arquivo = request.POST.get('nome_arquivo', '') or arquivo_file.name
+                nome_arquivo = sanitize_filename(nome_arquivo)
+                if Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=None).exists():
+                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' neste projeto.")
+                else:
+                    public_id = f"projeto_{projeto.idprojeto}/{nome_arquivo}"
+                    pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id)
+                    Arquivo.objects.create(
+                        nome=nome_arquivo,
+                        arquivo=pid,
+                        resource_type=rtype,
+                        enviado_por=usuario,
+                        projeto=projeto,
+                        turma=turma,
+                        url=url
+                    )
+
+        # Upload de pasta com subpastas
+        elif 'upload_pasta' in request.POST:
+            arquivos = request.FILES.getlist('arquivos')
+            for arquivo_file in arquivos:
+                caminho = getattr(arquivo_file, 'webkitRelativePath', arquivo_file.name)
+                partes = caminho.split('/')
+                pasta_atual = None
+                for parte in partes[:-1]:
+                    pasta_atual, _ = Pasta.objects.get_or_create(
+                        nome=parte,
+                        projeto=projeto,
+                        pasta_pai=pasta_atual,
+                        criada_por=usuario,
+                        turma=turma
+                    )
+                nome_arquivo = sanitize_filename(partes[-1])
+                public_id_path = f"projeto_{projeto.idprojeto}/{'/'.join([sanitize_filename(p) for p in partes])}"
+                if Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=pasta_atual).exists():
+                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' na pasta de destino.")
+                    continue
+                pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id_path)
+                Arquivo.objects.create(
+                    nome=nome_arquivo,
+                    arquivo=pid,
+                    resource_type=rtype,
+                    enviado_por=usuario,
+                    projeto=projeto,
+                    pasta=pasta_atual,
+                    turma=turma,
+                    url=url
+                )
+
+        return redirect('repositorio_projeto', projeto_id=projeto.idprojeto)
+
+    # GET
+    pastas = Pasta.objects.filter(projeto=projeto, pasta_pai=None)
+    arquivos = Arquivo.objects.filter(projeto=projeto, pasta=None)
 
     return render(request, 'AlunoProfessor/repositorio.html', {
         'projeto': projeto,
@@ -280,169 +421,19 @@ def repositorio_projeto(request, projeto_id):
         'can_modify': can_modify,
     })
 
-
-def repositorio(request, turma_id):
+def download_repositorio_projeto(request, projeto_id):
     email = request.session.get('usuario_email')
     if not email:
         return redirect('login')
 
-    usuario = get_object_or_404(Usuario, email=email)
-    turma = get_object_or_404(Turma, idturma=turma_id)
-    can_modify = UsuarioDaTurma.objects.filter(id_usuario=usuario, id_turma=turma).exists()
-
-    if request.method == 'POST' and can_modify:
-
-        # ------------------- Criar nova pasta -------------------
-        if 'nome_pasta' in request.POST:
-            nome_pasta = request.POST.get('nome_pasta', '').strip()
-            if nome_pasta:
-                if Pasta.objects.filter(nome=nome_pasta, turma=turma, pasta_pai=None).exists():
-                    messages.error(request, f"Já existe uma pasta com o nome '{nome_pasta}' nesta localização.")
-                else:
-                    Pasta.objects.create(
-                        nome=nome_pasta,
-                        criada_por=usuario,
-                        turma=turma
-                    )
-
-        # ------------------- Upload de arquivo simples -------------------
-        elif 'arquivo' in request.FILES:
-            arquivo_file = request.FILES['arquivo']
-
-            if arquivo_file.size == 0:
-                messages.error(request, "O arquivo enviado está vazio.")
-            else:
-                nome_arquivo = request.POST.get('nome_arquivo', '').strip() or arquivo_file.name
-                nome_arquivo = sanitize_filename(nome_arquivo)
-                if Arquivo.objects.filter(nome=nome_arquivo, turma=turma, pasta=None).exists():
-                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' nesta localização.")
-                else:
-                    public_id = f"turma_{turma.idturma}/{nome_arquivo}"
-                    pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id)
-
-                    Arquivo.objects.create(
-                        nome=nome_arquivo,
-                        arquivo=pid,
-                        resource_type=rtype,
-                        enviado_por=usuario,
-                        turma=turma,
-                        url=url
-                    )
-
-        # ------------------- Upload múltiplos arquivos com pastas -------------------
-        elif 'upload_pasta' in request.POST:
-            arquivos = request.FILES.getlist('arquivos')
-
-            # 🔍 DETECÇÃO DE SUPORTE A PASTAS
-            sem_estrutura = all(
-                getattr(arquivo, 'webkitRelativePath', None) in (None, '')
-                for arquivo in arquivos
-            )
-
-            if sem_estrutura:
-                messages.warning(
-                    request,
-                    "Seu navegador não suporta envio de pastas com subpastas. "
-                    "Use Google Chrome / Edge ou envie um arquivo ZIP."
-                )
-
-            for arquivo_file in arquivos:
-                if arquivo_file.size == 0:
-                    messages.error(request, f"O arquivo '{arquivo_file.name}' está vazio e não foi enviado.")
-                    continue
-
-                caminho = getattr(arquivo_file, 'webkitRelativePath', arquivo_file.name)
-                partes = caminho.split('/')
-                pasta_atual = None
-                for parte in partes[:-1]:
-                    pasta_atual, _ = Pasta.objects.get_or_create(
-                        nome=parte,
-                        turma=turma,
-                        pasta_pai=pasta_atual,
-                        criada_por=usuario
-                    )
-
-                nome_arquivo = sanitize_filename(partes[-1])
-                public_id_path = f"turma_{turma.idturma}/{'/'.join([sanitize_filename(p) for p in partes])}"
-
-                if Arquivo.objects.filter(nome=nome_arquivo, turma=turma, pasta=pasta_atual).exists():
-                    messages.error(request, f"Já existe um arquivo com o nome '{nome_arquivo}' na pasta de destino.")
-                    continue
-
-                pid, rtype, url = upload_para_cloudinary(arquivo_file, public_id_path)
-                Arquivo.objects.create(
-                    nome=nome_arquivo,
-                    arquivo=pid,
-                    resource_type=rtype,
-                    enviado_por=usuario,
-                    turma=turma,
-                    pasta=pasta_atual,
-                    url=url
-                )
-
-        # ------------------- Editar pasta -------------------
-        elif 'edit_pasta' in request.POST:
-            pasta_id = request.POST.get('pasta_id')
-            novo_nome = request.POST.get('novo_nome', '').strip()
-            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma)
-            if pasta.criada_por == usuario and novo_nome:
-                if Pasta.objects.filter(nome=novo_nome, turma=turma, pasta_pai=pasta.pasta_pai).exclude(id=pasta.id).exists():
-                    messages.error(request, f"Já existe uma pasta com o nome '{novo_nome}' nesta localização.")
-                else:
-                    pasta.nome = novo_nome
-                    pasta.save()
-
-        # ------------------- Deletar arquivo único -------------------
-        elif 'delete_arquivo' in request.POST:
-            arquivo_id = request.POST['delete_arquivo']
-            arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
-            if arquivo.enviado_por == usuario:
-                arquivo.delete()
-
-        # ------------------- Deletar múltiplos arquivos -------------------
-        elif 'delete_arquivos_selecionados' in request.POST:
-            ids = request.POST.getlist('arquivos_selecionados')
-            for arquivo_id in ids:
-                arquivo = get_object_or_404(Arquivo, id=arquivo_id, turma=turma, pasta=None)
-                if arquivo.enviado_por == usuario:
-                    arquivo.delete()
-
-        # ------------------- Deletar todos os arquivos -------------------
-        elif 'delete_todos_arquivos' in request.POST:
-            arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
-            for arquivo in arquivos:
-                if arquivo.enviado_por == usuario:
-                    arquivo.delete()
-
-        # ------------------- Deletar pasta única -------------------
-        elif 'delete_pasta' in request.POST:
-            pasta_id = request.POST['delete_pasta']
-            pasta = get_object_or_404(Pasta, id=pasta_id, turma=turma, pasta_pai=None)
-            if pasta.criada_por == usuario:
-                pasta.delete()
-
-        # ------------------- Deletar múltiplas pastas -------------------
-        elif 'delete_pastas_selecionadas' in request.POST:
-            ids = request.POST.getlist('pastas_selecionadas')
-            for pasta_id in ids:
-                pasta = get_object_or_404(Pasta, id=pasta_id, pasta_pai=None)
-                if pasta.criada_por == usuario:
-                    pasta.delete()
-
-        return redirect('repositorio', turma_id=turma_id)
-
-    # GET
-    pastas = Pasta.objects.filter(turma=turma, pasta_pai=None)
-    arquivos = Arquivo.objects.filter(turma=turma, pasta=None)
-
-    return render(request, 'AlunoProfessor/repositorio.html', {
-        'turma': turma,
-        'pastas': pastas,
-        'arquivos': arquivos,
-        'usuario': usuario,
-        'path': [],
-        'can_modify': can_modify,
-    })
+    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        adicionar_pasta_ao_zip(zip_file, projeto)
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="repositorio_projeto_{projeto.idprojeto}.zip"'
+    return response
 
 def repositorio_pasta(request, pasta_id):
     email = request.session.get('usuario_email')

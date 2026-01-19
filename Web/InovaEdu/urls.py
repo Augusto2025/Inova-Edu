@@ -29,9 +29,19 @@ urlpatterns = [
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('turma/<int:turma_id>/projetos/', views.projetos_da_turma, name='projetos_da_turma'),
     path('projeto/<int:projeto_id>/repositorio/', views.repositorio_projeto, name='repositorio_projeto'),
-    path('repositorio/<int:turma_id>/', views.repositorio, name='repositorio'),
+    path('repositorio/<int:projeto_id>/', views.repositorio_projeto, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
-    path('repositorio/<int:turma_id>/download/', views.download_repositorio, name='download_repositorio'),
+    path('projeto/<int:projeto_id>/alunos/', views.gerenciar_alunos_projeto, name='gerenciar_alunos_projeto'),
+    path('api/projeto/<int:projeto_id>/alunos/', views.api_alunos_projeto, name='api_alunos_projeto'),
+    path('projeto/<int:projeto_id>/excluir/', views.excluir_projeto, name='excluir_projeto'),
+    
+    path(
+    'turma/<int:id_turma>/projetos/cadastrar/',
+    views.cadastrar_projeto,
+    name='cadastrar_projeto'
+),
+
+    path('repositorio/<int:projeto_id>/download/', views.download_repositorio_projeto, name='download_repositorio_projeto'),
     # Coordenação
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
     path('criar_curso/', views.criar_curso, name='criar_curso'),
