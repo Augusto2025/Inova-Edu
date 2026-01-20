@@ -112,6 +112,13 @@ class Turma(models.Model):
     turno = models.CharField(db_column='Turno', max_length=5, blank=True, null=True)
     ano = models.IntegerField(db_column='Ano')
     curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='ID_Curso')
+    professor = models.ForeignKey(
+        'Usuario',  # referencia à sua model Usuario
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        related_name='turmas'
+    )
 
     class Meta:
         managed = True
@@ -124,10 +131,13 @@ class Turma(models.Model):
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
+    descricao = models.TextField(db_column='Descricao', blank=True, null=True)
+    imagem = CloudinaryField('imagem_projeto', db_column='Imagem', blank=True, null=True)
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
     alunos = models.ManyToManyField(Usuario, blank=True, related_name='projetos')
+    alunos_edicao = models.ManyToManyField(Usuario, blank=True, related_name='projetos_edicao')
 
     class Meta:
         managed = True

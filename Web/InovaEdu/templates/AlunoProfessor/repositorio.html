@@ -8,7 +8,7 @@
 {% include "partials/header.html" %}
 
 <div class="rota">
-    Página: Cursos > Turmas > Projetos
+    Página: Cursos > Turmas > Projetos > Repositório
     {% for p in path %} > {{ p.nome }}{% endfor %}
 </div>
 
@@ -30,16 +30,15 @@
         <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
         <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
     {% endif %}
-    <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">⬇️ Baixar Repositório do Projeto</a>
+
+    <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">
+        ⬇️ Baixar Repositório
+    </a>
 
     {% if path %}
         {% if path|length > 1 %}
             {% with pasta_pai=path|slice:'-2'|last %}
-                {% if pasta_pai %}
-                    <a href="{% url 'repositorio_pasta' pasta_pai.id %}" class="acao-btn">⬅️ Voltar</a>
-                {% else %}
-                    <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="acao-btn">⬅️ Voltar</a>
-                {% endif %}
+                <a href="{% url 'repositorio_pasta' pasta_pai.id %}" class="acao-btn">⬅️ Voltar</a>
             {% endwith %}
         {% else %}
             <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="acao-btn">⬅️ Voltar</a>
@@ -56,7 +55,7 @@
         <h4>Criar Pasta</h4>
         <form method="post">
             {% csrf_token %}
-            <input type="text" name="nome_pasta" placeholder="Nome da pasta" required>
+            <input type="text" name="nome_pasta" required>
             <button type="submit" name="action" value="criar_pasta">Criar</button>
         </form>
     </div>
@@ -70,7 +69,6 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="file" name="arquivo" required>
-            <input type="text" name="nome_arquivo" placeholder="Nome do arquivo (opcional)">
             <button type="submit" name="action" value="upload_arquivo">Enviar</button>
         </form>
     </div>
@@ -83,7 +81,7 @@
         <h4>Enviar Pasta</h4>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="file" name="arquivos" webkitdirectory directory multiple required>
+            <input type="file" name="arquivos" webkitdirectory multiple required>
             <button type="submit" name="action" value="upload_pasta">Enviar</button>
         </form>
     </div>
@@ -96,8 +94,8 @@
         <h4>Editar Pasta</h4>
         <form method="post">
             {% csrf_token %}
-            <input type="hidden" id="edit_pasta_id" name="pasta_id">
-            <input type="text" name="novo_nome" placeholder="Novo nome" required>
+            <input type="hidden" name="pasta_id" id="edit_pasta_id">
+            <input type="text" name="novo_nome" required>
             <button type="submit" name="action" value="editar_pasta">Salvar</button>
         </form>
     </div>
@@ -107,104 +105,104 @@
 
 <div class="turma-repositorio">
 
-<!-- PASTAS -->
+<!-- ================= PASTAS ================= -->
 <div class="pastas">
     <div class="section-header">
         <h4>Pastas</h4>
         {% if can_modify and pastas %}
-        <button type="button" id="btn-selecionar-pastas" onclick="toggleSelecao('pastas')">Selecionar</button>
+            <button type="button" id="btn-selecionar-pastas" class="btn-selecionar" onclick="toggleSelecao('pastas')">
+                Selecionar
+            </button>
         {% endif %}
     </div>
 
-    {% if can_modify %}
-    <form method="post">
-        {% csrf_token %}
-    {% endif %}
+    {% if can_modify %}<form method="post">{% csrf_token %}{% endif %}
 
     <ul class="lista-pastas">
         {% for pasta in pastas %}
         <li class="pasta-item">
             <div class="pasta-info">
-                {% if can_modify %}
-                <input type="checkbox" name="pastas_selecionadas" value="{{ pasta.id }}" class="checkbox-pastas" style="display:none;">
-                {% endif %}
-
+                <input type="checkbox" name="pastas_selecionadas" value="{{ pasta.id }}"
+                       class="checkbox-pastas" style="display:none;">
                 <a href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
             </div>
 
             {% if can_modify %}
             <div class="pasta-actions">
-                <!-- Editar -->
                 <button type="button" onclick="abrirModalEdit('modal-edit-pasta', {{ pasta.id }})">✏️</button>
-                
-                <!-- Excluir individual -->
-                <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="pasta_id" value="{{ pasta.id }}">
-                    <button type="submit" name="action" value="excluir_pasta" onclick="return confirm('Deseja excluir esta pasta?')">🗑️</button>
-                </form>
+                <button type="submit" name="action" value="excluir_pasta"
+                        onclick="this.form.pasta_id.value='{{ pasta.id }}'; return confirm('Excluir pasta?')">
+                    🗑️
+                </button>
+                <input type="hidden" name="pasta_id">
             </div>
             {% endif %}
         </li>
-        {% empty %}
-        <li class="sem-pasta">Nenhuma pasta</li>
         {% endfor %}
     </ul>
 
     {% if can_modify %}
     <div id="botoes-excluir-pastas" style="display:none;">
-        <button type="submit" name="action" value="excluir_pastas_selecionadas" onclick="return confirm('Excluir pastas selecionadas?')">🗑️ Excluir Selecionadas</button>
-        <button type="submit" name="action" value="excluir_todos_pastas" onclick="return confirm('Excluir todas as pastas?')">🗑️ Excluir Todos</button>
+        <button type="submit" name="action" value="excluir_pastas_selecionadas" class="btn-excluir-selecionadas"
+                onclick="return confirm('Excluir pastas selecionadas?')">
+            🗑️ Excluir Selecionadas
+        </button>
+
+        <button type="submit" name="action" value="excluir_todos_pastas" class="btn-excluir-selecionadas"
+                onclick="return confirm('Excluir TODAS as pastas?')">
+            ⚠️ Excluir Todas
+        </button>
     </div>
     </form>
     {% endif %}
 </div>
 
-<!-- ARQUIVOS -->
+<!-- ================= ARQUIVOS ================= -->
 <div class="arquivos">
     <div class="section-header">
         <h4>Arquivos</h4>
         {% if can_modify and arquivos %}
-        <button type="button" id="btn-selecionar-arquivos" onclick="toggleSelecao('arquivos')">Selecionar</button>
+            <button type="button" id="btn-selecionar-arquivos" class="btn-selecionar" onclick="toggleSelecao('arquivos')">
+                Selecionar
+            </button>
         {% endif %}
     </div>
 
-    {% if can_modify %}
-    <form method="post">
-        {% csrf_token %}
-    {% endif %}
+    {% if can_modify %}<form method="post">{% csrf_token %}{% endif %}
 
     <ul class="lista-arquivos">
         {% for arquivo in arquivos %}
         <li class="arquivo-item">
             <div class="arquivo-info">
-                {% if can_modify %}
-                <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}" class="checkbox-arquivos" style="display:none;">
-                {% endif %}
-
+                <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}"
+                       class="checkbox-arquivos" style="display:none;">
                 <a href="{{ arquivo.url }}" download>📄 {{ arquivo.nome }}</a>
             </div>
 
             {% if can_modify %}
             <div class="pasta-actions">
-                <!-- Excluir individual -->
-                <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="arquivo_id" value="{{ arquivo.id }}">
-                    <button type="submit" name="action" value="excluir_arquivo" onclick="return confirm('Deseja excluir este arquivo?')">🗑️</button>
-                </form>
+                <button type="submit" name="action" value="excluir_arquivo"
+                        onclick="this.form.arquivo_id.value='{{ arquivo.id }}'; return confirm('Excluir arquivo?')">
+                    🗑️
+                </button>
+                <input type="hidden" name="arquivo_id">
             </div>
             {% endif %}
         </li>
-        {% empty %}
-        <li class="sem-arquivo">Nenhum arquivo</li>
         {% endfor %}
     </ul>
 
     {% if can_modify %}
     <div id="botoes-excluir-arquivos" style="display:none;">
-        <button type="submit" name="action" value="excluir_arquivos_selecionados" onclick="return confirm('Excluir arquivos selecionados?')">🗑️ Excluir Selecionados</button>
-        <button type="submit" name="action" value="excluir_todos_arquivos" onclick="return confirm('Excluir todos os arquivos?')">🗑️ Excluir Todos</button>
+        <button type="submit" name="action" value="excluir_arquivos_selecionados" class="btn-excluir-selecionadas"
+                onclick="return confirm('Excluir arquivos selecionados?')">
+            🗑️ Excluir Selecionados
+        </button>
+
+        <button type="submit" name="action" value="excluir_todos_arquivos" class="btn-excluir-selecionadas"
+                onclick="return confirm('Excluir TODOS os arquivos?')">
+            ⚠️ Excluir Todos
+        </button>
     </div>
     </form>
     {% endif %}
@@ -213,7 +211,6 @@
 </div>
 
 <!-- ================= JS ================= -->
-
 <script>
 function abrirModal(id) {
     document.getElementById(id).style.display = 'block';
@@ -229,13 +226,13 @@ function abrirModalEdit(id, pastaId) {
 }
 
 function toggleSelecao(tipo) {
-    const checkboxes = document.querySelectorAll(`.checkbox-${tipo}`);
-    const botoes = document.getElementById(`botoes-excluir-${tipo}`);
-    const btn = document.getElementById(`btn-selecionar-${tipo}`);
+    const checkboxes = document.querySelectorAll('.checkbox-' + tipo);
+    const botoes = document.getElementById('botoes-excluir-' + tipo);
+    const btn = document.getElementById('btn-selecionar-' + tipo);
 
     const ativo = checkboxes.length && checkboxes[0].style.display !== 'none';
 
-    checkboxes.forEach(cb => cb.style.display = ativo ? 'none' : 'block');
+    checkboxes.forEach(cb => cb.style.display = ativo ? 'none' : 'inline-block');
     botoes.style.display = ativo ? 'none' : 'block';
     btn.textContent = ativo ? 'Selecionar' : 'Cancelar';
 }

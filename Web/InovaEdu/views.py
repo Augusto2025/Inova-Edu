@@ -246,15 +246,97 @@ def api_alunos_projeto(request, projeto_id):
     })
 
 def projetos_da_turma(request, turma_id):
-    # Busca a turma ou retorna 404
+    # Busca a turma
     turma = get_object_or_404(Turma, idturma=turma_id)
-    
-    # Busca todos os projetos dessa turma
     projetos = Projeto.objects.filter(turma=turma)
+
+    # Usuário logado da sua tabela Usuario (não Django auth)
+    email_logado = request.session.get('usuario_email')  # setar no login
+    usuario_logado = None
+    if email_logado:
+        try:
+            usuario_logado = Usuario.objects.get(email=email_logado)
+        except Usuario.DoesNotExist:
+            usuario_logado = None
+
+    # Verifica se pode modificar (professor da turma)
+    can_modify = usuario_logado == turma.professor
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        # ================= CADASTRAR PROJETO =================
+        if action == 'cadastrar_projeto' and can_modify:
+            nome_projeto = request.POST.get('nome_projeto')
+            descricao = request.POST.get('descricao', '')
+            imagem_file = request.FILES.get('imagem')
+
+            if nome_projeto:
+                projeto = Projeto(
+                    nome_projeto=nome_projeto,
+                    descricao=descricao,
+                    turma=turma
+                )
+                if imagem_file:
+                    projeto.imagem = imagem_file
+                projeto.save()
+                messages.success(request, f'Projeto "{nome_projeto}" cadastrado com sucesso.')
+            else:
+                messages.error(request, 'O nome do projeto é obrigatório.')
+
+        # ================= EDITAR PROJETO =================
+        elif action == 'editar_projeto' and can_modify:
+            projeto_id = request.POST.get('projeto_id')
+            try:
+                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+                projeto.nome_projeto = request.POST.get('nome_projeto')
+                projeto.descricao = request.POST.get('descricao', '')
+                if request.FILES.get('imagem'):
+                    projeto.imagem = request.FILES['imagem']
+                projeto.save()
+                messages.success(request, f'Projeto "{projeto.nome_projeto}" editado com sucesso.')
+            except Projeto.DoesNotExist:
+                messages.error(request, 'Projeto não encontrado.')
+
+        # ================= EXCLUIR PROJETO =================
+        elif action == 'excluir_projeto' and can_modify:
+            projeto_id = request.POST.get('projeto_id')
+            try:
+                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+                projeto.delete()
+                messages.success(request, f'Projeto "{projeto.nome_projeto}" excluído com sucesso.')
+            except Projeto.DoesNotExist:
+                messages.error(request, 'Projeto não encontrado.')
+
+        # ================= SALVAR ALUNOS PERMITIDOS =================
+        elif action == 'salvar_alunos_repositorio' and can_modify:
+            projeto_id = request.POST.get('projeto_id')
+            try:
+                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+
+                # Recebe lista de ids de alunos selecionados
+                alunos_selecionados = request.POST.getlist('alunos_edicao')
+
+                # Converte para objetos Usuario
+                alunos_obj = Usuario.objects.filter(idusuario__in=alunos_selecionados)
+
+                # Atualiza a relação ManyToMany
+                projeto.alunos_edicao.set(alunos_obj)
+                projeto.save()
+
+                messages.success(request, f'Permissões do repositório atualizadas com sucesso para "{projeto.nome_projeto}".')
+            except Projeto.DoesNotExist:
+                messages.error(request, 'Projeto não encontrado.')
+
+        else:
+            messages.error(request, 'Ação inválida ou você não tem permissão.')
+
+        return redirect('projetos_da_turma', turma_id=turma.idturma)
 
     return render(request, 'AlunoProfessor/projetos.html', {
         'turma': turma,
-        'projetos': projetos
+        'projetos': projetos,
+        'can_modify': can_modify,
     })
 
 def excluir_projeto(request, projeto_id):

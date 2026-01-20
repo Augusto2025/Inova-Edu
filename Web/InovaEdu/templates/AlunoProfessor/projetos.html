@@ -3,127 +3,74 @@
 
 {% block content %}
 
+<link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/projetos.css' %}">
+
 {% block header %}
-<style>
-/* Modal geral */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-}
-.fechar {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-/* Container e cards */
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-self: center;
-    text-align: center;
-}
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
-.card {
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    padding: 15px;
-    width: 100%;
-    max-width: 800px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-.card-image img {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-.card-content {
-    flex: 1;
-    padding: 0 20px;
-}
-.card-title { margin: 0 0 5px 0; font-size: 1.5rem; color: #333; }
-.card-description { margin: 0; color: #666; }
-.card-action { display: flex; align-items: center; gap: 10px; }
-.btn-repositorio { background-color: #007bff; color: #fff; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; cursor: pointer; border: none; }
-.btn-repositorio:hover { background-color: #0056b3; }
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .card { flex-direction: column; text-align: center; gap: 10px; }
-    .card-image img { width: 80px; height: 80px; }
-    .card-content { padding: 0; }
-    .card-action { justify-content: center; }
-}
-</style>
 {% include "partials/header.html" %}
 {% endblock %}
 
+<div class="rota">
+    Página:
+    {{ turma.curso.nome_curso }} >
+    {{ turma.codigo_turma }} >
+    Projetos
+</div>
+
+<div class="titulo">
+    <p>Projetos da Turma {{ turma.codigo_turma }}</p>
+</div>
+
 <div class="container">
-    <h1>Projetos da Turma {{ turma.codigo_turma }}</h1>
 
+    {% if can_modify %}
     <!-- Botão abrir modal de cadastro -->
-    <button id="abrirModalCadastro" class="btn-repositorio">+ Cadastrar Projeto</button>
+    <button id="abrirModalCadastro" class="btn-primary">+ Cadastrar Projeto</button>
 
-    <!-- Modal Cadastrar Projeto -->
-    <div id="modalCadastro" class="modal">
+    <!-- Modal Cadastrar / Editar Projeto -->
+    <div id="modalProjeto" class="modal">
         <div class="modal-content">
-            <span class="fechar" data-fechar="modalCadastro">&times;</span>
-            <h2>Cadastrar Projeto</h2>
-            <form method="post" action="{% url 'cadastrar_projeto' turma.idturma %}">
+            <span class="fechar" data-fechar="modalProjeto">&times;</span>
+            <h2 id="modalTitle">Cadastrar Projeto</h2>
+            <form id="formProjeto" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="action" id="actionInput" value="cadastrar_projeto">
+                <input type="hidden" name="projeto_id" id="projetoIdInput">
+
                 <div class="mb-3">
                     <label class="form-label">Nome do Projeto</label>
-                    <input type="text" name="nome_projeto" class="form-control" placeholder="Digite o nome do projeto" required>
+                    <input type="text" name="nome_projeto" id="nomeProjetoInput" class="form-control" placeholder="Digite o nome do projeto" required>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Descrição do Projeto</label>
+                    <textarea name="descricao" id="descricaoInput" class="form-control" placeholder="Digite uma descrição" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Foto do Projeto</label>
+                    <input type="file" name="imagem" id="imagemInput" class="form-control" accept="image/*">
+                </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-fechar="modalCadastro">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-fechar="modalProjeto">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="salvarBtn">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
+    {% endif %}
 
     {% if projetos %}
     <div class="cards-container">
         {% for projeto in projetos %}
         <div class="card">
             <div class="card-image">
-                <img src="{% static 'img/project_placeholder.png' %}" alt="{{ projeto.nome_projeto }}">
+                {% if projeto.imagem %}
+                    <img src="{{ projeto.imagem.url }}" alt="{{ projeto.nome_projeto }}">
+                {% else %}
+                    <img src="{% static 'img/project_placeholder.png' %}" alt="{{ projeto.nome_projeto }}">
+                {% endif %}
             </div>
             <div class="card-content">
                 <h2 class="card-title">{{ projeto.nome_projeto }}</h2>
@@ -135,14 +82,59 @@
             </div>
             <div class="card-action">
                 <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="btn-repositorio">Ver Repositório</a>
-                
-                <!-- Botão abrir modal gerenciar alunos -->
-                <button class="btn btn-secondary abrirModalAlunos" data-projeto-id="{{ projeto.idprojeto }}">Gerenciar Alunos</button>
 
-                <form method="post" action="{% url 'excluir_projeto' projeto.idprojeto %}" style="display:inline;">
+                {% if can_modify %}
+                <!-- Botão Editar -->
+                <button class="btn btn-secondary editarBtn"
+                        data-id="{{ projeto.idprojeto }}"
+                        data-nome="{{ projeto.nome_projeto|escapejs }}"
+                        data-descricao="{{ projeto.descricao|default:''|escapejs }}">
+                    Editar
+                </button>
+
+                <!-- Botão Excluir -->
+                <form method="post" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Excluir</button>
+                    <input type="hidden" name="action" value="excluir_projeto">
+                    <input type="hidden" name="projeto_id" value="{{ projeto.idprojeto }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Excluir este projeto?')">Excluir</button>
                 </form>
+
+                <!-- Botão Gerenciar Permissões de Repositório -->
+                <button class="btn btn-warning btn-gerenciar"
+                        onclick="abrirModal('modalAlunos{{ projeto.idprojeto }}')">
+                    🛠️ Permissões do Repositório
+                </button>
+
+                <!-- Modal de Permissões -->
+                <div id="modalAlunos{{ projeto.idprojeto }}" class="modal">
+                    <div class="modal-content">
+                        <span class="fechar" onclick="fecharModal('modalAlunos{{ projeto.idprojeto }}')">&times;</span>
+                        <h2>Permissões de edição do repositório</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="salvar_alunos_repositorio">
+                            <input type="hidden" name="projeto_id" value="{{ projeto.idprojeto }}">
+
+                            {% for aluno in turma.alunos.all %}
+                                <div>
+                                    <input type="checkbox" name="alunos_edicao" value="{{ aluno.idusuario }}"
+                                    {% if aluno in projeto.alunos_edicao.all %}checked{% endif %}>
+                                    {{ aluno.nome }} {{ aluno.sobrenome }}
+                                </div>
+                            {% empty %}
+                                <p>Não há alunos nesta turma.</p>
+                            {% endfor %}
+
+                            <div style="margin-top:10px;">
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                <button type="button" class="btn btn-secondary" onclick="fecharModal('modalAlunos{{ projeto.idprojeto }}')">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -152,68 +144,45 @@
     {% endif %}
 </div>
 
-<!-- Modal Gerenciar Alunos -->
-<div id="modalAlunos" class="modal">
-    <div class="modal-content">
-        <span class="fechar" data-fechar="modalAlunos">&times;</span>
-        <h2>Gerenciar Alunos - <span id="nomeProjetoModal"></span></h2>
-        <form id="formAlunos" method="post">
-            {% csrf_token %}
-            <div id="alunosContainer">
-                <!-- Aqui serão inseridos os checkboxes via JS -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-fechar="modalAlunos">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-        </form>
-    </div>
-</div>
-
+<!-- ================= JS ================= -->
 <script>
-// Modal cadastro
 document.addEventListener('DOMContentLoaded', function() {
-    function abrirModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
-    function fecharModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+    function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Cadastrar Projeto
-    document.getElementById('abrirModalCadastro').addEventListener('click', () => abrirModal('modalCadastro'));
-    document.querySelectorAll('[data-fechar="modalCadastro"]').forEach(btn => btn.addEventListener('click', () => fecharModal('modalCadastro')));
+    {% if can_modify %}
+    const modalTitle = document.getElementById('modalTitle');
+    const actionInput = document.getElementById('actionInput');
+    const projetoIdInput = document.getElementById('projetoIdInput');
+    const nomeInput = document.getElementById('nomeProjetoInput');
+    const descricaoInput = document.getElementById('descricaoInput');
 
-    // Gerenciar alunos
-    const modalAlunos = document.getElementById('modalAlunos');
-    const nomeProjetoModal = document.getElementById('nomeProjetoModal');
-    const alunosContainer = document.getElementById('alunosContainer');
-    let formAlunos = document.getElementById('formAlunos');
+    // Abrir modal para cadastro
+    document.getElementById('abrirModalCadastro').addEventListener('click', () => {
+        modalTitle.textContent = 'Cadastrar Projeto';
+        actionInput.value = 'cadastrar_projeto';
+        projetoIdInput.value = '';
+        nomeInput.value = '';
+        descricaoInput.value = '';
+        abrirModal('modalProjeto');
+    });
 
-    document.querySelectorAll('.abrirModalAlunos').forEach(btn => {
+    // Abrir modal para edição
+    document.querySelectorAll('.editarBtn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const projetoId = btn.dataset.projetoId;
-
-            fetch(`/api/projeto/${projetoId}/alunos/`)  // Criar uma view API que retorne JSON dos alunos do projeto
-                .then(response => response.json())
-                .then(data => {
-                    nomeProjetoModal.textContent = data.nome_projeto;
-                    alunosContainer.innerHTML = '';
-                    data.alunos_disponiveis.forEach(aluno => {
-                        const checked = data.alunos_atual.includes(aluno.id) ? 'checked' : '';
-                        alunosContainer.innerHTML += `
-                            <label>
-                                <input type="checkbox" name="alunos" value="${aluno.id}" ${checked}> ${aluno.nome} ${aluno.sobrenome}
-                            </label><br>
-                        `;
-                    });
-                    formAlunos.action = `/projeto/${projetoId}/alunos/`;  // form post
-                    modalAlunos.style.display = 'flex';
-                });
+            modalTitle.textContent = 'Editar Projeto';
+            actionInput.value = 'editar_projeto';
+            projetoIdInput.value = btn.dataset.id;
+            nomeInput.value = btn.dataset.nome;
+            descricaoInput.value = btn.dataset.descricao;
+            abrirModal('modalProjeto');
         });
     });
 
-    document.querySelectorAll('[data-fechar="modalAlunos"]').forEach(btn => btn.addEventListener('click', () => fecharModal('modalAlunos')));
-
-    window.addEventListener('click', e => {
-        if(e.target === modalAlunos) modalAlunos.style.display = 'none';
-    });
+    // Fechar modais
+    document.querySelectorAll('.fechar').forEach(btn => btn.addEventListener('click', () => fecharModal(btn.parentElement.parentElement.id)));
+    window.addEventListener('click', e => { if(e.target.classList.contains('modal')) fecharModal(e.target.id); });
+    {% endif %}
 });
 </script>
 
