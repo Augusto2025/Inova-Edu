@@ -199,84 +199,46 @@ def turmas(request, curso_id):
         "turmas_por_ano": turmas_por_ano
     })
 
+# checagens futuras de permissão para editar o projeto (não funciona)
+def usuario_pode_editar_projeto(usuario, projeto):
+    if not usuario:
+        return False
 
-def gerenciar_alunos_projeto(request, projeto_id):
-    # Pega o projeto ou 404
-    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    # Professor da turma (opcional, mas normalmente sim)
+    if usuario == projeto.turma.professor:
+        return True
 
-    # Lista de todos os alunos disponíveis (pode filtrar por turma se quiser)
-    alunos_disponiveis = Usuario.objects.all()
+    # SOMENTE alunos permitidos no checklist
+    if projeto.alunos_edicao.filter(idusuario=usuario.idusuario).exists():
+        return True
 
-    if request.method == 'POST':
-        # Pega os alunos selecionados no formulário
-        selecionados = request.POST.getlist('alunos')  # lista de ids de usuários
-        # Substitui os alunos do projeto pelos selecionados
-        projeto.alunos.set(selecionados)
-        messages.success(request, "Alunos atualizados com sucesso!")
-        # Redireciona de volta para o repositório do projeto
-        return redirect('repositorio_projeto', projeto_id=projeto.idprojeto)
-
-    # Para GET, renderiza o template com os alunos atuais e disponíveis
-    return render(request, 'AlunoProfessor/gerenciar_alunos.html', {
-        'projeto': projeto,
-        'alunos_disponiveis': alunos_disponiveis,
-        'alunos_atual': projeto.alunos.all(),
-    })
-
-def api_alunos_projeto(request, projeto_id):
-    """
-    Retorna os dados de um projeto com os alunos disponíveis e os já cadastrados
-    """
-    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
-    
-    # Todos os alunos disponíveis (pode filtrar por turma se quiser)
-    alunos_disponiveis = Usuario.objects.all()
-
-    return JsonResponse({
-        'nome_projeto': projeto.nome_projeto,
-        'alunos_disponiveis': [
-            {
-                'id': aluno.idusuario,
-                'nome': aluno.nome,
-                'sobrenome': aluno.sobrenome
-            } 
-            for aluno in alunos_disponiveis
-        ],
-        'alunos_atual': [aluno.idusuario for aluno in projeto.alunos.all()]
-    })
+    return False
 
 def projetos_da_turma(request, turma_id):
-    # Busca a turma
     turma = get_object_or_404(Turma, idturma=turma_id)
     projetos = Projeto.objects.filter(turma=turma)
 
-    # Usuário logado da sua tabela Usuario (não Django auth)
-    email_logado = request.session.get('usuario_email')  # setar no login
+    # Usuário logado (sessão)
+    email_logado = request.session.get('usuario_email')
     usuario_logado = None
     if email_logado:
         try:
             usuario_logado = Usuario.objects.get(email=email_logado)
         except Usuario.DoesNotExist:
-            usuario_logado = None
+            pass
 
-    # Verifica se pode modificar (professor da turma)
     can_modify = usuario_logado == turma.professor
 
-    if request.method == 'POST':
+    if request.method == 'POST' and can_modify:
         action = request.POST.get('action')
 
-        # ================= CADASTRAR PROJETO =================
-        if action == 'cadastrar_projeto' and can_modify:
+        # ===== CADASTRAR PROJETO =====
+        if action == 'cadastrar_projeto':
             nome_projeto = request.POST.get('nome_projeto')
             descricao = request.POST.get('descricao', '')
             imagem_file = request.FILES.get('imagem')
-
             if nome_projeto:
-                projeto = Projeto(
-                    nome_projeto=nome_projeto,
-                    descricao=descricao,
-                    turma=turma
-                )
+                projeto = Projeto(nome_projeto=nome_projeto, descricao=descricao, turma=turma)
                 if imagem_file:
                     projeto.imagem = imagem_file
                 projeto.save()
@@ -284,8 +246,8 @@ def projetos_da_turma(request, turma_id):
             else:
                 messages.error(request, 'O nome do projeto é obrigatório.')
 
-        # ================= EDITAR PROJETO =================
-        elif action == 'editar_projeto' and can_modify:
+        # ===== EDITAR PROJETO =====
+        elif action == 'editar_projeto':
             projeto_id = request.POST.get('projeto_id')
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
@@ -298,8 +260,8 @@ def projetos_da_turma(request, turma_id):
             except Projeto.DoesNotExist:
                 messages.error(request, 'Projeto não encontrado.')
 
-        # ================= EXCLUIR PROJETO =================
-        elif action == 'excluir_projeto' and can_modify:
+        # ===== EXCLUIR PROJETO =====
+        elif action == 'excluir_projeto':
             projeto_id = request.POST.get('projeto_id')
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
@@ -308,65 +270,34 @@ def projetos_da_turma(request, turma_id):
             except Projeto.DoesNotExist:
                 messages.error(request, 'Projeto não encontrado.')
 
-        # ================= SALVAR ALUNOS PERMITIDOS =================
-        elif action == 'salvar_alunos_repositorio' and can_modify:
+        # ===== SALVAR ALUNOS DO PROJETO =====
+        elif action == 'salvar_alunos_repositorio':
             projeto_id = request.POST.get('projeto_id')
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
-
-                # Recebe lista de ids de alunos selecionados
                 alunos_selecionados = request.POST.getlist('alunos_edicao')
-
-                # Converte para objetos Usuario
                 alunos_obj = Usuario.objects.filter(idusuario__in=alunos_selecionados)
-
-                # Atualiza a relação ManyToMany
                 projeto.alunos_edicao.set(alunos_obj)
                 projeto.save()
-
-                messages.success(request, f'Permissões do repositório atualizadas com sucesso para "{projeto.nome_projeto}".')
+                messages.success(request, f'Alunos do projeto "{projeto.nome_projeto}" atualizados com sucesso.')
             except Projeto.DoesNotExist:
                 messages.error(request, 'Projeto não encontrado.')
 
         else:
-            messages.error(request, 'Ação inválida ou você não tem permissão.')
+            messages.error(request, 'Ação inválida.')
 
         return redirect('projetos_da_turma', turma_id=turma.idturma)
+
+    # ===== GET =====
+    # Pega todos os alunos da turma
+    alunos_da_turma = [ut.id_usuario for ut in turma.usuariodaturma_set.all()]
 
     return render(request, 'AlunoProfessor/projetos.html', {
         'turma': turma,
         'projetos': projetos,
         'can_modify': can_modify,
+        'alunos_da_turma': alunos_da_turma,
     })
-
-def excluir_projeto(request, projeto_id):
-    projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
-    turma_id = projeto.turma.idturma
-    projeto.delete()
-    messages.success(request, "Projeto excluído com sucesso!")
-    return redirect('projetos_da_turma', turma_id=turma_id)
-
-def cadastrar_projeto(request, turma_id):
-    turma = get_object_or_404(Turma, idturma=turma_id)
-    if request.method == 'POST':
-        nome = request.POST.get('nome_projeto')
-        descricao = request.POST.get('descricao', '')
-
-        if Projeto.objects.filter(nome_projeto=nome, turma=turma).exists():
-            messages.error(request, "Já existe um projeto com esse nome nesta turma.")
-        else:
-            projeto = Projeto.objects.create(nome_projeto=nome, descricao=descricao, turma=turma)
-
-            # Adicionar alunos selecionados (opcional)
-            alunos_ids = request.POST.getlist('alunos')  # espera uma lista de IDs de usuários
-            if alunos_ids:
-                projeto.alunos.set(alunos_ids)
-
-            messages.success(request, "Projeto cadastrado com sucesso!")
-            return redirect('detalhe_turma', turma_id=turma.idturma)
-
-    alunos = Usuario.objects.all()
-    return render(request, 'AlunoProfessor/cadastrar_projeto.html', {'turma': turma, 'alunos': alunos})
 
 # Função para limpar nomes de arquivos e deixar válidos para Cloudinary
 def sanitize_filename(filename):
@@ -383,9 +314,6 @@ def upload_para_cloudinary(arquivo_file, public_id):
     public_id_str = str(resultado['public_id'])
     url = cloudinary_url(public_id_str, resource_type=resource_type, version=resultado.get('version'))[0]
     return public_id_str, resource_type, url
-
-def usuario_pode_editar_projeto(usuario, projeto):
-    return usuario.tipo in ['Professor', 'Coordenador'] or projeto.alunos.filter(idusuario=usuario.idusuario).exists()
 
 def adicionar_pasta_ao_zip(zip_file, projeto, pasta=None, caminho=""):
     arquivos = Arquivo.objects.filter(projeto=projeto, pasta=pasta)

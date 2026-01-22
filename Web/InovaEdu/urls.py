@@ -5,6 +5,7 @@ from . import views
 
 
 urlpatterns = [
+    # Geral
     path('', views.homePage),
     path('homePage/', views.homePage, name='homePage'),
     path('login/', views.login, name='login'),
@@ -13,8 +14,6 @@ urlpatterns = [
     path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
     # Aluno e Professor
     path('home/', views.home, name='home'),
-    path("perfil/", views.perfil, name="perfil"),
-    path("calendario/", views.calendario, name="calendario"),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
     path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
     path('forum/<int:idforum>/topico/criar/', views.criar_topico, name='criar_topico'),
@@ -24,23 +23,15 @@ urlpatterns = [
     path('forum/criar/', views.criar_forum, name='criar_forum'),
     path('forum/excluir/<int:forum_id>/', views.excluir_forum, name='excluir_forum'),
     path('forum/editar/<int:forum_id>/', views.editar_forum, name='editar_forum'),
+    path("calendario/", views.calendario, name="calendario"),
     path('calendario/criar/', views.criar_evento, name='criar_evento'),
+    path("perfil/", views.perfil, name="perfil"),
     path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('turma/<int:turma_id>/projetos/', views.projetos_da_turma, name='projetos_da_turma'),
     path('projeto/<int:projeto_id>/repositorio/', views.repositorio_projeto, name='repositorio_projeto'),
     path('repositorio/<int:projeto_id>/', views.repositorio_projeto, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
-    path('projeto/<int:projeto_id>/alunos/', views.gerenciar_alunos_projeto, name='gerenciar_alunos_projeto'),
-    path('api/projeto/<int:projeto_id>/alunos/', views.api_alunos_projeto, name='api_alunos_projeto'),
-    path('projeto/<int:projeto_id>/excluir/', views.excluir_projeto, name='excluir_projeto'),
-    
-    path(
-    'turma/<int:id_turma>/projetos/cadastrar/',
-    views.cadastrar_projeto,
-    name='cadastrar_projeto'
-),
-
     path('repositorio/<int:projeto_id>/download/', views.download_repositorio_projeto, name='download_repositorio_projeto'),
     # Coordenação
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),

@@ -18,7 +18,8 @@
     max-width: 500px;
     width: 90%;
     position: relative;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    animation: slideDown 0.3s ease-out;
 }
 
 .fechar {
@@ -30,9 +31,7 @@
     color: #888;
     transition: color 0.2s;
 }
-.fechar:hover {
-    color: #333;
-}
+.fechar:hover { color: #333; }
 
 .modal-footer {
     display: flex;
@@ -42,18 +41,14 @@
 }
 
 /* ================== MODAL CADASTRO PROJETO ================== */
-#modalCadastro .modal-content {
+#modalProjeto .modal-content {
+    max-width: 450px;
     padding: 30px 25px;
     border-radius: 15px;
-    max-width: 450px;
-    width: 90%;
-    background: #f9f9f9;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-    position: relative;
-    animation: slideDown 0.3s ease-out;
+    background-color: #f9f9f9;
 }
 
-#modalCadastro h2 {
+#modalProjeto h2 {
     font-size: 1.6rem;
     font-weight: 600;
     margin-bottom: 20px;
@@ -61,7 +56,9 @@
     text-align: center;
 }
 
-#modalCadastro input[type="text"] {
+#modalProjeto input[type="text"],
+#modalProjeto textarea,
+#modalProjeto input[type="file"] {
     width: 100%;
     padding: 10px 12px;
     border-radius: 8px;
@@ -71,43 +68,26 @@
     transition: all 0.2s ease;
 }
 
-#modalCadastro input[type="text"]:focus {
+#modalProjeto input[type="text"]:focus,
+#modalProjeto textarea:focus {
     border-color: #2f4ac4;
-    box-shadow: 0 0 6px rgba(47, 74, 196, 0.4);
+    box-shadow: 0 0 6px rgba(47,74,196,0.4);
     outline: none;
 }
 
-#modalCadastro .modal-footer {
-    justify-content: center;
-    margin-top: 25px;
-}
-
-#modalCadastro .btn-primary {
-    width: 48%;
-}
-
-#modalCadastro .btn-secondary {
-    width: 48%;
-}
-
 /* ================== CARDS ================== */
-.container {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    min-height: calc(64vh - 90px);
-}
-
 .cards-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     margin-top: 35px;
     justify-content: center;
+    min-height: calc(61vh - 90px);
 }
 
 .card {
     display: flex;
+    flex-direction: row;
     align-items: center;
     background-color: #fff;
     border-radius: 12px;
@@ -116,6 +96,7 @@
     width: 100%;
     max-width: 800px;
     transition: transform 0.2s, box-shadow 0.2s;
+    max-height: 190px;
 }
 
 .card:hover {
@@ -123,6 +104,9 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
 
+.card-image {
+    flex: 0 0 100px;
+}
 .card-image img {
     width: 100px;
     height: 100px;
@@ -133,32 +117,46 @@
 .card-content {
     flex: 1;
     padding: 0 20px;
+    text-align: left;
 }
-
 .card-title {
     margin: 0 0 5px 0;
     font-size: 1.5rem;
     color: #333;
     font-weight: 600;
 }
-
 .card-description {
     margin: 0;
     color: #666;
     font-size: 0.95rem;
 }
 
+/* Botões à direita */
 .card-action {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 10px;
+    align-items: flex-end;
+    min-width: 140px;
+}
+
+.card-action-top {
+    width: 100%;
+}
+
+.card-action-bottom {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 /* ================== BOTÕES ================== */
 .btn-repositorio,
 .btn-primary,
 .btn-secondary,
-.btn-danger {
+.btn-danger,
+.btn-warning {
     padding: 10px 16px;
     border-radius: 8px;
     font-weight: 500;
@@ -172,81 +170,20 @@
     justify-content: center;
 }
 
-.btn-repositorio {
-    background-color: #007bff;
-    color: #fff;
-}
-.btn-repositorio:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
+.btn-repositorio { background-color: #007bff; color: #fff; }
+.btn-repositorio:hover { background-color: #0056b3; transform: translateY(-2px); }
 
-.btn-primary {
-    background-color: #28a745;
-    color: #fff;
-}
-.btn-primary:hover {
-    background-color: #1e7e34;
-    transform: translateY(-2px);
-}
+.btn-primary { background-color: #28a745; color: #fff;}
+.btn-primary:hover { background-color: #1e7e34; transform: translateY(-2px); }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: #fff;
-}
-.btn-secondary:hover {
-    background-color: #5a6268;
-    transform: translateY(-2px);
-}
+.btn-secondary { background-color: #6c757d; color: #fff; }
+.btn-secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
 
-.btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-}
-.btn-danger:hover {
-    background-color: #c82333;
-    transform: translateY(-2px);
-}
+.btn-danger { background-color: #dc3545; color: #fff; }
+.btn-danger:hover { background-color: #c82333; transform: translateY(-2px); }
 
-#abrirModalCadastro {
-    position: fixed;
-    top: 90px;
-    right: 30px;
-    background-color: #2f4ac4; 
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#abrirModalCadastro:hover {
-    background-color: #212388;
-}
-
-/* ================== CHECKBOXES ================== */
-#alunosContainer label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-    cursor: pointer;
-}
-#alunosContainer input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-/* ================== ANIMAÇÕES ================== */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.btn-warning { background-color: #ffc107; color: #fff; }
+.btn-warning:hover { background-color: #e0a800; transform: translateY(-2px); }
 
 /* ================== RESPONSIVIDADE ================== */
 @media (max-width: 768px) {
@@ -257,13 +194,29 @@
     }
     .card-image img { width: 80px; height: 80px; }
     .card-content { padding: 0; }
-    .card-action { justify-content: center; flex-wrap: wrap; }
-    .btn-repositorio, .btn-primary, .btn-secondary, .btn-danger { width: 100%; }
+    .card-action {
+        width: 100%;
+        align-items: center;
+    }
+    .card-action-top,
+    .card-action-bottom {
+        justify-content: center;
+        width: 100%;
+    }
+    .btn-repositorio,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-warning {
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
-    #modalCadastro .btn-primary,
-    #modalCadastro .btn-secondary {
+    #modalProjeto input[type="text"],
+    #modalProjeto textarea,
+    #modalProjeto input[type="file"],
+    #modalProjeto .btn-primary {
         width: 100%;
         margin-bottom: 10px;
     }

@@ -16,13 +16,13 @@
     <p>Repositório</p>
 </div>
 
-{% if messages %}
+{% comment %} {% if messages %}
 <div class="messages">
     {% for message in messages %}
         <p class="{{ message.tags }}">{{ message }}</p>
     {% endfor %}
 </div>
-{% endif %}
+{% endif %} {% endcomment %}
 
 <div class="acoes-repositorio">
     {% if can_modify %}
@@ -55,7 +55,7 @@
         <h4>Criar Pasta</h4>
         <form method="post">
             {% csrf_token %}
-            <input type="text" name="nome_pasta" required>
+            <input type="text" name="nome_pasta" required placeholder="Nome da pasta">
             <button type="submit" name="action" value="criar_pasta">Criar</button>
         </form>
     </div>
@@ -119,26 +119,30 @@
     {% if can_modify %}<form method="post">{% csrf_token %}{% endif %}
 
     <ul class="lista-pastas">
-        {% for pasta in pastas %}
-        <li class="pasta-item">
-            <div class="pasta-info">
-                <input type="checkbox" name="pastas_selecionadas" value="{{ pasta.id }}"
-                       class="checkbox-pastas" style="display:none;">
-                <a href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
-            </div>
+        {% if pastas %}
+            {% for pasta in pastas %}
+            <li class="pasta-item">
+                <div class="pasta-info">
+                    <input type="checkbox" name="pastas_selecionadas" value="{{ pasta.id }}"
+                           class="checkbox-pastas" style="display:none;">
+                    <a href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
+                </div>
 
-            {% if can_modify %}
-            <div class="pasta-actions">
-                <button type="button" onclick="abrirModalEdit('modal-edit-pasta', {{ pasta.id }})">✏️</button>
-                <button type="submit" name="action" value="excluir_pasta"
-                        onclick="this.form.pasta_id.value='{{ pasta.id }}'; return confirm('Excluir pasta?')">
-                    🗑️
-                </button>
-                <input type="hidden" name="pasta_id">
-            </div>
-            {% endif %}
-        </li>
-        {% endfor %}
+                {% if can_modify %}
+                <div class="pasta-actions">
+                    <button type="button" onclick="abrirModalEdit('modal-edit-pasta', {{ pasta.id }})">✏️</button>
+                    <button type="submit" name="action" value="excluir_pasta"
+                            onclick="this.form.pasta_id.value='{{ pasta.id }}'; return confirm('Excluir pasta?')">
+                        🗑️
+                    </button>
+                    <input type="hidden" name="pasta_id">
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="sem-itens">Não existe nenhuma pasta até o momento.</li>
+        {% endif %}
     </ul>
 
     {% if can_modify %}
@@ -171,25 +175,29 @@
     {% if can_modify %}<form method="post">{% csrf_token %}{% endif %}
 
     <ul class="lista-arquivos">
-        {% for arquivo in arquivos %}
-        <li class="arquivo-item">
-            <div class="arquivo-info">
-                <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}"
-                       class="checkbox-arquivos" style="display:none;">
-                <a href="{{ arquivo.url }}" download>📄 {{ arquivo.nome }}</a>
-            </div>
+        {% if arquivos %}
+            {% for arquivo in arquivos %}
+            <li class="arquivo-item">
+                <div class="arquivo-info">
+                    <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}"
+                           class="checkbox-arquivos" style="display:none;">
+                    <a href="{{ arquivo.url }}" download>📄 {{ arquivo.nome }}</a>
+                </div>
 
-            {% if can_modify %}
-            <div class="pasta-actions">
-                <button type="submit" name="action" value="excluir_arquivo"
-                        onclick="this.form.arquivo_id.value='{{ arquivo.id }}'; return confirm('Excluir arquivo?')">
-                    🗑️
-                </button>
-                <input type="hidden" name="arquivo_id">
-            </div>
-            {% endif %}
-        </li>
-        {% endfor %}
+                {% if can_modify %}
+                <div class="pasta-actions">
+                    <button type="submit" name="action" value="excluir_arquivo"
+                            onclick="this.form.arquivo_id.value='{{ arquivo.id }}'; return confirm('Excluir arquivo?')">
+                        🗑️
+                    </button>
+                    <input type="hidden" name="arquivo_id">
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="sem-itens">Não existe nenhum arquivo até o momento.</li>
+        {% endif %}
     </ul>
 
     {% if can_modify %}
