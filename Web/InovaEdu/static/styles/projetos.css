@@ -82,7 +82,7 @@
     gap: 20px;
     margin-top: 35px;
     justify-content: center;
-    min-height: calc(61vh - 90px);
+    min-height: calc(77vh - 90px);
 }
 
 .card {
