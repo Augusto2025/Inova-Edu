@@ -1,5 +1,6 @@
 # dashboard.py
 import customtkinter as ctk
+from banco import conectar
 
 
 def abrir_dashboard(app, tipo, tela_login):

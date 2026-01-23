@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from dashboard import abrir_dashboard
+from banco import conectar
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("dark-blue")
