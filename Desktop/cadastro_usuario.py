@@ -11,7 +11,7 @@ class TelaCadastro:
     def __init__(self):
         self.janela = ctk.CTk()
         self.janela.title("Sistema de Cadastro")
-        self.janela.geometry("800x600")
+        self.janela.geometry("1000x600")
         self.janela.resizable(False, False)
         
         # Caminho da foto selecionada
