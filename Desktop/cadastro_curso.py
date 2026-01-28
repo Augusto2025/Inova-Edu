@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from tkinter import filedialog
 
 # Configurar aparência
 ctk.set_appearance_mode("light")  # Modo claro
@@ -18,6 +19,8 @@ class CadastroCursos:
         self.cor_cinza_claro = "#f5f5f5"
         self.cor_cinza = "#e0e0e0"
         self.cor_texto = "#333333"
+        self.cor_vermelho = "#dc3545"
+        self.cor_vermelho_hover = "#c82333"
         
         # Aplicar cores de fundo
         self.janela.configure(fg_color=self.cor_branco)
@@ -57,11 +60,11 @@ class CadastroCursos:
         # Opções do menu
         opcoes_menu = [
             "📚 Cadastro de Cursos",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "📋 Listar Cursos",
+            "👥 Alunos",
+            "👨‍🏫 Professores",
+            "📊 Relatórios",
+            "⚙️ Configurações"
         ]
         
         self.botoes_menu = []
@@ -262,62 +265,77 @@ class CadastroCursos:
         )
         self.descricao_text.grid(row=4, column=1, padx=(0, 30), pady=15, sticky="nsew")
         
+        # *******************************************
+        # ÁREA DOS BOTÕES SALVAR E CANCELAR
+        # *******************************************
+        
         # Frame para os botões de ação
         botoes_frame = ctk.CTkFrame(
             campos_frame, 
             fg_color="transparent",
-            height=80
+            height=100
         )
-        botoes_frame.grid(row=5, column=0, columnspan=2, pady=(20, 30), sticky="ew")
+        botoes_frame.grid(row=5, column=0, columnspan=2, pady=(30, 20), sticky="ew")
         botoes_frame.grid_columnconfigure(0, weight=1)
         botoes_frame.grid_columnconfigure(1, weight=1)
         
-        # Botão Limpar (à esquerda)
-        self.limpar_btn = ctk.CTkButton(
+        # Botão Cancelar (à esquerda) - VERMELHO
+        self.cancelar_btn = ctk.CTkButton(
             botoes_frame,
-            text="🔄 LIMPAR CAMPOS",
-            command=self.limpar_campos,
-            height=45,
-            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
-            fg_color=self.cor_cinza,
-            hover_color="#cccccc",
-            text_color=self.cor_texto,
+            text="❌ CANCELAR",
+            command=self.cancelar_operacao,
+            height=50,
+            font=ctk.CTkFont(size=15, weight="bold", family="Arial"),
+            fg_color=self.cor_vermelho,
+            hover_color=self.cor_vermelho_hover,
+            text_color=self.cor_branco,
             corner_radius=10,
             border_width=0
         )
-        self.limpar_btn.grid(row=0, column=0, padx=(30, 10), sticky="ew")
+        self.cancelar_btn.grid(row=0, column=0, padx=(30, 15), sticky="ew")
         
-        # Botão Salvar (à direita)
+        # Botão Salvar (à direita) - AZUL
         self.salvar_btn = ctk.CTkButton(
             botoes_frame,
             text="💾 SALVAR CURSO",
             command=self.salvar_curso,
-            height=45,
-            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
+            height=50,
+            font=ctk.CTkFont(size=15, weight="bold", family="Arial"),
             fg_color=self.cor_azul,
             hover_color=self.cor_azul_hover,
             text_color=self.cor_branco,
             corner_radius=10,
             border_width=0
         )
-        self.salvar_btn.grid(row=0, column=1, padx=(10, 30), sticky="ew")
+        self.salvar_btn.grid(row=0, column=1, padx=(15, 30), sticky="ew")
+        
+        # Adicionar atalhos de teclado
+        self.janela.bind('<Control-s>', lambda e: self.salvar_curso())
+        self.janela.bind('<Escape>', lambda e: self.cancelar_operacao())
         
         # Rodapé informativo
         rodape = ctk.CTkLabel(
             campos_frame,
-            text="* Campos marcados com asterisco são obrigatórios",
+            text="* Campos marcados com asterisco são obrigatórios | Atalhos: Ctrl+S (Salvar) | Esc (Cancelar)",
             font=ctk.CTkFont(size=11, family="Arial"),
             text_color="#666666"
         )
-        rodape.grid(row=6, column=0, columnspan=2, pady=(0, 20))
+        rodape.grid(row=6, column=0, columnspan=2, pady=(10, 20))
         
     def buscar_imagem(self):
-        # Em uma aplicação real, você implementaria o filedialog aqui
-        messagebox.showinfo(
-            "Buscar Imagem", 
-            "Funcionalidade para selecionar imagem.\n\nEm uma versão completa, um filedialog seria aberto para escolher o arquivo.",
-            icon="info"
+        tipos_arquivos = [
+            ("Imagens", "*.png *.jpg *.jpeg *.gif *.bmp"),
+            ("Todos os arquivos", "*.*")
+        ]
+        
+        arquivo = filedialog.askopenfilename(
+            title="Selecione uma imagem",
+            filetypes=tipos_arquivos
         )
+        
+        if arquivo:
+            self.imagem_entry.delete(0, "end")
+            self.imagem_entry.insert(0, arquivo)
         
     def salvar_curso(self):
         # Coletar dados dos campos
@@ -336,29 +354,87 @@ class CadastroCursos:
             )
             self.nome_entry.focus()
             return
-            
-        # Aqui você normalmente salvaria no banco de dados
-        dados = {
-            "Nome": nome,
-            "Início": inicio if inicio else "Não informado",
-            "Término": termino if termino else "Não informado",
-            "Imagem": imagem if imagem else "Não selecionada",
-            "Descrição": descricao if descricao else "Sem descrição"
-        }
         
-        # Mostrar mensagem de sucesso
-        messagebox.showinfo(
-            "Sucesso!", 
-            f"Curso '{nome}' salvo com sucesso!\n\n"
-            f"Os dados foram processados e estão prontos para serem armazenados no banco de dados.",
-            icon="info"
+        # Verificar se as datas são válidas
+        if inicio and not self.validar_data(inicio):
+            messagebox.showwarning(
+                "Data Inválida", 
+                "Data de Início em formato inválido!\nUse DD/MM/AAAA",
+                icon="warning"
+            )
+            self.inicio_entry.focus()
+            return
+            
+        if termino and not self.validar_data(termino):
+            messagebox.showwarning(
+                "Data Inválida", 
+                "Data de Término em formato inválido!\nUse DD/MM/AAAA",
+                icon="warning"
+            )
+            self.termino_entry.focus()
+            return
+        
+        # Mostrar confirmação
+        resposta = messagebox.askyesno(
+            "Confirmar Cadastro",
+            f"Deseja salvar o curso '{nome}'?",
+            icon="question"
         )
         
-        # Limpar campos após salvar (opcional)
-        # self.limpar_campos()
+        if resposta:
+            # Aqui você normalmente salvaria no banco de dados
+            dados = {
+                "Nome": nome,
+                "Início": inicio if inicio else "Não informado",
+                "Término": termino if termino else "Não informado",
+                "Imagem": imagem if imagem else "Não selecionada",
+                "Descrição": descricao if descricao else "Sem descrição"
+            }
+            
+            # Mostrar mensagem de sucesso
+            messagebox.showinfo(
+                "Sucesso!", 
+                f"✅ Curso '{nome}' salvo com sucesso!",
+                icon="info"
+            )
+            
+            # Limpar campos após salvar
+            self.limpar_campos()
+    
+    def cancelar_operacao(self):
+        """Função do botão Cancelar"""
+        # Verificar se há dados não salvos
+        tem_dados = (
+            self.nome_entry.get() or
+            self.inicio_entry.get() or
+            self.termino_entry.get() or
+            self.imagem_entry.get() or
+            self.descricao_text.get("1.0", "end-1c").strip()
+        )
         
+        if tem_dados:
+            resposta = messagebox.askyesno(
+                "Cancelar Operação",
+                "Existem dados não salvos no formulário.\nDeseja realmente cancelar e perder as alterações?",
+                icon="warning"
+            )
+            
+            if resposta:
+                self.limpar_campos()
+                messagebox.showinfo(
+                    "Operação Cancelada", 
+                    "✅ Cadastro cancelado. Todos os campos foram limpos.",
+                    icon="info"
+                )
+        else:
+            messagebox.showinfo(
+                "Cancelar", 
+                "Não há dados para cancelar.\nOs campos já estão vazios.",
+                icon="info"
+            )
+    
     def limpar_campos(self):
-        # Limpar todos os campos
+        """Função auxiliar para limpar campos"""
         self.nome_entry.delete(0, "end")
         self.inicio_entry.delete(0, "end")
         self.termino_entry.delete(0, "end")
@@ -367,6 +443,20 @@ class CadastroCursos:
         
         # Focar no primeiro campo
         self.nome_entry.focus()
+    
+    def validar_data(self, data):
+        """Validação simples de data no formato DD/MM/AAAA"""
+        try:
+            dia, mes, ano = data.split('/')
+            if len(dia) == 2 and len(mes) == 2 and len(ano) == 4:
+                # Verificar se são números
+                int(dia)
+                int(mes)
+                int(ano)
+                return True
+        except:
+            pass
+        return False
         
     def selecionar_menu(self, opcao):
         # Destacar o botão selecionado
@@ -382,17 +472,7 @@ class CadastroCursos:
                     text_color=self.cor_branco
                 )
         
-        # Aqui você implementaria a troca de telas
         print(f"Menu selecionado: {opcao}")
-        
-        # Exemplo de feedback visual
-        if opcao != "📚 Cadastro de Cursos":
-            messagebox.showinfo(
-                "Navegação",
-                f"Você selecionou: {opcao}\n\n"
-                "Em uma versão completa, esta ação carregaria a tela correspondente.",
-                icon="info"
-            )
         
     def run(self):
         self.janela.mainloop()
