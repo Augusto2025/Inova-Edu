@@ -60,11 +60,11 @@ class CadastroCursos:
         # Opções do menu
         opcoes_menu = [
             "📚 Cadastro de Cursos",
-            "📋 Listar Cursos",
-            "👥 Alunos",
-            "👨‍🏫 Professores",
-            "📊 Relatórios",
-            "⚙️ Configurações"
+            "",
+            "",
+            "",
+            "",
+            ""
         ]
         
         self.botoes_menu = []
