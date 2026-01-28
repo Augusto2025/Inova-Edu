@@ -1,26 +1,46 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import ttk
 
 # Configurar aparência
-ctk.set_appearance_mode("light")  # Modo claro
+ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-class CadastroCursos:
+class CadastroTurmas:
     def __init__(self):
         self.janela = ctk.CTk()
-        self.janela.title("Sistema de Cadastro de Cursos")
-        self.janela.geometry("1000x600")
+        self.janela.title("Sistema de Cadastro de Turmas")
+        self.janela.geometry("1000x650")
         
         # Configurar cores personalizadas
         self.cor_azul = "#004a8d"
         self.cor_azul_hover = "#003366"
         self.cor_branco = "#ffffff"
         self.cor_cinza_claro = "#f5f5f5"
-        self.cor_cinza = "#e0e0e0"
+        self.cor_cinza = "#b9b9b9"
         self.cor_texto = "#333333"
         self.cor_vermelho = "#dc3545"
         self.cor_vermelho_hover = "#c82333"
+        self.cor_verde = "#28a745"
+        self.cor_verde_hover = "#218838"
+        
+        # Dados de exemplo
+        self.cursos = [
+            "Ciência da Computação",
+            "Engenharia de Software",
+            "Sistemas de Informação",
+            "Análise e Desenvolvimento de Sistemas",
+            "Redes de Computadores"
+        ]
+        
+        self.usuarios = [
+            "João Silva",
+            "Maria Santos",
+            "Pedro Oliveira",
+            "Ana Costa",
+            "Carlos Rodrigues",
+            "Juliana Ferreira"
+        ]
         
         # Aplicar cores de fundo
         self.janela.configure(fg_color=self.cor_branco)
@@ -60,11 +80,11 @@ class CadastroCursos:
         # Opções do menu
         opcoes_menu = [
             "📚 Cadastro de Cursos",
-            "📋 Listar Cursos",
-            "👥 Alunos",
-            "👨‍🏫 Professores",
-            "📊 Relatórios",
-            "⚙️ Configurações"
+            "👥 Cadastro de Turmas",
+            "",
+            "",
+            "",
+            ""
         ]
         
         self.botoes_menu = []
@@ -126,13 +146,13 @@ class CadastroCursos:
         # Título da tela no cabeçalho
         titulo = ctk.CTkLabel(
             cabecalho_frame,
-            text="📝 CADASTRO DE CURSOS",
+            text="👥 CADASTRO DE TURMAS",
             font=ctk.CTkFont(size=22, weight="bold", family="Arial"),
             text_color=self.cor_branco
         )
         titulo.pack(side="left", padx=30, pady=20)
         
-        # Frame para os campos (com scroll se necessário)
+        # Frame para os campos
         container = ctk.CTkFrame(self.conteudo_frame, fg_color=self.cor_branco)
         container.pack(fill="both", expand=True, padx=40, pady=30)
         
@@ -164,106 +184,162 @@ class CadastroCursos:
             "corner_radius": 8
         }
         
-        # Campo Nome
-        nome_label = ctk.CTkLabel(
+        # Campo Código da Turma
+        codigo_label = ctk.CTkLabel(
             campos_frame, 
-            text="Nome do Curso: *",
+            text="Código da Turma: *",
             **estilo_label
         )
-        nome_label.grid(row=0, column=0, padx=(30, 15), pady=(30, 15), sticky="w")
+        codigo_label.grid(row=0, column=0, padx=(30, 15), pady=(30, 15), sticky="w")
         
-        self.nome_entry = ctk.CTkEntry(
+        self.codigo_entry = ctk.CTkEntry(
             campos_frame,
-            placeholder_text="Digite o nome do curso...",
+            placeholder_text="Ex: TURMA2023-001",
             width=400,
             **estilo_entry
         )
-        self.nome_entry.grid(row=0, column=1, padx=(0, 30), pady=(30, 15), sticky="ew")
+        self.codigo_entry.grid(row=0, column=1, padx=(0, 30), pady=(30, 15), sticky="ew")
         
-        # Campo Data de Início
-        inicio_label = ctk.CTkLabel(
+        # Campo Turno
+        turno_label = ctk.CTkLabel(
             campos_frame, 
-            text="Data de Início:",
+            text="Turno: *",
             **estilo_label
         )
-        inicio_label.grid(row=1, column=0, padx=(30, 15), pady=15, sticky="w")
+        turno_label.grid(row=1, column=0, padx=(30, 15), pady=15, sticky="w")
         
-        self.inicio_entry = ctk.CTkEntry(
-            campos_frame,
-            placeholder_text="DD/MM/AAAA",
-            **estilo_entry
-        )
-        self.inicio_entry.grid(row=1, column=1, padx=(0, 30), pady=15, sticky="ew")
+        # Frame para os botões de turno
+        turno_frame = ctk.CTkFrame(campos_frame, fg_color="transparent")
+        turno_frame.grid(row=1, column=1, padx=(0, 30), pady=15, sticky="w")
         
-        # Campo Data de Término
-        termino_label = ctk.CTkLabel(
+        # Variável para armazenar o turno selecionado
+        self.turno_var = ctk.StringVar(value="Matutino")
+        
+        # Botões de opção para turno
+        turnos = ["Matutino", "Vespertino", "Noturno", "Integral"]
+        for i, turno in enumerate(turnos):
+            btn = ctk.CTkRadioButton(
+                turno_frame,
+                text=turno,
+                variable=self.turno_var,
+                value=turno,
+                font=ctk.CTkFont(size=13, family="Arial"),
+                text_color=self.cor_texto
+            )
+            btn.pack(side="left", padx=(0, 20))
+        
+        # Campo Ano
+        ano_label = ctk.CTkLabel(
             campos_frame, 
-            text="Data de Término:",
+            text="Ano: *",
             **estilo_label
         )
-        termino_label.grid(row=2, column=0, padx=(30, 15), pady=15, sticky="w")
+        ano_label.grid(row=2, column=0, padx=(30, 15), pady=15, sticky="w")
         
-        self.termino_entry = ctk.CTkEntry(
+        # Combobox para ano
+        self.ano_combobox = ctk.CTkComboBox(
             campos_frame,
-            placeholder_text="DD/MM/AAAA",
-            **estilo_entry
-        )
-        self.termino_entry.grid(row=2, column=1, padx=(0, 30), pady=15, sticky="ew")
-        
-        # Campo Imagem
-        imagem_label = ctk.CTkLabel(
-            campos_frame, 
-            text="Imagem:",
-            **estilo_label
-        )
-        imagem_label.grid(row=3, column=0, padx=(30, 15), pady=15, sticky="w")
-        
-        imagem_frame = ctk.CTkFrame(
-            campos_frame,
-            fg_color="transparent"
-        )
-        imagem_frame.grid(row=3, column=1, padx=(0, 30), pady=15, sticky="ew")
-        
-        self.imagem_entry = ctk.CTkEntry(
-            imagem_frame,
-            placeholder_text="Selecione uma imagem...",
-            **estilo_entry
-        )
-        self.imagem_entry.pack(side="left", fill="x", expand=True, padx=(0, 10))
-        
-        self.buscar_btn = ctk.CTkButton(
-            imagem_frame,
-            text="📁 Buscar",
-            width=100,
+            values=[str(ano) for ano in range(2020, 2031)],
+            state="readonly",
             height=40,
-            fg_color=self.cor_azul,
-            hover_color=self.cor_azul_hover,
-            text_color=self.cor_branco,
-            font=ctk.CTkFont(size=13, weight="bold", family="Arial"),
-            corner_radius=8,
-            command=self.buscar_imagem
-        )
-        self.buscar_btn.pack(side="right")
-        
-        # Campo Descrição
-        descricao_label = ctk.CTkLabel(
-            campos_frame, 
-            text="Descrição:",
-            **estilo_label
-        )
-        descricao_label.grid(row=4, column=0, padx=(30, 15), pady=15, sticky="nw")
-        
-        self.descricao_text = ctk.CTkTextbox(
-            campos_frame,
-            height=120,
             border_width=2,
             border_color=self.cor_cinza,
             fg_color=self.cor_branco,
             text_color=self.cor_texto,
             font=ctk.CTkFont(size=13, family="Arial"),
-            corner_radius=8
+            corner_radius=8,
+            dropdown_font=ctk.CTkFont(size=13, family="Arial")
         )
-        self.descricao_text.grid(row=4, column=1, padx=(0, 30), pady=15, sticky="nsew")
+        self.ano_combobox.set("2024")  # Valor padrão
+        self.ano_combobox.grid(row=2, column=1, padx=(0, 30), pady=15, sticky="ew")
+        
+        # Campo Curso
+        curso_label = ctk.CTkLabel(
+            campos_frame, 
+            text="Curso: *",
+            **estilo_label
+        )
+        curso_label.grid(row=3, column=0, padx=(30, 15), pady=15, sticky="w")
+        
+        # Combobox para curso
+        self.curso_combobox = ctk.CTkComboBox(
+            campos_frame,
+            values=self.cursos,
+            state="readonly",
+            height=40,
+            border_width=2,
+            border_color=self.cor_cinza,
+            fg_color=self.cor_branco,
+            text_color=self.cor_texto,
+            font=ctk.CTkFont(size=13, family="Arial"),
+            corner_radius=8,
+            dropdown_font=ctk.CTkFont(size=13, family="Arial")
+        )
+        self.curso_combobox.set(self.cursos[0])  # Valor padrão
+        self.curso_combobox.grid(row=3, column=1, padx=(0, 30), pady=15, sticky="ew")
+        
+        # Campo Usuários
+        usuarios_label = ctk.CTkLabel(
+            campos_frame, 
+            text="Usuários (Alunos/Professores): *",
+            **estilo_label
+        )
+        usuarios_label.grid(row=4, column=0, padx=(30, 15), pady=15, sticky="nw")
+        
+        # Frame para a lista de usuários
+        usuarios_frame = ctk.CTkFrame(campos_frame, fg_color=self.cor_branco, corner_radius=8)
+        usuarios_frame.grid(row=4, column=1, padx=(0, 30), pady=15, sticky="nsew")
+        
+        # Lista de usuários selecionáveis
+        self.usuarios_selecionados = {}
+        
+        # Scrollable frame para os checkboxes
+        usuarios_scroll = ctk.CTkScrollableFrame(
+            usuarios_frame,
+            height=150,
+            fg_color=self.cor_branco
+        )
+        usuarios_scroll.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Criar checkboxes para cada usuário
+        for usuario in self.usuarios:
+            var = ctk.BooleanVar(value=False)
+            self.usuarios_selecionados[usuario] = var
+            
+            checkbox = ctk.CTkCheckBox(
+                usuarios_scroll,
+                text=usuario,
+                variable=var,
+                font=ctk.CTkFont(size=13, family="Arial"),
+                text_color=self.cor_texto
+            )
+            checkbox.pack(anchor="w", padx=5, pady=3)
+        
+        # Botões de seleção rápida
+        selecao_frame = ctk.CTkFrame(usuarios_frame, fg_color="transparent")
+        selecao_frame.pack(fill="x", padx=5, pady=5)
+        
+        ctk.CTkButton(
+            selecao_frame,
+            text="Selecionar Todos",
+            width=120,
+            height=30,
+            font=ctk.CTkFont(size=12, family="Arial"),
+            fg_color=self.cor_azul,
+            hover_color=self.cor_azul_hover,
+            command=self.selecionar_todos_usuarios
+        ).pack(side="left", padx=(0, 10))
+        
+        ctk.CTkButton(
+            selecao_frame,
+            text="Deselecionar Todos",
+            width=120,
+            height=30,
+            font=ctk.CTkFont(size=12, family="Arial"),
+            fg_color=self.cor_cinza,
+            hover_color="#e9e7e7",
+            command=self.deselecionar_todos_usuarios
+        ).pack(side="left")
         
         # *******************************************
         # ÁREA DOS BOTÕES SALVAR E CANCELAR
@@ -297,8 +373,8 @@ class CadastroCursos:
         # Botão Salvar (à direita) - AZUL
         self.salvar_btn = ctk.CTkButton(
             botoes_frame,
-            text="💾 SALVAR CURSO",
-            command=self.salvar_curso,
+            text="💾 SALVAR TURMA",
+            command=self.salvar_turma,
             height=50,
             font=ctk.CTkFont(size=15, weight="bold", family="Arial"),
             fg_color=self.cor_azul,
@@ -310,7 +386,7 @@ class CadastroCursos:
         self.salvar_btn.grid(row=0, column=1, padx=(15, 30), sticky="ew")
         
         # Adicionar atalhos de teclado
-        self.janela.bind('<Control-s>', lambda e: self.salvar_curso())
+        self.janela.bind('<Control-s>', lambda e: self.salvar_turma())
         self.janela.bind('<Escape>', lambda e: self.cancelar_operacao())
         
         # Rodapé informativo
@@ -321,80 +397,87 @@ class CadastroCursos:
             text_color="#666666"
         )
         rodape.grid(row=6, column=0, columnspan=2, pady=(10, 20))
-        
-    def buscar_imagem(self):
-        tipos_arquivos = [
-            ("Imagens", "*.png *.jpg *.jpeg *.gif *.bmp"),
-            ("Todos os arquivos", "*.*")
-        ]
-        
-        arquivo = filedialog.askopenfilename(
-            title="Selecione uma imagem",
-            filetypes=tipos_arquivos
-        )
-        
-        if arquivo:
-            self.imagem_entry.delete(0, "end")
-            self.imagem_entry.insert(0, arquivo)
-        
-    def salvar_curso(self):
+    
+    def selecionar_todos_usuarios(self):
+        """Seleciona todos os usuários"""
+        for var in self.usuarios_selecionados.values():
+            var.set(True)
+    
+    def deselecionar_todos_usuarios(self):
+        """Deseleciona todos os usuários"""
+        for var in self.usuarios_selecionados.values():
+            var.set(False)
+    
+    def salvar_turma(self):
         # Coletar dados dos campos
-        nome = self.nome_entry.get()
-        inicio = self.inicio_entry.get()
-        termino = self.termino_entry.get()
-        imagem = self.imagem_entry.get()
-        descricao = self.descricao_text.get("1.0", "end-1c")
+        codigo = self.codigo_entry.get()
+        turno = self.turno_var.get()
+        ano = self.ano_combobox.get()
+        curso = self.curso_combobox.get()
+        
+        # Obter usuários selecionados
+        usuarios_selecionados = []
+        for usuario, var in self.usuarios_selecionados.items():
+            if var.get():
+                usuarios_selecionados.append(usuario)
         
         # Validação
-        if not nome:
-            messagebox.showwarning(
-                "Atenção", 
-                "O campo 'Nome do Curso' é obrigatório!",
-                icon="warning"
-            )
-            self.nome_entry.focus()
-            return
+        erros = []
         
-        # Verificar se as datas são válidas
-        if inicio and not self.validar_data(inicio):
+        if not codigo:
+            erros.append("O campo 'Código da Turma' é obrigatório!")
+            self.codigo_entry.focus()
+        
+        if not ano:
+            erros.append("O campo 'Ano' é obrigatório!")
+        
+        if not curso:
+            erros.append("O campo 'Curso' é obrigatório!")
+        
+        if not usuarios_selecionados:
+            erros.append("Selecione pelo menos um usuário!")
+        
+        if erros:
             messagebox.showwarning(
-                "Data Inválida", 
-                "Data de Início em formato inválido!\nUse DD/MM/AAAA",
+                "Validação", 
+                "\n".join(erros),
                 icon="warning"
             )
-            self.inicio_entry.focus()
-            return
-            
-        if termino and not self.validar_data(termino):
-            messagebox.showwarning(
-                "Data Inválida", 
-                "Data de Término em formato inválido!\nUse DD/MM/AAAA",
-                icon="warning"
-            )
-            self.termino_entry.focus()
             return
         
         # Mostrar confirmação
         resposta = messagebox.askyesno(
             "Confirmar Cadastro",
-            f"Deseja salvar o curso '{nome}'?",
+            f"Deseja salvar a turma '{codigo}'?\n\n"
+            f"Detalhes:\n"
+            f"• Turno: {turno}\n"
+            f"• Ano: {ano}\n"
+            f"• Curso: {curso}\n"
+            f"• Usuários selecionados: {len(usuarios_selecionados)}",
             icon="question"
         )
         
         if resposta:
             # Aqui você normalmente salvaria no banco de dados
             dados = {
-                "Nome": nome,
-                "Início": inicio if inicio else "Não informado",
-                "Término": termino if termino else "Não informado",
-                "Imagem": imagem if imagem else "Não selecionada",
-                "Descrição": descricao if descricao else "Sem descrição"
+                "Código": codigo,
+                "Turno": turno,
+                "Ano": ano,
+                "Curso": curso,
+                "Usuários": usuarios_selecionados,
+                "Total de Usuários": len(usuarios_selecionados)
             }
             
-            # Mostrar mensagem de sucesso
+            # Mostrar mensagem de sucesso com detalhes
             messagebox.showinfo(
                 "Sucesso!", 
-                f"✅ Curso '{nome}' salvo com sucesso!",
+                f"✅ Turma '{codigo}' salva com sucesso!\n\n"
+                f"📋 Detalhes:\n"
+                f"• Código: {codigo}\n"
+                f"• Turno: {turno}\n"
+                f"• Ano: {ano}\n"
+                f"• Curso: {curso}\n"
+                f"• Total de usuários: {len(usuarios_selecionados)}",
                 icon="info"
             )
             
@@ -405,11 +488,8 @@ class CadastroCursos:
         """Função do botão Cancelar"""
         # Verificar se há dados não salvos
         tem_dados = (
-            self.nome_entry.get() or
-            self.inicio_entry.get() or
-            self.termino_entry.get() or
-            self.imagem_entry.get() or
-            self.descricao_text.get("1.0", "end-1c").strip()
+            self.codigo_entry.get() or
+            any(var.get() for var in self.usuarios_selecionados.values())
         )
         
         if tem_dados:
@@ -435,28 +515,17 @@ class CadastroCursos:
     
     def limpar_campos(self):
         """Função auxiliar para limpar campos"""
-        self.nome_entry.delete(0, "end")
-        self.inicio_entry.delete(0, "end")
-        self.termino_entry.delete(0, "end")
-        self.imagem_entry.delete(0, "end")
-        self.descricao_text.delete("1.0", "end")
+        self.codigo_entry.delete(0, "end")
+        self.turno_var.set("Matutino")
+        self.ano_combobox.set("2024")
+        self.curso_combobox.set(self.cursos[0])
+        
+        # Desmarcar todos os usuários
+        for var in self.usuarios_selecionados.values():
+            var.set(False)
         
         # Focar no primeiro campo
-        self.nome_entry.focus()
-    
-    def validar_data(self, data):
-        """Validação simples de data no formato DD/MM/AAAA"""
-        try:
-            dia, mes, ano = data.split('/')
-            if len(dia) == 2 and len(mes) == 2 and len(ano) == 4:
-                # Verificar se são números
-                int(dia)
-                int(mes)
-                int(ano)
-                return True
-        except:
-            pass
-        return False
+        self.codigo_entry.focus()
         
     def selecionar_menu(self, opcao):
         # Destacar o botão selecionado
@@ -474,9 +543,18 @@ class CadastroCursos:
         
         print(f"Menu selecionado: {opcao}")
         
+        # Aqui você implementaria a navegação entre telas
+        if opcao != "👥 Cadastro de Turmas":
+            messagebox.showinfo(
+                "Navegação",
+                f"Você selecionou: {opcao}\n\n"
+                "Em uma aplicação completa, esta ação carregaria a tela correspondente.",
+                icon="info"
+            )
+        
     def run(self):
         self.janela.mainloop()
 
 if __name__ == "__main__":
-    app = CadastroCursos()
+    app = CadastroTurmas()
     app.run()
