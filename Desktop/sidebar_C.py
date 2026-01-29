@@ -1,6 +1,14 @@
 import customtkinter as ctk
+from PIL import Image
+from cadastro_turma import CadastroTurmas
+from cadastro_usuario import CadastroUsuarios
+from cadastro_curso import CadastroCursos
 
 def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
+    # Faz com que o menu se estique conforme a tela
+    janela.grid_rowconfigure(0, weight=1)
+    janela.grid_columnconfigure(1, weight=1)
+
     # Frame do menu lateral - IMPORTANTE: rowspan para ocupar todas as linhas
     menu_frame = ctk.CTkFrame(
         janela, 
@@ -14,11 +22,21 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # Container para conteúdo do menu - que preenche todo o frame
     menu_container = ctk.CTkFrame(menu_frame, fg_color="transparent")
     menu_container.pack(fill="both", expand=True, padx=10, pady=20)
-    
+
+    imagem_pil = Image.open("Desktop/LOGOBRANCO.png")
+
+    imagem_ctk = ctk.CTkImage(
+        light_image=imagem_pil,
+        size=(80,100)
+    )
+
     # Logo do sistema
     logo_frame = ctk.CTkFrame(menu_container, fg_color="transparent")
     logo_frame.pack(pady=(0, 20))
     
+    logo_image = ctk.CTkLabel(logo_frame, image=imagem_ctk, text="")
+    logo_image.pack()
+
     logo_label = ctk.CTkLabel(
         logo_frame,
         text="INOVA EDU",
@@ -38,7 +56,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # Título do menu
     titulo_label = ctk.CTkLabel(
         menu_container,
-        text="MENU PRINCIPAL",
+        text="MENU LATERAL",
         font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
         text_color=cor_texto
     )
@@ -46,19 +64,33 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     
     # Opções do menu
     opcoes_menu = [
-        "📚 Cadastros",
-        "👤 Listas",
+        " Cadastrar Aluno",
+        " Listas dos Alunos",
+        " Cadastrar Turmas",
+        " Listas das Turmas",
+        " Cadastrar Cursos",
+        " Listas dos Cursos",
     ]
     
     botoes_menu = []
-    
+
     for opcao in opcoes_menu:
+        if opcao == "Cadastrar Aluno":
+            comando = lambda: CadastroUsuarios().run()
+        elif opcao == "Cadastrar Cursos":
+            comando = lambda: CadastroCursos().run()
+        elif opcao == "Cadastrar Turmas":
+            comando = lambda: CadastroTurmas().run()
+        else:
+            comando = ""
+
         botao = ctk.CTkButton(
             menu_container,
             text=f"   {opcao}",
             height=50,
             anchor="w",
             text_color=cor_texto,
+            command=comando,
             font=ctk.CTkFont(size=14, family="Arial"),
             corner_radius=5,
             border_width=0
@@ -76,7 +108,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # Botão Sair (sempre no final)
     sair_btn = ctk.CTkButton(
         menu_container,
-        text="🚪 Sair do Sistema",
+        text="Logout",
         command=janela.quit,
         height=45,
         fg_color="#e74c3c",
@@ -95,11 +127,6 @@ if __name__ == "__main__":
     app.geometry("1200x700")
     app.title("Sidebar")
     app._set_appearance_mode("light")
-
-    
-    # Configurar grid da janela principal
-    app.grid_rowconfigure(0, weight=1)
-    app.grid_columnconfigure(1, weight=1)
     
     # Criar menu
     menu_frame, botoes = sidebar(app)

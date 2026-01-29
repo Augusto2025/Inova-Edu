@@ -8,8 +8,5 @@ if __name__ == "__main__":
     app.geometry("1200x600")
     app.title("Teste de tela")
 
-    app.grid_rowconfigure(0, weight=1)
-    app.grid_columnconfigure(1, weight=1)
-
     sidebar(app)
     app.mainloop()
