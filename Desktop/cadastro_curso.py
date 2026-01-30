@@ -27,7 +27,7 @@ class CadastroCursos:
         
         # IMPORTAR SIDEBAR
         from sidebar_C import sidebar
-        sidebar(self.janela)
+        self.menu_frame, self.botoes_menu = sidebar(self.janela)
 
         # self.criar_menu_lateral()
         self.criar_tela_cadastro()
