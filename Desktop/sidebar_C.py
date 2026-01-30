@@ -1,44 +1,97 @@
 import customtkinter as ctk
 from PIL import Image
-from cadastro_turma import CadastroTurmas
-from cadastro_usuario import CadastroUsuarios
-from cadastro_curso import CadastroCursos
+import sys
+import os
+
+# Variável global para controlar a janela atual
+janela_global = None
 
 def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
-    # Faz com que o menu se estique conforme a tela
-    janela.grid_rowconfigure(0, weight=1)
-    janela.grid_columnconfigure(1, weight=1)
+    global janela_global
+    janela_global = janela
+    
+    # Importar classes DENTRO das funções para evitar circular imports
+    def importar_classes():
+        try:
+            from cadastro_turma import CadastroTurmas
+            from cadastro_usuario import CadastroUsuarios
+            from cadastro_curso import CadastroCursos
+            return CadastroUsuarios, CadastroTurmas, CadastroCursos
+        except ImportError:
+            # Classes mock para teste
+            class MockCadastro:
+                def run(self):
+                    print("Classe não encontrada")
+            return MockCadastro, MockCadastro, MockCadastro
+    
+    # Pega nome do arquivo atual
+    nome_arquivo = os.path.basename(sys.argv[0])
+    print(f"DEBUG: Arquivo atual: {nome_arquivo}")
 
-    # Frame do menu lateral - IMPORTANTE: rowspan para ocupar todas as linhas
+    def detectar_tela(arquivo_alvo, nome_exibicao):
+        """Retorna o comando correto ou None se já está na mesma tela"""
+        # Se já está neste arquivo, retorna None
+        if nome_arquivo == arquivo_alvo:
+            print(f"DEBUG: Já está em {arquivo_alvo} - retornando None")
+            return None
+        
+        # Importa classes agora
+        CadastroUsuarios, CadastroTurmas, CadastroCursos = importar_classes()
+        
+        # Mapeamento de arquivos para classes
+        mapeamento = {
+            "cadastro_usuario.py": CadastroUsuarios,
+            "cadastro_turma.py": CadastroTurmas,
+            "cadastro_curso.py": CadastroCursos
+        }
+        
+        classe = mapeamento.get(arquivo_alvo)
+        if not classe:
+            return None
+        
+        def navegar():
+            global janela_global
+            print(f"DEBUG: Navegando para {arquivo_alvo}")
+            if janela_global:
+                janela_global.destroy()
+            classe().run()
+        
+        return navegar
+
+    def limpar_tela():
+        global janela_global
+        if janela_global:
+            janela_global.destroy()
+
+
+    # Frame do menu lateral - use pack em vez de grid
     menu_frame = ctk.CTkFrame(
         janela, 
         width=250,
         corner_radius=0,
         fg_color=cor_fundo
     )
-    menu_frame.grid(row=0, column=0, rowspan=2, sticky="nsew")
-    menu_frame.grid_propagate(False)
+    menu_frame.pack(side="left", fill="y")
     
-    # Container para conteúdo do menu - que preenche todo o frame
+    # Container para conteúdo do menu
     menu_container = ctk.CTkFrame(menu_frame, fg_color="transparent")
     menu_container.pack(fill="both", expand=True, padx=10, pady=20)
 
-    imagem_pil = Image.open("Desktop/LOGOBRANCO.png")
-
-    imagem_ctk = ctk.CTkImage(
-        light_image=imagem_pil,
-        size=(80,100)
-    )
-
-    # Logo do sistema
-    logo_frame = ctk.CTkFrame(menu_container, fg_color="transparent")
-    logo_frame.pack(pady=(0, 20))
-    
-    logo_image = ctk.CTkLabel(logo_frame, image=imagem_ctk, text="")
-    logo_image.pack()
+    # Carregar imagem 
+    try:
+        imagem_pil = Image.open("Desktop/LOGOBRANCO.png")
+        imagem_ctk = ctk.CTkImage(
+            light_image=imagem_pil,
+            size=(80,100)
+        )
+        logo_image = ctk.CTkLabel(menu_container, image=imagem_ctk, text="")
+        logo_image.pack()
+    except:
+        # Fallback se imagem não existir
+        ctk.CTkLabel(menu_container, text="LOGO", font=ctk.CTkFont(size=22)).pack()
 
     logo_label = ctk.CTkLabel(
-        logo_frame,
+        menu_container,
         text="INOVA EDU",
         font=ctk.CTkFont(size=22, weight="bold", family="Arial"),
         text_color=cor_texto
@@ -46,12 +99,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     logo_label.pack()
     
     # Separador
-    separador = ctk.CTkFrame(
-        menu_container, 
-        height=2,
-        fg_color=cor_texto
-    )
-    separador.pack(fill="x", pady=5)
+    ctk.CTkFrame(menu_container, height=2, fg_color=cor_texto).pack(fill="x", pady=5)
     
     # Título do menu
     titulo_label = ctk.CTkLabel(
@@ -62,50 +110,42 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     )
     titulo_label.pack(pady=(15, 10))
     
-    # Opções do menu
-    opcoes_menu = [
-        " Cadastrar Aluno",
-        " Listas dos Alunos",
-        " Cadastrar Turmas",
-        " Listas das Turmas",
-        " Cadastrar Cursos",
-        " Listas dos Cursos",
-    ]
+    # Opções do menu - corrigido
+    opcoes_menu = {
+        " Cadastrar Aluno": ("cadastro_usuario.py", "Cadastro de Alunos"),
+        " Cadastrar Turmas": ("cadastro_turma.py", "Cadastro de Turmas"),
+        " Cadastrar Cursos": ("cadastro_curso.py", "Cadastro de Cursos"),
+    }
     
     botoes_menu = []
 
-    for opcao in opcoes_menu:
-        if opcao == "Cadastrar Aluno":
-            comando = lambda: CadastroUsuarios().run()
-        elif opcao == "Cadastrar Cursos":
-            comando = lambda: CadastroCursos().run()
-        elif opcao == "Cadastrar Turmas":
-            comando = lambda: CadastroTurmas().run()
-        else:
-            comando = ""
-
+    for texto_botao, (arquivo_alvo, nome_tela) in opcoes_menu.items():
+        comando = detectar_tela(arquivo_alvo, nome_tela)
+        
         botao = ctk.CTkButton(
             menu_container,
-            text=f"   {opcao}",
+            text=texto_botao,
             height=50,
             anchor="w",
             text_color=cor_texto,
-            command=comando,
+            command=comando if comando else lambda: None,  # Se None, função vazia
             font=ctk.CTkFont(size=14, family="Arial"),
             corner_radius=5,
-            border_width=0
+            border_width=0,
+            fg_color="#419FFD",
+            hover_color="#003366",
+            state="normal" if comando else "disabled"  # Desabilita se já está na tela
         )
         botao.pack(fill="x", pady=3)
         botoes_menu.append(botao)
         
-    # **ESPAÇO FLEXÍVEL** - Isso faz o conteúdo acima e abaixo se ajustarem
-    espaco_flexivel = ctk.CTkLabel(menu_container, text="")
-    espaco_flexivel.pack(fill="both", expand=True)
+        # Debug
+        print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando else 'Desativado (None)'}")
+        
+    # Espaço flexível
+    ctk.CTkLabel(menu_container, text="").pack(fill="both", expand=True)
     
-    # Separador antes do botão sair
-    ctk.CTkFrame(menu_container, height=1, fg_color="#ffffff").pack(fill="x", pady=(10, 5), side="bottom")
-    
-    # Botão Sair (sempre no final)
+    # Botão Sair
     sair_btn = ctk.CTkButton(
         menu_container,
         text="Logout",
@@ -121,14 +161,12 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     
     return menu_frame, botoes_menu
 
+# Arquivo MAIN para testar
 if __name__ == "__main__":
-    # Testar a versão mais simples
     app = ctk.CTk()
     app.geometry("1200x700")
-    app.title("Sidebar")
+    app.title("Sistema Acadêmico - Menu Principal")
     app._set_appearance_mode("light")
-    
-    # Criar menu
-    menu_frame, botoes = sidebar(app)
+    sidebar(app)
     
     app.mainloop()
