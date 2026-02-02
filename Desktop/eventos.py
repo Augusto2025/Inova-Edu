@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 class CalendarioDesktopApp:
     def __init__(self):
         self.root = ctk.CTk()
-        self.root.title("Eventos - Calendário")
-        self.root.geometry("1400x800")
-        
+        # self.root.title("Eventos - Calendário")
+        # self.root.geometry("1400x800")
+        self.root.attributes("-fullscreen", True)
+
         # Configurar tema
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")

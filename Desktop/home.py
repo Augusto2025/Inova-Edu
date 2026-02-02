@@ -11,7 +11,7 @@ class Home:
     def __init__(self):
         self.janela = ctk.CTk()
         self.janela.title("Cursos - Inova Edu")
-        self.janela.geometry("1100x700")
+        self.janela.attributes("-fullscreen", True)
 
         # cores
         self.cor_fundo = "#f5f7fb"

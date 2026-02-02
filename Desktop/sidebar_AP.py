@@ -15,8 +15,8 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
         try:
             from home import Home
             from cadastro_usuario import CadastroUsuarios
-            from cadastro_curso import CadastroCursos
-            return CadastroUsuarios, Home, CadastroCursos
+            from eventos import CalendarioDesktopApp
+            return CadastroUsuarios, Home, CalendarioDesktopApp
         except ImportError:
             # Classes mock para teste
             class MockCadastro:
@@ -36,13 +36,13 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             return None
         
         # Importa classes agora
-        CadastroUsuarios, Home, CadastroCursos = importar_classes()
+        CadastroUsuarios, Home, CalendarioDesktopApp = importar_classes()
         
         # Mapeamento de arquivos para classes
         mapeamento = {
             "cadastro_usuario.py": CadastroUsuarios,
             "home.py": Home,
-            "cadastro_curso.py": CadastroCursos
+            "enventos.py": CalendarioDesktopApp
         }
         
         classe = mapeamento.get(arquivo_alvo)
@@ -113,8 +113,8 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # Opções do menu - corrigido
     opcoes_menu = {
         " Repositório": ("home.py", "Home"),
-        " Fórum": ("cadastro_turma.py", "Cadastro de Turmas"),
-        " Eventos": ("cadastro_curso.py", "Cadastro de Cursos"),
+        " Fórum": ("cadastro_usuario.py", "Cadastro de Usuários"),
+        " Eventos": ("enventos.py", "Calendário de Eventos"),
     }
     
     botoes_menu = []
