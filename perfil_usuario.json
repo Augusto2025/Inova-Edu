@@ -1,0 +1,29 @@
+{
+    "nome": "Alcides miranda neto",
+    "bio": "Estudante dedicado com interesse em tecnologia e aprendizado contínuo.",
+    "curso": "Ciência da Computação",
+    "foto": "assets/profile_20260202_171134_helder.png",
+    "certificados": [
+        {
+            "nome": "pyadasd",
+            "instituicao": "asdasd",
+            "data": "asdasd",
+            "carga_horaria": "asdas horas",
+            "arquivo": "certificados/cert_20260202_171743_IMG_5133.jpg"
+        }
+    ],
+    "projetos": [
+        {
+            "nome": "Sistema de Gestão Acadêmica",
+            "descricao": "Desenvolvimento de sistema web para gestão de estudantes"
+        },
+        {
+            "nome": "App Mobile para Ensino",
+            "descricao": "Aplicativo para auxílio no aprendizado de matemática"
+        },
+        {
+            "nome": "API de Integração",
+            "descricao": "API REST para integração entre sistemas"
+        }
+    ]
+}
