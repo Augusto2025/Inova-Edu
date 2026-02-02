@@ -65,7 +65,7 @@ def tela_login():
         pwd = senha.get()
 
         if user in usuarios and usuarios[user]["senha"] == pwd:
-            abrir_dashboard(app, usuarios[user]["tipo"], tela_login)
+            (app, usuarios[user]["tipo"], tela_login)
         else:
             erro.configure(text="Usuário ou senha inválidos")
 
