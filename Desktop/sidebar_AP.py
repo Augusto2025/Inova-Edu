@@ -16,7 +16,8 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             from home import Home
             from cadastro_usuario import CadastroUsuarios
             from eventos import CalendarioDesktopApp
-            return CadastroUsuarios, Home, CalendarioDesktopApp
+            from perfil_academico import UserProfileSystem
+            return CadastroUsuarios, Home, CalendarioDesktopApp, UserProfileSystem
         except ImportError:
             # Classes mock para teste
             class MockCadastro:
@@ -36,13 +37,14 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             return None
         
         # Importa classes agora
-        CadastroUsuarios, Home, CalendarioDesktopApp = importar_classes()
+        CadastroUsuarios, Home, CalendarioDesktopApp, UserProfileSystem = importar_classes()
         
         # Mapeamento de arquivos para classes
         mapeamento = {
             "cadastro_usuario.py": CadastroUsuarios,
             "home.py": Home,
-            "enventos.py": CalendarioDesktopApp
+            "enventos.py": CalendarioDesktopApp,
+            "perfil_academico.py": UserProfileSystem
         }
         
         classe = mapeamento.get(arquivo_alvo)
@@ -141,9 +143,37 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
         
         # Debug
         print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando else 'Desativado (None)'}")
-        
+    
+
     # Espaço flexível
     ctk.CTkLabel(menu_container, text="").pack(fill="both", expand=True)
+
+    opcoes_bottom = {
+        " Perfil": ("perfil_academico.py", "Perfil do Usuário"),
+    }
+    botoes_menu_perfil = []
+
+    for texto_botao, (arquivo_alvo, nome_tela) in opcoes_bottom.items():
+        comando2 = detectar_tela(arquivo_alvo, nome_tela)
+    
+    perfil_btn = ctk.CTkButton(
+        menu_container,
+        text="Perfil",
+        height=50,
+        anchor="w",
+        text_color=cor_texto,
+        command=comando2 if comando2 else lambda: None,
+        font=ctk.CTkFont(size=14, family="Arial"),
+        corner_radius=5,
+        border_width=0,
+        fg_color="#419FFD",
+        hover_color="#003366",
+        state="normal" if comando2 else "disabled"
+    )
+    perfil_btn.pack(fill="x", pady=3)
+    botoes_menu_perfil.append(perfil_btn)
+
+    print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando2 else 'Desativado (None)'}")
     
     # Botão Sair
     sair_btn = ctk.CTkButton(
