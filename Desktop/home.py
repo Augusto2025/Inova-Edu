@@ -18,12 +18,8 @@ class Home:
         self.janela.configure(fg_color=self.cor_fundo)
 
         # importar sidebar_AP de forma tardia (evita import circular)
-        try:
-            from sidebar_AP import sidebar
-            self.menu_frame, self.botoes_menu = sidebar(self.janela)
-        except Exception:
-            self.menu_frame = None
-            self.botoes_menu = []
+        from sidebar_AP import sidebar
+        sidebar(self.janela)
 
         self.criar_interface()
 
@@ -261,7 +257,7 @@ class Home:
         # criar cards em grade (2 colunas) com tamanho fixo - AUMENTADO
         CARD_WIDTH = 420
         CARD_HEIGHT = 420
-        cols = 2
+        cols = 3
         
         for idx, curso in enumerate(cursos):
             r = idx // cols
