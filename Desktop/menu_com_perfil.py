@@ -3,6 +3,7 @@ from PIL import Image
 import sys
 import os
 
+
 # Variável global para controlar a janela atual
 janela_global = None
 
@@ -29,7 +30,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             
             # Mapeamento dinâmico de classes
             if arquivo_alvo == "home.py":
-                from home import Home
+                from Desktop.menu_com_perfil import Home
                 Home().run()
             elif arquivo_alvo == "cadastro_usuario.py":
                 from cadastro_usuario import CadastroUsuarios
@@ -38,7 +39,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
                 from cadastro_curso import CadastroCursos
                 CadastroCursos().run()
             elif arquivo_alvo == "perfil_academico.py":
-                from perfil_academico import UserProfileSystem
+                from Desktop.perfil_academico import UserProfileSystem
                 UserProfileSystem().run()
             else:
                 print(f"Classe não encontrada para {arquivo_alvo}")

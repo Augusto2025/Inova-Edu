@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from menu_com_perfil import sidebar
+from Desktop.menu_com_perfil import sidebar
 
 # Para iniciar em uma tela específica, por exemplo:
 def iniciar_sistema(tela_inicial="perfil_academico"):
@@ -10,7 +10,7 @@ def iniciar_sistema(tela_inicial="perfil_academico"):
         from perfil_academico import UserProfileSystem
         app = UserProfileSystem()
     elif tela_inicial == "home":
-        from home import Home
+        from Desktop.menu_com_perfil import Home
         app = Home()
     else:
         # Tela padrão com menu lateral
