@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from sidebar_C import sidebar
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -194,114 +195,25 @@ def nova_turma():
         )
 
 
-# ───────────── SIDEBAR SIMPLIFICADA ─────────────
-def sidebar(app):
-    sidebar_frame = ctk.CTkFrame(
-        app,
-        width=220,
-        corner_radius=0,
-        fg_color="#004a8f"
-    )
-    
-    # Logo/ título
-    ctk.CTkLabel(
-        sidebar_frame,
-        text="🎓 GESTÃO\nESCOLAR",
-        text_color="white",
-        font=ctk.CTkFont(size=20, weight="bold"),
-        justify="center"
-    ).pack(pady=(30, 20))
-    
-    # Separador
-    ctk.CTkFrame(
-        sidebar_frame,
-        height=2,
-        fg_color="white"
-    ).pack(fill="x", padx=20, pady=10)
-    
-    # Opções do menu
-    opcoes = [
-        ("📊 Dashboard", "dash"),
-        ("📚 Cursos", "cursos"),
-        ("👥 Turmas", "turmas"),
-        ("👤 Alunos", "alunos"),
-        ("👨‍🏫 Professores", "prof"),
-        ("📅 Calendário", "cal"),
-        ("📈 Relatórios", "rel"),
-        ("⚙️ Configurações", "config")
-    ]
-    
-    botoes_menu = []
-    
-    for texto, cmd in opcoes:
-        # Destacar a opção atual (Turmas)
-        if cmd == "turmas":
-            fg_color = "white"
-            text_color = "#004a8f"
-        else:
-            fg_color = "transparent"
-            text_color = "white"
-        
-        btn = ctk.CTkButton(
-            sidebar_frame,
-            text=texto,
-            command=lambda c=cmd: selecionar_menu(c),
-            height=45,
-            anchor="w",
-            fg_color=fg_color,
-            hover_color="#003366",
-            text_color=text_color,
-            font=ctk.CTkFont(size=14),
-            corner_radius=5,
-            border_width=0
-        )
-        btn.pack(fill="x", padx=15, pady=3)
-        botoes_menu.append(btn)
-    
-    # Espaço vazio
-    ctk.CTkLabel(sidebar_frame, text="").pack(fill="x", expand=True)
-    
-    # Botão Sair
-    ctk.CTkButton(
-        sidebar_frame,
-        text="🚪 Sair do Sistema",
-        command=app.quit,
-        height=45,
-        fg_color="white",
-        hover_color="#e6e6e6",
-        text_color="#004a8f",
-        font=ctk.CTkFont(size=14, weight="bold"),
-        corner_radius=8
-    ).pack(side="bottom", fill="x", padx=15, pady=20)
-    
-    return sidebar_frame, botoes_menu
-
-
-def selecionar_menu(opcao):
-    if opcao != "turmas":
-        messagebox.showinfo(
-            "Navegação",
-            f"Você selecionou: {opcao}\n\n"
-            "Em uma aplicação completa, esta ação carregaria a tela correspondente.",
-            icon="info"
-        )
-
-
 # ───────────── APP ─────────────
 if __name__ == "__main__":
     app = ctk.CTk()
     app.geometry("1300x650")
     app.title("Sistema de Gestão de Turmas")
 
-    app.grid_rowconfigure(0, weight=1)
-    app.grid_columnconfigure(0, weight=0)
-    app.grid_columnconfigure(1, weight=1)
-
-    sidebar_frame, botoes_menu = sidebar(app)
-    sidebar_frame.grid(row=0, column=0, sticky="ns")
-
-    conteudo_frame = ctk.CTkFrame(app, fg_color="#ffffff", corner_radius=0)
-    conteudo_frame.grid(row=0, column=1, sticky="nsew")
+    # IMPORTANTE: A sidebar usa pack(), então precisamos configurar o layout assim:
+    # 1. Primeiro criamos o frame principal
+    main_container = ctk.CTkFrame(app)
+    main_container.pack(fill="both", expand=True)
+    
+    # 2. Adicionamos a sidebar (ela usa pack(side="left"))
+    sidebar_frame, botoes_menu = sidebar(main_container)
+    
+    # 3. Criamos o frame do conteúdo ao lado da sidebar
+    conteudo_frame = ctk.CTkFrame(main_container, fg_color="#ffffff")
+    conteudo_frame.pack(side="left", fill="both", expand=True)
+    
+    # Configurar grid do conteúdo
     conteudo_frame.grid_rowconfigure(2, weight=1)
     conteudo_frame.grid_columnconfigure(0, weight=1)
 
@@ -316,19 +228,7 @@ if __name__ == "__main__":
         text_color="white",
         font=ctk.CTkFont(size=18, weight="bold")
     ).grid(row=0, column=0, padx=20, pady=15, sticky="w")
-
-    # Botão para nova turma
-    ctk.CTkButton(
-        topo,
-        text="+ Nova Turma",
-        fg_color="white",
-        text_color="#004a8f",
-        hover_color="#e6e6e6",
-        width=120,
-        height=35,
-        font=ctk.CTkFont(size=13, weight="bold"),
-        command=nova_turma
-    ).grid(row=0, column=2, padx=20)
+    
 
     # ───────────── BARRA DE AÇÕES ─────────────
     acoes = ctk.CTkFrame(conteudo_frame, fg_color="#f5f5f5", height=80, corner_radius=8)

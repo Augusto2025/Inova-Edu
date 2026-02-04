@@ -9,7 +9,7 @@ ctk.set_default_color_theme("blue")
 # ───────────── FUNÇÕES DE FILTRO ─────────────
 def carregar_tabela(lista):
     for widget in tabela.winfo_children():
-        widget.destroy()
+        widget.decabestroy()
 
     for u in lista:
         linha = ctk.CTkFrame(tabela, fg_color="#ffffff")
@@ -53,6 +53,9 @@ def aplicar_filtro(*args):
     carregar_tabela(resultado)
 
 
+
+
+
 # ───────────── APP ─────────────
 if __name__ == "__main__":
     app = ctk.CTk()
@@ -82,14 +85,7 @@ if __name__ == "__main__":
         font=ctk.CTkFont(size=18, weight="bold")
     ).grid(row=0, column=0, padx=20, pady=15, sticky="w")
 
-    ctk.CTkButton(
-        topo,
-        text="+ Cadastro",
-        fg_color="white",
-        text_color="#004a8f",
-        hover_color="#e6e6e6",
-        width=120
-    ).grid(row=0, column=2, padx=20)
+
 
     acoes = ctk.CTkFrame(conteudo_frame, fg_color="#f5f5f5", height=60, corner_radius=8)
     acoes.grid(row=1, column=0, sticky="ew", padx=20, pady=15)
