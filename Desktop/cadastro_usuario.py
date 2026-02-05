@@ -2,6 +2,8 @@ import customtkinter as ctk
 from tkinter import messagebox
 from tkinter import filedialog
 
+
+
 # Configurar aparência
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -31,19 +33,21 @@ class CadastroUsuarios:
         from sidebar_C import sidebar
         sidebar(self.janela)
 
-        self.criar_tela_cadastro()
+        self.view_container = ctk.CTkFrame(self.janela, fg_color=self.cor_branco)
+        self.view_container.pack(side="right", fill="both", expand=True)
+
+        self.view_cadastro = ctk.CTkFrame(self.view_container, fg_color=self.cor_branco)
+
+        self.criar_tela_cadastro(self.view_cadastro)
+
+        self.view_cadastro.pack(fill="both", expand=True)
+
         
         
-    def criar_tela_cadastro(self):
+    def criar_tela_cadastro(self, parent):
         
         # Frame principal do conteúdo
-        self.conteudo_frame = ctk.CTkFrame(
-            self.janela,
-            fg_color=self.cor_branco,
-            corner_radius=0
-        )
-        self.conteudo_frame.pack(side="right", fill="both", expand=True)
-        
+        self.conteudo_frame = parent
         
 
         # Cabeçalho

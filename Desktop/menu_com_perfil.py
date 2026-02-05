@@ -3,26 +3,13 @@ from PIL import Image
 import sys
 import os
 
+
 # Variável global para controlar a janela atual
 janela_global = None
 
 def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     global janela_global
     janela_global = janela
-    
-    # Importar classes DENTRO das funções para evitar circular imports
-    def importar_classes():
-        try:
-            from Desktop.AlunoProfessor.home import Home
-            from Desktop.coordenacao.cadastro_usuario import CadastroUsuarios
-            from cadastro_curso import CadastroCursos
-            return CadastroUsuarios, Home, CadastroCursos
-        except ImportError:
-            # Classes mock para teste
-            class MockCadastro:
-                def run(self):
-                    print("Classe não encontrada")
-            return MockCadastro, MockCadastro, MockCadastro
     
     # Pega nome do arquivo atual
     nome_arquivo = os.path.basename(sys.argv[0])
@@ -35,36 +22,31 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             print(f"DEBUG: Já está em {arquivo_alvo} - retornando None")
             return None
         
-        # Importa classes agora
-        CadastroUsuarios, Home, CadastroCursos = importar_classes()
-        
-        # Mapeamento de arquivos para classes
-        mapeamento = {
-            "cadastro_usuario.py": CadastroUsuarios,
-            "home.py": Home,
-            "cadastro_curso.py": CadastroCursos
-        }
-        
-        classe = mapeamento.get(arquivo_alvo)
-        if not classe:
-            return None
-        
         def navegar():
             global janela_global
             print(f"DEBUG: Navegando para {arquivo_alvo}")
             if janela_global:
                 janela_global.destroy()
-            classe().run()
+            
+            # Mapeamento dinâmico de classes
+            if arquivo_alvo == "home.py":
+                from Desktop.menu_com_perfil import Home
+                Home().run()
+            elif arquivo_alvo == "cadastro_usuario.py":
+                from cadastro_usuario import CadastroUsuarios
+                CadastroUsuarios().run()
+            elif arquivo_alvo == "cadastro_curso.py":
+                from cadastro_curso import CadastroCursos
+                CadastroCursos().run()
+            elif arquivo_alvo == "perfil_academico.py":
+                from Desktop.perfil_academico import UserProfileSystem
+                UserProfileSystem().run()
+            else:
+                print(f"Classe não encontrada para {arquivo_alvo}")
         
         return navegar
 
-    def limpar_tela():
-        global janela_global
-        if janela_global:
-            janela_global.destroy()
-
-
-    # Frame do menu lateral - use pack em vez de grid
+    # Frame do menu lateral
     menu_frame = ctk.CTkFrame(
         janela, 
         width=250,
@@ -110,11 +92,12 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     )
     titulo_label.pack(pady=(15, 10))
     
-    # Opções do menu - corrigido
+    # Opções do menu - AGORA COM PERFIL
     opcoes_menu = {
-        " Repositório": ("home.py", "Home"),
-        " Fórum": ("cadastro_turma.py", "Cadastro de Turmas"),
-        " Eventos": ("cadastro_curso.py", "Cadastro de Cursos"),
+        " 🏠 Repositório": ("home.py", "Home"),
+        " 👥 Fórum": ("cadastro_turma.py", "Cadastro de Turmas"),
+        " 📚 Eventos": ("cadastro_curso.py", "Cadastro de Cursos"),
+        " 👤 Meu Perfil": ("perfil_academico.py", "Perfil Acadêmico"),
     }
     
     botoes_menu = []
@@ -128,18 +111,17 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
             height=50,
             anchor="w",
             text_color=cor_texto,
-            command=comando if comando else lambda: None,  # Se None, função vazia
+            command=comando if comando else lambda: None,
             font=ctk.CTkFont(size=14, family="Arial"),
             corner_radius=5,
             border_width=0,
             fg_color="#419FFD",
             hover_color="#003366",
-            state="normal" if comando else "disabled"  # Desabilita se já está na tela
+            state="normal" if comando else "disabled"
         )
         botao.pack(fill="x", pady=3)
         botoes_menu.append(botao)
         
-        # Debug
         print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando else 'Desativado (None)'}")
         
     # Espaço flexível
@@ -160,13 +142,3 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     sair_btn.pack(side="bottom", fill="x", pady=(0, 5))
     
     return menu_frame, botoes_menu
-
-# Arquivo MAIN para testar
-if __name__ == "__main__":
-    app = ctk.CTk()
-    app.geometry("1200x700")
-    app.title("Sistema Acadêmico - Menu Principal")
-    app._set_appearance_mode("light")
-    sidebar(app)
-    
-    app.mainloop()
