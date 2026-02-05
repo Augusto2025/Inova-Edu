@@ -1,11 +1,10 @@
-# model/models/login_model.py
 from config.banco import conectar
 
-class LoginUsuario:
-    def exibir_usuarios(self):
+class CursosModel:
+    def exibirCursos(self):
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("SELECT Email, Senha, Tipo FROM usuario")
+        cursor.execute("SELECT Nome_curso, imagem_curso, Descricao_curso, Data_inicio, Data_final FROM curso")
         usuario = cursor.fetchall()
         conn.close()
         return usuario

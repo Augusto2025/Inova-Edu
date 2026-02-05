@@ -58,16 +58,21 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
 
     
     def autentificacao(self):
-        result = autenticar(self.usuario.get(), self.senha.get())
-        if result is True:
-            # Fecha a janela atual
-            root = self.winfo_toplevel()
-            root.destroy()
-    
+        tipo = ""
+        result = autenticar(self.usuario.get(), self.senha.get(), tipo)
+        if result[1]:  # Se o segundo valor da tupla é True (autenticado)
+            tipo = result[0]  # O tipo de usuário retornado
+
             # Abre a HOME como nova janela
-            from home import Home
-            app = Home()
-            app.run()
+            if tipo == "Aluno" or tipo == "Professor":
+                self.destroy()  # Fecha a tela de login
+                
+                from views.Aluno_e_Professor.home_view import Home
+                self.home_aluno_screen = Home(self.master)
+                self.home_aluno_screen.pack(expand=True, fill="both")
+            elif tipo == "Coordenador":
+                # falta implementar a tela do coordenador
+                pass
         else:
             # result é uma tupla (mensagem, False)
             mensagem, ok = result
