@@ -38,6 +38,15 @@ function mostrarLista(id) {
 
     // Esconde a imagem inicial
     document.getElementById("painelImagem").style.display = "none";
+
+    const elemento = document.getElementById(id);
+    if (elemento) {
+        elemento.style.display = 'block';
+    }
+
+
+
+
 }
 
 // ====== EDITAR ======
