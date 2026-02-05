@@ -13,9 +13,3 @@ def conectar():
     )
     # banco externo:
     # return psycopg2.connect(os.getenv("DATABASE_URL"))
-
-try:
-    conexao = conectar()
-    print("Conexão bem-sucedida ao banco de dados MySQL!")
-except mysql.connector.Error as err:
-    print(f"Erro ao conectar ao banco de dados: {err}")

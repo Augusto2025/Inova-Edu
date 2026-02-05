@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from views.login_view import tela_login
 
+ctk.set_appearance_mode("light")
 class main(ctk.CTk):
     def __init__(self):
         super().__init__()
