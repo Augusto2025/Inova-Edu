@@ -60,6 +60,7 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
     def autentificacao(self):
         tipo = ""
         result = autenticar(self.usuario.get(), self.senha.get(), tipo)
+        print(result)
         if result[1]:  # Se o segundo valor da tupla é True (autenticado)
             tipo = result[0]  # O tipo de usuário retornado
 
@@ -70,9 +71,16 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
                 from views.Aluno_e_Professor.home_view import Home
                 self.home_aluno_screen = Home(self.master)
                 self.home_aluno_screen.pack(expand=True, fill="both")
-            elif tipo == "Coordenador":
+                
                 # falta implementar a tela do coordenador
-                pass
+            elif tipo == "Coordenador":
+                print("teste de tela iniciada da home")
+                self.destroy()
+                
+                from views.Coordenacao.HomeCoordenador import HomeCoordenador
+                self.home_coordenador_screen = HomeCoordenador(self.master)
+                self.home_coordenador_screen.pack(expand=True, fill="both")
+                              
         else:
             # result é uma tupla (mensagem, False)
             mensagem, ok = result
