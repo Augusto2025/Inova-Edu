@@ -14,8 +14,13 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # ================= IMPORTAÇÃO DAS TELAS =================
     def importar_classes():
         try:
+<<<<<<< HEAD
             from cadastro_usuario import CadastroUsuarios
             from cadastro_turma import CadastroTurmas
+=======
+            from cadastro_turma import CadastroTurmas
+            from cadastro_usuario import CadastroUsuarios
+>>>>>>> develop
             from cadastro_curso import CadastroCursos
 
             try:

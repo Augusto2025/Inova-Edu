@@ -2,48 +2,39 @@ import customtkinter as ctk
 from PIL import Image
 import os
 from datetime import datetime
+from models.cursos_model import CursosModel
+from controllers.cursos_controllers import obter_cursos
 
-ctk.set_appearance_mode("light")
-ctk.set_default_color_theme("blue")
+class Home(ctk.CTkFrame):
+    def __init__(self, master):  
+        super().__init__(master)
 
-
-class Home:
-    def __init__(self):
-        self.janela = ctk.CTk()
-        self.janela.title("Cursos - Inova Edu")
-        self.janela.geometry("1700x700")
+        self.janela = master
 
         # cores
         self.cor_fundo = "#f5f7fb"
         self.janela.configure(fg_color=self.cor_fundo)
 
         # importar sidebar_AP de forma tardia (evita import circular)
-        from sidebar_AP import sidebar
-        sidebar(self.janela)
+        # from sidebar_AP import sidebar
+        # sidebar(self.janela)
 
         self.criar_interface()
 
-        # dados de exemplo
-        self.cursos = [
-            {
-                "name": "Introdução à Programação",
-                "description": "Conceitos básicos de lógica e algoritmos.",
-                "image": "",
-                "start_date": "2025-03-01"
-            },
-            {
-                "name": "Desenvolvimento Web",
-                "description": "HTML, CSS, JavaScript e frameworks modernos.",
-                "image": "",
-                "start_date": "2025-04-10"
-            },
-            {
-                "name": "Inteligência Artificial",
-                "description": "Fundamentos de ML e redes neurais.",
-                "image": "",
-                "start_date": "2025-02-20"
-            },
-        ]
+        cursos_data = CursosModel().exibirCursos()
+        self.cursos = []
+        
+        for nome_curso, imagem_curso, descricao_curso, data_inicio, data_final in cursos_data:
+            curso = {
+                "name": nome_curso,
+                "image": imagem_curso,
+                "description": descricao_curso,
+                "start_date": data_inicio,
+                "end_date": data_final  # Adicionando data final também
+            }
+            self.cursos.append(curso)
+    
+        print(f"Carregados {len(self.cursos)} cursos")
 
         self.atualizar_cards()
 
@@ -72,7 +63,7 @@ class Home:
         # container interno para grid de cards
         self.cards_container = ctk.CTkFrame(self.scroll_area, fg_color="transparent")
         self.cards_container.pack(expand=False, padx=8, pady=8)
-        self.cards_container.grid_columnconfigure((0, 1), weight=1)
+        self.cards_container.grid_columnconfigure((0, 1, 2), weight=1)  # 3 colunas
 
         # Variáveis para filtros
         self.data_inicio = None
@@ -106,19 +97,19 @@ class Home:
 
         # Data início
         ctk.CTkLabel(
-            main_frame, 
+            main_frame,
             text="📅 Data de Início",
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#004A8D"
         ).pack(anchor="w", pady=(0, 8))
-        data_inicio_entry = ctk.CTkEntry(
+        self.data_inicio_entry = ctk.CTkEntry(
             main_frame, 
             placeholder_text="Ex: 2025-03-01",
             height=40,
             border_width=2,
             border_color="#004A8D"
         )
-        data_inicio_entry.pack(fill="x", pady=(0, 20))
+        self.data_inicio_entry.pack(fill="x", pady=(0, 20))
 
         # Data fim
         ctk.CTkLabel(
@@ -127,14 +118,14 @@ class Home:
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#004A8D"
         ).pack(anchor="w", pady=(0, 8))
-        data_fim_entry = ctk.CTkEntry(
+        self.data_fim_entry = ctk.CTkEntry(
             main_frame, 
             placeholder_text="Ex: 2025-12-31",
             height=40,
             border_width=2,
             border_color="#004A8D"
         )
-        data_fim_entry.pack(fill="x", pady=(0, 24))
+        self.data_fim_entry.pack(fill="x", pady=(0, 24))
 
         # Ordenação
         ctk.CTkLabel(
@@ -167,14 +158,14 @@ class Home:
         botoes_frame.pack(fill="x")
 
         def aplicar():
-            self.data_inicio = data_inicio_entry.get().strip()
-            self.data_fim = data_fim_entry.get().strip()
+            self.data_inicio = self.data_inicio_entry.get().strip()
+            self.data_fim = self.data_fim_entry.get().strip()
             self.aplicar_filtros()
             modal.destroy()
 
         def limpar():
-            data_inicio_entry.delete(0, "end")
-            data_fim_entry.delete(0, "end")
+            self.data_inicio_entry.delete(0, "end")
+            self.data_fim_entry.delete(0, "end")
             self.ordenar_var.set("A-Z")
 
         ctk.CTkButton(
@@ -227,15 +218,36 @@ class Home:
         filtrados = []
         for c in self.cursos:
             nome_ok = (not nome) or (nome in c["name"].lower())
-            data_ok = True
-            if inicio or fim:
+            
+            # Lógica do filtro de data CORRIGIDA
+            data_ok = True  # Assume que está OK por padrão
+            
+            if inicio or fim:  # Se pelo menos uma data foi informada
                 try:
-                    sd = datetime.strptime(c["start_date"], "%Y-%m-%d").date()
-                    if inicio and sd < inicio:
-                        data_ok = False
-                    if fim and sd > fim:
-                        data_ok = False
-                except Exception:
+                    # Converte datas do curso
+                    data_inicio_curso = datetime.strptime(c["start_date"], "%Y-%m-%d").date()
+                    data_fim_curso = datetime.strptime(c["end_date"], "%Y-%m-%d").date() if "end_date" in c else None
+                    
+                    # Verifica SE AMBAS as datas foram fornecidas
+                    if inicio and fim:
+                        # Curso deve estar DENTRO do intervalo [inicio, fim]
+                        # Verifica se o curso começa DEPOIS da data início
+                        # E termina ANTES da data fim
+                        if data_inicio_curso < inicio or (data_fim_curso and data_fim_curso > fim):
+                            data_ok = False
+                    # Se só data início foi fornecida
+                    elif inicio and not fim:
+                        # Curso deve começar DEPOIS da data início
+                        if data_inicio_curso < inicio:
+                            data_ok = False
+                    # Se só data fim foi fornecida
+                    elif fim and not inicio:
+                        # Curso deve terminar ANTES da data fim
+                        if data_fim_curso and data_fim_curso > fim:
+                            data_ok = False
+                            
+                except Exception as e:
+                    print(f"Erro ao processar datas do curso {c['name']}: {e}")
                     data_ok = False
 
             if nome_ok and data_ok:
@@ -245,7 +257,18 @@ class Home:
         reverse = self.ordenar_var.get() == "Z-A"
         filtrados.sort(key=lambda x: x["name"].lower(), reverse=reverse)
 
+        print(f"Filtrados {len(filtrados)} cursos")
         self.atualizar_cards(filtrados)
+
+    def entrar_no_curso(self, curso):
+        """Função chamada quando clica no botão 'Entrar' do curso"""
+        print(f"Entrando no curso: {curso['name']}")
+        # Aqui você pode adicionar a lógica para abrir a tela do curso
+        # Exemplo: self.abrir_tela_curso(curso)
+        
+        # Por enquanto, mostra uma mensagem
+        from tkinter import messagebox
+        messagebox.showinfo("Curso", f"Você entrou no curso: {curso['name']}")
 
     def atualizar_cards(self, lista=None):
         # limpa container
@@ -254,9 +277,9 @@ class Home:
 
         cursos = lista if lista is not None else self.cursos
 
-        # criar cards em grade (2 colunas) com tamanho fixo - AUMENTADO
+        # criar cards em grade (3 colunas) com tamanho fixo
         CARD_WIDTH = 420
-        CARD_HEIGHT = 420
+        CARD_HEIGHT = 470  # Aumentei um pouco para caber o botão
         cols = 3
         
         for idx, curso in enumerate(cursos):
@@ -291,8 +314,8 @@ class Home:
 
             # nome
             nome_lbl = ctk.CTkLabel(
-                card, 
-                text=curso["name"], 
+                card,
+                text=curso["name"],
                 font=ctk.CTkFont(size=15, weight="bold"),
                 wraplength=CARD_WIDTH - 30,
                 justify="left"
@@ -307,12 +330,36 @@ class Home:
                 justify="left",
                 font=ctk.CTkFont(size=12)
             )
-            desc_lbl.pack(anchor="w", padx=14, pady=(0, 14), fill="both", expand=True)
+            desc_lbl.pack(anchor="w", padx=14, pady=(0, 10), fill="both", expand=True)
+            
+            # Datas do curso (informação adicional)
+            datas_frame = ctk.CTkFrame(card, fg_color="transparent")
+            datas_frame.pack(anchor="w", padx=14, pady=(0, 10))
+            
+            ctk.CTkLabel(
+                datas_frame,
+                text=f"📅 Início: {curso['start_date']}",
+                font=ctk.CTkFont(size=11),
+                text_color="#555555"
+            ).pack(side="left", anchor="w")
+            
+            if "end_date" in curso:
+                ctk.CTkLabel(
+                    datas_frame,
+                    text=f"  |  Término: {curso['end_date']}",
+                    font=ctk.CTkFont(size=11),
+                    text_color="#555555"
+                ).pack(side="left", anchor="w")
 
-    def run(self):
-        self.janela.mainloop()
-
-
-if __name__ == "__main__":
-    app = Home()
-    app.run()
+            # Botão "Entrar no Curso"
+            btn_entrar = ctk.CTkButton(
+                card,
+                text="🎓 Entrar no Curso",
+                command=lambda c=curso: self.entrar_no_curso(c),
+                fg_color="#1f6aa5",
+                hover_color="#004A8D",
+                height=40,
+                width=CARD_WIDTH - 40,
+                font=ctk.CTkFont(size=13, weight="bold")
+            )
+            btn_entrar.pack(pady=(0, 15))
