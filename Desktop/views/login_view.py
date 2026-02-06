@@ -10,7 +10,7 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
 
         print("Tela de login iniciada")
         self.container = ctk.CTkFrame(self)
-        self.container.pack(expand=True, fill="both", padx=40, pady=40)
+        self.container.pack(expand=True, fill="both")
 
         self.container.grid_columnconfigure((0, 1), weight=1)
         self.container.grid_rowconfigure(0, weight=1)

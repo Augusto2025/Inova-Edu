@@ -1,202 +1,231 @@
+# sidebar_oo.py
 import customtkinter as ctk
 from PIL import Image
 import sys
 import os
-
-# Variável global para controlar a janela atual
-janela_global = None
-
-def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
-    global janela_global
-    janela_global = janela
-    
-    # Importar classes DENTRO das funções para evitar circular imports
-    def importar_classes():
-        try:
-            from home import Home
-            from cadastro_usuario import CadastroUsuarios
-            from eventos import CalendarioDesktopApp
-            from perfil_academico import UserProfileSystem
-            return CadastroUsuarios, Home, CalendarioDesktopApp, UserProfileSystem
-        except ImportError:
-            # Classes mock para teste
-            class MockCadastro:
-                def run(self):
-                    print("Classe não encontrada")
-            return MockCadastro, MockCadastro, MockCadastro
-    
-    # Pega nome do arquivo atual
-    nome_arquivo = os.path.basename(sys.argv[0])
-    print(f"DEBUG: Arquivo atual: {nome_arquivo}")
-
-    def detectar_tela(arquivo_alvo, nome_exibicao):
-        """Retorna o comando correto ou None se já está na mesma tela"""
-        # Se já está neste arquivo, retorna None
-        if nome_arquivo == arquivo_alvo:
-            print(f"DEBUG: Já está em {arquivo_alvo} - retornando None")
-            return None
-        
-        # Importa classes agora
-        CadastroUsuarios, Home, CalendarioDesktopApp, UserProfileSystem = importar_classes()
-        
-        # Mapeamento de arquivos para classes
-        mapeamento = {
-            "cadastro_usuario.py": CadastroUsuarios,
-            "home.py": Home,
-            "enventos.py": CalendarioDesktopApp,
-            "perfil_academico.py": UserProfileSystem
-        }
-        
-        classe = mapeamento.get(arquivo_alvo)
-        if not classe:
-            return None
-        
-        def navegar():
-            global janela_global
-            print(f"DEBUG: Navegando para {arquivo_alvo}")
-            if janela_global:
-                janela_global.destroy()
-            classe().run()
-        
-        return navegar
-
-    def limpar_tela():
-        global janela_global
-        if janela_global:
-            janela_global.destroy()
+import importlib
+from assets.cores import *
 
 
-    # Frame do menu lateral - use pack em vez de grid
-    menu_frame = ctk.CTkFrame(
-        janela, 
-        width=250,
-        corner_radius=0,
-        fg_color=cor_fundo
-    )
-    menu_frame.pack(side="left", fill="y")
-    
-    # Container para conteúdo do menu
-    menu_container = ctk.CTkFrame(menu_frame, fg_color="transparent")
-    menu_container.pack(fill="both", expand=True, padx=10, pady=20)
+class Sidebar(ctk.CTkFrame):
+    """
+    Sidebar orientado a objetos para CustomTkinter.
 
-    # Carregar imagem 
-    try:
-        imagem_pil = Image.open("Desktop/LOGOBRANCO.png")
-        imagem_ctk = ctk.CTkImage(
-            light_image=imagem_pil,
-            size=(80,100)
-        )
-        logo_image = ctk.CTkLabel(menu_container, image=imagem_ctk, text="")
-        logo_image.pack()
-    except:
-        # Fallback se imagem não existir
-        ctk.CTkLabel(menu_container, text="LOGO", font=ctk.CTkFont(size=22)).pack()
+    Uso na Home (sem mudar sua lógica):
+        from sidebar_oo import sidebar
+        sidebar(self.janela)
 
-    logo_label = ctk.CTkLabel(
-        menu_container,
-        text="INOVA EDU",
-        font=ctk.CTkFont(size=22, weight="bold", family="Arial"),
-        text_color=cor_texto
-    )
-    logo_label.pack()
-    
-    # Separador
-    ctk.CTkFrame(menu_container, height=2, fg_color=cor_texto).pack(fill="x", pady=5)
-    
-    # Título do menu
-    titulo_label = ctk.CTkLabel(
-        menu_container,
-        text="MENU LATERAL",
-        font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
-        text_color=cor_texto
-    )
-    titulo_label.pack(pady=(15, 10))
-    
-    # Opções do menu - corrigido
-    opcoes_menu = {
-        " Repositório": ("home.py", "Home"),
-        " Fórum": ("cadastro_usuario.py", "Cadastro de Usuários"),
-        " Eventos": ("enventos.py", "Calendário de Eventos"),
-    }
-    
-    botoes_menu = []
+    Regras:
+      - Mapeia as outras telas e tenta primeiro `app.run()` do módulo.
+      - Se não houver `app.run()`, tenta `Classe().run()` (fallback).
+      - Corrigido "enventos.py" -> "eventos.py".
+      - Botão "Repositório" (Home) fica desativado, como no seu fluxo.
+    """
 
-    for texto_botao, (arquivo_alvo, nome_tela) in opcoes_menu.items():
-        comando = detectar_tela(arquivo_alvo, nome_tela)
-        
-        botao = ctk.CTkButton(
+    def __init__(self, master, *, cor_fundo=azulEscuro, cor_texto=Branco):
+        super().__init__(master, width=250, corner_radius=0, fg_color=cor_fundo)
+        self.master = master
+        self.cor_texto = cor_texto
+        self._logo_img = None
+        self._botoes = []
+
+        # Nome do arquivo principal executado (compat com sua lógica antiga)
+        self._arquivo_atual = os.path.basename(sys.argv[0])
+        print(f"DEBUG: Arquivo atual: {self._arquivo_atual}")
+
+        self._build_ui()
+
+    # ------------------- UI -------------------
+    def _build_ui(self):
+        menu_container = ctk.CTkFrame(self, fg_color="transparent")
+        menu_container.pack(fill="both", expand=True, padx=10, pady=20)
+
+        self._add_logo(menu_container)
+
+        ctk.CTkLabel(
             menu_container,
-            text=texto_botao,
+            text="INOVA EDU",
+            font=ctk.CTkFont(size=22, weight="bold", family="Arial"),
+            text_color=self.cor_texto
+        ).pack()
+
+        ctk.CTkFrame(menu_container, height=2, fg_color=self.cor_texto).pack(fill="x", pady=5)
+
+        ctk.CTkLabel(
+            menu_container,
+            text="MENU LATERAL",
+            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
+            text_color=self.cor_texto
+        ).pack(pady=(15, 10))
+
+        opcoes_menu = {
+            " Repositório": ("home.py", "Home"),
+            " Fórum": ("cadastro_usuario.py", "Cadastro de Usuários"),
+            " Eventos": ("eventos.py", "Calendário de Eventos"),  # corrigido
+        }
+
+        for texto_botao, (arquivo_alvo, nome_tela) in opcoes_menu.items():
+            comando = self._detectar_tela(arquivo_alvo, nome_tela)
+            btn = ctk.CTkButton(
+                menu_container,
+                text=texto_botao,
+                height=50,
+                anchor="w",
+                text_color=self.cor_texto,
+                command=comando if comando else (lambda: None),
+                font=ctk.CTkFont(size=14, family="Arial"),
+                corner_radius=5,
+                border_width=0,
+                fg_color=f"{azulClaro}",
+                hover_color=f"{azulEscuro}",
+                state="normal" if comando else "disabled"
+            )
+            btn.pack(fill="x", pady=3)
+            self._botoes.append(btn)
+            print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando else 'Desativado (None)'}")
+
+        # Espaço flexível
+        ctk.CTkLabel(menu_container, text="").pack(fill="both", expand=True)
+
+        # Perfil (parte de baixo)
+        texto_botao = " Perfil"
+        arquivo_alvo, nome_tela = "perfil_academico.py", "Perfil do Usuário"
+        comando2 = self._detectar_tela(arquivo_alvo, nome_tela)
+
+        perfil_btn = ctk.CTkButton(
+            menu_container,
+            text="Perfil",
             height=50,
             anchor="w",
-            text_color=cor_texto,
-            command=comando if comando else lambda: None,  # Se None, função vazia
+            text_color=self.cor_texto,
+            command=comando2 if comando2 else (lambda: None),
             font=ctk.CTkFont(size=14, family="Arial"),
             corner_radius=5,
             border_width=0,
-            fg_color="#419FFD",
-            hover_color="#003366",
-            state="normal" if comando else "disabled"  # Desabilita se já está na tela
+            fg_color=f"{azulClaro}",
+            hover_color=f"{azulEscuro}",
+            state="normal" if comando2 else "disabled"
         )
-        botao.pack(fill="x", pady=3)
-        botoes_menu.append(botao)
-        
-        # Debug
-        print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando else 'Desativado (None)'}")
-    
+        perfil_btn.pack(fill="x", pady=3)
+        self._botoes.append(perfil_btn)
+        print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando2 else 'Desativado (None)'}")
 
-    # Espaço flexível
-    ctk.CTkLabel(menu_container, text="").pack(fill="both", expand=True)
+        # Sair
+        ctk.CTkButton(
+            menu_container,
+            text="Logout",
+            command=self.master.quit,
+            height=45,
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            text_color=self.cor_texto,
+            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
+            corner_radius=8
+        ).pack(side="bottom", fill="x", pady=(0, 5))
 
-    opcoes_bottom = {
-        " Perfil": ("perfil_academico.py", "Perfil do Usuário"),
-    }
-    botoes_menu_perfil = []
+    def _add_logo(self, parent):
+        try:
+            pil = Image.open("Desktop/assets/LOGOBRANCO.png")
+            self._logo_img = ctk.CTkImage(light_image=pil, size=(80, 100))
+            ctk.CTkLabel(parent, image=self._logo_img, text="").pack()
+        except Exception:
+            ctk.CTkLabel(parent, text="LOGO", font=ctk.CTkFont(size=22)).pack()
 
-    for texto_botao, (arquivo_alvo, nome_tela) in opcoes_bottom.items():
-        comando2 = detectar_tela(arquivo_alvo, nome_tela)
-    
-    perfil_btn = ctk.CTkButton(
-        menu_container,
-        text="Perfil",
-        height=50,
-        anchor="w",
-        text_color=cor_texto,
-        command=comando2 if comando2 else lambda: None,
-        font=ctk.CTkFont(size=14, family="Arial"),
-        corner_radius=5,
-        border_width=0,
-        fg_color="#419FFD",
-        hover_color="#003366",
-        state="normal" if comando2 else "disabled"
-    )
-    perfil_btn.pack(fill="x", pady=3)
-    botoes_menu_perfil.append(perfil_btn)
+    # ------------------- Navegação -------------------
+    def _detectar_tela(self, arquivo_alvo: str, nome_exibicao: str):
+        # Sidebar aparece só na Home → botão "Repositório" desativado
+        if arquivo_alvo == "home.py":
+            print("DEBUG: Estamos na Home - botão Repositório desativado")
+            return None
 
-    print(f"DEBUG: Botão '{texto_botao}' - Comando: {'Ativo' if comando2 else 'Desativado (None)'}")
-    
-    # Botão Sair
-    sair_btn = ctk.CTkButton(
-        menu_container,
-        text="Logout",
-        command=janela.quit,
-        height=45,
-        fg_color="#e74c3c",
-        hover_color="#c0392b",
-        text_color=cor_texto,
-        font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
-        corner_radius=8
-    )
-    sair_btn.pack(side="bottom", fill="x", pady=(0, 5))
-    
-    return menu_frame, botoes_menu
+        # Se o arquivo principal for o mesmo (compat com sua lógica antiga)
+        if self._arquivo_atual == arquivo_alvo:
+            print(f"DEBUG: Já está em {arquivo_alvo} - retornando None")
+            return None
 
-# Arquivo MAIN para testar
-if __name__ == "__main__":
-    app = ctk.CTk()
-    app.geometry("1200x700")
-    app.title("Sistema Acadêmico - Menu Principal")
-    app._set_appearance_mode("light")
-    sidebar(app)
-    
-    app.mainloop()
+        def navegar():
+            print(f"DEBUG: Navegando para {arquivo_alvo}")
+            self._fechar_janela()
+            self._abrir_destino(arquivo_alvo)
+
+        return navegar
+
+    def _fechar_janela(self):
+        toplevel = self.winfo_toplevel()
+        try:
+            toplevel.destroy()
+        except Exception:
+            try:
+                toplevel.quit()
+            except Exception:
+                pass
+
+    def _abrir_destino(self, arquivo_alvo: str):
+        mapa = {
+            "cadastro_usuario.py": {
+                "module": "cadastro_usuario",
+                "class": "CadastroUsuarios"
+            },
+            "eventos.py": {  # corrigido
+                "module": "eventos",
+                "class": "CalendarioDesktopApp"
+            },
+            "perfil_academico.py": {
+                "module": "perfil_academico",
+                "class": "UserProfileSystem"
+            }
+        }
+
+        alvo = mapa.get(arquivo_alvo)
+        if not alvo:
+            print(f"DEBUG: Destino '{arquivo_alvo}' não mapeado.")
+            return
+
+        mod_name = alvo["module"]
+        cls_name = alvo["class"]
+
+        try:
+            mod = importlib.import_module(mod_name)
+        except Exception as e:
+            print(f"DEBUG: Falha ao importar módulo '{mod_name}': {e}")
+            return
+
+        # 1) Tenta app.run()
+        app = getattr(mod, "app", None)
+        if app and hasattr(app, "run") and callable(app.run):
+            try:
+                app.run()
+                return
+            except Exception as e:
+                print(f"DEBUG: Erro ao chamar app.run() de '{mod_name}': {e}")
+
+        # 2) Tenta Classe().run()
+        cls = getattr(mod, cls_name, None)
+        if cls:
+            try:
+                inst = cls()
+                if hasattr(inst, "run") and callable(inst.run):
+                    inst.run()
+                    return
+                else:
+                    print(f"DEBUG: Classe '{cls_name}' não possui método run().")
+            except Exception as e:
+                print(f"DEBUG: Erro ao instanciar/chamar '{cls_name}': {e}")
+
+        print(f"DEBUG: Não foi possível abrir destino '{arquivo_alvo}'.")
+
+    @property
+    def botoes(self):
+        return list(self._botoes)
+
+
+# -------- Adaptador com a MESMA assinatura que você usa na Home --------
+def sidebar(janela, cor_fundo=f"{azulEscuro}", cor_texto=f"{Branco}"):
+    """
+    Mantém compatibilidade com:
+        sidebar(self.janela)
+    Retorna (sidebar_instance, botoes)
+    """
+    sb = Sidebar(janela, cor_fundo=cor_fundo, cor_texto=cor_texto)
+    sb.pack(side="left", fill="y")
+    return sb, sb.botoes

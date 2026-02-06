@@ -1,9 +1,12 @@
+# views/Aluno_e_Professor/home_view.py
 import customtkinter as ctk
 from PIL import Image
 import os
-from datetime import datetime
+from datetime import datetime, date
 from models.cursos_model import CursosModel
-from controllers.cursos_controllers import obter_cursos
+from controllers.cursos_controllers import obter_cursos 
+from assets.cores import *
+
 
 class Home(ctk.CTkFrame):
     def __init__(self, master):  
@@ -15,22 +18,63 @@ class Home(ctk.CTkFrame):
         self.cor_fundo = "#f5f7fb"
         self.janela.configure(fg_color=self.cor_fundo)
 
-        # importar sidebar_AP de forma tardia (evita import circular)
-        # from sidebar_AP import sidebar
-        # sidebar(self.janela)
+        # Configurar este frame para expandir
+        self.configure(fg_color=self.cor_fundo)
+        self.pack(fill="both", expand=True)
 
+        # Criar um container principal dentro do frame Home
+        self.container_principal = ctk.CTkFrame(self, fg_color="transparent")
+        self.container_principal.pack(fill="both", expand=True, side="left")
+        
+        # Importar sidebar (OOP) de forma tardia (evita import circular)
+        from sidebar_AP import sidebar
+        
+        # Criar sidebar - passa self (frame Home) como master
+        sidebar(self.container_principal)
+        
+        # Agora criar o conteúdo dentro do mesmo container
         self.criar_interface()
 
+        # --- Carrega cursos de forma robusta (evita ValueError de unpack) ---
         cursos_data = CursosModel().exibirCursos()
         self.cursos = []
-        
-        for nome_curso, imagem_curso, descricao_curso, data_inicio, data_final in cursos_data:
+
+        def _to_str_date(value):
+            """Normaliza datas para string YYYY-MM-DD sem quebrar se já for str."""
+            if isinstance(value, datetime):
+                return value.date().isoformat()
+            if isinstance(value, date):
+                return value.isoformat()
+            return (str(value) if value is not None else "")[:10]
+
+        for row in cursos_data:
+            try:
+                if isinstance(row, dict):
+                    # Quando o model retorna dicts
+                    nome_curso      = row.get("nome") or row.get("name") or row.get("titulo") or ""
+                    imagem_curso    = row.get("imagem") or row.get("image") or ""
+                    descricao_curso = row.get("descricao") or row.get("description") or ""
+                    data_inicio     = _to_str_date(row.get("data_inicio") or row.get("start_date"))
+                    data_final      = _to_str_date(row.get("data_final") or row.get("end_date"))
+                else:
+                    # Quando o model retorna tuplas/listas com 5+ colunas
+                    # Ajuste os índices conforme seu SELECT real.
+                    # Aqui assumimos: (nome, imagem, descricao, data_inicio, data_final, *extras)
+                    nome_curso      = row[0] if len(row) > 0 else ""
+                    imagem_curso    = row[1] if len(row) > 1 else ""
+                    descricao_curso = row[2] if len(row) > 2 else ""
+                    data_inicio     = _to_str_date(row[3] if len(row) > 3 else "")
+                    data_final      = _to_str_date(row[4] if len(row) > 4 else "")
+            except Exception as e:
+                print(f"DEBUG: falha ao ler linha do cursos_data: {e} | row={row}")
+                continue
+
             curso = {
-                "name": nome_curso,
-                "image": imagem_curso,
-                "description": descricao_curso,
-                "start_date": data_inicio,
-                "end_date": data_final  # Adicionando data final também
+                "name": str(nome_curso or "").strip(),
+                "image": str(imagem_curso or "").strip(),
+                "description": str(descricao_curso or "").strip(),
+                "start_date": data_inicio or "",
+                "end_date": data_final or ""
             }
             self.cursos.append(curso)
     
@@ -40,8 +84,9 @@ class Home(ctk.CTkFrame):
 
     def criar_interface(self):
         # area de conteúdo (à direita do sidebar)
-        self.conteudo = ctk.CTkFrame(self.janela, fg_color="transparent")
-        self.conteudo.pack(side="right", fill="both", expand=True)
+        # Agora o conteúdo está dentro do mesmo container que a sidebar
+        self.conteudo = ctk.CTkFrame(self.container_principal, fg_color="transparent")
+        self.conteudo.pack(side="left", fill="both", expand=True)
 
         # Barra de pesquisa no topo
         pesquisa_frame = ctk.CTkFrame(self.conteudo, fg_color="transparent")
@@ -56,14 +101,16 @@ class Home(ctk.CTkFrame):
         filtros_btn = ctk.CTkButton(pesquisa_frame, text="⚙️ Filtros Avançados", width=150, command=self.abrir_modal_filtros)
         filtros_btn.pack(side="right", padx=6)
 
-        # Área de cards (scrollable)
+        # Área de cards (scrollable) - OBRIGATÓRIO: precisa expandir para preencher espaço
         self.scroll_area = ctk.CTkScrollableFrame(self.conteudo, fg_color="transparent")
         self.scroll_area.pack(fill="both", expand=True, padx=16, pady=(0, 16))
 
         # container interno para grid de cards
         self.cards_container = ctk.CTkFrame(self.scroll_area, fg_color="transparent")
-        self.cards_container.pack(expand=False, padx=8, pady=8)
-        self.cards_container.grid_columnconfigure((0, 1, 2), weight=1)  # 3 colunas
+        self.cards_container.pack(expand=True, fill="both", padx=8, pady=8)  # IMPORTANTE: expand=True aqui também
+        
+        # Configurar grid de cards (3 colunas)
+        self.cards_container.grid_columnconfigure((0, 1, 2), weight=1, uniform="col")
 
         # Variáveis para filtros
         self.data_inicio = None
@@ -219,35 +266,27 @@ class Home(ctk.CTkFrame):
         for c in self.cursos:
             nome_ok = (not nome) or (nome in c["name"].lower())
             
-            # Lógica do filtro de data CORRIGIDA
-            data_ok = True  # Assume que está OK por padrão
+            # Lógica do filtro de data
+            data_ok = True
             
-            if inicio or fim:  # Se pelo menos uma data foi informada
+            if inicio or fim:
                 try:
-                    # Converte datas do curso
-                    data_inicio_curso = datetime.strptime(c["start_date"], "%Y-%m-%d").date()
-                    data_fim_curso = datetime.strptime(c["end_date"], "%Y-%m-%d").date() if "end_date" in c else None
+                    data_inicio_curso = datetime.strptime(c["start_date"], "%Y-%m-%d").date() if c.get("start_date") else None
+                    data_fim_curso    = datetime.strptime(c["end_date"], "%Y-%m-%d").date()   if c.get("end_date") else None
                     
-                    # Verifica SE AMBAS as datas foram fornecidas
                     if inicio and fim:
-                        # Curso deve estar DENTRO do intervalo [inicio, fim]
-                        # Verifica se o curso começa DEPOIS da data início
-                        # E termina ANTES da data fim
-                        if data_inicio_curso < inicio or (data_fim_curso and data_fim_curso > fim):
+                        # Curso deve estar dentro do intervalo [inicio, fim]
+                        if (data_inicio_curso and data_inicio_curso < inicio) or (data_fim_curso and data_fim_curso > fim):
                             data_ok = False
-                    # Se só data início foi fornecida
                     elif inicio and not fim:
-                        # Curso deve começar DEPOIS da data início
-                        if data_inicio_curso < inicio:
+                        if data_inicio_curso and data_inicio_curso < inicio:
                             data_ok = False
-                    # Se só data fim foi fornecida
                     elif fim and not inicio:
-                        # Curso deve terminar ANTES da data fim
                         if data_fim_curso and data_fim_curso > fim:
                             data_ok = False
                             
                 except Exception as e:
-                    print(f"Erro ao processar datas do curso {c['name']}: {e}")
+                    print(f"Erro ao processar datas do curso {c.get('name', '')}: {e}")
                     data_ok = False
 
             if nome_ok and data_ok:
@@ -263,10 +302,6 @@ class Home(ctk.CTkFrame):
     def entrar_no_curso(self, curso):
         """Função chamada quando clica no botão 'Entrar' do curso"""
         print(f"Entrando no curso: {curso['name']}")
-        # Aqui você pode adicionar a lógica para abrir a tela do curso
-        # Exemplo: self.abrir_tela_curso(curso)
-        
-        # Por enquanto, mostra uma mensagem
         from tkinter import messagebox
         messagebox.showinfo("Curso", f"Você entrou no curso: {curso['name']}")
 
@@ -279,87 +314,133 @@ class Home(ctk.CTkFrame):
 
         # criar cards em grade (3 colunas) com tamanho fixo
         CARD_WIDTH = 420
-        CARD_HEIGHT = 470  # Aumentei um pouco para caber o botão
+        CARD_HEIGHT = 470
         cols = 3
         
         for idx, curso in enumerate(cursos):
             r = idx // cols
             c = idx % cols
+            
+            # Card com layout vertical centralizado
             card = ctk.CTkFrame(
                 self.cards_container, 
                 width=CARD_WIDTH, 
                 height=CARD_HEIGHT,
-                corner_radius=15, 
+                corner_radius=20,
                 fg_color="#ffffff",
-                border_width=2,
+                border_width=1,
                 border_color="#e0e0e0"
             )
             card.grid(row=r, column=c, padx=16, pady=16, sticky="nsew")
-            card.pack_propagate(False)  # Fixa o tamanho do card
-
-            # imagem
+            card.pack_propagate(False)
+            
+            # CONTAINER PRINCIPAL - Centraliza tudo verticalmente
+            main_container = ctk.CTkFrame(card, fg_color="transparent")
+            main_container.pack(expand=True, fill="both", padx=20, pady=20)
+            
+            # 1. IMAGEM (topo) - Centralizada
+            img_frame = ctk.CTkFrame(main_container, fg_color="transparent", height=150)
+            img_frame.pack(fill="x", pady=(0, 15))
+            
             img_path = curso.get("image", "")
             pil = None
             try:
                 if img_path and os.path.exists(img_path):
-                    pil = Image.open(img_path).resize((CARD_WIDTH - 20, 170))
+                    pil = Image.open(img_path).resize((CARD_WIDTH - 60, 140))
                 else:
-                    pil = Image.new("RGB", (CARD_WIDTH - 20, 170), (200, 200, 200))
+                    # Placeholder mais bonito
+                    from PIL import ImageDraw, ImageFont
+                    pil = Image.new("RGB", (CARD_WIDTH - 60, 140), (52, 152, 219))
+                    draw = ImageDraw.Draw(pil)
+                    # Adiciona um ícone/texto no placeholder
+                    try:
+                        # Tenta adicionar texto
+                        font = ImageFont.load_default()
+                        draw.text((50, 50), "🎓", font=font, fill="white")
+                    except:
+                        pass
             except Exception:
-                pil = Image.new("RGB", (CARD_WIDTH - 20, 170), (200, 200, 200))
+                pil = Image.new("RGB", (CARD_WIDTH - 60, 140), (52, 152, 219))
 
-            img_ctk = ctk.CTkImage(light_image=pil, size=(CARD_WIDTH - 20, 170))
-            img_lbl = ctk.CTkLabel(card, image=img_ctk, text="")
-            img_lbl.pack(padx=10, pady=(10, 12))
-
-            # nome
-            nome_lbl = ctk.CTkLabel(
-                card,
-                text=curso["name"],
-                font=ctk.CTkFont(size=15, weight="bold"),
-                wraplength=CARD_WIDTH - 30,
-                justify="left"
-            )
-            nome_lbl.pack(anchor="w", padx=14, pady=(0, 8))
-
-            # descricao
-            desc_lbl = ctk.CTkLabel(
-                card, 
-                text=curso["description"], 
-                wraplength=CARD_WIDTH - 30, 
-                justify="left",
-                font=ctk.CTkFont(size=12)
-            )
-            desc_lbl.pack(anchor="w", padx=14, pady=(0, 10), fill="both", expand=True)
+            img_ctk = ctk.CTkImage(light_image=pil, size=(CARD_WIDTH - 60, 140))
+            img_lbl = ctk.CTkLabel(img_frame, image=img_ctk, text="", fg_color="transparent")
+            img_lbl.image = img_ctk
+            img_lbl.pack(expand=True)
             
-            # Datas do curso (informação adicional)
-            datas_frame = ctk.CTkFrame(card, fg_color="transparent")
-            datas_frame.pack(anchor="w", padx=14, pady=(0, 10))
+            # 2. NOME DO CURSO - Centralizado
+            nome_lbl = ctk.CTkLabel(
+                main_container,
+                text=curso["name"],
+                font=ctk.CTkFont(size=16, weight="bold"),
+                wraplength=CARD_WIDTH - 80,
+                justify="center",
+                text_color="#2c3e50"
+            )
+            nome_lbl.pack(pady=(0, 10))
+            
+            # 3. DESCRIÇÃO - Centralizada
+            desc_lbl = ctk.CTkLabel(
+                main_container, 
+                text=curso["description"][:100] + "..." if len(curso["description"]) > 100 else curso["description"],
+                wraplength=CARD_WIDTH - 80, 
+                justify="center",
+                font=ctk.CTkFont(size=12),
+                text_color="#34495e"
+            )
+            desc_lbl.pack(pady=(0, 15), fill="x", expand=True)
+            
+            # 4. DATAS - Centralizadas em coluna
+            datas_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+            datas_frame.pack(pady=(0, 15))
+            
+            # Data de início
+            inicio_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
+            inicio_frame.pack(pady=2)
             
             ctk.CTkLabel(
-                datas_frame,
-                text=f"📅 Início: {curso['start_date']}",
-                font=ctk.CTkFont(size=11),
-                text_color="#555555"
-            ).pack(side="left", anchor="w")
+                inicio_frame,
+                text="📅",
+                font=ctk.CTkFont(size=12),
+                text_color="#3498db"
+            ).pack(side="left", padx=(0, 8))
             
-            if "end_date" in curso:
+            ctk.CTkLabel(
+                inicio_frame,
+                text=f"Início: {curso.get('start_date', 'Não definido')}",
+                font=ctk.CTkFont(size=11),
+                text_color="#7f8c8d"
+            ).pack(side="left")
+            
+            # Data de término (se houver)
+            if curso.get("end_date"):
+                termino_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
+                termino_frame.pack(pady=2)
+                
                 ctk.CTkLabel(
-                    datas_frame,
-                    text=f"  |  Término: {curso['end_date']}",
+                    termino_frame,
+                    text="⏱️",
+                    font=ctk.CTkFont(size=12),
+                    text_color="#e74c3c"
+                ).pack(side="left", padx=(0, 8))
+                
+                ctk.CTkLabel(
+                    termino_frame,
+                    text=f"Término: {curso['end_date']}",
                     font=ctk.CTkFont(size=11),
-                    text_color="#555555"
-                ).pack(side="left", anchor="w")
-
-            # Botão "Entrar no Curso"
+                    text_color="#7f8c8d"
+                ).pack(side="left")
+            
+            # 5. BOTÃO - Centralizado na parte inferior
             btn_entrar = ctk.CTkButton(
-                card,
-                text="🎓 Entrar no Curso",
+                main_container,
+                text="🎓 Acessar Curso",
                 command=lambda c=curso: self.entrar_no_curso(c),
-                fg_color="#1f6aa5",
-                hover_color="#004A8D",
-                height=40,
-                width=CARD_WIDTH - 40,
-                font=ctk.CTkFont(size=13, weight="bold")
+                fg_color="#3498db",
+                hover_color="#2980b9",
+                height=45,
+                width=CARD_WIDTH - 80,
+                font=ctk.CTkFont(size=14, weight="bold"),
+                corner_radius=10,
+                border_width=0
             )
-            btn_entrar.pack(pady=(0, 15))
+            btn_entrar.pack(side="bottom", pady=(15, 0))
