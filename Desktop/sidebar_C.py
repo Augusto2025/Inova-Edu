@@ -13,8 +13,8 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
     # Importar classes DENTRO das funções para evitar circular imports
     def importar_classes():
         try:
-            from Desktop.coordenacao.cadastro_turma import CadastroTurmas
-            from Desktop.coordenacao.cadastro_usuario import CadastroUsuarios
+            from cadastro_turma import CadastroTurmas
+            from cadastro_usuario import CadastroUsuarios
             from cadastro_curso import CadastroCursos
             return CadastroUsuarios, CadastroTurmas, CadastroCursos
         except ImportError:
