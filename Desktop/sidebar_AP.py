@@ -138,10 +138,7 @@ class Sidebar(ctk.CTkFrame):
             print("DEBUG: Estamos na Home - botão Repositório desativado")
             return None
 
-        # Se o arquivo principal for o mesmo (compat com sua lógica antiga)
-        if self._arquivo_atual == arquivo_alvo:
-            print(f"DEBUG: Já está em {arquivo_alvo} - retornando None")
-            return None
+        # (REMOVIDO) Não desativar botão apenas porque o arquivo atual é o mesmo
 
         def navegar():
             print(f"DEBUG: Navegando para {arquivo_alvo}")
@@ -167,7 +164,7 @@ class Sidebar(ctk.CTkFrame):
                 "class": "CadastroUsuarios"
             },
             "eventos.py": {  # corrigido
-                "module": "eventos",
+                "module": "views.Aluno_e_Professor.eventos",
                 "class": "CalendarioDesktopApp"
             },
             "perfil_academico.py": {

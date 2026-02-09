@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from controllers.login_controller import autenticar
+import threading
+import traceback
 
 class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
     def __init__(self, master):  
@@ -43,38 +45,164 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
             self.right, placeholder_text="Senha", show="*", width=280, height=45
         )
         self.senha.pack(pady=10)
+        self.usuario.bind("<Return>", self.autentificacao)
+        self.senha.bind("<Return>", self.autentificacao)
 
         self.erro = ctk.CTkLabel(self.right, text="", text_color="red")
         self.erro.pack()
 
-        ctk.CTkButton(
+        self.botao_entrar = ctk.CTkButton(
             self.right,
             text="Entrar",
             width=280,
             height=45,
             font=("Arial", 16),
             command=self.autentificacao,
-        ).pack(pady=30)
+        )
+        self.botao_entrar.pack(pady=30)
+
+    
+    def autentificacao(self, event=None):
+        """Executa autenticação em thread separada para não travar UI"""
+        try:
+            print("[LOGIN] Clicou Entrar")
+            usuario = self.usuario.get()
+            senha = self.senha.get()
+            
+            if not usuario or not senha:
+                self.erro.configure(text="Preencha email e senha")
+                return
+            
+            # Desabilita botão
+            self.botao_entrar.configure(state="disabled", text="Autenticando...")
+            self.erro.configure(text="")
+            
+            # Executa autenticação em thread separada
+            thread = threading.Thread(target=self._autenticar_thread, args=(usuario, senha), daemon=True)
+            thread.start()
+        except Exception as e:
+            print(f"[LOGIN ERRO] {str(e)}")
+            self.erro.configure(text=f"Erro: {str(e)}")
+            self.botao_entrar.configure(state="normal", text="Entrar")
+    
+    def _autenticar_thread(self, usuario, senha):
+        """Executa a autenticação em thread"""
+        try:
+            print(f"[LOGIN THREAD] Autenticando {usuario}")
+            tipo = ""
+            
+            print(f"[LOGIN THREAD] Chamando controller...")
+            result = autenticar(usuario, senha, tipo)
+            print(f"[LOGIN THREAD] Resultado: {result}")
+            
+            # Volta para a thread principal para atualizar UI
+            self.after(0, self._processar_resultado, result, usuario)
+        except Exception as e:
+            print(f"[LOGIN THREAD ERRO] {str(e)}")
+            print(f"[LOGIN THREAD TRACEBACK] {traceback.format_exc()}")
+            self.after(0, lambda: self._mostrar_erro(f"Erro: {str(e)}"))
+    
+    def _processar_resultado(self, result, usuario):
+        """Processa o resultado da autenticação (rodando na thread principal)"""
+        try:
+            self.botao_entrar.configure(state="normal", text="Entrar")
+            
+            if isinstance(result, tuple) and len(result) >= 2 and result[1]:
+                # Autenticado!
+                tipo = result[0]
+                print(f"[LOGIN] Autenticado! Tipo: {tipo}")
+
+                if tipo == "Aluno" or tipo == "Professor":
+                    try:
+                        print("[LOGIN] Abrindo Home...")
+                        self.destroy()
+                        
+                        print("[LOGIN] Importando Home...")
+                        from views.Aluno_e_Professor.home_view import Home
+                        print("[LOGIN] Criando instância de Home...")
+                        self.home_aluno_screen = Home(self.master)
+                        print("[LOGIN] Empacotando Home...")
+                        self.home_aluno_screen.pack(expand=True, fill="both")
+                        print("[LOGIN] Home aberta com sucesso!")
+                    except Exception as home_error:
+                        print(f"[LOGIN HOME ERRO] {str(home_error)}")
+                        print(f"[LOGIN HOME TRACEBACK] {traceback.format_exc()}")
+                        self._mostrar_erro(f"Erro ao abrir home: {str(home_error)}")
+                elif tipo == "Coordenador":
+                    print("[LOGIN] Tipo Coordenador")
+                    pass
+            else:
+                # Falha na autenticação
+                mensagem = result[0] if isinstance(result, tuple) else str(result)
+                print(f"[LOGIN] Falha na autenticacao: {mensagem}")
+                self._mostrar_erro(mensagem)
+        except Exception as e:
+            print(f"[LOGIN PROCESSAR ERRO] {str(e)}")
+            print(f"[LOGIN PROCESSAR TRACEBACK] {traceback.format_exc()}")
+            self._mostrar_erro(f"Erro: {str(e)}")
+    
+    def _mostrar_erro(self, mensagem):
+        """Mostra erro na UI (thread-safe)"""
+        try:
+            self.erro.configure(text=mensagem)
+            self.botao_entrar.configure(state="normal", text="Entrar")
+        except:
+            print(f"[LOGIN MOSTRAR ERRO] Nao conseguiu atualizar label de erro")
+
 
     
     def autentificacao(self):
-        tipo = ""
-        result = autenticar(self.usuario.get(), self.senha.get(), tipo)
-        if result[1]:  # Se o segundo valor da tupla é True (autenticado)
-            tipo = result[0]  # O tipo de usuário retornado
+        try:
+            print("[LOGIN] Clicou Entrar")
+            tipo = ""
+            usuario = self.usuario.get()
+            senha = self.senha.get()
+            
+            if not usuario or not senha:
+                self.erro.configure(text="Preencha email e senha")
+                return
+            
+            print(f"[LOGIN] Autenticando usuario: {usuario}")
+            result = autenticar(usuario, senha, tipo)
+            print(f"[LOGIN] Resultado: {result}")
+            
+            if isinstance(result, tuple) and len(result) >= 2 and result[1]:
+                # Se o segundo valor da tupla é True (autenticado)
+                tipo = result[0]  # O tipo de usuário retornado
+                print(f"[LOGIN] Autenticado! Tipo: {tipo}")
 
-            # Abre a HOME como nova janela
-            if tipo == "Aluno" or tipo == "Professor":
-                self.destroy()  # Fecha a tela de login
-                
-                from views.Aluno_e_Professor.home_view import Home
-                self.home_aluno_screen = Home(self.master)
-                self.home_aluno_screen.pack(expand=True, fill="both")
-            elif tipo == "Coordenador":
-                # falta implementar a tela do coordenador
-                pass
-        else:
-            # result é uma tupla (mensagem, False)
-            mensagem, ok = result
-            self.erro.configure(text=mensagem)
+                # Abre a HOME como nova janela
+                if tipo == "Aluno" or tipo == "Professor":
+                    try:
+                        print("[LOGIN] Abrindo Home...")
+                        self.destroy()  # Fecha a tela de login
+                        
+                        print("[LOGIN] Importando Home...")
+                        from views.Aluno_e_Professor.home_view import Home
+                        print("[LOGIN] Criando instância de Home...")
+                        self.home_aluno_screen = Home(self.master)
+                        print("[LOGIN] Empacotando Home...")
+                        self.home_aluno_screen.pack(expand=True, fill="both")
+                        print("[LOGIN] Home aberta com sucesso!")
+                    except Exception as home_error:
+                        import traceback
+                        print(f"[LOGIN HOME ERRO] {str(home_error)}")
+                        print(f"[LOGIN HOME TRACEBACK] {traceback.format_exc()}")
+                        self.erro.configure(text=f"Erro ao abrir home: {str(home_error)}")
+                elif tipo == "Coordenador":
+                    print("[LOGIN] Tipo Coordenador (placeholder)")
+                    pass
+            else:
+                # result é uma tupla (mensagem, False)
+                mensagem = result[0] if isinstance(result, tuple) else str(result)
+                print(f"[LOGIN] Falha na autenticacao: {mensagem}")
+                self.erro.configure(text=mensagem)
+        except Exception as e:
+            import traceback
+            print(f"[LOGIN ERRO GERAL] {str(e)}")
+            print(f"[LOGIN TRACEBACK GERAL] {traceback.format_exc()}")
+            try:
+                self.erro.configure(text=f"Erro: {str(e)}")
+            except:
+                print("[LOGIN] Erro ao atualizar label de erro")
 

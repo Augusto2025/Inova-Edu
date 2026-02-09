@@ -1,5 +1,10 @@
 import customtkinter as ctk
 from datetime import datetime, timedelta
+# Adicionar sidebar
+try:
+    from sidebar_AP import Sidebar
+except Exception:
+    Sidebar = None
 
 class CalendarioDesktopApp:
     def __init__(self):
@@ -74,6 +79,13 @@ class CalendarioDesktopApp:
         # Container principal
         self.main_container = ctk.CTkFrame(self.root, fg_color="#f8fafc")
         self.main_container.pack(fill="both", expand=True)
+        # Sidebar (se disponível)
+        if Sidebar:
+            try:
+                self.sidebar = Sidebar(self.main_container)
+                self.sidebar.pack(side="left", fill="y")
+            except Exception as e:
+                print(f"[EVENTOS] Falha ao carregar Sidebar: {e}")
         
         # Cabeçalho
         self.criar_cabecalho()
