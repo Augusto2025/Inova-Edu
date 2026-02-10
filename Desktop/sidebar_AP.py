@@ -115,6 +115,7 @@ def sidebar(janela, cor_fundo="#004A8D", cor_texto="#ecf0f1"):
         " Repositório": ("home.py", "Home"),
         " Fórum": ("cadastro_turma.py", "Cadastro de Turmas"),
         " Eventos": ("cadastro_curso.py", "Cadastro de Cursos"),
+        
     }
     
     botoes_menu = []
