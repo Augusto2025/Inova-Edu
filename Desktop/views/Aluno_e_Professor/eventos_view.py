@@ -1,265 +1,317 @@
-# views/Aluno_e_Professor/eventos_view.py
+# eventos_view.py - CORRIGIDO
 import customtkinter as ctk
-from controllers.eventos_controller import EventosController
+from datetime import datetime, timedelta
 from assets.cores import *
-import traceback
 
-class Eventos(ctk.CTkFrame):
-    def __init__(self, master, id_usuario=None):
+class CalendarioDesktopApp(ctk.CTkFrame):
+    def __init__(self, master):  
         super().__init__(master)
-        self.controller = EventosController()
-        self.id_usuario = id_usuario
-        self.eventos_data = []
+
         self.janela = master
-        
+
         # cores
         self.cor_fundo = "#f5f7fb"
         self.janela.configure(fg_color=self.cor_fundo)
-        
+
         # Configurar este frame para expandir
         self.configure(fg_color=self.cor_fundo)
         self.pack(fill="both", expand=True)
-        
+
         # Criar um container principal
         self.container_principal = ctk.CTkFrame(self, fg_color="transparent")
         self.container_principal.pack(fill="both", expand=True, side="left")
         
-        # Importar e criar sidebar
-        try:
-            from sidebar_AP import Sidebar
-            self.sidebar = Sidebar(self.container_principal)
-            self.sidebar.pack(side="left", fill="y")
-        except Exception as e:
-            print(f"[VIEW EVENTOS] Erro ao carregar sidebar: {str(e)}")
+        # Importar sidebar
+        from sidebar_AP import sidebar
+        sidebar(self.container_principal)
         
-        # Criar conteúdo principal
-        self.content_frame = ctk.CTkFrame(self.container_principal, fg_color=self.cor_fundo)
-        self.content_frame.pack(side="left", fill="both", expand=True)
-        self.content_frame.grid_rowconfigure(1, weight=1)
-        self.content_frame.grid_columnconfigure(0, weight=1)
+        # INICIALIZAR VARIÁVEIS ANTES DE CRIAR A INTERFACE
+        self.eventos = self.carregar_eventos_exemplo()
+        self.ano_atual = datetime.now().year
+        self.mes_atual = datetime.now().month
+        self.dia_selecionado = None
         
-        print("[VIEW EVENTOS] Inicializando tela de eventos...")
+        # Agora criar a interface
+        self.criar_interface()
+        self.atualizar_calendario()
+
+    def criar_interface(self):
+        """Cria interface"""
+        # area de conteúdo (à direita do sidebar)
+        self.conteudo = ctk.CTkFrame(self.container_principal, fg_color="transparent")
+        self.conteudo.pack(side="left", fill="both", expand=True)
+
+        # Barra de pesquisa no topo
+        pesquisa_frame = ctk.CTkFrame(self.conteudo, fg_color="transparent")
+        pesquisa_frame.pack(fill="x", padx=16, pady=(16, 8))
+
+        ctk.CTkLabel(pesquisa_frame, text="🔍 Buscar Evento:", 
+                    font=ctk.CTkFont(size=13, weight="bold")).pack(side="left", padx=6)
         
-        try:
-            self.setup_ui()
-            self.carregar_eventos()
-        except Exception as e:
-            print(f"[VIEW EVENTOS ERRO] {str(e)}")
-            print(f"[VIEW EVENTOS TRACEBACK] {traceback.format_exc()}")
-    
-    def setup_ui(self):
-        """Cria a interface da tela de eventos"""
-        # HEADER
-        header_frame = ctk.CTkFrame(self.content_frame, fg_color="#1f6aa5")
-        header_frame.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
-        
-        ctk.CTkLabel(
-            header_frame, 
-            text="Eventos", 
-            font=("Arial", 24, "bold"), 
-            text_color="white"
-        ).pack(pady=10, padx=10)
-        
-        # BOTÃO CRIAR EVENTO
-        botoes_frame = ctk.CTkFrame(header_frame, fg_color="#1f6aa5")
-        botoes_frame.pack(fill="x", padx=10, pady=10)
-        
-        ctk.CTkButton(
-            botoes_frame,
-            text="+ Novo Evento",
-            command=self.abrir_criar_evento,
-            fg_color="#2E7D32",
-            hover_color="#1B5E20"
-        ).pack(side="left", padx=5)
-        
-        ctk.CTkButton(
-            botoes_frame,
-            text="↻ Atualizar",
-            command=self.carregar_eventos,
-            fg_color="#1976D2",
-            hover_color="#1565C0"
-        ).pack(side="left", padx=5)
-        
-        # CONTEÚDO
-        self.scroll_frame = ctk.CTkScrollableFrame(self.content_frame)
-        self.scroll_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
-        self.scroll_frame.grid_columnconfigure(0, weight=1)
-        
-        # LABEL INFO
-        self.info_label = ctk.CTkLabel(
-            self.scroll_frame, 
-            text="Carregando eventos...", 
-            text_color="gray"
+        self.nome_filter = ctk.CTkEntry(pesquisa_frame, width=350, 
+                                       placeholder_text="Digite o nome do evento...")
+        self.nome_filter.pack(side="left", padx=(6, 12), fill="x", expand=True)
+        self.nome_filter.bind("<Return>", lambda e: self.aplicar_filtros())
+
+        # Botão para criar novo evento
+        criar_btn = ctk.CTkButton(pesquisa_frame, text="➕ Novo Evento", 
+                                 width=150, command=self.criar_evento,
+                                 fg_color="#28a745", hover_color="#20c997")
+        criar_btn.pack(side="right", padx=6)
+
+        # Área do calendário (scrollable)
+        self.scroll_area = ctk.CTkScrollableFrame(self.conteudo, fg_color="transparent")
+        self.scroll_area.pack(fill="both", expand=True, padx=16, pady=(0, 16))
+
+        # Container do calendário
+        self.calendario_container = ctk.CTkFrame(self.scroll_area, fg_color="transparent")
+        self.calendario_container.pack(expand=True, fill="both", padx=8, pady=8)
+
+        # Frame para navegação (mês/ano)
+        self.nav_frame = ctk.CTkFrame(self.calendario_container, fg_color="transparent")
+        self.nav_frame.pack(fill="x", pady=(0, 20))
+
+        # Navegação do calendário
+        self.criar_navegacao()
+
+        # Frame para dias da semana
+        self.criar_dias_semana()
+
+        # Frame para os dias do calendário
+        self.days_frame = ctk.CTkFrame(self.calendario_container, fg_color="transparent")
+        self.days_frame.pack(fill="both", expand=True)
+
+    def criar_navegacao(self):
+        """Cria navegação do calendário"""
+        # Botão mês anterior
+        btn_prev = ctk.CTkButton(
+            self.nav_frame, text="◀", width=40, height=40,
+            command=lambda: self.alterar_mes(-1),
+            fg_color="#f1f5f9", hover_color="#e2e8f0",
+            text_color="#475569", corner_radius=8
         )
-        self.info_label.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-    
-    def carregar_eventos(self):
-        """Carrega e exibe os eventos"""
-        try:
-            print("[VIEW EVENTOS] Carregando eventos...")
-            # Se tiver ID de usuário, busca apenas seus eventos; senão busca todos
-            if self.id_usuario:
-                self.eventos_data = self.controller.obter_eventos_do_usuario(self.id_usuario)
-            else:
-                self.eventos_data = self.controller.obter_todos_eventos()
-            
-            self.exibir_eventos()
-        except Exception as e:
-            print(f"[VIEW EVENTOS ERRO AO CARREGAR] {str(e)}")
-            self.info_label.configure(text=f"Erro ao carregar eventos: {str(e)}")
-    
-    def exibir_eventos(self):
-        """Exibe a lista de eventos"""
-        # Limpa frame anterior
-        for widget in self.scroll_frame.winfo_children():
+        btn_prev.pack(side="left", padx=(0, 10))
+        
+        # Mês e ano atual - AGORA self.mes_atual e self.ano_atual JÁ EXISTEM
+        meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+        
+        # Criar label para mês/ano
+        self.month_label = ctk.CTkLabel(
+            self.nav_frame,
+            text=f"{meses[self.mes_atual - 1]} {self.ano_atual}",
+            font=ctk.CTkFont(size=24, weight="bold"),
+            text_color="#1e293b"
+        )
+        self.month_label.pack(side="left", padx=10)
+        
+        # Botão próximo mês
+        btn_next = ctk.CTkButton(
+            self.nav_frame, text="▶", width=40, height=40,
+            command=lambda: self.alterar_mes(1),
+            fg_color="#f1f5f9", hover_color="#e2e8f0",
+            text_color="#475569", corner_radius=8
+        )
+        btn_next.pack(side="left", padx=(10, 0))
+        
+        # Botão "Hoje"
+        btn_today = ctk.CTkButton(
+            self.nav_frame, text="Hoje", width=80, height=40,
+            command=self.ir_para_mes_atual,
+            fg_color="#3b82f6", hover_color="#2563eb",
+            corner_radius=8, font=ctk.CTkFont(size=13)
+        )
+        btn_today.pack(side="right")
+
+    def criar_dias_semana(self):
+        """Cria cabeçalho com dias da semana"""
+        weekdays_frame = ctk.CTkFrame(self.calendario_container, fg_color="transparent")
+        weekdays_frame.pack(fill="x", pady=(0, 10))
+        
+        weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
+        for day in weekdays:
+            label = ctk.CTkLabel(
+                weekdays_frame,
+                text=day,
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color="#475569"
+            )
+            label.pack(side="left", expand=True)
+
+    def carregar_eventos_exemplo(self):
+        """Carrega eventos de exemplo"""
+        return [
+            {
+                "id": 1,
+                "nome": "Reunião de Planejamento",
+                "data": f"{datetime.now().year}-{datetime.now().month:02d}-15",
+                "hora": "14:00",
+                "descricao": "Reunião para planejar as atividades do trimestre.",
+                "endereco": "Sala 101 - Bloco A",
+                "status": "agendado"
+            },
+            {
+                "id": 2,
+                "nome": "Workshop de Python",
+                "data": f"{datetime.now().year}-{datetime.now().month:02d}-20",
+                "hora": "09:00",
+                "descricao": "Workshop sobre desenvolvimento em Python.",
+                "endereco": "Laboratório de Informática",
+                "status": "em_andamento"
+            },
+            {
+                "id": 3,
+                "nome": "Apresentação de Projetos",
+                "data": f"{datetime.now().year}-{datetime.now().month:02d}-25",
+                "hora": "16:00",
+                "descricao": "Apresentação dos projetos finais dos alunos.",
+                "endereco": "Auditório Principal",
+                "status": "finalizado"
+            }
+        ]
+
+    def atualizar_calendario(self):
+        """Atualiza o grid de dias do calendário"""
+        # Limpar dias anteriores
+        for widget in self.days_frame.winfo_children():
             widget.destroy()
         
-        if not self.eventos_data:
-            self.info_label = ctk.CTkLabel(
-                self.scroll_frame, 
-                text="Nenhum evento encontrado", 
-                text_color="gray"
+        # Configurar grid 6x7
+        for row in range(6):
+            self.days_frame.grid_rowconfigure(row, weight=1, minsize=100)
+        for col in range(7):
+            self.days_frame.grid_columnconfigure(col, weight=1, minsize=100)
+        
+        # Obter primeiro dia do mês
+        primeiro_dia = datetime(self.ano_atual, self.mes_atual, 1)
+        
+        # Encontrar o primeiro domingo do calendário
+        offset = (primeiro_dia.weekday() + 1) % 7
+        
+        # Preencher dias vazios iniciais
+        for i in range(offset):
+            empty_frame = ctk.CTkFrame(self.days_frame, fg_color="transparent")
+            empty_frame.grid(row=i//7, column=i%7, sticky="nsew", padx=1, pady=1)
+        
+        # Obter último dia do mês
+        ultimo_dia = (datetime(self.ano_atual, self.mes_atual + 1, 1) 
+                     if self.mes_atual < 12 
+                     else datetime(self.ano_atual + 1, 1, 1)) - timedelta(days=1)
+        num_dias = ultimo_dia.day
+        
+        # Preencher dias do mês
+        for dia in range(1, num_dias + 1):
+            posicao = offset + dia - 1
+            linha = posicao // 7
+            coluna = posicao % 7
+            
+            # Frame para o dia
+            dia_frame = ctk.CTkFrame(
+                self.days_frame,
+                corner_radius=8,
+                border_width=1,
+                border_color="#e0e0e0",
+                fg_color="#ffffff"
             )
-            self.info_label.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-            return
-        
-        # Exibe cada evento
-        for idx, evento in enumerate(self.eventos_data):
-            self.criar_card_evento(evento, idx)
-    
-    def criar_card_evento(self, evento, idx):
-        """Cria um card para exibir um evento"""
-        id_evento, nome, hora, data, descricao, endereco, id_usuario = evento
-        
-        card_frame = ctk.CTkFrame(self.scroll_frame, fg_color="#ffffff")
-        card_frame.grid(row=idx, column=0, sticky="ew", padx=5, pady=5)
-        card_frame.grid_columnconfigure(0, weight=1)
-        
-        # CABEÇALHO DO CARD
-        header_card = ctk.CTkFrame(card_frame, fg_color="#1f6aa5")
-        header_card.grid(row=0, column=0, sticky="ew")
-        header_card.grid_columnconfigure(0, weight=1)
-        
-        ctk.CTkLabel(
-            header_card,
-            text=nome,
-            font=("Arial", 14, "bold"),
-            text_color="white"
-        ).pack(anchor="w", padx=10, pady=5)
-        
-        # DETALHES
-        detalhes_frame = ctk.CTkFrame(card_frame, fg_color="white")
-        detalhes_frame.grid(row=1, column=0, sticky="ew", padx=10, pady=10)
-        detalhes_frame.grid_columnconfigure(0, weight=1)
-        
-        info_text = f"""
-📅 Data: {data}
-🕐 Hora: {hora}
-📍 Local: {endereco}
-📝 {descricao}
-        """.strip()
-        
-        ctk.CTkLabel(
-            detalhes_frame,
-            text=info_text,
-            text_color="#333",
-            font=("Arial", 11),
-            justify="left"
-        ).pack(anchor="w", padx=10, pady=10)
-        
-        # BOTÕES
-        botoes_card = ctk.CTkFrame(card_frame, fg_color="white")
-        botoes_card.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
-        
-        ctk.CTkButton(
-            botoes_card,
-            text="Editar",
-            width=60,
-            command=lambda: self.abrir_editar_evento(id_evento),
-            fg_color="#1976D2",
-            hover_color="#1565C0",
-            font=("Arial", 10)
-        ).pack(side="left", padx=5)
-        
-        ctk.CTkButton(
-            botoes_card,
-            text="Deletar",
-            width=60,
-            command=lambda: self.deletar_evento(id_evento),
-            fg_color="#C62828",
-            hover_color="#B71C1C",
-            font=("Arial", 10)
-        ).pack(side="left", padx=5)
-    
-    def abrir_criar_evento(self):
-        """Abre diálogo para criar novo evento"""
-        print("[VIEW EVENTOS] Abrindo criar evento...")
-        
-        dialog = ctk.CTkToplevel(self.janela)
-        dialog.title("Novo Evento")
-        dialog.geometry("400x500")
-        dialog.resizable(False, False)
-        
-        # CAMPOS
-        campo_frame = ctk.CTkFrame(dialog)
-        campo_frame.pack(padx=20, pady=20, fill="both", expand=True)
-        
-        labels_placeholders = [
-            ("Nome do Evento", "nome_evento"),
-            ("Data (YYYY-MM-DD)", "data_evento"),
-            ("Hora (HH:MM:SS)", "hora_evento"),
-            ("Endereço", "endereco"),
-            ("Descrição", "descricao"),
-        ]
-        
-        campos = {}
-        for label_text, chave in labels_placeholders:
-            ctk.CTkLabel(campo_frame, text=label_text, font=("Arial", 11)).pack(anchor="w", pady=(10, 0))
-            entry = ctk.CTkEntry(campo_frame, width=300)
-            entry.pack(pady=5, fill="x")
-            campos[chave] = entry
-        
-        # BOTÕES
-        def salvar():
-            try:
-                nome = campos["nome_evento"].get()
-                data = campos["data_evento"].get()
-                hora = campos["hora_evento"].get()
-                endereco = campos["endereco"].get()
-                descricao = campos["descricao"].get()
+            dia_frame.grid(row=linha, column=coluna, sticky="nsew", padx=1, pady=1)
+            
+            # Container interno
+            content_frame = ctk.CTkFrame(dia_frame, fg_color="transparent")
+            content_frame.pack(fill="both", expand=True, padx=8, pady=8)
+            
+            # Número do dia
+            dia_label = ctk.CTkLabel(
+                content_frame,
+                text=str(dia),
+                font=ctk.CTkFont(size=16, weight="bold"),
+                text_color="#2c3e50"
+            )
+            dia_label.pack(anchor="nw")
+            
+            # Verificar se é hoje
+            hoje = datetime.now()
+            if (self.ano_atual == hoje.year and 
+                self.mes_atual == hoje.month and 
+                dia == hoje.day):
+                dia_frame.configure(border_color="#3b82f6", border_width=2)
+                dia_label.configure(text_color="#3b82f6")
+            
+            # Verificar eventos do dia
+            data_str = f"{self.ano_atual}-{self.mes_atual:02d}-{dia:02d}"
+            eventos_dia = [e for e in self.eventos if e["data"] == data_str]
+            
+            # Se houver eventos, mostrar indicadores
+            if eventos_dia:
+                indicators_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
+                indicators_frame.pack(side="bottom", fill="x", pady=(5, 0))
                 
-                result = self.controller.criar_evento(nome, hora, data, descricao, endereco, self.id_usuario or 1)
-                if result[1]:
-                    print("[VIEW EVENTOS] Evento criado com sucesso")
-                    dialog.destroy()
-                    self.carregar_eventos()
-                else:
-                    print(f"[VIEW EVENTOS] Erro ao criar: {result[0]}")
-            except Exception as e:
-                print(f"[VIEW EVENTOS ERRO CRIAR] {str(e)}")
-        
-        botoes = ctk.CTkFrame(campo_frame)
-        botoes.pack(pady=20, fill="x")
-        
-        ctk.CTkButton(botoes, text="Salvar", command=salvar, fg_color="#2E7D32").pack(side="left", padx=5)
-        ctk.CTkButton(botoes, text="Cancelar", command=dialog.destroy, fg_color="#757575").pack(side="left", padx=5)
-    
-    def abrir_editar_evento(self, id_evento):
-        """Abre diálogo para editar evento (placeholder)"""
-        print(f"[VIEW EVENTOS] Editando evento {id_evento}")
-        # TODO: Implementar edição
-    
-    def deletar_evento(self, id_evento):
-        """Deleta um evento com confirmação"""
-        try:
-            print(f"[VIEW EVENTOS] Deletando evento {id_evento}...")
-            result = self.controller.deletar_evento(id_evento)
-            if result[1]:
-                self.carregar_eventos()
-        except Exception as e:
-            print(f"[VIEW EVENTOS ERRO DELETE] {str(e)}")
+                # Mostrar até 3 indicadores
+                for evento in eventos_dia[:3]:
+                    cor = self.get_cor_status(evento["status"])
+                    indicator = ctk.CTkFrame(
+                        indicators_frame,
+                        height=6,
+                        corner_radius=3,
+                        fg_color=cor
+                    )
+                    indicator.pack(side="left", fill="x", expand=True, padx=1)
 
+    def get_cor_status(self, status):
+        """Retorna a cor correspondente ao status"""
+        cores = {
+            "finalizado": "#ef4444",      # Vermelho
+            "em_andamento": "#f59e0b",    # Amarelo/laranja
+            "agendado": "#10b981"         # Verde
+        }
+        return cores.get(status, "#94a3b8")
 
-def run(master):
-    """Função para integração com a sidebar"""
-    return Eventos(master)
+    def alterar_mes(self, delta):
+        """Altera o mês atual"""
+        novo_mes = self.mes_atual + delta
+        novo_ano = self.ano_atual
+        
+        if novo_mes > 12:
+            novo_mes = 1
+            novo_ano += 1
+        elif novo_mes < 1:
+            novo_mes = 12
+            novo_ano -= 1
+        
+        self.ano_atual = novo_ano
+        self.mes_atual = novo_mes
+        
+        # Atualizar label do mês
+        meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+        self.month_label.configure(text=f"{meses[self.mes_atual - 1]} {self.ano_atual}")
+        
+        self.atualizar_calendario()
+
+    def ir_para_mes_atual(self):
+        """Vai para o mês atual"""
+        hoje = datetime.now()
+        self.ano_atual = hoje.year
+        self.mes_atual = hoje.month
+        
+        meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+        self.month_label.configure(text=f"{meses[self.mes_atual - 1]} {self.ano_atual}")
+        
+        self.atualizar_calendario()
+
+    def aplicar_filtros(self):
+        """Aplica filtros de busca"""
+        nome = self.nome_filter.get().strip().lower()
+        if nome:
+            print(f"Buscando eventos com: {nome}")
+        else:
+            print("Digite um termo para buscar")
+
+    def criar_evento(self):
+        """Cria novo evento"""
+        from tkinter import messagebox
+        messagebox.showinfo(
+            "Novo Evento",
+            "Funcionalidade de criar novo evento.\n"
+            "Aqui você implementaria um formulário para adicionar novos eventos."
+        )

@@ -54,8 +54,8 @@ class Home(ctk.CTkFrame):
                     nome_curso      = row.get("nome") or row.get("name") or row.get("titulo") or ""
                     imagem_curso    = row.get("imagem") or row.get("image") or ""
                     descricao_curso = row.get("descricao") or row.get("description") or ""
-                    data_inicio     = _to_str_date(row.get("data_inicio") or row.get("start_date"))
-                    data_final      = _to_str_date(row.get("data_final") or row.get("end_date"))
+                    # data_inicio     = _to_str_date(row.get("data_inicio") or row.get("start_date"))
+                    # data_final      = _to_str_date(row.get("data_final") or row.get("end_date"))
                 else:
                     # Quando o model retorna tuplas/listas com 5+ colunas
                     # Ajuste os índices conforme seu SELECT real.
@@ -63,8 +63,8 @@ class Home(ctk.CTkFrame):
                     nome_curso      = row[0] if len(row) > 0 else ""
                     imagem_curso    = row[1] if len(row) > 1 else ""
                     descricao_curso = row[2] if len(row) > 2 else ""
-                    data_inicio     = _to_str_date(row[3] if len(row) > 3 else "")
-                    data_final      = _to_str_date(row[4] if len(row) > 4 else "")
+                    # data_inicio     = _to_str_date(row[3] if len(row) > 3 else "")
+                    # data_final      = _to_str_date(row[4] if len(row) > 4 else "")
             except Exception as e:
                 print(f"DEBUG: falha ao ler linha do cursos_data: {e} | row={row}")
                 continue
@@ -73,8 +73,8 @@ class Home(ctk.CTkFrame):
                 "name": str(nome_curso or "").strip(),
                 "image": str(imagem_curso or "").strip(),
                 "description": str(descricao_curso or "").strip(),
-                "start_date": data_inicio or "",
-                "end_date": data_final or ""
+                # "start_date": data_inicio or "",
+                # "end_date": data_final or ""
             }
             self.cursos.append(curso)
     
@@ -113,8 +113,8 @@ class Home(ctk.CTkFrame):
         self.cards_container.grid_columnconfigure((0, 1, 2), weight=1, uniform="col")
 
         # Variáveis para filtros
-        self.data_inicio = None
-        self.data_fim = None
+        # self.data_inicio = None
+        # self.data_fim = None
         self.ordenar_var = ctk.StringVar(value="A-Z")
 
     def abrir_modal_filtros(self):
@@ -390,45 +390,45 @@ class Home(ctk.CTkFrame):
             desc_lbl.pack(pady=(0, 15), fill="x", expand=True)
             
             # 4. DATAS - Centralizadas em coluna
-            datas_frame = ctk.CTkFrame(main_container, fg_color="transparent")
-            datas_frame.pack(pady=(0, 15))
+            # datas_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+            # datas_frame.pack(pady=(0, 15))
             
             # Data de início
-            inicio_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
-            inicio_frame.pack(pady=2)
+            # inicio_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
+            # inicio_frame.pack(pady=2)
             
-            ctk.CTkLabel(
-                inicio_frame,
-                text="📅",
-                font=ctk.CTkFont(size=12),
-                text_color="#3498db"
-            ).pack(side="left", padx=(0, 8))
+            # ctk.CTkLabel(
+            #     inicio_frame,
+            #     text="📅",
+            #     font=ctk.CTkFont(size=12),
+            #     text_color="#3498db"
+            # ).pack(side="left", padx=(0, 8))
             
-            ctk.CTkLabel(
-                inicio_frame,
-                text=f"Início: {curso.get('start_date', 'Não definido')}",
-                font=ctk.CTkFont(size=11),
-                text_color="#7f8c8d"
-            ).pack(side="left")
+            # ctk.CTkLabel(
+            #     inicio_frame,
+            #     text=f"Início: {curso.get('start_date', 'Não definido')}",
+            #     font=ctk.CTkFont(size=11),
+            #     text_color="#7f8c8d"
+            # ).pack(side="left")
             
             # Data de término (se houver)
-            if curso.get("end_date"):
-                termino_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
-                termino_frame.pack(pady=2)
+            # if curso.get("end_date"):
+            #     termino_frame = ctk.CTkFrame(datas_frame, fg_color="transparent")
+            #     termino_frame.pack(pady=2)
                 
-                ctk.CTkLabel(
-                    termino_frame,
-                    text="⏱️",
-                    font=ctk.CTkFont(size=12),
-                    text_color="#e74c3c"
-                ).pack(side="left", padx=(0, 8))
+            #     ctk.CTkLabel(
+            #         termino_frame,
+            #         text="⏱️",
+            #         font=ctk.CTkFont(size=12),
+            #         text_color="#e74c3c"
+            #     ).pack(side="left", padx=(0, 8))
                 
-                ctk.CTkLabel(
-                    termino_frame,
-                    text=f"Término: {curso['end_date']}",
-                    font=ctk.CTkFont(size=11),
-                    text_color="#7f8c8d"
-                ).pack(side="left")
+            #     ctk.CTkLabel(
+            #         termino_frame,
+            #         text=f"Término: {curso['end_date']}",
+            #         font=ctk.CTkFont(size=11),
+            #         text_color="#7f8c8d"
+            #     ).pack(side="left")
             
             # 5. BOTÃO - Centralizado na parte inferior
             btn_entrar = ctk.CTkButton(
