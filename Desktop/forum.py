@@ -18,11 +18,11 @@ class ForumApp:
                 "topic": "Configuração de OSPF e balanceamento de carga",
                 "created": "20/03/2025",
                 "posts": [
-                    {"author": "Lucas Amaral", "message": "Galera, lembrando que amanhã é a apresentação dos projetos. Todo mundo com a topologia pronta?", "time": "12:15", "avatar": "LA"},
-                    {"author": "Carla Souza", "message": "Quase! Tô finalizando o OSPF ainda. Mais alguém usando?", "time": "12:17", "avatar": "CS"},
-                    {"author": "Vinícius Junior", "message": "Eu! Só travando no balanceamento de carga. 😊", "time": "12:17", "avatar": "VJ"},
-                    {"author": "Diego Maradona", "message": "Fiz isso ontem. Posso te mandar o exemplo!", "time": "12:18", "avatar": "DM"},
-                    {"author": "Ana", "message": "Meu foco é segurança com VLANs. Configurei DHCP snooping e port security 🛡️", "time": "12:20", "avatar": "AN"}
+                    {"author": "Lucas Amaral", "message": "Galera, lembrando que amanhã é a apresentação dos projetos. Todo mundo com a topologia pronta?", "time": "12:15"},
+                    {"author": "Carla Souza", "message": "Quase! Tô finalizando o OSPF ainda. Mais alguém usando?", "time": "12:17"},
+                    {"author": "Vinícius Junior", "message": "Eu! Só travando no balanceamento de carga. 😊", "time": "12:17"},
+                    {"author": "Diego Maradona", "message": "Fiz isso ontem. Posso te mandar o exemplo!", "time": "12:18"},
+                    {"author": "Ana", "message": "Meu foco é segurança com VLANs. Configurei DHCP snooping e port security 🛡️", "time": "12:20"}
                 ]
             },
             {
@@ -30,8 +30,8 @@ class ForumApp:
                 "topic": "Reparo de placas-mãe e substituição de componentes",
                 "created": "12/01/2025",
                 "posts": [
-                    {"author": "João Silva", "message": "Alguém tem experiência com reparo de placa mãe em Dell Inspiron?", "time": "10:30", "avatar": "JS"},
-                    {"author": "Maria Santos", "message": "Sim, qual o modelo específico? Já trabalhei com vários.", "time": "10:45", "avatar": "MS"}
+                    {"author": "João Silva", "message": "Alguém tem experiência com reparo de placa mãe em Dell Inspiron?", "time": "10:30"},
+                    {"author": "Maria Santos", "message": "Sim, qual o modelo específico? Já trabalhei com vários.", "time": "10:45"}
                 ]
             },
             {
@@ -39,8 +39,8 @@ class ForumApp:
                 "topic": "Firewalls, VLANs e políticas de segurança",
                 "created": "28/05/2025",
                 "posts": [
-                    {"author": "Carlos Oliveira", "message": "Discussão sobre firewalls de próxima geração e análise comportamental", "time": "09:15", "avatar": "CO"},
-                    {"author": "Fernanda Lima", "message": "Recomendo o pfSense para soluções open-source!", "time": "09:30", "avatar": "FL"}
+                    {"author": "Carlos Oliveira", "message": "Discussão sobre firewalls de próxima geração e análise comportamental", "time": "09:15"},
+                    {"author": "Fernanda Lima", "message": "Recomendo o pfSense para soluções open-source!", "time": "09:30"}
                 ]
             }
         ]
@@ -107,8 +107,7 @@ class ForumApp:
         # Lista de fóruns (scrollável)
         self.forums_list_frame = ctk.CTkScrollableFrame(
             left_column,
-            fg_color="transparent",
-            scrollbar_button_color="#9ca3af"
+            fg_color="transparent"
         )
         self.forums_list_frame.pack(fill="both", expand=True, padx=10)
         
@@ -238,7 +237,7 @@ class ForumApp:
             border_color=border_color
         )
         forum_frame.pack(fill="x", pady=(0, 10))
-        forum_frame.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        forum_frame.bind("<Button-1>", lambda e: self.load_forum(index))
         
         # Nome do fórum com contador
         name_frame = ctk.CTkFrame(forum_frame, fg_color="transparent")
@@ -251,7 +250,7 @@ class ForumApp:
             text_color="#111827"
         )
         name_label.pack(side="left")
-        name_label.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        name_label.bind("<Button-1>", lambda e: self.load_forum(index))
         
         # Contador de mensagens
         msg_count = len(forum["posts"])
@@ -262,20 +261,21 @@ class ForumApp:
             text_color="#6b7280"
         )
         count_label.pack(side="right")
-        count_label.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        count_label.bind("<Button-1>", lambda e: self.load_forum(index))
         
         # Tópico/Descrição
         topic_frame = ctk.CTkFrame(forum_frame, fg_color="transparent")
         topic_frame.pack(fill="x", padx=15, pady=(0, 5))
         
+        topic_text = forum["topic"][:40] + "..." if len(forum["topic"]) > 40 else forum["topic"]
         topic_label = ctk.CTkLabel(
             topic_frame,
-            text=f"📌 {forum['topic'][:40]}..." if len(forum['topic']) > 40 else f"📌 {forum['topic']}",
+            text=f"📌 {topic_text}",
             font=ctk.CTkFont(size=11),
             text_color="#4b5563"
         )
         topic_label.pack(side="left")
-        topic_label.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        topic_label.bind("<Button-1>", lambda e: self.load_forum(index))
         
         # Data de criação e ações
         footer_frame = ctk.CTkFrame(forum_frame, fg_color="transparent")
@@ -288,7 +288,7 @@ class ForumApp:
             text_color="#6b7280"
         )
         date_label.pack(side="left")
-        date_label.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        date_label.bind("<Button-1>", lambda e: self.load_forum(index))
         
         # Botões de ação (editar e excluir)
         actions_frame = ctk.CTkFrame(footer_frame, fg_color="transparent")
@@ -318,7 +318,7 @@ class ForumApp:
             fg_color="transparent",
             hover_color="#fee2e2",
             text_color="#ef4444",
-            command=lambda idx=index: self.delete_forum(idx)
+            command=lambda idx=index: self.confirm_delete_forum(idx)
         )
         delete_btn.pack(side="left")
         
@@ -329,7 +329,7 @@ class ForumApp:
             font=ctk.CTkFont(size=12)
         )
         link_label.pack(side="right", padx=(10, 0))
-        link_label.bind("<Button-1>", lambda e, idx=index: self.load_forum(idx))
+        link_label.bind("<Button-1>", lambda e: self.load_forum(index))
     
     def load_forum(self, index):
         """Carrega um fórum específico"""
@@ -397,6 +397,118 @@ class ForumApp:
         )
         time_label.pack(anchor="w")
     
+    def confirm_delete_forum(self, index):
+        """Abre janela de confirmação para excluir fórum"""
+        forum_name = self.forums[index]["name"]
+        
+        dialog = ctk.CTkToplevel(self.root)
+        dialog.title("Excluir fórum")
+        dialog.geometry("450x280")
+        dialog.resizable(False, False)
+        dialog.grab_set()
+        
+        # Centralizar
+        dialog.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() // 2) - (450 // 2)
+        y = self.root.winfo_y() + (self.root.winfo_height() // 2) - (280 // 2)
+        dialog.geometry(f"+{x}+{y}")
+        
+        # Conteúdo
+        content = ctk.CTkFrame(dialog, fg_color="white")
+        content.pack(fill="both", expand=True, padx=25, pady=25)
+        
+        # Ícone de alerta
+        alert_label = ctk.CTkLabel(
+            content,
+            text="⚠️",
+            font=ctk.CTkFont(size=48)
+        )
+        alert_label.pack(pady=(0, 10))
+        
+        # Mensagem
+        msg_label = ctk.CTkLabel(
+            content,
+            text="Tem certeza que deseja excluir este fórum?",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="#111827"
+        )
+        msg_label.pack(pady=(0, 5))
+        
+        forum_name_label = ctk.CTkLabel(
+            content,
+            text=f"\"{forum_name}\"",
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color="#ef4444"
+        )
+        forum_name_label.pack(pady=(0, 10))
+        
+        sub_msg = ctk.CTkLabel(
+            content,
+            text="Todas as mensagens serão permanentemente perdidas.",
+            font=ctk.CTkFont(size=12),
+            text_color="#6b7280"
+        )
+        sub_msg.pack(pady=(0, 20))
+        
+        # Botões
+        buttons_frame = ctk.CTkFrame(content, fg_color="transparent")
+        buttons_frame.pack(fill="x", pady=(5, 0))
+        
+        cancel_btn = ctk.CTkButton(
+            buttons_frame,
+            text="Cancelar",
+            width=110,
+            height=40,
+            fg_color="transparent",
+            hover_color="#f3f4f6",
+            text_color="#374151",
+            border_width=1,
+            border_color="#d1d5db",
+            font=ctk.CTkFont(size=13),
+            command=dialog.destroy
+        )
+        cancel_btn.pack(side="left", padx=(0, 10))
+        
+        delete_btn = ctk.CTkButton(
+            buttons_frame,
+            text="Sim, excluir",
+            width=130,
+            height=40,
+            font=ctk.CTkFont(size=13, weight="bold"),
+            fg_color="#ef4444",
+            hover_color="#dc2626",
+            command=lambda: self.delete_forum(index, dialog)
+        )
+        delete_btn.pack(side="right")
+    
+    def delete_forum(self, index, dialog):
+        """Exclui o fórum"""
+        # Fechar janela de confirmação
+        dialog.destroy()
+        
+        # Remover fórum da lista
+        del self.forums[index]
+        
+        # Ajustar índice atual
+        if len(self.forums) == 0:
+            # Criar fórum padrão se não houver nenhum
+            default_forum = {
+                "name": "Fórum principal",
+                "topic": "Discussões gerais",
+                "created": datetime.now().strftime("%d/%m/%Y"),
+                "posts": []
+            }
+            self.forums.append(default_forum)
+            self.load_forum(0)
+        else:
+            if index == 0:
+                self.load_forum(0)
+            else:
+                self.load_forum(index - 1)
+        
+        # Atualizar lista
+        self.load_forums_list()
+    
     def setup_events(self):
         """Configura eventos"""
         self.create_forum_btn.configure(command=self.create_new_forum)
@@ -416,7 +528,7 @@ class ForumApp:
             self.reply_entry.insert("1.0", "Digite sua resposta...")
     
     def create_new_forum(self):
-        """Cria um novo fórum com nome e tópico"""
+        """Cria um novo fórum"""
         dialog = ctk.CTkToplevel(self.root)
         dialog.title("Criar novo fórum")
         dialog.geometry("500x400")
@@ -514,7 +626,6 @@ class ForumApp:
                 self.load_forum(len(self.forums) - 1)
                 dialog.destroy()
             else:
-                # Mostrar erro
                 error_label = ctk.CTkLabel(
                     content,
                     text="Preencha todos os campos!",
@@ -641,14 +752,12 @@ class ForumApp:
                 self.forums[index]["topic"] = new_topic
                 self.load_forums_list()
                 
-                # Se for o fórum atual, atualizar título e tópico
                 if index == self.current_forum_index:
                     self.current_forum_title.configure(text=f"## {new_name}")
                     self.current_forum_topic.configure(text=new_topic)
                 
                 dialog.destroy()
             else:
-                # Mostrar erro
                 error_label = ctk.CTkLabel(
                     content,
                     text="Preencha todos os campos!",
@@ -669,131 +778,18 @@ class ForumApp:
         )
         save_btn.pack(side="right")
     
-    def delete_forum(self, index):
-        """Exclui um fórum"""
-        forum_name = self.forums[index]["name"]
-        
-        dialog = ctk.CTkToplevel(self.root)
-        dialog.title("Excluir fórum")
-        dialog.geometry("450x250")
-        dialog.resizable(False, False)
-        dialog.grab_set()
-        
-        # Centralizar
-        dialog.update_idletasks()
-        x = self.root.winfo_x() + (self.root.winfo_width() // 2) - (450 // 2)
-        y = self.root.winfo_y() + (self.root.winfo_height() // 2) - (250 // 2)
-        dialog.geometry(f"+{x}+{y}")
-        
-        # Conteúdo
-        content = ctk.CTkFrame(dialog, fg_color="white")
-        content.pack(fill="both", expand=True, padx=25, pady=25)
-        
-        # Ícone de alerta
-        alert_label = ctk.CTkLabel(
-            content,
-            text="⚠️",
-            font=ctk.CTkFont(size=40)
-        )
-        alert_label.pack(pady=(0, 15))
-        
-        # Mensagem
-        msg_label = ctk.CTkLabel(
-            content,
-            text=f"Tem certeza que deseja excluir o fórum?",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#111827"
-        )
-        msg_label.pack(pady=(0, 5))
-        
-        forum_name_label = ctk.CTkLabel(
-            content,
-            text=f"\"{forum_name}\"",
-            font=ctk.CTkFont(size=15, weight="bold"),
-            text_color="#ef4444"
-        )
-        forum_name_label.pack(pady=(0, 10))
-        
-        sub_msg = ctk.CTkLabel(
-            content,
-            text="Todas as mensagens serão permanentemente perdidas.",
-            font=ctk.CTkFont(size=13),
-            text_color="#6b7280"
-        )
-        sub_msg.pack(pady=(0, 20))
-        
-        # Botões
-        buttons_frame = ctk.CTkFrame(content, fg_color="transparent")
-        buttons_frame.pack(fill="x")
-        
-        cancel_btn = ctk.CTkButton(
-            buttons_frame,
-            text="Cancelar",
-            width=110,
-            height=40,
-            fg_color="transparent",
-            hover_color="#f3f4f6",
-            text_color="#374151",
-            border_width=1,
-            border_color="#d1d5db",
-            font=ctk.CTkFont(size=13),
-            command=dialog.destroy
-        )
-        cancel_btn.pack(side="left", padx=(0, 10))
-        
-        def confirm_delete():
-            # Remover fórum
-            del self.forums[index]
-            
-            # Ajustar índice atual
-            if len(self.forums) > 0:
-                if index >= len(self.forums):
-                    index = len(self.forums) - 1
-                self.load_forum(index)
-            else:
-                # Criar fórum padrão se não houver nenhum
-                default_forum = {
-                    "name": "Fórum principal",
-                    "topic": "Discussões gerais",
-                    "created": datetime.now().strftime("%d/%m/%Y"),
-                    "posts": []
-                }
-                self.forums.append(default_forum)
-                self.load_forum(0)
-            
-            self.load_forums_list()
-            dialog.destroy()
-        
-        delete_btn = ctk.CTkButton(
-            buttons_frame,
-            text="Sim, excluir",
-            width=130,
-            height=40,
-            font=ctk.CTkFont(size=13, weight="bold"),
-            fg_color="#ef4444",
-            hover_color="#dc2626",
-            command=confirm_delete
-        )
-        delete_btn.pack(side="right")
-    
     def send_message(self):
         """Envia uma nova mensagem"""
         message = self.reply_entry.get("1.0", "end-1c").strip()
         if message and message != "Digite sua resposta...":
-            # Adicionar mensagem ao fórum atual
             new_post = {
                 "author": "Você",
                 "message": message,
-                "time": datetime.now().strftime("%H:%M"),
-                "avatar": "VC"
+                "time": datetime.now().strftime("%H:%M")
             }
             self.forums[self.current_forum_index]["posts"].append(new_post)
-            
-            # Recarregar conversas e lista
             self.load_forum(self.current_forum_index)
             self.load_forums_list()
-            
-            # Limpar campo
             self.reply_entry.delete("1.0", "end")
             self.reply_entry.insert("1.0", "Digite sua resposta...")
     
@@ -805,7 +801,6 @@ class ForumApp:
             self.load_forums_list()
             return
         
-        # Filtrar fóruns que correspondem à busca
         filtered_forums = []
         for forum in self.forums:
             if (search_term in forum["name"].lower() or 
@@ -815,7 +810,6 @@ class ForumApp:
                     for post in forum["posts"])):
                 filtered_forums.append(forum)
         
-        # Atualizar lista com resultados
         for widget in self.forums_list_frame.winfo_children():
             widget.destroy()
         
