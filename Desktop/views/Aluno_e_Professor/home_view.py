@@ -10,29 +10,31 @@ from assets.cores import *
 
 class Home(ctk.CTkFrame):
     def __init__(self, master):  
-        super().__init__(master)
-
+        super().__init__(master, fg_color="#f5f7fb")
         self.janela = master
 
-        # cores
-        self.cor_fundo = "#f5f7fb"
-        self.janela.configure(fg_color=self.cor_fundo)
+        from sidebar_AP import Sidebar, sidebar
+        
+        # 2. Verifica se a Sidebar já existe
+        sidebar_existente = None
+        for widget in self.janela.winfo_children():
+            if isinstance(widget, Sidebar):
+                sidebar_existente = widget
+                break
 
-        # Configurar este frame para expandir
-        self.configure(fg_color=self.cor_fundo)
-        self.pack(fill="both", expand=True)
+        # 3. GARANTE A SIDEBAR PRIMEIRO
+        if not sidebar_existente:
+            # Se não existe, cria. O pack(side="left") dela reserva a esquerda.
+            sidebar_existente, _ = sidebar(self.janela)
+        
+        # 4. AGORA damos pack na Home (self) usando side="right"
+        # Isso garante que ela preencha o que sobrou à direita da sidebar
+        self.pack(side="right", fill="both", expand=True)
 
-        # Criar um container principal dentro do frame Home
+        # 5. Todo o seu conteúdo interno continua normal
         self.container_principal = ctk.CTkFrame(self, fg_color="transparent")
-        self.container_principal.pack(fill="both", expand=True, side="left")
-        
-        # Importar sidebar (OOP) de forma tardia (evita import circular)
-        from sidebar_AP import sidebar
-        
-        # Criar sidebar - passa self (frame Home) como master
-        sidebar(self.container_principal)
-        
-        # Agora criar o conteúdo dentro do mesmo container
+        self.container_principal.pack(fill="both", expand=True)
+
         self.criar_interface()
 
         # --- Carrega cursos de forma robusta (evita ValueError de unpack) ---
