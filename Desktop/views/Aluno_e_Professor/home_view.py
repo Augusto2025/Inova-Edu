@@ -142,8 +142,24 @@ class Home(ctk.CTkFrame):
             w.destroy()
 
         cursos = lista if lista is not None else self.cursos
+
+        if not cursos:
+            # Container centralizado para a mensagem de erro
+            empty_frame = ctk.CTkFrame(self.cards_container, fg_color="transparent")
+            empty_frame.pack(expand=True, pady=100)
+
+            ctk.CTkLabel(empty_frame, text="🔍", font=ctk.CTkFont(size=50)).pack()
+            ctk.CTkLabel(empty_frame, 
+                         text="Nenhum curso encontrado com esse nome.", 
+                         font=ctk.CTkFont(size=18, weight="bold"),
+                         text_color=azulEscuro).pack(pady=10)
+            ctk.CTkLabel(empty_frame, 
+                         text="Tente digitar algo diferente ou verifique os filtros.", 
+                         font=ctk.CTkFont(size=14),
+                         text_color=CinzaTexto).pack()
+            return
+
         cols = 3
-        
         for idx, curso in enumerate(cursos):
             r = idx // cols
             c = idx % cols
@@ -169,26 +185,25 @@ class Home(ctk.CTkFrame):
             # Botão de Ação (Azul para combinar com o tema)
             ctk.CTkButton(card, text="Acessar Curso", fg_color=azulEscuro, hover_color=azulClaro,
                           height=40, width=50, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-                          command=lambda c=curso: print(f"Acessando: {c['name']}")).pack(side="bottom", fill="x", padx=20, pady=20)
+                          command=lambda c=curso: self.entrar_no_curso(c)).pack(side="bottom", fill="x", padx=20, pady=20)
 
     def entrar_no_curso(self, curso):
         """Troca a tela atual pela tela da Turma"""
         print(f"Navegando para o curso: {curso['name']}")
         
-        # 1. Importação 'Lazy' (dentro da função) para evitar importação circular
         try:
-            # Substitua 'views.Aluno_e_Professor.turma_view' pelo caminho real do seu arquivo
+            # Importação Lazy para evitar erro circular
             from views.Aluno_e_Professor.turma_view import TurmasDesktopDashboard 
             
-            # 2. Limpar a tela atual (Home)
+            # 1. Esconde a Home
             self.pack_forget() 
             
-            # 3. Instanciar a nova tela da Turma
-            # Passamos o 'self.janela' (que é o root) e o nome do curso selecionado
-            tela_turma = TurmasDesktopDashboard(self.janela, nome_curso=curso['name'])
+            # 2. Instancia a Turma APENAS com o master (self.janela)
+            # Removemos o 'nome_curso' daqui
+            tela_turma = TurmasDesktopDashboard(self.janela) 
             tela_turma.pack(side="right", fill="both", expand=True)
             
         except ImportError as e:
             print(f"Erro: Arquivo da Turma não encontrado! {e}")
             from tkinter import messagebox
-            messagebox.showerror("Erro de Navegação", "A tela da turma ainda não foi implementada ou o caminho está incorreto.")
+            messagebox.showerror("Erro de Navegação", "A tela da turma não foi encontrada.")

@@ -10,6 +10,7 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
         self.janela = master
+        
         self.configure(fg_color="#f0f2f5") # Fundo estilo software corporativo
         
         # Dados estruturados com a cor padronizada #3b82f6
@@ -26,6 +27,16 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
             ]
         }
         
+        # --- INTEGRAÇÃO COM A SIDEBAR ---
+        from sidebar_AP import Sidebar, sidebar
+        sidebar_existente = None
+        for widget in self.janela.winfo_children():
+            if isinstance(widget, Sidebar):
+                sidebar_existente = widget
+                break
+        if not sidebar_existente:
+            sidebar(self.janela)
+
         self.pack(side="right", fill="both", expand=True)
         self.criar_interface()
 
@@ -108,16 +119,35 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         btn_usuarios.pack(side="left", expand=True, padx=(0, 5))
 
         # Botão Gerenciar
-        btn_gerenciar = ctk.CTkButton(button_row, text="Projetos", height=32, width=100,
+        btn_projetos = ctk.CTkButton(button_row, text="Projetos", height=32, width=100,
                                       fg_color="#3b82f6", text_color="#ffffff", hover_color="#2563eb",
                                       font=ctk.CTkFont(size=12, weight="bold"),
-                                      command=lambda: print(f"Gerenciar: {turma['cod']}"))
-        btn_gerenciar.pack(side="left", expand=True, padx=(5, 0))
+                                      command=lambda: self.abrir_projetos(turma["cod"]))
+        btn_projetos.pack(side="left", expand=True, padx=(5, 0))
+    
+    def abrir_projetos(self, turma_cod):
+        """Navega para a tela de projetos da turma selecionada"""
+        try:
+            # Importação lazy para evitar erro de circularidade
+            from views.Aluno_e_Professor.projetos_view import ProjetosDesktopDashboard
+            
+            # 1. Limpa a tela de turmas
+            self.pack_forget()
+            
+            # 2. Instancia e exibe a tela de projetos
+            # Note que não passamos o código da turma conforme seu pedido de "apenas entrar"
+            tela_projetos = ProjetosDesktopDashboard(self.janela)
+            tela_projetos.pack(side="right", fill="both", expand=True)
+            
+        except ImportError as e:
+            from tkinter import messagebox
+            messagebox.showerror("Erro", f"Não foi possível carregar a tela de projetos.\n{e}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("light") # Garante o visual claro corporativo
     root = ctk.CTk()
     root.geometry("1150x750")
     root.title("Inova Edu - Desktop Admin")
+    root.attributes("-fullscreen", True)
     app = TurmasDesktopDashboard(root)
     root.mainloop()
