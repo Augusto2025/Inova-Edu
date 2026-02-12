@@ -152,57 +152,31 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
 
     
     def autentificacao(self):
-        try:
-            print("[LOGIN] Clicou Entrar")
-            tipo = ""
-            usuario = self.usuario.get()
-            senha = self.senha.get()
-            
-            if not usuario or not senha:
-                self.erro.configure(text="Preencha email e senha")
-                return
-            
-            print(f"[LOGIN] Autenticando usuario: {usuario}")
-            result = autenticar(usuario, senha, tipo)
-            print(f"[LOGIN] Resultado: {result}")
-            
-            if isinstance(result, tuple) and len(result) >= 2 and result[1]:
-                # Se o segundo valor da tupla é True (autenticado)
-                tipo = result[0]  # O tipo de usuário retornado
-                print(f"[LOGIN] Autenticado! Tipo: {tipo}")
+        tipo = ""
+        result = autenticar(self.usuario.get(), self.senha.get(), tipo)
+        print(result)
+        if result[1]:  # Se o segundo valor da tupla é True (autenticado)
+            tipo = result[0]  # O tipo de usuário retornado
 
-                # Abre a HOME como nova janela
-                if tipo == "Aluno" or tipo == "Professor":
-                    try:
-                        print("[LOGIN] Abrindo Home...")
-                        self.destroy()  # Fecha a tela de login
-                        
-                        print("[LOGIN] Importando Home...")
-                        from views.Aluno_e_Professor.home_view import Home
-                        print("[LOGIN] Criando instância de Home...")
-                        self.home_aluno_screen = Home(self.master)
-                        print("[LOGIN] Empacotando Home...")
-                        self.home_aluno_screen.pack(expand=True, fill="both")
-                        print("[LOGIN] Home aberta com sucesso!")
-                    except Exception as home_error:
-                        import traceback
-                        print(f"[LOGIN HOME ERRO] {str(home_error)}")
-                        print(f"[LOGIN HOME TRACEBACK] {traceback.format_exc()}")
-                        self.erro.configure(text=f"Erro ao abrir home: {str(home_error)}")
-                elif tipo == "Coordenador":
-                    print("[LOGIN] Tipo Coordenador (placeholder)")
-                    pass
-            else:
-                # result é uma tupla (mensagem, False)
-                mensagem = result[0] if isinstance(result, tuple) else str(result)
-                print(f"[LOGIN] Falha na autenticacao: {mensagem}")
-                self.erro.configure(text=mensagem)
-        except Exception as e:
-            import traceback
-            print(f"[LOGIN ERRO GERAL] {str(e)}")
-            print(f"[LOGIN TRACEBACK GERAL] {traceback.format_exc()}")
-            try:
-                self.erro.configure(text=f"Erro: {str(e)}")
-            except:
-                print("[LOGIN] Erro ao atualizar label de erro")
+            # Abre a HOME como nova janela
+            if tipo == "Aluno" or tipo == "Professor":
+                self.destroy()  # Fecha a tela de login
+                
+                from views.Aluno_e_Professor.home_view import Home
+                self.home_aluno_screen = Home(self.master)
+                self.home_aluno_screen.pack(expand=True, fill="both")
+                
+                # falta implementar a tela do coordenador
+            elif tipo == "Coordenador":
+                print("teste de tela iniciada da home")
+                self.destroy()
+                
+                from views.Coordenacao.HomeCoordenador import HomeCoordenador
+                self.home_coordenador_screen = HomeCoordenador(self.master)
+                self.home_coordenador_screen.pack(expand=True, fill="both")
+                              
+        else:
+            # result é uma tupla (mensagem, False)
+            mensagem, ok = result
+            self.erro.configure(text=mensagem)
 
