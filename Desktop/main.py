@@ -1,48 +1,38 @@
 import customtkinter as ctk
 from views.login_view import tela_login
+import traceback
+import sys
 
 ctk.set_appearance_mode("light")
+
+# Configuração global para capturar exceções não tratadas
+def global_exception_handler(exc_type, exc_value, exc_traceback):
+    """Captura exceções não tratadas"""
+    print(f"\n[ERRO GLOBAL] {exc_type.__name__}: {exc_value}")
+    print(f"[TRACEBACK] {traceback.format_exc()}")
+
+sys.excepthook = global_exception_handler
+
 class main(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("1350x700")
-        self.title("Sistema Acadêmico - INOVA EDU")
+        try:
+            self.title("Sistema Acadêmico - INOVA EDU")
+            self.attributes("-fullscreen", True)
 
-        self.login_screen = tela_login(self)
-        self.login_screen.pack(expand=True, fill="both")
+            self.login_screen = tela_login(self)
+            self.login_screen.pack(expand=True, fill="both")
+            print("[MAIN] App iniciada")
+        except Exception as e:
+            print(f"[MAIN ERRO] {str(e)}")
+            traceback.print_exc()
+            raise
 
 
 if __name__ == "__main__":
-    # Inicia com a tela de perfil acadêmico
-    app = main()
-    app.mainloop()
-
-
-# ------ Estou testando o login padronizado ------
-# depois tu coloca alinhado com o meu login esse teu código abaixo
-
-# from Desktop.menu_com_perfil import sidebar
-
-# Para iniciar em uma tela específica, por exemplo:
-# def iniciar_sistema(tela_inicial="perfil_academico"):
-#     """Iniciar o sistema com a tela inicial especificada"""
-#     ctk.set_appearance_mode("light")
-    
-#     if tela_inicial == "perfil_academico":
-#         from perfil_academico import UserProfileSystem
-#         app = UserProfileSystem()
-#     elif tela_inicial == "home":
-#         from Desktop.menu_com_perfil import Home
-#         app = Home()
-#     else:
-#         # Tela padrão com menu lateral
-#         app = ctk.CTk()
-#         app.geometry("1350x700")
-#         app.title("Sistema Acadêmico - INOVA EDU")
-#         sidebar(app)
-    
-#     app.run()
-
-# if __name__ == "__main__":
-#     # Inicia com a tela de perfil acadêmico
-#     iniciar_sistema("perfil_academico")
+    try:
+        app = main()
+        app.mainloop()
+    except Exception as e:
+        print(f"[MAIN FATAL] {str(e)}")
+        traceback.print_exc()
