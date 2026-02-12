@@ -1,4 +1,3 @@
-# model/models/login_model.py
 from config.banco import conectar
 
 class UsuarioModel:
@@ -12,6 +11,25 @@ class UsuarioModel:
         senha,
         descricao
     ):
-        # depois aqui entra o banco (SQLite, MySQL etc)
-        print("📦 Salvando usuário no banco...")
-        print(imagem, tipo, nome, sobrenome, email, senha, descricao)
+        conn = conectar()
+        cursor = conn.cursor()
+
+        sql = """
+            INSERT INTO usuarios
+            (imagem, tipo, nome, sobrenome, email, senha, descricao)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(sql, (
+            imagem,
+            tipo,
+            nome,
+            sobrenome,
+            email,
+            senha,
+            descricao
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()

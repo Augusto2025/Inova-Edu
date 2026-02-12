@@ -17,7 +17,7 @@ class HomeCoordenador(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        # ================= CONFIGURAÇÃO GLOBAL =================
+        # ================= CONFIGURAÇÃO GLOBAL' =================
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
 

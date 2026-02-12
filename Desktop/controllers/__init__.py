@@ -1,6 +1,7 @@
 def __init__(self, main_content_frame, menu_frame):
     self.main_content_frame = main_content_frame
     self.menu_frame = menu_frame
+   
     
     # Importar Model
     from models.user_model import UserModel
@@ -11,6 +12,7 @@ def __init__(self, main_content_frame, menu_frame):
     self.model = UserModel()
     self.image_utils = ImageUtils
     self.file_utils = FileUtils
+    self.controller = UsuarioController()
     
     # Importar Views
     from views.profile_view import ProfileView

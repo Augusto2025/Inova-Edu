@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from tkinter import filedialog
+# from controllers.usuario_controller import UsuarioController
 
 
 
@@ -13,6 +14,7 @@ class CadastroUsuarios:
         self.janela = ctk.CTk()
         self.janela.title("Sistema de Cadastro de Usuários")
         self.janela.geometry("1100x800")
+        self.janela.attributes("-fullscreen", True)  # TELA INTEIRA
         
         # Configurar cores personalizadas
         self.cor_azul = "#004a8d"
@@ -41,6 +43,10 @@ class CadastroUsuarios:
         self.criar_tela_cadastro(self.view_cadastro)
 
         self.view_cadastro.pack(fill="both", expand=True)
+        
+        
+        
+        
 
         
         
@@ -384,31 +390,30 @@ class CadastroUsuarios:
         )
         
         if resposta:
-            # Aqui você normalmente salvaria no banco de dados
-            dados = {
-                "Nome": nome,
-                "Sobrenome": sobrenome,
-                "Nome Completo": f"{nome} {sobrenome}",
-                "Email": email,
-                "Tipo": tipo,
-                "Imagem": imagem if imagem else "Padrão do sistema",
-                "Descrição": descricao if descricao.strip() else "Sem descrição"
-            }
-            
-            # Mostrar mensagem de sucesso
-            messagebox.showinfo(
-                "Sucesso!", 
-                f"✅ Usuário '{nome} {sobrenome}' salvo com sucesso!\n\n"
-                f"👤 Detalhes do cadastro:\n"
-                f"• Nome completo: {nome} {sobrenome}\n"
-                f"• Email: {email}\n"
-                f"• Tipo: {tipo}\n"
-                f"• Status: Cadastro ativo",
-                icon="info"
-            )
-            
-            # Limpar campos após salvar
-            self.limpar_campos()
+            try:
+                self.model.cadastrar(
+                    imagem=imagem if imagem else None,
+                    tipo=tipo,
+                    nome=nome,
+                    sobrenome=sobrenome,
+                    email=email,
+                    senha="123456",
+                    descricao=descricao
+                )
+
+                messagebox.showinfo(
+                    "Sucesso",
+                    "✅ Usuário salvo com sucesso no banco!"
+                )
+
+                self.limpar_campos()
+
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Erro ao salvar no banco:\n{e}"
+                )
+
     
     def cancelar_operacao(self):
         """Função do botão Cancelar"""
@@ -496,3 +501,5 @@ class CadastroUsuarios:
 if __name__ == "__main__":
     app = CadastroUsuarios()
     app.run()
+    
+    

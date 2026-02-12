@@ -11,6 +11,7 @@ class CadastroCursos:
         self.janela = ctk.CTk()
         self.janela.title("Sistema de Cadastro de Cursos")
         self.janela.geometry("1000x600")
+        self.janela.attributes("-fullscreen", True)  # TELA INTEIRA
         
         # Configurar cores personalizadas
         self.cor_azul = "#004a8d"

@@ -281,6 +281,7 @@ if __name__ == "__main__":
     app = ctk.CTk()
     app.geometry("1300x650")
     app.title("Sistema de Gestão de Cursos")
+    app.attributes("-fullscreen", True)
 
     # Container principal
     main_container = ctk.CTkFrame(app)

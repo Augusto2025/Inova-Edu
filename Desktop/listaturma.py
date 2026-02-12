@@ -200,6 +200,7 @@ if __name__ == "__main__":
     app = ctk.CTk()
     app.geometry("1300x650")
     app.title("Sistema de Gestão de Turmas")
+    app.attributes("-fullscreen", True)
 
     # IMPORTANTE: A sidebar usa pack(), então precisamos configurar o layout assim:
     # 1. Primeiro criamos o frame principal
