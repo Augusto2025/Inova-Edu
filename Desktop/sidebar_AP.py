@@ -83,7 +83,7 @@ class Sidebar(ctk.CTkFrame):
         mapa_telas = {
             "home": {"modulo": "views.Aluno_e_Professor.home_view", "classe": "Home"},
             "eventos": {"modulo": "views.Aluno_e_Professor.eventos_view", "classe": "CalendarioDesktopApp"},
-            "forum": {"modulo": "cadastro_usuario", "classe": "CadastroUsuarios"},
+            "forum": {"modulo": "views.Aluno_e_Professor.forum_view", "classe": "Forum"},
             "perfil": {"modulo": "perfil_academico", "classe": "UserProfileSystem"}
         }
         
