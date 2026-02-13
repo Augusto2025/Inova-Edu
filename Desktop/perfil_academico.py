@@ -6,26 +6,29 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Importar o menu lateral
-from menu_com_perfil import sidebar
+# from menu_com_perfil import sidebar
 
 print("DEBUG: Iniciando perfil_academico.py")
 
-class UserProfileSystem:
-    def __init__(self):
-        self.app = ctk.CTk()
-        self.app.title("Sistema de Perfil Acadêmico - INOVA EDU")
-        self.app.geometry("1350x700")
-        self.app.resizable(True, True)
+class UserProfileSystem(ctk.CTkFrame):
+    def __init__(self, master=None):
+        super().__init__(master)
+
+        self.janela = master
+
+        from sidebar_AP import Sidebar, sidebar
         
-        ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("blue")
-        
-        # Menu lateral
-        print("DEBUG: Criando menu lateral...")
-        self.menu_frame, self.botoes_menu = sidebar(self.app)
+        sidebar_existente = None
+        for widget in self.janela.winfo_children():
+            if isinstance(widget, Sidebar):
+                sidebar_existente = widget
+                break
+
+        if not sidebar_existente:
+            sidebar_existente, _ = sidebar(self.janela)
         
         # Frame principal
-        self.main_content_frame = ctk.CTkFrame(self.app, fg_color="transparent")
+        self.main_content_frame = ctk.CTkFrame(self.janela, fg_color="transparent")
         self.main_content_frame.pack(side="right", fill="both", expand=True, padx=20, pady=20)
         
         # Criar diretórios necessários
@@ -38,9 +41,8 @@ class UserProfileSystem:
             print("DEBUG: ProfileController importado com sucesso!")
             
             # Inicializar controller
-            self.controller = ProfileController(self.main_content_frame, self.menu_frame)
+            self.controller = ProfileController(self.main_content_frame, sidebar_existente)
             print("DEBUG: Controller inicializado com sucesso!")
-            
         except ImportError as e:
             print(f"DEBUG: Erro ao importar: {e}")
             # Fallback: mostrar interface básica
@@ -75,21 +77,9 @@ class UserProfileSystem:
             font=("Arial", 18),
             text_color="#E74C3C"
         ).pack(pady=20)
-    
-    def run(self):
-        """
-        Executar aplicação
-        """
-        print("DEBUG: Iniciando mainloop...")
-        self.app.mainloop()
-
-def main():
-    """
-    Função principal
-    """
-    print("DEBUG: Executando main()...")
-    app = UserProfileSystem()
-    app.run()
 
 if __name__ == "__main__":
-    main()
+    app = ctk.CTk()
+    app.geometry("1100x700")
+    UserProfileSystem(master=app).pack(fill="both", expand=True)
+    app.mainloop()
