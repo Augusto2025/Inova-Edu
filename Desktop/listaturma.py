@@ -16,18 +16,11 @@ class ListaTurmasApp:
         # ───────────── DADOS DAS TURMAS ─────────────
         self.turmas = [
             ("2025.10.111", "Manhã", "2025", "Desenvolvimento de sistemas", "📌", "🔒"),
-            ("2025.02.001", "Tarde", "0", "Administrador de Banco de dados", "📌", "🔒"),
-            ("2025.10.201", "Noite", "0", "Administrador de Redes", "📌", "🔒"),
-            ("2025.12.115", "Manhã", "0", "IT Essentials", "📌", "🔒"),
-            ("2025.05.210", "Tarde", "0", "Programação Web", "📌", "🔒"),
-            ("2024.09.001", "Noite", "0", "Segurança da Informação", "📌", "🔒"),
-            ("2025.06.300", "Manhã", "0", "Design Gráfico", "📌", "🔒"),
-            ("2025.07.101", "Noite", "0", "Engenharia de Software", "📌", "🔒"),
-            ("2025.10.111", "Manhã", "0", "Desenvolvimento de sistemas", "📌", "🔒"),
-            ("2025.10.201", "Noite", "0", "Administrador de Redes", "📌", "🔒"),
-            ("2025.12.115", "Manhã", "0", "IT Essentials", "📌", "🔒"),
-            ("2025.05.210", "Tarde", "0", "Programação Web", "📌", "🔒"),
-            ("2024.09.001", "Noite", "0", "Segurança da Informação", "📌", "🔒"),
+            ("2025.02.001", "Tarde", "2025", "Administrador de Banco de dados", "📌", "🔒"),
+            ("2025.10.201", "Noite", "2025", "Administrador de Redes", "📌", "🔒"),
+            ("2025.12.115", "Manhã", "2024", "IT Essentials", "📌", "🔒"),
+            ("2025.05.210", "Tarde", "2024", "Programação Web", "📌", "🔒"),
+            ("2024.09.001", "Noite", "2024", "Segurança da Informação", "📌", "🔒"),
         ]
 
         self.montar_layout()
@@ -100,14 +93,14 @@ class ListaTurmasApp:
                 command=lambda t=turma: self.excluir_turma(t)
             ).pack(side="left", padx=5)
 
-    def aplicar_filtro(self, *args):
+    def aplicar_filtro(self, event=None):
         texto = self.busca.get().lower()
         turno = self.filtro_turno.get()
         ano = self.filtro_ano.get()
 
         resultado = []
         for turma in self.turmas:
-            bate_texto = texto in "".join(turma).lower()
+            bate_texto = texto in f"{turma[0]} {turma[3]}".lower()
             bate_turno = turno == "Todos" or turma[1] == turno
             bate_ano = ano == "Todos" or turma[2] == ano
 
@@ -117,35 +110,13 @@ class ListaTurmasApp:
         self.carregar_tabela(resultado)
 
     def visualizar_turma(self, turma):
-        messagebox.showinfo(
-            "Detalhes da Turma",
-            f"🔢 Código: {turma[0]}\n\n"
-            f"🕒 Turno: {turma[1]}\n"
-            f"📅 Ano: {turma[2]}\n"
-            f"📚 Curso: {turma[3]}\n"
-            f"👥 Usuários: {turma[4]}\n"
-            f"🔒 Status: {turma[5]}"
-        )
+        messagebox.showinfo("Turma", turma[0])
 
     def editar_turma(self, turma):
-        if messagebox.askyesno(
-            "Editar Turma",
-            f"Deseja editar a turma '{turma[0]}' - {turma[3]}?"
-        ):
-            messagebox.showinfo(
-                "Em Desenvolvimento",
-                "Funcionalidade de edição será implementada em breve!"
-            )
+        messagebox.showinfo("Editar", turma[0])
 
     def excluir_turma(self, turma):
-        if messagebox.askyesno(
-            "Excluir Turma",
-            f"Tem certeza que deseja excluir a turma '{turma[0]}'?\n\nCurso: {turma[3]}"
-        ):
-            messagebox.showinfo(
-                "Turma Excluída",
-                f"✅ A turma '{turma[0]}' foi marcada para exclusão."
-            )
+        messagebox.showwarning("Excluir", turma[0])
 
     # ───────────── LAYOUT ─────────────
     def montar_layout(self):
@@ -156,44 +127,66 @@ class ListaTurmasApp:
 
         conteudo_frame = ctk.CTkFrame(main_container, fg_color="#ffffff")
         conteudo_frame.pack(side="left", fill="both", expand=True)
-        conteudo_frame.grid_rowconfigure(2, weight=1)
-        conteudo_frame.grid_columnconfigure(0, weight=1)
 
-        topo = ctk.CTkFrame(conteudo_frame, height=60, fg_color="#004a8f", corner_radius=0)
-        topo.grid(row=0, column=0, sticky="ew")
+        topo = ctk.CTkFrame(conteudo_frame, height=60, fg_color="#004a8f",corner_radius=0)
+        topo.pack(fill="x")
 
         ctk.CTkLabel(
             topo,
-            text="👥  LISTA DE TURMAS",
+            text="👥 LISTA DE TURMAS",
             text_color="white",
             font=ctk.CTkFont(size=18, weight="bold")
-        ).pack(anchor="w", padx=20, pady=15)
-
-        acoes = ctk.CTkFrame(conteudo_frame, fg_color="#f5f5f5", height=80)
-        acoes.grid(row=1, column=0, sticky="ew", padx=20, pady=15)
-
-        filtros_frame = ctk.CTkFrame(acoes, fg_color="transparent")
-        filtros_frame.pack(side="left", padx=15, pady=10)
-
-        self.busca = ctk.CTkEntry(
-            filtros_frame,
-            placeholder_text="Buscar por código ou curso...",
-            width=250
-        )
-        self.busca.pack(anchor="w")
-        self.busca.bind("<KeyRelease>", self.aplicar_filtro)
+        ).grid(row=0, column=0, padx=20, pady=15, sticky="w")
         
+      
 
+        # ───────────── AÇÕES ─────────────
+        acoes = ctk.CTkFrame(conteudo_frame, fg_color="#f5f5f5", height=80)
+        acoes.pack(fill="x", padx=20, pady=15)
+
+        acoes.grid_columnconfigure(0, weight=1)
+        acoes.grid_columnconfigure(1, weight=1)
+
+        # BUSCA (ESQUERDA)
+        self.busca = ctk.CTkEntry(
+            acoes,
+            placeholder_text="Buscar por código ou curso...",
+            width=260
+        )
+        self.busca.grid(row=0, column=0, sticky="w", padx=15)
+        self.busca.bind("<KeyRelease>", self.aplicar_filtro)
+
+        # FILTROS (DIREITA)
+        filtros = ctk.CTkFrame(acoes, fg_color="transparent")
+        filtros.grid(row=0, column=1, sticky="e", padx=15)
+
+        ctk.CTkLabel(filtros, text="Filtrar por:").pack(side="left", padx=(0, 10))
         self.filtro_turno = ctk.StringVar(value="Todos")
         self.filtro_ano = ctk.StringVar(value="Todos")
 
-        corpo = ctk.CTkFrame(conteudo_frame, fg_color="#ffffff")
-        corpo.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 20))
-        corpo.grid_rowconfigure(1, weight=1)
-        corpo.grid_columnconfigure(0, weight=1)
+        for turno in ["Todos", "Manhã", "Tarde", "Noite"]:
+            ctk.CTkRadioButton(
+                filtros,
+                text=turno,
+                variable=self.filtro_turno,
+                value=turno,
+                command=self.aplicar_filtro
+            ).pack(side="left", padx=5)
+            
+            
+        # TABELA
+        self.tabela = ctk.CTkScrollableFrame(conteudo_frame, fg_color="#ffffff")
+        self.tabela.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        
+        ctk.CTkButton(
+                filtros, text="+ Cadastro ",
+                width=40, height=20, 
+                fg_color="#004a8f",
+                hover_color="#003366"
+            ).pack(side="left", padx=5)  # Espaço entre os filtros   
 
-        self.tabela = ctk.CTkScrollableFrame(corpo, fg_color="#ffffff")
-        self.tabela.grid(row=1, column=0, sticky="nsew")
+
+
 
 
 if __name__ == "__main__":
