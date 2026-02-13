@@ -5,6 +5,7 @@ import sys
 
 ctk.set_appearance_mode("light")
 
+# Configuração global para capturar exceções não tratadas
 def global_exception_handler(exc_type, exc_value, exc_traceback):
     """Captura exceções não tratadas"""
     print(f"\n[ERRO GLOBAL] {exc_type.__name__}: {exc_value}")
