@@ -2,6 +2,7 @@ import customtkinter as ctk
 from PIL import Image
 import sys
 import os
+import importlib
 
 # Tenta importar as cores, senão usa padrão
 try:
@@ -14,45 +15,16 @@ except ImportError:
 class Sidebar(ctk.CTkFrame):
     def __init__(self, master, *, cor_fundo=azulEscuro, cor_texto=Branco):
         super().__init__(master, width=250, corner_radius=0, fg_color=cor_fundo)
-        self.master = master
+        self.master = master # Aqui master é a HomeCoordenador
         self.cor_texto = cor_texto
         self._logo_img = None
-        self.botoes = []  # Lista para armazenar os objetos dos botões
+        self.botoes = []
         
-        # Identifica qual arquivo .py está rodando agora
+        # Identifica qual arquivo .py está rodando agora para desativar o botão da própria tela
         self.nome_arquivo_atual = os.path.basename(sys.argv[0])
-        print(f"DEBUG: Tela atual -> {self.nome_arquivo_atual}")
-
-        # Carrega as classes das outras telas
-        self.classes_telas = self._importar_classes()
 
         self.pack_propagate(False)
         self._build_ui()
-
-    def _importar_classes(self):
-        """Lógica de importação trazida da primeira sidebar"""
-        try:
-            try:
-                from cadastro_usuario import CadastroUsuarios
-                from cadastro_turma import CadastroTurmas
-                from cadastro_curso import CadastroCursos
-                from listausuario import ListaUsuariosApp
-                from listaturma import ListaTurmasApp
-                from listacurso import CursosView
-                
-                return {
-                    "cadastro_usuario.py": CadastroUsuarios,
-                    "cadastro_turma.py": CadastroTurmas,
-                    "cadastro_curso.py": CadastroCursos,
-                    "listausuario.py": ListaUsuariosApp,
-                    "listaturma.py": ListaTurmasApp,
-                    "listacurso.py": CursosView,
-                }
-            except ImportError:
-                return {}
-        except Exception as e:
-            print(f"Erro ao importar classes: {e}")
-            return {}
 
     def _build_ui(self):
         self.menu_container = ctk.CTkFrame(self, fg_color="transparent")
@@ -72,7 +44,7 @@ class Sidebar(ctk.CTkFrame):
 
         ctk.CTkLabel(
             self.menu_container,
-            text="MENU LATERAL",
+            text="MENU COORDENAÇÃO",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color=self.cor_texto
         ).pack(pady=(5, 5))
@@ -81,7 +53,7 @@ class Sidebar(ctk.CTkFrame):
         self._criar_botoes_menu(self.menu_container)
 
         # ================= RODAPÉ =================
-        ctk.CTkLabel(self.menu_container, text="").pack(expand=True)
+        # Logout embaixo
         self._criar_botao_sair(self.menu_container)
 
     def _add_logo(self, parent):
@@ -91,37 +63,20 @@ class Sidebar(ctk.CTkFrame):
             self._logo_img = ctk.CTkImage(light_image=pil, size=(80, 100))
             ctk.CTkLabel(parent, image=self._logo_img, text="").pack()
         except:
-            ctk.CTkLabel(
-                parent, 
-                text="LOGO", 
-                font=ctk.CTkFont(size=22, weight="bold"),
-                text_color=self.cor_texto
-            ).pack()
+            ctk.CTkLabel(parent, text="🎓", font=ctk.CTkFont(size=40)).pack()
 
     def _criar_botoes_menu(self, parent):
-        opcoes_menu = {
-            " Cadastrar Usuário": "cadastro_usuario.py",
-            " Cadastrar Turmas": "cadastro_turma.py",
-            " Cadastrar Cursos": "cadastro_curso.py",
-            " Listar Usuários": "listausuario.py",
-            " Listar Turmas": "listaturma.py",
-            " Listar Cursos": "listacurso.py",
+        # Mapeamento: Texto do Botão -> (Modulo, Nome da Classe)
+        self.mapa_telas = {
+            " Cadastrar Usuário": {"modulo": "cadastro_usuario", "classe": "CadastroUsuarios"},
+            " Cadastrar Turmas":  {"modulo": "cadastro_turma",   "classe": "CadastroTurmas"},
+            " Cadastrar Cursos":  {"modulo": "cadastro_curso",   "classe": "CadastroCursos"},
+            " Listar Usuários":   {"modulo": "listausuario",    "classe": "ListaUsuariosApp"},
+            " Listar Turmas":     {"modulo": "listaturma",      "classe": "ListaTurmasApp"},
+            " Listar Cursos":     {"modulo": "listacurso",      "classe": "CursosView"},
         }
 
-        self.botoes = [] # Limpa lista antes de criar
-
-        for texto, arquivo_alvo in opcoes_menu.items():
-            
-            estado = "normal"
-            comando = lambda a=arquivo_alvo: self._navegar(a)
-            
-            # Lógica de bloqueio do botão atual
-            if self.nome_arquivo_atual == arquivo_alvo:
-                estado = "disabled"
-                comando = None
-            elif arquivo_alvo not in self.classes_telas:
-                estado = "disabled" 
-
+        for texto, config in self.mapa_telas.items():
             btn = ctk.CTkButton(
                 parent, 
                 text=texto, 
@@ -130,50 +85,51 @@ class Sidebar(ctk.CTkFrame):
                 fg_color=azulClaro, 
                 hover_color="#003366",
                 text_color=self.cor_texto,
-                state=estado,
-                command=comando,
-                font=ctk.CTkFont(size=14),
+                command=lambda c=config: self._navegar(c),
+                font=ctk.CTkFont(size=13),
                 corner_radius=6
             )
             btn.pack(fill="x", pady=4)
-            self.botoes.append(btn) # Adiciona à lista que será retornada
+            self.botoes.append(btn)
 
-    def _navegar(self, arquivo_alvo):
-        classe_destino = self.classes_telas.get(arquivo_alvo)
-        if classe_destino:
-            # Importante: Interrompe loops do CTk antes de destruir para evitar "invalid command"
-            self.master.quit() 
-            self.master.destroy()
-            classe_destino().run()
-        else:
-            print(f"Classe para {arquivo_alvo} não encontrada.")
+    def _navegar(self, config):
+        try:
+            # 1. Referência ao content_frame da HomeCoordenador
+            # Como você usa 'self.sidebar_frame = sidebar(self)', 
+            # o master aqui é o objeto HomeCoordenador.
+            home_coordenador = self.master
+            conteudo_central = home_coordenador.content_frame
+
+            # 2. Limpar o conteúdo antigo (apaga a imagem ou a tela anterior)
+            for widget in conteudo_central.winfo_children():
+                widget.destroy()
+
+            # 3. Importar e instanciar dinamicamente
+            modulo = importlib.import_module(config["modulo"])
+            importlib.reload(modulo) # Garante que carregue mudanças no arquivo
+            classe_tela = getattr(modulo, config["classe"])
+            
+            # 4. Criar a nova tela dentro do content_frame
+            nova_tela = classe_tela(conteudo_central)
+            nova_tela.pack(fill="both", expand=True)
+
+        except Exception as e:
+            print(f"Erro ao navegar: {e}")
 
     def _criar_botao_sair(self, parent):
         ctk.CTkButton(
             parent, 
-            text="Logout", 
-            command=self.master.destroy,
+            text="Sair", 
+            command=self.winfo_toplevel().destroy, # Fecha a janela toda
             height=45, 
             fg_color="#e74c3c", 
             hover_color="#c0392b",
-            text_color=self.cor_texto, 
+            text_color=Branco, 
             font=ctk.CTkFont(size=14, weight="bold"),
             corner_radius=8
-        ).pack(side="bottom", fill="x", pady=(0, 5))
+        ).pack(side="bottom", fill="x", pady=(10, 0))
 
-# ================= WRAPPER DE COMPATIBILIDADE =================
+# Wrapper de compatibilidade
 def sidebar(janela, cor_fundo=azulEscuro, cor_texto=Branco):
     sb = Sidebar(janela, cor_fundo=cor_fundo, cor_texto=cor_texto)
-    sb.pack(side="left", fill="y")
-    
-    # CORREÇÃO PRINCIPAL: Retorna o objeto Frame E a lista de botões
-    # Isso satisfaz a chamada: self.sidebar_frame, self.botoes_menu = sidebar(...)
-    return sb, sb.botoes 
-
-if __name__ == "__main__":
-    ctk.set_appearance_mode("light")
-    ctk.set_default_color_theme("blue")
-    app = ctk.CTk()
-    app.geometry("1200x700")
-    sidebar(app)
-    app.mainloop()
+    return sb, sb.botoes
