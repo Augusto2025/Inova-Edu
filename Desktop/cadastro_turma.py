@@ -11,6 +11,7 @@ class CadastroTurmas:
         self.janela = ctk.CTk()
         self.janela.title("Sistema de Cadastro de Turmas")
         self.janela.geometry("1000x650")
+        self.janela.attributes("-fullscreen", True)  # TELA INTEIRA
         
         # Configurar cores personalizadas
         self.cor_azul = "#004a8d"
@@ -44,85 +45,14 @@ class CadastroTurmas:
         
         # Aplicar cores de fundo
         self.janela.configure(fg_color=self.cor_branco)
+
+        # IMPORTAR SIDEBAR
+        from sidebar_C import sidebar
+        sidebar(self.janela)
         
-        self.criar_menu_lateral()
         self.criar_tela_cadastro()
         
-    def criar_menu_lateral(self):
-        # Frame do menu lateral
-        self.menu_frame = ctk.CTkFrame(
-            self.janela, 
-            width=220, 
-            corner_radius=0,
-            fg_color=self.cor_azul
-        )
-        self.menu_frame.pack(side="left", fill="y")
-        self.menu_frame.pack_propagate(False)
-        
-        # Título do menu
-        titulo_label = ctk.CTkLabel(
-            self.menu_frame,
-            text="MENU PRINCIPAL",
-            font=ctk.CTkFont(size=18, weight="bold", family="Arial"),
-            text_color=self.cor_branco
-        )
-        titulo_label.pack(pady=(30, 20))
-        
-        # Separador
-        separador = ctk.CTkFrame(
-            self.menu_frame, 
-            height=2,
-            fg_color=self.cor_branco,
-            bg_color=self.cor_azul
-        )
-        separador.pack(fill="x", padx=20, pady=5)
-        
-        # Opções do menu
-        opcoes_menu = [
-            "📚 Cadastro de Cursos",
-            "👥 Cadastro de Turmas",
-            "",
-            "",
-            "",
-            ""
-        ]
-        
-        self.botoes_menu = []
-        
-        for opcao in opcoes_menu:
-            botao = ctk.CTkButton(
-                self.menu_frame,
-                text=opcao,
-                command=lambda o=opcao: self.selecionar_menu(o),
-                height=45,
-                anchor="w",
-                fg_color="transparent",
-                hover_color=self.cor_azul_hover,
-                text_color=self.cor_branco,
-                font=ctk.CTkFont(size=14, family="Arial"),
-                corner_radius=5,
-                border_width=0
-            )
-            botao.pack(fill="x", padx=15, pady=3)
-            self.botoes_menu.append(botao)
-            
-        # Espaço vazio para preencher
-        espaco_vazio = ctk.CTkLabel(self.menu_frame, text="", height=20)
-        espaco_vazio.pack(fill="x", expand=True)
-        
-        # Botão Sair
-        sair_btn = ctk.CTkButton(
-            self.menu_frame,
-            text="🚪 Sair do Sistema",
-            command=self.janela.quit,
-            height=45,
-            fg_color=self.cor_branco,
-            hover_color=self.cor_cinza_claro,
-            text_color=self.cor_azul,
-            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
-            corner_radius=8
-        )
-        sair_btn.pack(side="bottom", fill="x", padx=15, pady=20)
+    
         
     def criar_tela_cadastro(self):
         # Frame principal do conteúdo

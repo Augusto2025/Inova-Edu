@@ -1,0 +1,47 @@
+{
+    "nome": "Alcides Miranda Neto",
+    "bio": "Estudante dedicado com interesse em tecnologia e aprendizado contínuo. Apaixonado por desenvolvimento de software e inovação educacional.",
+    "curso": "Ciência da Computação",
+    "foto": "assets/default_avatar.png",
+    "certificados": [
+        {
+            "nome": "Curso de Python Avançado",
+            "instituicao": "INOVA EDU",
+            "data": "15/10/2024",
+            "carga_horaria": "40 horas",
+            "arquivo": "certificados/python_avancado.pdf"
+        },
+        {
+            "nome": "Desenvolvimento Web Full Stack",
+            "instituicao": "Digital Innovation One",
+            "data": "20/09/2024",
+            "carga_horaria": "60 horas",
+            "arquivo": "certificados/web_fullstack.pdf"
+        },
+        {
+            "nome": "Inteligência Artificial Aplicada",
+            "instituicao": "Google AI",
+            "data": "05/11/2024",
+            "carga_horaria": "80 horas",
+            "arquivo": "certificados/ia_google.pdf"
+        }
+    ],
+    "projetos": [
+        {
+            "nome": "Sistema de Gestão Acadêmica",
+            "descricao": "Desenvolvimento de sistema web completo para gestão de estudantes, professores e disciplinas. Tecnologias: Django, React, PostgreSQL."
+        },
+        {
+            "nome": "App Mobile para Ensino de Matemática",
+            "descricao": "Aplicativo Android/iOS para auxílio no aprendizado de matemática básica. Com jogos educativos e exercícios interativos."
+        },
+        {
+            "nome": "API de Integração de Sistemas Educacionais",
+            "descricao": "API REST para integração entre diferentes sistemas acadêmicos. Implementado com FastAPI e autenticação JWT."
+        },
+        {
+            "nome": "Plataforma de Cursos Online",
+            "descricao": "Desenvolvimento de plataforma E-learning com videoaulas, quizzes e certificados automáticos."
+        }
+    ]
+}

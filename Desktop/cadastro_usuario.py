@@ -1,6 +1,9 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from tkinter import filedialog
+# from controllers.usuario_controller import UsuarioController
+
+
 
 # Configurar aparência
 ctk.set_appearance_mode("light")
@@ -10,7 +13,8 @@ class CadastroUsuarios:
     def __init__(self):
         self.janela = ctk.CTk()
         self.janela.title("Sistema de Cadastro de Usuários")
-        self.janela.geometry("1000x700")
+        self.janela.geometry("1100x800")
+        self.janela.attributes("-fullscreen", True)  # TELA INTEIRA
         
         # Configurar cores personalizadas
         self.cor_azul = "#004a8d"
@@ -26,95 +30,32 @@ class CadastroUsuarios:
         
         # Aplicar cores de fundo
         self.janela.configure(fg_color=self.cor_branco)
+
+        # Importar o sidebar de forma tardia para evitar importação circular
+        from sidebar_C import sidebar
+        sidebar(self.janela)
+
+        self.view_container = ctk.CTkFrame(self.janela, fg_color=self.cor_branco)
+        self.view_container.pack(side="right", fill="both", expand=True)
+
+        self.view_cadastro = ctk.CTkFrame(self.view_container, fg_color=self.cor_branco)
+
+        self.criar_tela_cadastro(self.view_cadastro)
+
+        self.view_cadastro.pack(fill="both", expand=True)
         
-        self.criar_menu_lateral()
-        self.criar_tela_cadastro()
         
-    def criar_menu_lateral(self):
-        # Frame do menu lateral
-        self.menu_frame = ctk.CTkFrame(
-            self.janela, 
-            width=220, 
-            corner_radius=0,
-            fg_color=self.cor_azul
-        )
-        self.menu_frame.pack(side="left", fill="y")
-        self.menu_frame.pack_propagate(False)
         
-        # Título do menu
-        titulo_label = ctk.CTkLabel(
-            self.menu_frame,
-            text="MENU PRINCIPAL",
-            font=ctk.CTkFont(size=18, weight="bold", family="Arial"),
-            text_color=self.cor_branco
-        )
-        titulo_label.pack(pady=(30, 20))
         
-        # Separador
-        separador = ctk.CTkFrame(
-            self.menu_frame, 
-            height=2,
-            fg_color=self.cor_branco,
-            bg_color=self.cor_azul
-        )
-        separador.pack(fill="x", padx=20, pady=5)
+
         
-        # Opções do menu
-        opcoes_menu = [
-            "📚 Cadastro de Cursos",
-            "👥 Cadastro de Turmas",
-            "👤 Cadastro de Usuários",
-            "",
-            "",
-            ""
-        ]
         
-        self.botoes_menu = []
+    def criar_tela_cadastro(self, parent):
         
-        for opcao in opcoes_menu:
-            botao = ctk.CTkButton(
-                self.menu_frame,
-                text=opcao,
-                command=lambda o=opcao: self.selecionar_menu(o),
-                height=45,
-                anchor="w",
-                fg_color="transparent",
-                hover_color=self.cor_azul_hover,
-                text_color=self.cor_branco,
-                font=ctk.CTkFont(size=14, family="Arial"),
-                corner_radius=5,
-                border_width=0
-            )
-            botao.pack(fill="x", padx=15, pady=3)
-            self.botoes_menu.append(botao)
-            
-        # Espaço vazio para preencher
-        espaco_vazio = ctk.CTkLabel(self.menu_frame, text="", height=20)
-        espaco_vazio.pack(fill="x", expand=True)
-        
-        # Botão Sair
-        sair_btn = ctk.CTkButton(
-            self.menu_frame,
-            text="🚪 Sair do Sistema",
-            command=self.janela.quit,
-            height=45,
-            fg_color=self.cor_branco,
-            hover_color=self.cor_cinza_claro,
-            text_color=self.cor_azul,
-            font=ctk.CTkFont(size=14, weight="bold", family="Arial"),
-            corner_radius=8
-        )
-        sair_btn.pack(side="bottom", fill="x", padx=15, pady=20)
-        
-    def criar_tela_cadastro(self):
         # Frame principal do conteúdo
-        self.conteudo_frame = ctk.CTkFrame(
-            self.janela,
-            fg_color=self.cor_branco,
-            corner_radius=0
-        )
-        self.conteudo_frame.pack(side="right", fill="both", expand=True)
+        self.conteudo_frame = parent
         
+
         # Cabeçalho
         cabecalho_frame = ctk.CTkFrame(
             self.conteudo_frame,
@@ -449,31 +390,30 @@ class CadastroUsuarios:
         )
         
         if resposta:
-            # Aqui você normalmente salvaria no banco de dados
-            dados = {
-                "Nome": nome,
-                "Sobrenome": sobrenome,
-                "Nome Completo": f"{nome} {sobrenome}",
-                "Email": email,
-                "Tipo": tipo,
-                "Imagem": imagem if imagem else "Padrão do sistema",
-                "Descrição": descricao if descricao.strip() else "Sem descrição"
-            }
-            
-            # Mostrar mensagem de sucesso
-            messagebox.showinfo(
-                "Sucesso!", 
-                f"✅ Usuário '{nome} {sobrenome}' salvo com sucesso!\n\n"
-                f"👤 Detalhes do cadastro:\n"
-                f"• Nome completo: {nome} {sobrenome}\n"
-                f"• Email: {email}\n"
-                f"• Tipo: {tipo}\n"
-                f"• Status: Cadastro ativo",
-                icon="info"
-            )
-            
-            # Limpar campos após salvar
-            self.limpar_campos()
+            try:
+                self.model.cadastrar(
+                    imagem=imagem if imagem else None,
+                    tipo=tipo,
+                    nome=nome,
+                    sobrenome=sobrenome,
+                    email=email,
+                    senha="123456",
+                    descricao=descricao
+                )
+
+                messagebox.showinfo(
+                    "Sucesso",
+                    "✅ Usuário salvo com sucesso no banco!"
+                )
+
+                self.limpar_campos()
+
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Erro ao salvar no banco:\n{e}"
+                )
+
     
     def cancelar_operacao(self):
         """Função do botão Cancelar"""
@@ -561,3 +501,5 @@ class CadastroUsuarios:
 if __name__ == "__main__":
     app = CadastroUsuarios()
     app.run()
+    
+    
