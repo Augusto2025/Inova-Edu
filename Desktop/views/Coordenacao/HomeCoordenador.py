@@ -8,11 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 from assets.cores import *
 from sidebar_C import sidebar
-
-
-
-
-
 class HomeCoordenador(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -60,7 +55,7 @@ class HomeCoordenador(ctk.CTkFrame):
         self.area_central.place(relx=0.5, rely=0.5, anchor="center")
 
         # ================= IMAGEM CENTRAL =================
-        caminho_imagem = os.path.join("assets", "img", "LOGOAZUL.png")
+        caminho_imagem = "Desktop/assets/img/LOGOAZUL.png"
 
         imagem = Image.open(caminho_imagem)
 
@@ -75,7 +70,6 @@ class HomeCoordenador(ctk.CTkFrame):
             text=""
         )
         self.imagem_label.pack()
-
 
 if __name__ == "__main__":
     root = ctk.CTk()
