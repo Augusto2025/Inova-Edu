@@ -12,13 +12,15 @@ print("DEBUG: Iniciando perfil_academico.py")
 
 class UserProfileSystem(ctk.CTkFrame):
     def __init__(self, master=None):
-        super().__init__(master)
+        # 1. Primeiro chamamos o super e definimos a janela
+        super().__init__(master, fg_color="transparent")
+        self.janela = master  # ESSA LINHA PRECISA VIR ANTES DE TUDO
 
-        self.janela = master
-
+        # 2. Agora o código de buscar a sidebar funciona
         from sidebar_AP import Sidebar, sidebar
         
         sidebar_existente = None
+        # Agora o self.janela existe, então o loop abaixo não dará erro
         for widget in self.janela.winfo_children():
             if isinstance(widget, Sidebar):
                 sidebar_existente = widget
@@ -27,9 +29,11 @@ class UserProfileSystem(ctk.CTkFrame):
         if not sidebar_existente:
             sidebar_existente, _ = sidebar(self.janela)
         
-        # Frame principal
-        self.main_content_frame = ctk.CTkFrame(self.janela, fg_color="transparent")
-        self.main_content_frame.pack(side="right", fill="both", expand=True, padx=20, pady=20)
+        # 3. Frame principal colado na sidebar (side="left")
+        self.main_content_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.main_content_frame.pack(side="left", fill="both", expand=True, padx=20, pady=20)
+        
+        # ... resto do seu código (create_directories, etc)
         
         # Criar diretórios necessários
         self.create_directories()
@@ -79,7 +83,10 @@ class UserProfileSystem(ctk.CTkFrame):
         ).pack(pady=20)
 
 if __name__ == "__main__":
+    ctk.set_appearance_mode("light") # ESSA LINHA É VITAL
     app = ctk.CTk()
-    app.geometry("1100x700")
-    UserProfileSystem(master=app).pack(fill="both", expand=True)
+    app.geometry("1200x800")
+    # Garante que o container principal preencha a tela
+    app_frame = UserProfileSystem(master=app)
+    app_frame.pack(fill="both", expand=True) 
     app.mainloop()
