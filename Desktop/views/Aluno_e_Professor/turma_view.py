@@ -2,30 +2,27 @@ import customtkinter as ctk
 import os
 import sys
 
+# Adiciona o caminho base para importar os módulos corretamente
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
+# Importação do Controller
+from controllers.turma_controllers import TurmasController
 from assets.cores import *
 
 class TurmasDesktopDashboard(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, id_curso, nome_curso):
         super().__init__(master)
         self.janela = master
+        self.id_curso = id_curso
+        self.nome_curso = nome_curso
         
-        self.configure(fg_color="#f0f2f5") # Fundo estilo software corporativo
+        # Configuração visual do Frame Principal
+        self.configure(fg_color="#f0f2f5") 
         
-        # Dados estruturados com a cor padronizada #3b82f6
-        self.turmas_por_ano = {
-            "2027": [
-                {"cod": "DS1-A", "turno": "Manhã", "alunos": 32, "cor": "#3b82f6"},
-                {"cod": "DS1-B", "turno": "Tarde", "alunos": 28, "cor": "#3b82f6"},
-            ],
-            "2026": [
-                {"cod": "DS2-A", "turno": "Manhã", "alunos": 30, "cor": "#3b82f6"},
-            ],
-            "2025": [
-                {"cod": "DS3-A", "turno": "Integral", "alunos": 25, "cor": "#3b82f6"},
-            ]
-        }
+        # --- LÓGICA MVC: BUSCA DE DADOS ---
+        self.controller = TurmasController()
+        # O controller retorna o dicionário agrupado por ano vindo do banco
+        self.turmas_por_ano = self.controller.obter_turmas_filtradas(self.id_curso)
         
         # --- INTEGRAÇÃO COM A SIDEBAR ---
         from sidebar_AP import Sidebar, sidebar
@@ -41,7 +38,7 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         self.criar_interface()
 
     def criar_interface(self):
-        # Header Superior fixo
+        # 1. HEADER SUPERIOR
         header = ctk.CTkFrame(self, fg_color=azulEscuro, height=80, corner_radius=0)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
@@ -50,16 +47,29 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
                      font=ctk.CTkFont(size=24, weight="bold"), 
                      text_color=Branco).pack(side="left", padx=30)
 
-        # Barra de Pesquisa
+        # Barra de Pesquisa (Filtro)
         self.entry_busca = ctk.CTkEntry(header, placeholder_text="Pesquisar turma...", width=300, height=35)
         self.entry_busca.pack(side="right", padx=30)
+        self.entry_busca.bind("<KeyRelease>", self.filtrar_turmas)
 
-        # Área de Conteúdo com Scroll
+        # 2. ÁREA DE CONTEÚDO COM SCROLL
         self.main_scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.main_scroll.pack(fill="both", expand=True, padx=20, pady=10)
 
+        self.renderizar_conteudo(self.turmas_por_ano)
+
+    def renderizar_conteudo(self, dados):
+        """Limpa e renderiza as seções de turmas"""
+        for widget in self.main_scroll.winfo_children():
+            widget.destroy()
+
+        if not dados:
+            ctk.CTkLabel(self.main_scroll, text="Nenhuma turma encontrada.", 
+                         font=ctk.CTkFont(size=16), text_color="#64748b").pack(pady=50)
+            return
+
         # Gerar Seções por Ano
-        for ano, turmas in self.turmas_por_ano.items():
+        for ano, turmas in dados.items():
             self.renderizar_secao(ano, turmas)
 
     def renderizar_secao(self, ano, turmas):
@@ -67,7 +77,7 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         section_container = ctk.CTkFrame(self.main_scroll, fg_color="transparent")
         section_container.pack(fill="x", pady=(10, 20))
 
-        # Título da Seção com Linha
+        # Título da Seção (Ex: Ano Letivo 2025)
         title_frame = ctk.CTkFrame(section_container, fg_color="transparent")
         title_frame.pack(fill="x", pady=(0, 10))
         
@@ -76,22 +86,27 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         
         ctk.CTkFrame(title_frame, height=2, fg_color="#e2e8f0").pack(side="left", fill="x", expand=True, padx=10)
 
-        # Grid para os Cards
+        # Grid para os Cards (Máximo 3 colunas)
         grid_container = ctk.CTkFrame(section_container, fg_color="transparent")
         grid_container.pack(fill="x")
+        grid_container.grid_columnconfigure((0, 1, 2), weight=1)
         
         for i, turma in enumerate(turmas):
             self.criar_card_turma(grid_container, turma, i)
 
-    def criar_card_turma(self, master, turma, col):
-        # Card principal - Aumentei um pouco a altura para caber os botões novos
+    def criar_card_turma(self, master, turma, idx):
+        # Lógica de posicionamento no Grid
+        linha = idx // 3
+        coluna = idx % 3
+
+        # Card principal
         card = ctk.CTkFrame(master, fg_color="#ffffff", width=300, height=200, corner_radius=15, 
                             border_width=1, border_color="#e2e8f0")
-        card.grid(row=0, column=col, padx=10, pady=10)
+        card.grid(row=linha, column=coluna, padx=10, pady=10, sticky="n")
         card.pack_propagate(False)
 
-        # Faixa lateral de cor fixa
-        accent = ctk.CTkFrame(card, width=6, fg_color=turma["cor"], corner_radius=0)
+        # Faixa lateral de cor (Accent)
+        accent = ctk.CTkFrame(card, width=6, fg_color=turma.get("cor", "#3b82f6"), corner_radius=0)
         accent.pack(side="left", fill="y")
 
         # Conteúdo do Card
@@ -104,50 +119,65 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         ctk.CTkLabel(content, text=f"Turno: {turma['turno']}", font=ctk.CTkFont(size=13), 
                      text_color="#64748b").pack(anchor="w")
 
-        ctk.CTkLabel(content, text=f"👥 {turma['alunos']} Alunos matriculados", font=ctk.CTkFont(size=12), 
+        ctk.CTkLabel(content, text=f"👥 {turma.get('alunos', 0)} Alunos matriculados", font=ctk.CTkFont(size=12), 
                      text_color="#94a3b8").pack(anchor="w", pady=(10, 0))
 
-        # --- CONTAINER DE BOTÕES (RODAPÉ DO CARD) ---
+        # Container de Botões (Rodapé)
         button_row = ctk.CTkFrame(content, fg_color="transparent")
         button_row.pack(side="bottom", fill="x", pady=(10, 0))
 
-        # Botão Usuários (Novo)
+        # Botão Usuários
         btn_usuarios = ctk.CTkButton(button_row, text="Usuários", height=32, width=100,
                                      fg_color="#f1f5f9", text_color="#475569", hover_color="#e2e8f0",
                                      font=ctk.CTkFont(size=12, weight="bold"),
-                                     command=lambda: print(f"Lista de usuários: {turma['cod']}"))
+                                     command=lambda: print(f"Usuários da turma: {turma['cod']}"))
         btn_usuarios.pack(side="left", expand=True, padx=(0, 5))
 
-        # Botão Gerenciar
+        # Botão Projetos
         btn_projetos = ctk.CTkButton(button_row, text="Projetos", height=32, width=100,
                                       fg_color="#3b82f6", text_color="#ffffff", hover_color="#2563eb",
                                       font=ctk.CTkFont(size=12, weight="bold"),
-                                      command=lambda: self.abrir_projetos(turma["cod"]))
+                                      command=lambda t=turma: self.abrir_projetos(t["id"], t["cod"]))
         btn_projetos.pack(side="left", expand=True, padx=(5, 0))
     
-    def abrir_projetos(self, turma_cod):
-        """Navega para a tela de projetos da turma selecionada"""
+    def filtrar_turmas(self, event=None):
+        """Filtra as turmas exibidas com base na entrada de texto"""
+        termo = self.entry_busca.get().lower()
+        dados_filtrados = {}
+
+        for ano, lista_turmas in self.turmas_por_ano.items():
+            filtradas = [t for t in lista_turmas if termo in t["cod"].lower() or termo in t["turno"].lower()]
+            if filtradas:
+                dados_filtrados[ano] = filtradas
+        
+        self.renderizar_conteudo(dados_filtrados)
+
+    def abrir_projetos(self, turma_id, turma_nome): # Recebe os dois argumentos
+        """Navega para a tela de projetos"""
         try:
-            # Importação lazy para evitar erro de circularidade
             from views.Aluno_e_Professor.projetos_view import ProjetosDesktopDashboard
             
-            # 1. Limpa a tela de turmas
+            # Pega o tipo do usuário (se não tiver, use "Professor" para testar)
+            tipo_user = getattr(self.janela, 'tipo_usuario', 'Professor') 
+
             self.pack_forget()
             
-            # 2. Instancia e exibe a tela de projetos
-            # Note que não passamos o código da turma conforme seu pedido de "apenas entrar"
-            tela_projetos = ProjetosDesktopDashboard(self.janela)
+            # Instancia passando os parâmetros necessários
+            tela_projetos = ProjetosDesktopDashboard(
+                self.janela, 
+                id_turma=turma_id, 
+                nome_turma=turma_nome, 
+                tipo_usuario=tipo_user
+            )
             tela_projetos.pack(side="right", fill="both", expand=True)
             
-        except ImportError as e:
+        except Exception as e:
             from tkinter import messagebox
-            messagebox.showerror("Erro", f"Não foi possível carregar a tela de projetos.\n{e}")
+            messagebox.showerror("Erro", f"Não foi possível carregar projetos: {e}")
 
 if __name__ == "__main__":
-    ctk.set_appearance_mode("light") # Garante o visual claro corporativo
+    ctk.set_appearance_mode("light")
     root = ctk.CTk()
     root.geometry("1150x750")
-    root.title("Inova Edu - Desktop Admin")
-    root.attributes("-fullscreen", True)
     app = TurmasDesktopDashboard(root)
     root.mainloop()
