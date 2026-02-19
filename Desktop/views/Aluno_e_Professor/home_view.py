@@ -4,7 +4,7 @@ from PIL import Image
 import os
 from datetime import datetime, date
 from models.cursos_model import CursosModel
-# from controllers.cursos_controllers import obter_cursos 
+from controllers.cursos_controllers import obter_cursos
 from assets.cores import *
 
 class Home(ctk.CTkFrame):
@@ -36,26 +36,7 @@ class Home(ctk.CTkFrame):
         self.criar_interface()
 
         # --- Carregamento de dados ---
-        cursos_data = CursosModel().exibirCursos()
-        self.cursos = []
-        for row in cursos_data:
-            try:
-                if isinstance(row, dict):
-                    nome_curso = row.get("nome") or row.get("titulo") or ""
-                    imagem_curso = row.get("imagem") or ""
-                    descricao_curso = row.get("descricao") or ""
-                else:
-                    nome_curso = row[0] if len(row) > 0 else ""
-                    imagem_curso = row[1] if len(row) > 1 else ""
-                    descricao_curso = row[2] if len(row) > 2 else ""
-                
-                self.cursos.append({
-                    "name": str(nome_curso).strip(),
-                    "image": str(imagem_curso).strip(),
-                    "description": str(descricao_curso).strip()
-                })
-            except Exception as e:
-                continue
+        self.cursos = obter_cursos()
     
         self.atualizar_cards()
 
@@ -188,22 +169,24 @@ class Home(ctk.CTkFrame):
                           command=lambda c=curso: self.entrar_no_curso(c)).pack(side="bottom", fill="x", padx=20, pady=20)
 
     def entrar_no_curso(self, curso):
-        """Troca a tela atual pela tela da Turma"""
-        print(f"Navegando para o curso: {curso['name']}")
+        # Captura o ID e o Nome do dicionário que veio do controller
+        id_curso = curso.get("id") 
+        nome_curso = curso.get("name")
         
+        # DEBUG: Verifique se esses valores aparecem no seu terminal
+        print(f"DEBUG HOME: Enviando ID {id_curso} e Nome {nome_curso} para a tela de turmas")
+        
+        if id_curso is None:
+            print("ERRO CRÍTICO: O curso selecionado não possui um ID!")
+            return
+
         try:
-            # Importação Lazy para evitar erro circular
             from views.Aluno_e_Professor.turma_view import TurmasDesktopDashboard 
-            
-            # 1. Esconde a Home
             self.pack_forget() 
             
-            # 2. Instancia a Turma APENAS com o master (self.janela)
-            # Removemos o 'nome_curso' daqui
-            tela_turma = TurmasDesktopDashboard(self.janela) 
+            # Instancia passando os 3 argumentos: master, id, nome
+            tela_turma = TurmasDesktopDashboard(self.janela, id_curso, nome_curso) 
             tela_turma.pack(side="right", fill="both", expand=True)
             
-        except ImportError as e:
-            print(f"Erro: Arquivo da Turma não encontrado! {e}")
-            from tkinter import messagebox
-            messagebox.showerror("Erro de Navegação", "A tela da turma não foi encontrada.")
+        except Exception as e:
+            print(f"Erro ao navegar: {e}")
