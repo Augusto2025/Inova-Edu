@@ -152,28 +152,31 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         
         self.renderizar_conteudo(dados_filtrados)
 
-    def abrir_projetos(self, turma_id, turma_nome): # Recebe os dois argumentos
-        """Navega para a tela de projetos"""
+    def abrir_projetos(self, turma_id, turma_nome):
         try:
             from views.Aluno_e_Professor.projetos_view import ProjetosDesktopDashboard
-            
-            # Pega o tipo do usuário (se não tiver, use "Professor" para testar)
+            from controllers.projeto_controller import ProjetoController # Importe o controller aqui
+
+            # 1. Instancie o controller
+            controller_projeto = ProjetoController()
+
+            # 2. Pegue o tipo do usuário
             tipo_user = getattr(self.janela, 'tipo_usuario', 'Professor') 
 
             self.pack_forget()
             
-            # Instancia passando os parâmetros necessários
-            tela_projetos = ProjetosDesktopDashboard(
-                self.janela, 
+            # 3. Passe o controller como o 5º argumento
+            self.tela_projetos = ProjetosDesktopDashboard(
+                master=self.janela, 
                 id_turma=turma_id, 
                 nome_turma=turma_nome, 
-                tipo_usuario=tipo_user
+                tipo_usuario=tipo_user,
+                controller=controller_projeto  # <--- Faltava isso!
             )
-            tela_projetos.pack(side="right", fill="both", expand=True)
+            self.tela_projetos.pack(side="right", fill="both", expand=True)
             
         except Exception as e:
-            from tkinter import messagebox
-            messagebox.showerror("Erro", f"Não foi possível carregar projetos: {e}")
+            print("Erro", f"Não foi possível carregar projetos: {e}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("light")
