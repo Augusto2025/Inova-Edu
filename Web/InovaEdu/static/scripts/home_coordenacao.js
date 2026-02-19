@@ -38,6 +38,15 @@ function mostrarLista(id) {
 
     // Esconde a imagem inicial
     document.getElementById("painelImagem").style.display = "none";
+
+    const elemento = document.getElementById(id);
+    if (elemento) {
+        elemento.style.display = 'block';
+    }
+
+
+
+
 }
 
 // ====== EDITAR ======
@@ -194,5 +203,43 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 });
 
+
+
+
+// ===== MODAL USUÁRIOS DA TURMA =====
+document.addEventListener("DOMContentLoaded", function () {
+
+  const modal = document.getElementById("modalUsuariosTurma");
+  const fechar = document.getElementById("fecharUsuariosTurma");
+  const lista = document.getElementById("listaUsuariosTurma");
+
+  document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
+    btn.addEventListener("click", function () {
+
+      const usuarios = JSON.parse(this.dataset.usuarios || "[]");
+
+      lista.innerHTML = "";
+
+      if (usuarios.length === 0) {
+        lista.innerHTML = "<li>Nenhum usuário vinculado.</li>";
+      } else {
+        usuarios.forEach(user => {
+          const li = document.createElement("li");
+          li.textContent = `${user.nome} ${user.sobrenome}`;
+          lista.appendChild(li);
+        });
+      }
+
+      modal.style.display = "flex";
+    });
+  });
+
+  fechar.onclick = () => modal.style.display = "none";
+
+  window.addEventListener("click", e => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+
+});
 
 

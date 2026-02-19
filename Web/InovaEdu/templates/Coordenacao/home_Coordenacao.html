@@ -98,19 +98,78 @@
         <section class="section-wrapper">
 
             <!-- USUÁRIO -->
-            <section class="container_usuario lista_conteudo " id="listaUsuario" style="display:none;">
-                <div class="titulo_lista">
-                    <p>Lista Usuário</p>
+            <section class=" lista_conteudo container-usuario lista-usuario" id="listaUsuario" style="display:none;">
 
-                    <div class="guia-centro">
+                <div class="titulo-usuario">
+                    <p>Lista de Usuários</p>
+
+                    <div class="busca-geral">
                         <i class="fa fa-search"></i>
                         <input type="text" id="pesquisarUsuario" placeholder="Pesquisar Usuário">
                     </div>
 
-                    <a href="#" class="btn-add" id="abrirModal">+ Cadastro</a>
+                    <a href="#" class="btn-add-geral" id="abrirModal">+ Cadastro</a>
                 </div>
 
-                <!-- Modal Cadastro -->
+                <!-- Lista Usuário -->
+                <section class="lista-usuario-conteudo">
+                    <ul>
+                        <li class="usuario-cabecalho">
+                            <span>Nome</span>
+                            <span>Sobrenome</span>
+                            <span>Email</span>
+                            <span>Descrição</span>
+                            <span>Imagem</span>
+                            <span>Tipo</span>
+                            <span class="usuario-acoes">Ações</span>
+                        </li>
+
+                        {% for usuario in usuarios %}
+                        <li class="usuario-item" data-id="{{ usuario.idusuario }}">
+                            <span>{{ usuario.nome }}</span>
+                            <span>{{ usuario.sobrenome }}</span>
+                            <span>{{ usuario.email }}</span>
+
+                            <i class="fa-solid fa-align-center icon-descricao"
+                            title="Ver descrição"
+                            data-descricao="{{ usuario.descricao|escapejs }}"></i>
+
+                            <span>
+                                {% if usuario.imagem %}
+                                    <img src="{{ usuario.imagem.url }}" alt="Foto">
+                                {% else %}
+                                    <img src="{% static 'img/default_user.png' %}" alt="Sem foto">
+                                {% endif %}
+                            </span>
+
+                            <span>{{ usuario.tipo }}</span>
+
+                           <span class="acoes-geral">
+                                <button type="button" class="btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+
+                                <form method="POST">
+                                    <button type="submit" class="btn-excluir" title="Excluir">
+                                    <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </span>
+
+                        </li>
+
+                        {% empty %}
+                        <li class="usuario-vazio">
+                            <span>Nenhum usuário cadastrado ainda.</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </section>
+
+
+
+            <!-- Modal Cadastro -->
                 <div id="modalCadastro" class="modal">
                     <div class="modal-conteudo">
                         <span class="fechar" id="fecharModal">&times;</span>
@@ -201,110 +260,57 @@
 
 
 
-                <!-- Lista Usuário -->
-                <section class="lista-completa">
-                    <ul>
-                        <li class="cabecalho">
-                            <span>Nome</span>
-                            <span>Sobrenome</span>
-                            <span>Email</span>
-                            {% comment %} <span>Senha</span> {% endcomment %}
-                            <span>Descrição</span>
-                            <span>Imagem</span>
-                            <span>Tipo de Usuário</span>
-                            <span class="acoes">Ações</span>
-                        </li>
-                        {% for usuario in usuarios %}
-                        <li data-id="{{ usuario.idusuario }}">
-                            <span>{{ usuario.nome }}</span>
-                            <span>{{ usuario.sobrenome }}</span>
-                            <span>{{ usuario.email }}</span>
-                            {% comment %} <span>••••••</span> {% endcomment %}
-                            <i class="fa-solid fa-align-center icon-descricao"
-                            title="Ver descrição"
-                            data-descricao="{{ usuario.descricao|escapejs }}"></i>
-                         
-                            {% if usuario.imagem %}
-                            <span><img src="{{ usuario.imagem.url }}" alt="Foto"></span>
-                            {% else %}
-                            <span><img src="{% static 'img/default_user.png' %}" alt="Sem foto"></span>
-                            {% endif %}
-                            <span>{{ usuario.tipo }}</span>
 
-                          <span class="acoes">
-                                <!-- EDITAR -->
-                                <button type="button"
-                                        class="botao-editar"
-                                        title="Editar">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
 
-                                <!-- EXCLUIR -->
-                                <form action="{% url 'excluir_usuario' usuario.idusuario %}"
-                                    method="POST"
-                                    class="form-excluir">
-                                    {% csrf_token %}
-
-                                    <button type="submit"
-                                            class="botao-excluir"
-                                            title="Excluir"
-                                            onclick="return confirm('Tem certeza que deseja excluir?')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-
-                            </span>
-                            
-                        </li>
-                        {% empty %}
-                        <li><span>Nenhum usuário cadastrado ainda.</span></li>
-                        {% endfor %}
-                    </ul>
-                </section>
-            </section>
 
 
 
             <!-- CURSOS -->
-            <section class="container_usuario lista_conteudo " id="listaCurso" style="display:none;">
-                <div class="titulo_lista">
+
+            <section class="lista_conteudo container-curso lista-curso" id="listaCurso" style="display:none;">
+
+                <div class="titulo-curso">
                     <p>Lista de Cursos</p>
 
-                    <div class="guia-centro">
+                    <div class="busca-geral">
                         <i class="fa fa-search"></i>
-                        <input type="text" id="pesquisarCurso" placeholder="Pesquisar o Curso">
+                        <input type="text" id="pesquisarCurso" placeholder="Pesquisar Curso">
                     </div>
 
-                    <a href="#" class="btn-add" id="abrirModalCurso">+ Cadastro</a>
+
+                    <a href="#" class="btn-add-geral" id="abrirModalCurso">+ Cadastro</a>
+
                 </div>
 
-
-                <section class="lista-completa">
+                <section class="lista-curso-conteudo">
                     <ul>
-                        <li class="cabecalho">
+                        <li class="curso-cabecalho">
                             <span>Nome</span>
-                            <span>Data Início</span>
-                            <span>Data Término</span>
+                            <span>Início</span>
+                            <span>Término</span>
                             <span>Imagem</span>
                             <span>Descrição</span>
-                           <span class="acoes">Ações</span>
+                            <span class="curso-acoes">Ações</span>
                         </li>
+
                         {% for curso in cursos %}
-                        <li>
+                        <li class="curso-item">
                             <span>{{ curso.nome_curso }}</span>
                             <span>{{ curso.data_inicio }}</span>
                             <span>{{ curso.data_final }}</span>
+
                             <span>
                                 {% if curso.imagem %}
-                                <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
+                                    <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
                                 {% else %}-{% endif %}
                             </span>
+
                             <i class="fa-solid fa-align-center icon-descricao"
                             title="Ver descrição"
                             data-descricao="{{ curso.descricao|escapejs }}"></i>
 
-                            <span class="acoes">
-                                <!-- EDITAR CURSO -->
+                            <span class="acoes-geral">
+                                <!-- EDITAR -->
                                 <button
                                     type="button"
                                     class="btn-editar-curso"
@@ -314,35 +320,36 @@
                                     data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
                                     data-final="{{ curso.data_final|date:'Y-m-d' }}"
                                     data-descricao="{{ curso.descricao_curso }}">
-
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <!-- EXCLUIR CURSO -->
+                                <!-- EXCLUIR -->
                                 <form action="{% url 'excluir_curso' curso.idcurso %}"
                                     method="POST"
-                                    class="form-excluir"
-                                    style="display:inline;">
+                                    class="form-excluir-curso">
                                     {% csrf_token %}
-
                                     <button type="submit"
-                                            class="botao-excluir"
+                                            class="btn-excluir-curso"
                                             title="Excluir curso"
                                             onclick="return confirm('Tem certeza que deseja excluir este curso?')">
-
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
-
                             </span>
-
                         </li>
+
                         {% empty %}
-                        <li><span>Nenhum curso cadastrado.</span></li>
+                        <li class="curso-vazio">
+                            <span>Nenhum curso cadastrado.</span>
+                        </li>
                         {% endfor %}
                     </ul>
                 </section>
             </section>
+
+           
+        
+
 
             <!-- MODAL CADASTRO CURSO -->
             <div id="modalCadastroCurso" class="modal">
@@ -415,36 +422,50 @@
             
 
             <!-- TURMAS -->
-            <section class="container_usuario lista_conteudo" id="listaTurma" style="display:none;">
-                <div class="titulo_lista">
+           <section class="lista_conteudo container-turma lista-turma" id="listaTurma" style="display:none;">
+                <div class="titulo-turma">
                     <p>Lista de Turmas</p>
-
-                    <div class="guia-centro">
+                    <div class="busca-geral">
                         <i class="fa fa-search"></i>
-                        <input type="text" id="pesquisarTurma" placeholder="Pesquisar a Turma">
+                        <input type="text" id="pesquisarTurma" placeholder="Pesquisar Turma">
                     </div>
 
-                    <a href="#" class="btn-add" id="abrirModalTurma">+ Cadastro</a>
+
+                    <a href="#" class="btn-add-geral" id="abrirModalTurma">+ Cadastro</a>
+
                 </div>
 
-
-                <section class="lista-completa">
+                <section class="lista-turma-conteudo">
                     <ul>
-                        <li class="cabecalho">
-                            <span>Codigo_turma</span>
+                        <li class="turma-cabecalho">
+                            <span>Código</span>
                             <span>Turno</span>
                             <span>Ano</span>
                             <span>Curso</span>
-                            <span class="acoes">Ações</span>
+                            <span>Usuários</span>
+                            <span class="turma-acoes">Ações</span>
                         </li>
+
                         {% for turma in turmas %}
-                        <li>
+                        <li class="turma-item">
                             <span>{{ turma.codigo_turma }}</span>
                             <span>{{ turma.turno }}</span>
                             <span>{{ turma.ano }}</span>
                             <span>{{ turma.curso.nome_curso }}</span>
-                            <span class="acoes acoes-turma">
-                                <!-- EDITAR TURMA -->
+                            <span class="turma-usuarios">
+                                <button
+                                    type="button"
+                                    class="btn-ver-usuarios"
+                                    title="Ver usuários da turma"
+                                    data-turma="{{ turma.idturma }}"
+                                    data-usuarios='{{ turma.usuarios_json|escapejs }}'>
+                                    <i class="fa-solid fa-users"></i>
+                                </button>
+                            </span>
+
+
+                            <span class="acoes-geral">
+                                <!-- EDITAR -->
                                 <button
                                     type="button"
                                     class="btn-editar-turma"
@@ -454,37 +475,51 @@
                                     data-turno="{{ turma.turno }}"
                                     data-ano="{{ turma.ano }}"
                                     data-curso="{{ turma.curso.idcurso }}">
-
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <!-- EXCLUIR TURMA -->
+                                <!-- EXCLUIR -->
                                 <form action="{% url 'excluir_turma' turma.idturma %}"
                                     method="POST"
-                                    class="form-excluir"
-                                    style="display:inline;">
+                                    class="form-excluir-turma">
                                     {% csrf_token %}
-
                                     <button type="submit"
-                                            class="botao-excluir"
+                                            class="btn-excluir-turma"
                                             title="Excluir turma"
                                             onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
-
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
-
                             </span>
-
-
                         </li>
-                        {% empty %}
-                        <li><span>Nenhuma turma cadastrada.</span></li>
-                        {% endfor %}
 
+                        {% empty %}
+                        <li class="turma-vazia">
+                            <span>Nenhuma turma cadastrada.</span>
+                        </li>
+                        {% endfor %}
                     </ul>
                 </section>
             </section>
+
+            <div id="modalUsuariosTurma" class="modal" style="display:none;">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharUsuariosTurma">&times;</span>
+
+                    <h3>Usuários da Turma</h3>
+
+                    <ul id="listaUsuariosTurma" class="lista-usuarios-modal">
+                    <!-- preenchido via JS -->
+                    </ul>
+                </div>
+            </div>
+
+
+
+
+
+
+
 
             <div id="modalCadastroTurma" class="modal" style="display:none;">
                 <div class="modal-conteudo">
@@ -553,13 +588,6 @@
                 </div>
             </div>
 
-
-
-
-
-
-
-            
 
 
             <!-- PERFIL -->
@@ -646,7 +674,7 @@
                         <input type="email" name="email" value="{{ usuario_logado.email }}">
                         <textarea name="descricao">{{ usuario_logado.descricao }}</textarea>
 
-                        <button type="submit">Salvar</button>
+                        <button type="submitsalvar">Salvar</button>
                         <button type="button" onclick="mostrarLista('listaPerfil')">
                             Cancelar
                         </button>
