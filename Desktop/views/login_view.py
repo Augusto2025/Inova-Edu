@@ -2,6 +2,7 @@ import customtkinter as ctk
 from controllers.login_controller import autenticar
 import threading
 import traceback
+from tkinter import messagebox
 
 class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
     def __init__(self, master):  
@@ -169,12 +170,12 @@ class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
                 # falta implementar a tela do coordenador
             elif tipo == "Coordenador":
                 print("teste de tela iniciada da home")
-                self.destroy()
                 
-                from views.Coordenacao.HomeCoordenador import HomeCoordenador
-                self.home_coordenador_screen = HomeCoordenador(self.master)
-                self.home_coordenador_screen.pack(expand=True, fill="both")
-                              
+                
+                messagebox.showinfo(
+                    "Em desenvolvimento",
+                    "As telas da Coordenação ainda estão em processo de desenvolvimento."
+                )
         else:
             # result é uma tupla (mensagem, False)
             mensagem, ok = result
