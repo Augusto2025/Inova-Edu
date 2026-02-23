@@ -67,6 +67,7 @@ def conectar():
             'port': port,
             'connection_timeout': 3,
             'use_pure': True, # Melhora a compatibilidade no PyInstaller
+            'auth_plugin': 'mysql_native_password',
         }
         print(f"[BANCO] Conectando a {host}:{port} via mysql-connector...", flush=True)
         conn = mysql.connector.connect(**db_config)
