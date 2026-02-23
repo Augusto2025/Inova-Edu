@@ -2,6 +2,10 @@ import customtkinter as ctk
 from datetime import datetime
 import tkinter.messagebox as messagebox
 import re
+<<<<<<< HEAD
+=======
+from models.forum_model import buscar_foruns_db, buscar_topicos_db, buscar_mensagens_db, enviar_mensagem
+>>>>>>> desktop_telas
 # from sidebar_C import sidebar
 
 # Configuração de cores moderna
@@ -31,6 +35,7 @@ class ForumApp:
         self.current_forum_index = 0
         self.current_topic_index = 0
         self.view_mode = "topics"
+<<<<<<< HEAD
         
         # Dados dos fóruns
         self.forums = [
@@ -85,6 +90,13 @@ class ForumApp:
             }
         ]
         
+=======
+        
+        # Dados dos fóruns
+        
+        self.forums = buscar_foruns_db()
+        
+>>>>>>> desktop_telas
         self.build_ui()
     
     def build_ui(self):
@@ -199,7 +211,11 @@ class ForumApp:
             text="+ Novo Fórum",
             height=45,
             font=ctk.CTkFont(size=14, weight="bold"),
+<<<<<<< HEAD
             fg_color=CORES["sucesso"],
+=======
+            fg_color="black",
+>>>>>>> desktop_telas
             hover_color=CORES["secundaria"],
             corner_radius=10,
             command=self.criar_novo_forum
@@ -334,8 +350,23 @@ class ForumApp:
         for widget in self.forums_list_frame.winfo_children():
             widget.destroy()
         
+<<<<<<< HEAD
         for i, forum in enumerate(self.forums):
             self.create_forum_card(forum, i)
+=======
+        self.forums = buscar_foruns_db()        
+        
+        for i, forum in enumerate(self.forums):
+            btn = ctk.CTkButton(
+                self.forums_list_frame,
+                text=f"{forum['nome']}",
+                anchor="w",
+                fg_color="transparent",
+                hover_color=CORES["secundaria"],
+                command=lambda idx=i: self.load_forum(idx)
+            )
+            btn.pack(fill="x", pady=2)
+>>>>>>> desktop_telas
     
     def create_forum_card(self, forum, index):
         """Cria um card de fórum com botões de editar e excluir"""
@@ -479,6 +510,10 @@ class ForumApp:
     def load_topics(self):
         """Carrega a lista de tópicos"""
         forum = self.forums[self.current_forum_index]
+<<<<<<< HEAD
+=======
+        self.topicos = buscar_topicos_db(forum["idforum"])
+>>>>>>> desktop_telas
         
         # Limpar o conteúdo antes de carregar
         self.clear_content()
@@ -487,7 +522,11 @@ class ForumApp:
             self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
             return
         
+<<<<<<< HEAD
         for i, topic in enumerate(forum["topics"]):
+=======
+        for i, topic in enumerate(self.topicos):
+>>>>>>> desktop_telas
             self.create_topic_card(topic, i)
     
     def create_topic_card(self, topic, index):
@@ -1462,6 +1501,7 @@ class ForumApp:
             self.reply_entry.insert("1.0", "Digite sua resposta...")
     
     def send_message(self):
+<<<<<<< HEAD
         """Envia mensagem"""
         message = self.reply_entry.get("1.0", "end-1c").strip()
         if message and message != "Digite sua resposta...":
@@ -1524,6 +1564,67 @@ class ForumApp:
         if hasattr(self.master, 'mainloop'):
             self.master.mainloop()
 
+=======
+        txt = self.reply_entry.get("1.0", "end-1c").strip()
+
+        if not txt or txt == "Digite sua resposta...":
+            return
+
+        forum_id = self.forums[self.current_forum_index]["id"]
+
+        conn = conectar()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO mensagem (ID_Forum, ID_Usuario, Conteudo)
+            VALUES (%s, %s, %s)
+        """, (forum_id, 1, txt))  # depois podemos pegar o usuário logado
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        self.reply_entry.delete("1.0", "end")
+        self.refresh_ui()
+            
+            
+            
+        
+    
+    def search_forums(self, event=None):
+        """Busca fóruns"""
+        search_term = self.search_entry.get().lower()
+        
+        if not search_term:
+            self.load_forums_list()
+            return
+        
+        filtered = [f for f in self.forums if search_term in f["name"].lower()]
+        
+        for widget in self.forums_list_frame.winfo_children():
+            widget.destroy()
+        
+        if filtered:
+            for i, forum in enumerate(filtered):
+                self.create_forum_card(forum, i)
+        else:
+            no_results = ctk.CTkLabel(
+                self.forums_list_frame,
+                text="🔍 Nenhum fórum encontrado",
+                font=ctk.CTkFont(size=13),
+                text_color=CORES["texto_secundario"]
+            )
+            no_results.pack(pady=30)
+    
+    def run(self):
+        """Inicia o fórum"""
+        if not self.ui_built:
+            self.build_ui()
+        
+        if hasattr(self.master, 'mainloop'):
+            self.master.mainloop()
+
+>>>>>>> desktop_telas
 
 if __name__ == "__main__":
     app = ForumApp()
