@@ -2,45 +2,1147 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding-top: 80px; /* Espaço para o header fixo */
+        padding-bottom: 60px; /* Espaço para o footer fixo */
+        position: relative;
+    }
 
-    <div class="titulo">
-        <p>Meu Perfil</p>
-    </div>
+    /* Garantir que o header apareça */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        padding: 15px 30px;
+        display: flex !important; /* Forçar aparecer */
+        justify-content: space-between;
+        align-items: center;
+    }
 
-    <main>
-        <section class="perfil-container">
+    /* Footer Fixo */
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        padding: 15px 30px;
+        text-align: center;
+        display: block !important; /* Forçar aparecer */
+    }
 
-            <div class="foto-nome">
-                {% if usuario.imagem %}
-                    <img class="perfil-img" src="{{ usuario.imagem.url }}" alt="Foto do usuário">
-                {% else %}
-                    <img class="perfil-img" src="{% static 'img/default_user.png' %}" alt="Foto do usuário">
-                {% endif %}
-                <p class="Nome_Usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</p>
-            </div>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-            <div class="info-card">
-                <p><strong>Email:</strong> {{ usuario.email }}</p>
-                <p><strong>Tipo:</strong> {{ usuario.tipo }}</p>
-            </div>
-            
-            <div class="descricao">
-                <p><strong>Descrição:</strong></p>
-                {{ usuario.descricao|default:"Sem descrição." }}
-            </div>
+    /* Profile Card */
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        animation: slideIn 0.5s ease;
+    }
 
-            <a href="{% url 'editar_perfil' %}" class="Editar_Perfil">Editar Perfil</a>
-        </section>
-    </main>
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .profile-photo-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+    }
+
+    .profile-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #667eea;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-photo:hover {
+        transform: scale(1.05);
+    }
+
+    .photo-edit-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: #667eea;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid white;
+        transition: all 0.3s ease;
+    }
+
+    .photo-edit-btn:hover {
+        background: #764ba2;
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-info h1 {
+        font-size: 2.5em;
+        margin-bottom: 5px;
+        color: #333;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .profile-bio {
+        color: #666;
+        margin: 15px 0;
+        line-height: 1.6;
+    }
+
+    .course-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 10px 0;
+    }
+
+    .course-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        font-weight: 500;
+        color: white;
+        font-size: 0.9em;
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .edit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .edit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Sections */
+    .certificates-section,
+    .repos-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        animation: slideIn 0.5s ease 0.1s both;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .section-header h2 {
+        color: #333;
+        font-size: 1.8em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-header h2 i {
+        color: #667eea;
+    }
+
+    .add-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .add-btn:hover {
+        background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Grids */
+    .certificates-grid,
+    .repos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    /* Certificate Cards */
+    .certificate-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        border-left: 4px solid #667eea;
+        position: relative;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    .certificate-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+        border-left: 4px solid #764ba2;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+
+    .certificate-icon {
+        font-size: 2em;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .certificate-card h3 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+
+    .certificate-card p {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .certificate-card p i {
+        color: #667eea;
+        width: 20px;
+    }
+
+    .certificate-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .cert-btn {
+        padding: 6px 15px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .edit-cert {
+        background: #ffc107;
+        color: #333;
+    }
+
+    .edit-cert:hover {
+        background: #e0a800;
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+    }
+
+    .delete-cert {
+        background: #dc3545;
+        color: white;
+    }
+
+    .delete-cert:hover {
+        background: #c82333;
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Repository Cards */
+    .repo-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+
+    .repo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .repo-icon {
+        font-size: 2em;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .repo-card h3 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .repo-turma {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .repo-date {
+        font-size: 0.85em;
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        animation: modalAppear 0.3s ease;
+        overflow: hidden;
+    }
+
+    @keyframes modalAppear {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .close-btn:hover {
+        transform: scale(1.2);
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .modal-footer {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .modal-footer button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .save-btn {
+        background: #28a745;
+        color: white;
+    }
+
+    .save-btn:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .cancel-btn:hover {
+        background: #c82333;
+        transform: scale(1.05);
+    }
+
+    /* No Items */
+    .no-items {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        grid-column: 1 / -1;
+    }
+
+    .no-items i {
+        font-size: 3em;
+        margin-bottom: 10px;
+        color: #ddd;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 2500;
+    }
+
+    .loading-overlay.active {
+        display: flex;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background: white;
+        border-radius: 10px;
+        padding: 15px 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2300;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+    }
+
+    .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .toast-icon {
+        font-size: 1.2em;
+    }
+
+    .toast-icon.success {
+        color: #28a745;
+    }
+
+    .toast-icon.error {
+        color: #dc3545;
+    }
+
+    /* Upload input */
+    #photo-upload {
+        display: none;
+    }
+
+    /* Ajuste para o ano None */
+    .none-value {
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        body {
+            padding-top: 120px;
+        }
+        
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-info h1 {
+            font-size: 2em;
+        }
+        
+        .course-badges {
+            justify-content: center;
+        }
+        
+        .section-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- HEADER (usando seu include) -->
+{% block header %}
+    {% include "partials/header.html" %}
 {% endblock %}
 
+<!-- DEBUG: Verificar se o header está sendo incluído -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Header incluso?', document.querySelector('header') !== null);
+        if (!document.querySelector('header')) {
+            alert('Header não encontrado! Verifique o caminho: partials/header.html');
+        }
+    });
+</script>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="container">
+    <!-- Perfil -->
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-photo-container">
+                {% if usuario.imagem %}
+                    <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                {% endif %}
+                <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <input type="file" id="photo-upload" accept="image/*" onchange="updateProfilePhoto(event)">
+            </div>
+            <div class="profile-info">
+                <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
+                
+                <div class="course-badges">
+                    {% for curso in cursos %}
+                        <span class="course-badge">{{ curso.nome_curso }}</span>
+                    {% empty %}
+                        <span class="course-badge">Nenhum curso cadastrado</span>
+                    {% endfor %}
+                </div>
+                
+                <p class="profile-bio" id="profile-bio">{{ usuario.descricao|default:"Sem descrição cadastrada." }}</p>
+                <button class="edit-btn" onclick="openProfileModal()">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cursos -->
+    <div class="certificates-section">
+        <div class="section-header">
+            <h2><i class="fas fa-graduation-cap"></i> Meus Cursos</h2>
+            <button class="add-btn" onclick="openCursoModal()">
+                <i class="fas fa-plus"></i> Adicionar Curso
+            </button>
+        </div>
+        <div class="certificates-grid" id="cursos-grid">
+            {% for curso in cursos %}
+            <div class="certificate-card" data-id="{{ curso.idcurso }}">
+                <div class="certificate-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3>{{ curso.nome_curso }}</h3>
+                <p><strong>Descrição:</strong> {{ curso.descricao_curso|default:"Sem descrição" }}</p>
+                {% if curso.data_inicio %}
+                    <p><i class="far fa-calendar-alt"></i> <strong>Início:</strong> {{ curso.data_inicio|date:"d/m/Y" }}</p>
+                {% endif %}
+                {% if curso.data_final %}
+                    <p><i class="far fa-calendar-check"></i> <strong>Término:</strong> {{ curso.data_final|date:"d/m/Y" }}</p>
+                {% endif %}
+                <div class="certificate-actions">
+                    <button class="cert-btn edit-cert" onclick="openEditCursoModal({{ curso.idcurso }}, '{{ curso.nome_curso|escapejs }}', '{{ curso.descricao_curso|escapejs }}', '{{ curso.data_inicio|date:'Y-m-d' }}', '{{ curso.data_final|date:'Y-m-d' }}')">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="cert-btn delete-cert" onclick="deleteCurso({{ curso.idcurso }})">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-items">
+                <i class="fas fa-book-open"></i>
+                <p>Nenhum curso cadastrado ainda.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Projetos -->
+    <div class="repos-section">
+        <div class="section-header">
+            <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
+        </div>
+        <div class="repos-grid" id="projetos-grid">
+            {% for projeto in projetos %}
+            <div class="repo-card">
+                <div class="repo-icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h3>{{ projeto.nome_projeto }}</h3>
+                <p class="repo-turma">
+                    <i class="fas fa-users"></i> 
+                    {{ projeto.turma.curso.nome_curso }} - 
+                    {% if projeto.turma.ano %}
+                        {{ projeto.turma.ano }}
+                    {% else %}
+                        <span class="none-value">Ano não informado</span>
+                    {% endif %}
+                </p>
+                <p class="repo-date"><i class="far fa-calendar-alt"></i> Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}</p>
+            </div>
+            {% empty %}
+            <div class="no-items">
+                <i class="fas fa-folder-open"></i>
+                <p>Nenhum projeto encontrado.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER (usando seu include) -->
 {% block footer %}
     {% include "partials/footer.html" %}
+{% endblock %}
+
+<!-- Modais e JavaScript -->
+<!-- Modal de Edição de Perfil -->
+<div class="modal" id="profile-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
+            <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="edit-nome"><i class="fas fa-user"></i> Nome</label>
+                <input type="text" id="edit-nome" placeholder="Seu nome" value="{{ usuario.nome }}">
+            </div>
+            <div class="form-group">
+                <label for="edit-sobrenome"><i class="fas fa-user"></i> Sobrenome</label>
+                <input type="text" id="edit-sobrenome" placeholder="Seu sobrenome" value="{{ usuario.sobrenome }}">
+            </div>
+            <div class="form-group">
+                <label for="edit-bio"><i class="fas fa-align-left"></i> Bio</label>
+                <textarea id="edit-bio" placeholder="Fale um pouco sobre você">{{ usuario.descricao }}</textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-btn" onclick="closeProfileModal()"><i class="fas fa-times"></i> Cancelar</button>
+            <button class="save-btn" onclick="saveProfile()"><i class="fas fa-check"></i> Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Curso -->
+<div class="modal" id="curso-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="curso-modal-title"><i class="fas fa-plus-circle"></i> Adicionar Curso</h3>
+            <button class="close-btn" onclick="closeCursoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="curso-nome"><i class="fas fa-graduation-cap"></i> Nome do curso</label>
+                <input type="text" id="curso-nome" placeholder="Ex: Engenharia de Software">
+            </div>
+            <div class="form-group">
+                <label for="curso-descricao"><i class="fas fa-align-left"></i> Descrição</label>
+                <textarea id="curso-descricao" placeholder="Descrição do curso"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="curso-data-inicio"><i class="far fa-calendar-alt"></i> Data de início</label>
+                    <input type="date" id="curso-data-inicio">
+                </div>
+                <div class="form-group">
+                    <label for="curso-data-fim"><i class="far fa-calendar-check"></i> Data de término</label>
+                    <input type="date" id="curso-data-fim">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-btn" onclick="closeCursoModal()"><i class="fas fa-times"></i> Cancelar</button>
+            <button class="save-btn" onclick="saveCurso()"><i class="fas fa-check"></i> Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <div class="toast-content">
+        <i class="fas fa-check-circle toast-icon success"></i>
+        <span class="toast-message" id="toast-message"></span>
+    </div>
+</div>
+
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
+<script>
+    // (TODO O JAVASCRIPT QUE VOCÊ JÁ TEM - igual ao anterior)
+    // Pegar o token CSRF
+    const csrftoken = document.getElementById('csrf-token').value;
+
+    // Configuração para requisições AJAX
+    const headers = {
+        'X-CSRFToken': csrftoken,
+        'Content-Type': 'application/json',
+    };
+
+    // Elementos do DOM
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // Funções de utilidade
+    function showLoading() {
+        if (loadingOverlay) loadingOverlay.classList.add('active');
+    }
+
+    function hideLoading() {
+        if (loadingOverlay) loadingOverlay.classList.remove('active');
+    }
+
+    function showToast(message, type = 'success') {
+        if (!toast || !toastMessage) return;
+        
+        toastMessage.textContent = message;
+        const toastIcon = toast.querySelector('.toast-icon');
+        if (toastIcon) {
+            toastIcon.className = `toast-icon ${type}`;
+        }
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Funções do Perfil
+    function openProfileModal() {
+        const modal = document.getElementById('profile-modal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function closeProfileModal() {
+        const modal = document.getElementById('profile-modal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    async function saveProfile() {
+        const nome = document.getElementById('edit-nome')?.value.trim();
+        const sobrenome = document.getElementById('edit-sobrenome')?.value.trim();
+        const bio = document.getElementById('edit-bio')?.value.trim();
+
+        if (!nome || !sobrenome) {
+            showToast('Nome e sobrenome são obrigatórios!', 'error');
+            return;
+        }
+
+        showLoading();
+
+        try {
+            const response = await fetch('/api/atualizar-perfil/', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    nome: nome,
+                    sobrenome: sobrenome,
+                    bio: bio
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const profileName = document.getElementById('profile-name');
+                const profileBio = document.getElementById('profile-bio');
+                
+                if (profileName) profileName.textContent = nome + ' ' + sobrenome;
+                if (profileBio) profileBio.textContent = bio || 'Sem descrição cadastrada.';
+                
+                closeProfileModal();
+                showToast('Perfil atualizado com sucesso!');
+            } else {
+                showToast(data.message || 'Erro ao salvar perfil', 'error');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('Erro ao salvar perfil. Tente novamente.', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    async function updateProfilePhoto(event) {
+        const file = event.target.files[0];
+        
+        if (!file) return;
+        
+        // Validar tipo de arquivo
+        if (!file.type.startsWith('image/')) {
+            showToast('Por favor, selecione uma imagem válida!', 'error');
+            return;
+        }
+        
+        // Validar tamanho (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('A imagem deve ter no máximo 5MB!', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('foto', file);
+
+        showLoading();
+
+        try {
+            const response = await fetch('/api/upload-foto/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const profilePhoto = document.getElementById('profile-photo');
+                if (profilePhoto) profilePhoto.src = data.foto_url;
+                showToast('Foto atualizada com sucesso!');
+            } else {
+                showToast(data.message || 'Erro ao fazer upload da foto', 'error');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('Erro ao fazer upload da foto. Tente novamente.', 'error');
+        } finally {
+            hideLoading();
+        }
+    }
+
+    // Funções de Cursos
+    let currentCursoId = null;
+
+    function openCursoModal() {
+        currentCursoId = null;
+        const modalTitle = document.getElementById('curso-modal-title');
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Curso';
+        
+        document.getElementById('curso-nome').value = '';
+        document.getElementById('curso-descricao').value = '';
+        document.getElementById('curso-data-inicio').value = '';
+        document.getElementById('curso-data-fim').value = '';
+        
+        const modal = document.getElementById('curso-modal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function openEditCursoModal(id, nome, descricao, dataInicio, dataFim) {
+        currentCursoId = id;
+        const modalTitle = document.getElementById('curso-modal-title');
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-edit"></i> Editar Curso';
+        
+        document.getElementById('curso-nome').value = nome || '';
+        document.getElementById('curso-descricao').value = descricao || '';
+        document.getElementById('curso-data-inicio').value = dataInicio || '';
+        document.getElementById('curso-data-fim').value = dataFim || '';
+        
+        const modal = document.getElementById('curso-modal');
+        if (modal) modal.classList.add('active');
+    }
+
+    function closeCursoModal() {
+        const modal = document.getElementById('curso-modal');
+        if (modal) modal.classList.remove('active');
+        currentCursoId = null;
+    }
+
+    async function saveCurso() {
+        const nome = document.getElementById('curso-nome')?.value.trim();
+        const descricao = document.getElementById('curso-descricao')?.value.trim();
+        const dataInicio = document.getElementById('curso-data-inicio')?.value;
+        const dataFim = document.getElementById('curso-data-fim')?.value;
+
+        if (!nome) {
+            showToast('Por favor, preencha o nome do curso!', 'error');
+            return;
+        }
+
+        showLoading();
+
+        try {
+            const method = currentCursoId ? 'PUT' : 'POST';
+            
+            const response = await fetch('/api/cursos/', {
+                method: method,
+                headers: headers,
+                body: JSON.stringify({
+                    id: currentCursoId,
+                    nome: nome,
+                    descricao: descricao,
+                    data_inicio: dataInicio || null,
+                    data_fim: dataFim || null
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast(currentCursoId ? 'Curso atualizado com sucesso!' : 'Curso adicionado com sucesso!');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showToast(data.message || 'Erro ao salvar curso', 'error');
+                hideLoading();
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('Erro ao salvar curso. Tente novamente.', 'error');
+            hideLoading();
+        }
+    }
+
+    async function deleteCurso(id) {
+        if (!confirm('Tem certeza que deseja excluir este curso?')) {
+            return;
+        }
+
+        showLoading();
+
+        try {
+            const response = await fetch('/api/cursos/', {
+                method: 'DELETE',
+                headers: headers,
+                body: JSON.stringify({ id: id })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showToast('Curso excluído com sucesso!');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showToast(data.message || 'Erro ao deletar curso', 'error');
+                hideLoading();
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showToast('Erro ao deletar curso. Tente novamente.', 'error');
+            hideLoading();
+        }
+    }
+
+    // Fechar modais ao clicar fora
+    window.addEventListener('click', function(event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    });
+
+    // Fechar modais com tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const modals = document.querySelectorAll('.modal.active');
+            modals.forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+    });
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Perfil carregado com sucesso!');
+    });
+</script>
 {% endblock %}

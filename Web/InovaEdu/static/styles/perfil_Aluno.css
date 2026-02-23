@@ -1,4 +1,4 @@
-:root {
+/* :root {
     --laranja-Senac:#F7941D;
     --branco-Senac:#FFFFFF;
     --azul-Senac:#004A8D;
@@ -6,132 +6,611 @@
     --cinza-claro:#F5F5F5;
     --preto:#222;
     --sombra: 0 3px 10px rgba(0,0,0,0.12);
-}
+} */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: var(--cinza-claro);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* --------- CONTEÚDO PRINCIPAL --------- */
-
-main {
-    display: flex;
-    justify-content: center;
-    justify-self: center;
-    margin: 40px 0 80px 0;
-    min-height: calc(80vh - 90px);
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* --------- CONTAINER --------- */
-
-.perfil-container {
-    background: var(--branco-Senac);
-    width: 420px;
-    padding: 35px;
+/* Profile Card */
+.profile-card {
+    background: white;
     border-radius: 20px;
-    box-shadow: var(--sombra);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-header {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.profile-photo-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #667eea;
+    transition: transform 0.3s ease;
+}
+
+.profile-photo:hover {
+    transform: scale(1.05);
+}
+
+.photo-edit-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #667eea;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+}
+
+.photo-edit-btn:hover {
+    background: #764ba2;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h1 {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+    color: #333;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.profile-bio {
+    color: #666;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+.course-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.course-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 500;
+    color: white;
+    font-size: 0.9em;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Sections */
+.certificates-section,
+.repos-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    animation: slideIn 0.5s ease 0.1s both;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.section-header h2 {
+    color: #333;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header h2 i {
+    color: #667eea;
+}
+
+.add-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+/* Grids */
+.certificates-grid,
+.repos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
 }
 
-/* --------- FOTO & NOME --------- */
-
-.perfil-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 100%;
-    object-fit: cover;
-    border: 4px solid var(--azul-Senac);
+/* Certificate Cards */
+.certificate-card {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    border-left: 4px solid #667eea;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
 }
 
-.Nome_Usuario {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--preto);
+.certificate-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    border-left: 4px solid #764ba2;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
 
-.tipo_usuario {
-    font-size: 14px;
-    color: var(--laranja-Senac);
-    font-weight: 600;
-    margin-top: -10px;
+.certificate-icon {
+    font-size: 2em;
+    color: #667eea;
+    margin-bottom: 10px;
 }
 
-/* --------- CARD DE INFORMAÇÕES --------- */
-
-.info-card {
-    background-color: var(--cinza-claro);
-    width: 100%;
-    padding: 18px 20px;
-    border-radius: 12px;
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
+.certificate-card h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.2em;
 }
 
-.info-card p {
-    font-size: 15px;
-    margin-bottom: 8px;
+.certificate-card p {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.certificate-card p i {
+    color: #667eea;
+    width: 20px;
+}
+
+.certificate-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cert-btn {
+    padding: 6px 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.edit-cert {
+    background: #ffc107;
     color: #333;
 }
 
-.info-card strong {
-    color: var(--azul-Senac);
+.edit-cert:hover {
+    background: #e0a800;
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
 }
 
-/* --------- DESCRIÇÃO --------- */
+.delete-cert {
+    background: #dc3545;
+    color: white;
+}
 
-.descricao {
-    background-color: var(--cinza-claro);
+.delete-cert:hover {
+    background: #c82333;
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+}
+
+/* Repository Cards */
+.repo-card {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.repo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.repo-icon {
+    font-size: 2em;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.repo-card h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.repo-turma {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.repo-date {
+    font-size: 0.85em;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 18px;
-    border-radius: 12px;
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
-    font-size: 15px;
-    text-align: start;
-    min-height: 80px;
-    color: #444;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
-/* --------- BOTÃO EDITAR --------- */
+.modal.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
 
-.Editar_Perfil {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    text-decoration: none;
-    padding: 12px 30px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    animation: modalAppear 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 10px;
-    font-weight: bold;
-    transition: 0.25s ease;
-    box-shadow: var(--sombra);
+    font-size: 1em;
+    transition: all 0.3s ease;
 }
 
-.Editar_Perfil:hover {
-    background-color: var(--laranja-Senac);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* --------- RESPONSIVIDADE --------- */
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
 
-@media (max-width: 480px) {
-    .perfil-container {
-        width: 90%;
-        padding: 25px;
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-footer button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.save-btn {
+    background: #28a745;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+.cancel-btn {
+    background: #dc3545;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background: #c82333;
+    transform: scale(1.05);
+}
+
+/* No Items */
+.no-items {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    grid-column: 1 / -1;
+}
+
+.no-items i {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 1500;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast-icon {
+    font-size: 1.2em;
+}
+
+.toast-icon.success {
+    color: #28a745;
+}
+
+.toast-icon.error {
+    color: #dc3545;
+}
+
+/* Upload input */
+#photo-upload {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
     }
-
-    .Nome_Usuario {
-        font-size: 22px;
+    
+    .profile-info h1 {
+        font-size: 2em;
     }
-
-    .titulo p {
-        font-size: 26px;
+    
+    .course-badges {
+        justify-content: center;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }

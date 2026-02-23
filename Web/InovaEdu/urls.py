@@ -10,9 +10,17 @@ urlpatterns = [
     path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),
     path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
+    
     # Aluno e Professor
     path('home/', views.home, name='home'),
     path("perfil/", views.perfil, name="perfil"),
+    
+    # NOVAS URLs para o perfil AJAX
+    path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
+    path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
+    path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
+    path('api/projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
+    
     path("calendario/", views.calendario, name="calendario"),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
     path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
@@ -25,6 +33,7 @@ urlpatterns = [
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('repositorio/<int:turma_id>/', views.repositorio, name='repositorio'),
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
+    
     # Coordenação
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
     path('criar_curso/', views.criar_curso, name='criar_curso'),
@@ -37,10 +46,6 @@ urlpatterns = [
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
-
-
-
-    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
 ]
 
 if settings.DEBUG:  

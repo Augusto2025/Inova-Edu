@@ -9,6 +9,8 @@ import random
 from django.contrib import messages
 import cloudinary.uploader
 import re
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -148,7 +150,150 @@ def home(request):
 
 
 def perfil(request):
-    return render(request, 'AlunoProfessor/perfil.html')
+    email = request.session.get('usuario_email')
+    if not email:
+        return redirect('login')
+    
+    usuario = get_object_or_404(Usuario, email=email)
+    
+    # Pegar cursos do usuário
+    cursos = Curso.objects.filter(usuario=usuario)
+    
+    # Pegar turmas que o usuário participa
+    turmas_usuario = UsuarioDaTurma.objects.filter(id_usuario=usuario).values_list('id_turma', flat=True)
+    
+    # Pegar projetos das turmas
+    projetos = Projeto.objects.filter(turma_id__in=turmas_usuario).select_related('turma__curso')
+    
+    context = {
+        'usuario': usuario,
+        'cursos': cursos,
+        'projetos': projetos,
+    }
+    return render(request, 'AlunoProfessor/perfil.html', context)
+
+
+@csrf_exempt
+def atualizar_perfil_ajax(request):
+    if request.method == 'POST':
+        email = request.session.get('usuario_email')
+        if not email:
+            return JsonResponse({'status': 'error', 'message': 'Não autenticado'}, status=401)
+        
+        usuario = get_object_or_404(Usuario, email=email)
+        data = json.loads(request.body)
+        
+        usuario.nome = data.get('nome', usuario.nome)
+        usuario.sobrenome = data.get('sobrenome', usuario.sobrenome)
+        usuario.descricao = data.get('bio', usuario.descricao)
+        usuario.save()
+        
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def upload_foto_ajax(request):
+    if request.method == 'POST' and request.FILES.get('foto'):
+        email = request.session.get('usuario_email')
+        if not email:
+            return JsonResponse({'status': 'error', 'message': 'Não autenticado'}, status=401)
+        
+        usuario = get_object_or_404(Usuario, email=email)
+        foto = request.FILES['foto']
+        
+        # Upload para Cloudinary
+        result = cloudinary.uploader.upload(foto, folder="perfil_usuarios")
+        
+        usuario.imagem = result['public_id']
+        usuario.save()
+        
+        return JsonResponse({
+            'status': 'success', 
+            'foto_url': usuario.imagem.url
+        })
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def gerenciar_cursos_ajax(request):
+    email = request.session.get('usuario_email')
+    if not email:
+        return JsonResponse({'status': 'error', 'message': 'Não autenticado'}, status=401)
+    
+    usuario = get_object_or_404(Usuario, email=email)
+    
+    if request.method == 'GET':
+        cursos = Curso.objects.filter(usuario=usuario).values(
+            'idcurso', 'nome_curso', 'descricao_curso', 'data_inicio', 'data_final'
+        )
+        return JsonResponse(list(cursos), safe=False)
+    
+    elif request.method == 'POST':
+        data = json.loads(request.body)
+        curso = Curso.objects.create(
+            nome_curso=data['nome'],
+            descricao_curso=data.get('descricao', ''),
+            data_inicio=data.get('data_inicio') if data.get('data_inicio') else None,
+            data_final=data.get('data_fim') if data.get('data_fim') else None,
+            usuario=usuario
+        )
+        return JsonResponse({'status': 'success', 'id': curso.idcurso})
+    
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+        curso = get_object_or_404(Curso, idcurso=data['id'], usuario=usuario)
+        curso.nome_curso = data.get('nome', curso.nome_curso)
+        curso.descricao_curso = data.get('descricao', curso.descricao_curso)
+        curso.data_inicio = data.get('data_inicio') if data.get('data_inicio') else curso.data_inicio
+        curso.data_final = data.get('data_fim') if data.get('data_fim') else curso.data_final
+        curso.save()
+        return JsonResponse({'status': 'success'})
+    
+    elif request.method == 'DELETE':
+        data = json.loads(request.body)
+        curso = get_object_or_404(Curso, idcurso=data['id'], usuario=usuario)
+        curso.delete()
+        return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@csrf_exempt
+def listar_projetos_ajax(request):
+    email = request.session.get('usuario_email')
+    if not email:
+        return JsonResponse({'status': 'error', 'message': 'Não autenticado'}, status=401)
+    
+    usuario = get_object_or_404(Usuario, email=email)
+    
+    if request.method == 'GET':
+        # Pegar turmas do usuário
+        turmas_usuario = UsuarioDaTurma.objects.filter(id_usuario=usuario).values_list('id_turma', flat=True)
+        
+        # Pegar projetos dessas turmas
+        projetos = Projeto.objects.filter(turma_id__in=turmas_usuario).select_related('turma__curso').values(
+            'idprojeto', 
+            'nome_projeto', 
+            'data_de_criacao',
+            'turma__turno',
+            'turma__ano',
+            'turma__curso__nome_curso'
+        )
+        
+        projetos_list = []
+        for projeto in projetos:
+            projetos_list.append({
+                'id': projeto['idprojeto'],
+                'nome': projeto['nome_projeto'],
+                'data_criacao': projeto['data_de_criacao'],
+                'turma': f"{projeto['turma__curso__nome_curso']} - {projeto['turma__ano']} ({projeto['turma__turno']})"
+            })
+        
+        return JsonResponse(projetos_list, safe=False)
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
 
 def editar_perfil(request):
     email = request.session.get('usuario_email')  # Pegando o email da sessão
@@ -738,28 +883,6 @@ def home_Coordenacao(request):
         'turmas': turmas,
         'usuario_logado': usuario_logado,
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def homePage(request):
