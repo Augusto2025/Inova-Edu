@@ -39,9 +39,9 @@
                 placeholder="Pesquisar"
                 value="{{ query }}">
 
-            {% if query %}
+            {% comment %} {% if query %}
                 <a style="color:#004A8D" href="{% url 'home' %}">Limpar</a>
-            {% endif %}
+            {% endif %} {% endcomment %}
 
             <!-- DATA INÍCIO -->
             <div class="campo-filtro">

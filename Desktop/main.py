@@ -19,7 +19,7 @@ class main(ctk.CTk):
         try:
             self.title("Sistema Acadêmico - INOVA EDU")
             self.attributes("-fullscreen", True)
-
+            
             self.login_screen = tela_login(self)
             self.login_screen.pack(expand=True, fill="both")
             print("[MAIN] App iniciada")
@@ -30,9 +30,11 @@ class main(ctk.CTk):
 
 
 if __name__ == "__main__":
+    ctk.set_appearance_mode("light")
     try:
         app = main()
         app.mainloop()
     except Exception as e:
         print(f"[MAIN FATAL] {str(e)}")
         traceback.print_exc()
+

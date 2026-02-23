@@ -1,182 +1,174 @@
 import customtkinter as ctk
 from controllers.login_controller import autenticar
 import threading
-import traceback
-
-class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
+from PIL import Image, ImageOps
+import os
+from assets.cores import *
+from assets.fonts import *
+class tela_login(ctk.CTkFrame):  
     def __init__(self, master):  
         super().__init__(master)
+        self.master = master
 
-        # este frame precisa ser adicionado à janela pelo chamador (pack/grid)
-        # Ex.: no main.py: TelaLogin(root).pack(expand=True, fill="both")
+        # Cores Adicionais para Refinamento
+        self.cor_fundo = "#F1F5F9"
+        self.cor_borda = "#E2E8F0"
+        self.cor_texto_secundario = "#94A3B8"
 
-        print("Tela de login iniciada")
-        self.container = ctk.CTkFrame(self)
+        self.configure(fg_color=self.cor_fundo) 
+        
+        self.container = ctk.CTkFrame(self, fg_color="transparent")
         self.container.pack(expand=True, fill="both")
 
-        self.container.grid_columnconfigure((0, 1), weight=1)
+        self.container.grid_columnconfigure(0, weight=1) 
+        self.container.grid_columnconfigure(1, weight=1) 
         self.container.grid_rowconfigure(0, weight=1)
 
-        self.left = ctk.CTkFrame(self.container, fg_color="#1f6aa5")
+        # --- LADO ESQUERDO: Branding Experience ---
+        self.left = ctk.CTkFrame(self.container, fg_color=azulEscuro, corner_radius=0)
         self.left.grid(row=0, column=0, sticky="nsew")
 
-        # titulo do lado esquerdo
-        ctk.CTkLabel(
-            self.left, text="Bem-vindo!", font=("Arial", 34, "bold"), text_color="white"
-        ).pack(pady=(120, 10))
-        ctk.CTkLabel(
-            self.left, text="Sistema Desktop\nProfinal", font=("Arial", 18), text_color="white"
-        ).pack()
-        ctk.CTkLabel(
-            self.left, text="Faça login para continuar", font=("Arial", 14), text_color="white"
-        ).pack(pady=10)
+        # Overlay sutil para textura (Opcional)
+        self.brand_content = ctk.CTkFrame(self.left, fg_color="transparent")
+        self.brand_content.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.right = ctk.CTkFrame(self.container, fg_color="white")
+        # Logo centralizado mais alto
+        try:
+            caminho_imagem = "Desktop/assets/img/LOGOBRANCO.png"
+            img_pil = Image.open(caminho_imagem)
+            self.img_logo = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(180, 220))
+            self.logo_label = ctk.CTkLabel(self.brand_content, image=self.img_logo, text="")
+            self.logo_label.pack(pady=(0, 20))
+        except:
+            pass
+
+        ctk.CTkLabel(
+            self.brand_content, text="INOVA EDU", 
+            font=ctk.CTkFont(family="Inter", size=48, weight="bold"), 
+            text_color="white"
+        ).pack()
+
+        ctk.CTkFrame(self.brand_content, width=40, height=4, fg_color="#38BDF8").pack(pady=15)
+
+        ctk.CTkLabel(
+            self.brand_content, 
+            text="Transformando a gestão acadêmica\ncom tecnologia de ponta.", 
+            font=ctk.CTkFont(family="Inter", size=18, weight="normal"), 
+            text_color="#CBD5E1",
+            justify="center"
+        ).pack()
+
+        # --- LADO DIREITO: Clean Form ---
+        self.right = ctk.CTkFrame(self.container, fg_color="white", corner_radius=0)
         self.right.grid(row=0, column=1, sticky="nsew")
 
+        # Box do Formulário (Simulando um Card)
+        self.form_card = ctk.CTkFrame(self.right, fg_color="white", width=400)
+        self.form_card.place(relx=0.5, rely=0.5, anchor="center")
+
         ctk.CTkLabel(
-            self.right, text="LOGIN", font=("Arial", 30, "bold"), text_color="#1f6aa5"
-        ).pack(pady=(120, 30))
+            self.form_card, text="Bem-vindo de volta", 
+            font=ctk.CTkFont(family="Inter", size=32, weight="bold"), 
+            text_color=azulEscuro
+        ).pack(anchor="w", padx=20)
 
-        self.usuario = ctk.CTkEntry(self.right, placeholder_text="Usuário", width=280, height=45)
-        self.usuario.pack(pady=10)
+        ctk.CTkLabel(
+            self.form_card, text="Por favor, insira seus dados de acesso.", 
+            font=ctk.CTkFont(family="Inter", size=14), 
+            text_color=self.cor_texto_secundario
+        ).pack(anchor="w", padx=20, pady=(5, 30))
 
-        self.senha = ctk.CTkEntry(
-            self.right, placeholder_text="Senha", show="*", width=280, height=45
+        # Estilização dos Inputs
+        input_kwargs = {
+            "width": 360,
+            "height": 52,
+            "corner_radius": 10,
+            "border_width": 1,
+            "border_color": self.cor_borda,
+            "fg_color": "#F8FAFC",
+            "text_color": 'black',
+            "font": (Fonte1, 14),
+            "placeholder_text_color": "#94A3B8"
+        }
+
+        self.usuario = ctk.CTkEntry(self.form_card, placeholder_text="Usuário ou e-mail", **input_kwargs)
+        self.usuario.pack(pady=10, padx=20)
+
+        self.senha = ctk.CTkEntry(self.form_card, placeholder_text="Sua senha", show="*", **input_kwargs)
+        self.senha.pack(pady=10, padx=20)
+
+        # Link de "Esqueci minha senha" (Estético)
+        # ctk.CTkLabel(
+        #     self.form_card, text="Esqueceu a senha?", 
+        #     font=ctk.CTkFont(size=12, weight="bold"), 
+        #     text_color="#38BDF8", cursor="hand2"
+        # ).pack(anchor="e", padx=25)
+
+        self.erro = ctk.CTkLabel(self.form_card, text="", text_color=VermelhoErro, font=("Inter", 12))
+        self.erro.pack(pady=5)
+
+        # Botão com Design Robusto
+        self.botao_entrar = ctk.CTkButton(
+            self.form_card, 
+            text="Entrar no Sistema", 
+            width=360, height=55, 
+            corner_radius=10, 
+            font=ctk.CTkFont(family="Inter", size=16, weight="bold"), 
+            fg_color=AzulPrimario, 
+            hover_color=AzulHover, 
+            command=self.autentificacao
         )
-        self.senha.pack(pady=10)
+        self.botao_entrar.pack(pady=(20, 20), padx=20)
+
+        # Binds
         self.usuario.bind("<Return>", self.autentificacao)
         self.senha.bind("<Return>", self.autentificacao)
 
-        self.erro = ctk.CTkLabel(self.right, text="", text_color="red")
-        self.erro.pack()
-
-        self.botao_entrar = ctk.CTkButton(
-            self.right,
-            text="Entrar",
-            width=280,
-            height=45,
-            font=("Arial", 16),
-            command=self.autentificacao,
-        )
-        self.botao_entrar.pack(pady=30)
-
-    
+    # --- LÓGICA MANTIDA ---
     def autentificacao(self, event=None):
-        """Executa autenticação em thread separada para não travar UI"""
         try:
-            print("[LOGIN] Clicou Entrar")
             usuario = self.usuario.get()
             senha = self.senha.get()
-            
             if not usuario or not senha:
                 self.erro.configure(text="Preencha email e senha")
                 return
-            
-            # Desabilita botão
             self.botao_entrar.configure(state="disabled", text="Autenticando...")
             self.erro.configure(text="")
-            
-            # Executa autenticação em thread separada
             thread = threading.Thread(target=self._autenticar_thread, args=(usuario, senha), daemon=True)
             thread.start()
         except Exception as e:
-            print(f"[LOGIN ERRO] {str(e)}")
             self.erro.configure(text=f"Erro: {str(e)}")
             self.botao_entrar.configure(state="normal", text="Entrar")
-    
+
     def _autenticar_thread(self, usuario, senha):
-        """Executa a autenticação em thread"""
         try:
-            print(f"[LOGIN THREAD] Autenticando {usuario}")
             tipo = ""
-            
-            print(f"[LOGIN THREAD] Chamando controller...")
             result = autenticar(usuario, senha, tipo)
-            print(f"[LOGIN THREAD] Resultado: {result}")
-            
-            # Volta para a thread principal para atualizar UI
             self.after(0, self._processar_resultado, result, usuario)
         except Exception as e:
-            print(f"[LOGIN THREAD ERRO] {str(e)}")
-            print(f"[LOGIN THREAD TRACEBACK] {traceback.format_exc()}")
             self.after(0, lambda: self._mostrar_erro(f"Erro: {str(e)}"))
-    
+
     def _processar_resultado(self, result, usuario):
-        """Processa o resultado da autenticação (rodando na thread principal)"""
         try:
-            self.botao_entrar.configure(state="normal", text="Entrar")
-            
+            self.botao_entrar.configure(state="normal", text="Acessar Sistema")
             if isinstance(result, tuple) and len(result) >= 2 and result[1]:
-                # Autenticado!
                 tipo = result[0]
-                print(f"[LOGIN] Autenticado! Tipo: {tipo}")
-
-                if tipo == "Aluno" or tipo == "Professor":
-                    try:
-                        print("[LOGIN] Abrindo Home...")
-                        self.destroy()
-                        
-                        print("[LOGIN] Importando Home...")
-                        from views.Aluno_e_Professor.home_view import Home
-                        print("[LOGIN] Criando instância de Home...")
-                        self.home_aluno_screen = Home(self.master)
-                        print("[LOGIN] Empacotando Home...")
-                        self.home_aluno_screen.pack(expand=True, fill="both")
-                        print("[LOGIN] Home aberta com sucesso!")
-                    except Exception as home_error:
-                        print(f"[LOGIN HOME ERRO] {str(home_error)}")
-                        print(f"[LOGIN HOME TRACEBACK] {traceback.format_exc()}")
-                        self._mostrar_erro(f"Erro ao abrir home: {str(home_error)}")
+                self.destroy()
+                if tipo in ["Aluno", "Professor"]:
+                    from views.Aluno_e_Professor.home_view import Home
+                    self.home_aluno_screen = Home(self.master)
+                    self.home_aluno_screen.pack(expand=True, fill="both")
                 elif tipo == "Coordenador":
-                    print("[LOGIN] Tipo Coordenador")
-                    pass
+                    from views.Coordenacao.HomeCoordenador import HomeCoordenador
+                    self.home_coordenador_screen = HomeCoordenador(self.master)
+                    self.home_coordenador_screen.pack(expand=True, fill="both")
             else:
-                # Falha na autenticação
-                mensagem = result[0] if isinstance(result, tuple) else str(result)
-                print(f"[LOGIN] Falha na autenticacao: {mensagem}")
-                self._mostrar_erro(mensagem)
+                self._mostrar_erro(result[0] if isinstance(result, tuple) else str(result))
         except Exception as e:
-            print(f"[LOGIN PROCESSAR ERRO] {str(e)}")
-            print(f"[LOGIN PROCESSAR TRACEBACK] {traceback.format_exc()}")
             self._mostrar_erro(f"Erro: {str(e)}")
-    
+
     def _mostrar_erro(self, mensagem):
-        """Mostra erro na UI (thread-safe)"""
         try:
             self.erro.configure(text=mensagem)
-            self.botao_entrar.configure(state="normal", text="Entrar")
-        except:
-            print(f"[LOGIN MOSTRAR ERRO] Nao conseguiu atualizar label de erro")
-
-
-    
-    def autentificacao(self):
-        tipo = ""
-        result = autenticar(self.usuario.get(), self.senha.get(), tipo)
-        print(result)
-        if result[1]:  # Se o segundo valor da tupla é True (autenticado)
-            tipo = result[0]  # O tipo de usuário retornado
-
-            # Abre a HOME como nova janela
-            if tipo == "Aluno" or tipo == "Professor":
-                self.destroy()  # Fecha a tela de login
-                
-                from views.Aluno_e_Professor.home_view import Home
-                self.home_aluno_screen = Home(self.master)
-                self.home_aluno_screen.pack(expand=True, fill="both")
-                
-                # falta implementar a tela do coordenador
-            elif tipo == "Coordenador":
-                print("teste de tela iniciada da home")
-                self.destroy()
-                
-                from views.Coordenacao.HomeCoordenador import HomeCoordenador
-                self.home_coordenador_screen = HomeCoordenador(self.master)
-                self.home_coordenador_screen.pack(expand=True, fill="both")
-                              
-        else:
-            # result é uma tupla (mensagem, False)
-            mensagem, ok = result
-            self.erro.configure(text=mensagem)
-
+            self.botao_entrar.configure(state="normal", text="Acessar Sistema")
+        except: pass

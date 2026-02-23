@@ -423,7 +423,7 @@ def sidebar(janela, cor_fundo=f"{azulEscuro}", cor_texto=f"{Branco}"):
 
     def _criar_botao_sair(self, parent):
         ctk.CTkButton(
-            parent, text="Logout", command=self.master.quit,
+            parent, text="Sair do Sistema", command=self.master.quit,
             height=45, fg_color="#e74c3c", hover_color="#c0392b",
             text_color=Branco, font=ctk.CTkFont(weight="bold"),
             corner_radius=8

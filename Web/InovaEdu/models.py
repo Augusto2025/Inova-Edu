@@ -82,8 +82,11 @@ class Usuario(models.Model):
     descricao = models.CharField(db_column='Descricao', max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'usuario'
+
+    def __str__(self):
+        return f"{self.nome} {self.sobrenome}"
 
 
 class Curso(models.Model):
@@ -96,12 +99,12 @@ class Curso(models.Model):
     usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'curso'
 
     def __str__(self):
         return self.nome_curso
-    
+
 
 class Turma(models.Model):
     idturma = models.AutoField(db_column='idTurma', primary_key=True)
@@ -109,20 +112,39 @@ class Turma(models.Model):
     turno = models.CharField(db_column='Turno', max_length=5, blank=True, null=True)
     ano = models.IntegerField(db_column='Ano')
     curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='ID_Curso')
+    professor = models.ForeignKey(
+        'Usuario',  # referencia à sua model Usuario
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        related_name='turmas'
+    )
 
     class Meta:
+        managed = True
         db_table = 'turma'
+
+    def __str__(self):
+        return self.codigo_turma
 
 
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
+    descricao = models.TextField(db_column='Descricao', blank=True, null=True)
+    imagem = CloudinaryField('imagem_projeto', db_column='Imagem', blank=True, null=True)
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
     turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
+    alunos = models.ManyToManyField(Usuario, blank=True, related_name='projetos')
+    alunos_edicao = models.ManyToManyField(Usuario, blank=True, related_name='projetos_edicao')
 
     class Meta:
+        managed = True
         db_table = 'projeto'
+
+    def __str__(self):
+        return self.nome_projeto
 
 
 class UsuarioDaTurma(models.Model):
@@ -131,53 +153,72 @@ class UsuarioDaTurma(models.Model):
     id_turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'usuario_da_turma'
         unique_together = (('id_usuario', 'id_turma'),)
+
+    def __str__(self):
+        return f"{self.id_usuario} - {self.id_turma}"
 
 
 class Eventos(models.Model):
     ideventos = models.AutoField(db_column='idEventos', primary_key=True)
-    nome_do_evento = models.CharField(db_column='Nome_do_evento', max_length=30)
+    nome_do_evento = models.CharField(db_column='Nome_do_evento', max_length=50)
     hora_do_evento = models.TimeField(db_column='Hora_do_evento')
     data_do_evento = models.DateField(db_column='Data_do_evento')
     descricao = models.CharField(db_column='Descricao', max_length=100)
     endereco = models.CharField(db_column='Endereco', max_length=30)
-    usuario = models.ForeignKey(
-        Usuario,
-        models.DO_NOTHING,
-        db_column='ID_Usuario',
-        blank=True,
-        null=True
-    )
+    usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='ID_Usuario', blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'eventos'
+
+    def __str__(self):
+        return self.nome_do_evento
 
 
 class Forum(models.Model):
     idforum = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=30)
-    data_criacao = models.DateField()
+    data_criacao = models.DateField(auto_now_add=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
+        managed = True
         db_table = 'forum'
+
+    def __str__(self):
+        return self.nome
 
 
 class Topico(models.Model):
     idtopico = models.AutoField(primary_key=True)
-    forum = models.ForeignKey(Forum,on_delete=models.CASCADE,related_name='topicos')
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='topicos')
     descricao = models.TextField(blank=True, null=True)
     titulo = models.CharField(max_length=100)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)
 
     class Meta:
+        managed = True
         db_table = 'topico'
 
+    def __str__(self):
+        return self.titulo
+
+
 class Mensagem(models.Model):
-    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='ID_Forum', related_name='mensagens')
-    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='ID_Usuario')
+    topico = models.ForeignKey(
+        Topico,
+        on_delete=models.CASCADE,
+        related_name='mensagens',
+        db_column='ID_Topico'
+    )
+    autor = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        db_column='ID_Usuario'
+    )
     conteudo = models.TextField(db_column='Conteudo')
     criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
 
@@ -186,15 +227,14 @@ class Mensagem(models.Model):
         db_table = 'mensagem'
 
     def __str__(self):
-        nome_autor = getattr(self.autor, "username", getattr(self.autor, "nome", str(self.autor.id)))
-        return f'{nome_autor}: {self.conteudo[:30]}'
+        return f"{self.autor.nome}: {self.conteudo[:30]}"
 
 
 class Pasta(models.Model):
     nome = models.CharField(max_length=100)
     criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     criada_em = models.DateTimeField(auto_now_add=True)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subpastas')
 
     class Meta:
@@ -208,10 +248,12 @@ class Pasta(models.Model):
 class Arquivo(models.Model):
     nome = models.CharField(max_length=100)
     arquivo = CloudinaryField('arquivo', resource_type='raw')
+    resource_type = models.CharField(max_length=20, blank=True, null=True)
     enviado_por = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     enviado_em = models.DateTimeField(auto_now_add=True)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, null=True, blank=True)
     pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, null=True, blank=True)
+    url = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -228,48 +270,3 @@ class Arquivo(models.Model):
             attachment=self.nome
         )
         return url
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
-    change_message = models.TextField()
-    content_type_id = models.IntegerField(blank=True, null=True)
-    user_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'

@@ -75,6 +75,10 @@ section:hover {
     justify-content: space-between;
 }
 
+.rota a {
+    color: var(--azul-Senac);
+}
+
 @media (max-width: 600px) {
     .rota {
         width: 92%;

@@ -7,179 +7,187 @@ import os
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
+class ListaUsuariosApp(ctk.CTkFrame):
+    def __init__(self, master):
+        # Inicializa como um Frame vinculado ao master (content_frame)
+        super().__init__(master, fg_color="#ffffff", corner_radius=0)
+        
+        # ───────────── DADOS DOS CURSOS ─────────────
+        self.cursos = [
+            ("Desenvolvimento de Sistemas", "Manhã", "2025", "💻", 32),
+            ("Banco de Dados", "Tarde", "2025", "🗄️", 28),
+            ("Redes de Computadores", "Noite", "2024", "🌐", 25),
+            ("Programação Web", "Manhã", "2025", "🕸️", 30),
+        ]
 
-class ListaUsuariosApp:
-    def __init__(self):
-        self.app = ctk.CTk()
-        self.app.geometry("1300x650")
-        self.app.title("Sistema de Gestão")
-        self.app.attributes("-fullscreen", True)
+        # Variáveis de Filtro
+        self.busca_var = ctk.StringVar()
+        self.filtro_turno = ctk.StringVar(value="Todos")
 
-        self.app.grid_rowconfigure(0, weight=1)
-        self.app.grid_columnconfigure(0, weight=0)
-        self.app.grid_columnconfigure(1, weight=1)
+        # Configuração de Grid do Frame Principal
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-        self.sidebar_frame, self.botoes_menu = sidebar(self.app)
-        self.sidebar_frame.grid(row=0, column=0, sticky="ns")
-
-        self.conteudo_frame = ctk.CTkFrame(self.app, fg_color="#ffffff", corner_radius=0)
-        self.conteudo_frame.grid(row=0, column=1, sticky="nsew")
-        self.conteudo_frame.grid_rowconfigure(2, weight=1)
-        self.conteudo_frame.grid_columnconfigure(0, weight=1)
-
+        # Montagem dos Componentes
         self.criar_topo()
         self.criar_acoes()
         self.criar_corpo()
         self.carregar_watermark()
+        
+        # Carga inicial de dados
+        self.carregar_tabela(self.cursos)
 
-        # 🔗 AQUI VEM DO BANCO DEPOIS
-        self.usuarios = []
-        self.carregar_tabela(self.usuarios)
-
-        self.app.mainloop()
-
-    # ───────────── TOPO ─────────────
+    # ───────────── TOPO (Design Azul) ─────────────
     def criar_topo(self):
-        topo = ctk.CTkFrame(self.conteudo_frame, height=60, fg_color="#004a8f", corner_radius=0)
+        topo = ctk.CTkFrame(self, height=60, fg_color="#004a8f", corner_radius=0)
         topo.grid(row=0, column=0, sticky="ew")
 
         ctk.CTkLabel(
             topo,
-            text="👤  LISTA DE USUÁRIOS",
+            text="📚  LISTA DE CURSOS",
             text_color="white",
             font=ctk.CTkFont(size=18, weight="bold")
         ).grid(row=0, column=0, padx=20, pady=15, sticky="w")
 
-    # ───────────── AÇÕES ─────────────
+    # ───────────── AÇÕES (Busca e Rádios) ─────────────
     def criar_acoes(self):
-        acoes = ctk.CTkFrame(self.conteudo_frame, fg_color="#f5f5f5", height=60, corner_radius=8)
+        acoes = ctk.CTkFrame(self, fg_color="#f5f5f5", height=60, corner_radius=8)
         acoes.grid(row=1, column=0, sticky="ew", padx=20, pady=15)
 
         acoes.grid_columnconfigure(0, weight=1)
-        acoes.grid_columnconfigure(1, weight=0)
-        acoes.grid_columnconfigure(2, weight=1)
-        acoes.grid_columnconfigure(3, weight=0)
 
-        self.busca = ctk.CTkEntry(acoes, placeholder_text="Buscar usuário...", width=300)
+        # Entrada de Busca
+        self.busca = ctk.CTkEntry(
+            acoes, 
+            placeholder_text="Buscar curso por nome...", 
+            width=300,
+            textvariable=self.busca_var
+        )
         self.busca.grid(row=0, column=0, padx=15, pady=10, sticky="w")
         self.busca.bind("<KeyRelease>", self.aplicar_filtro)
 
+        # Frame de Filtros de Turno
         filtro_frame = ctk.CTkFrame(acoes, fg_color="transparent")
-        filtro_frame.grid(row=0, column=1)
+        filtro_frame.grid(row=0, column=1, padx=10)
 
-        ctk.CTkLabel(filtro_frame, text="Filtrar por:").pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(filtro_frame, text="Turno:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=(0, 10))
 
-        self.filtro = ctk.StringVar(value="Todos")
-        for opcao in ["Todos", "Aluno", "Professor", "Coordenador"]:
+        for turno in ["Todos", "Manhã", "Tarde", "Noite"]:
             ctk.CTkRadioButton(
                 filtro_frame,
-                text=opcao,
-                variable=self.filtro,
-                value=opcao,
-                command=self.aplicar_filtro
+                text=turno,
+                variable=self.filtro_turno,
+                value=turno,
+                command=self.aplicar_filtro,
+                radiobutton_width=18,
+                radiobutton_height=18
             ).pack(side="left", padx=5)
 
+        # Botão Cadastro
         ctk.CTkButton(
             acoes,
-            text="+ Cadastro",
-            text_color="white",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            fg_color="#004a8f"
-        ).grid(row=0, column=3, padx=20, pady=10, sticky="e")
+            text="+ Novo Curso",
+            fg_color="#004a8f",
+            hover_color="#003366",
+            width=120,
+            command=lambda: messagebox.showinfo("Cadastro", "Tela de Cadastro de Cursos")
+        ).grid(row=0, column=2, padx=15, sticky="e")
 
-    # ───────────── CORPO ─────────────
+    # ───────────── CORPO E TABELA ─────────────
     def criar_corpo(self):
-        self.corpo = ctk.CTkFrame(self.conteudo_frame, fg_color="#ffffff", corner_radius=0)
-        self.corpo.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 20))
-        self.corpo.grid_columnconfigure(0, weight=1)
-        self.corpo.grid_rowconfigure(1, weight=1)
+        self.corpo_container = ctk.CTkFrame(self, fg_color="#ffffff", corner_radius=0)
+        self.corpo_container.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        self.corpo_container.grid_columnconfigure(0, weight=1)
+        self.corpo_container.grid_rowconfigure(1, weight=1)
 
-        tabela_header = ctk.CTkFrame(self.corpo, fg_color="#003f7f", height=40)
-        tabela_header.grid(row=0, column=0, sticky="ew")
+        # Header da Lista
+        header = ctk.CTkFrame(self.corpo_container, fg_color="#003f7f", height=40)
+        header.grid(row=0, column=0, sticky="ew")
 
         ctk.CTkLabel(
-            tabela_header,
-            text="USUÁRIOS CADASTRADOS",
-            text_color="white",
-            font=ctk.CTkFont(weight="bold")
+            header, text="CURSOS DISPONÍVEIS", 
+            text_color="white", font=ctk.CTkFont(weight="bold")
         ).pack(anchor="w", padx=15, pady=10)
 
-        self.tabela = ctk.CTkScrollableFrame(self.corpo, fg_color="#ffffff")
+        # Scrollable Frame para os Cards
+        self.tabela = ctk.CTkScrollableFrame(self.corpo_container, fg_color="#ffffff", corner_radius=0)
         self.tabela.grid(row=1, column=0, sticky="nsew")
 
-    # ───────────── WATERMARK ─────────────
+    # ───────────── LOGO FUNDO (Watermark) ─────────────
     def carregar_watermark(self):
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        logo_path = os.path.join(BASE_DIR, "assets", "img", "LOGOAZUL.png")
+        try:
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+            logo_path = os.path.join(BASE_DIR, "assets", "img", "LOGOAZUL.png")
+            img = Image.open(logo_path).convert("RGBA")
+            alpha = img.split()[3].point(lambda p: p * 0.12) # 12% Opacidade
+            img.putalpha(alpha)
+            self.watermark_img = ctk.CTkImage(light_image=img, size=(600, 600))
+        except:
+            self.watermark_img = None
 
-        img = Image.open(logo_path).convert("RGBA")
-        alpha = img.split()[3]
-        alpha = alpha.point(lambda p: p * 0.12)
-        img.putalpha(alpha)
-
-        self.watermark_img = ctk.CTkImage(light_image=img, size=(700, 700))
-
-    # ───────────── TABELA ─────────────
+    # ───────────── RENDERIZAÇÃO DOS CARDS ─────────────
     def carregar_tabela(self, lista):
         for widget in self.tabela.winfo_children():
             widget.destroy()
 
-        watermark = ctk.CTkLabel(self.tabela, image=self.watermark_img, text="")
-        watermark.pack(pady=120)
-        watermark.lower()
+        if self.watermark_img:
+            wm = ctk.CTkLabel(self.tabela, image=self.watermark_img, text="")
+            wm.place(relx=0.5, rely=0.5, anchor="center")
+            wm.lower()
 
-        for u in lista:
-            linha = ctk.CTkFrame(
-                self.tabela,
-                fg_color="#ffffff",
-                corner_radius=8,
-                border_width=1,
-                border_color="#e0e0e0"
-            )
-            linha.pack(fill="x", pady=8, padx=10)
+        for curso in lista:
+            card = ctk.CTkFrame(self.tabela, fg_color="#ffffff", border_width=1, border_color="#e0e0e0", corner_radius=10)
+            card.pack(fill="x", pady=8, padx=15)
 
-            ctk.CTkLabel(
-                linha,
-                text=f"👤 Nome: {u[1]} {u[2]}",
-                font=ctk.CTkFont(size=16, weight="bold"),
-                anchor="w"
-            ).pack(anchor="w", padx=15, pady=(10, 2))
+            # Info Esquerda
+            info = ctk.CTkFrame(card, fg_color="transparent")
+            info.pack(side="left", padx=20, pady=15, fill="x", expand=True)
 
-            ctk.CTkLabel(
-                linha,
-                text=f"📧 Email: {u[3]}",
-                anchor="w"
-            ).pack(anchor="w", padx=15, pady=2)
+            ctk.CTkLabel(info, text=f"{curso[3]} {curso[0]}", font=ctk.CTkFont(size=16, weight="bold"), text_color="#004a8f").pack(anchor="w")
+            ctk.CTkLabel(info, text=f"🕒 Turno: {curso[1]}  |  📅 Ano: {curso[2]}  |  👥 Alunos: {curso[4]}").pack(anchor="w", pady=2)
 
-            ctk.CTkLabel(
-                linha,
-                text=f"📝 Descrição: {u[4]}",
-                wraplength=900,
-                justify="left",
-                anchor="w"
-            ).pack(anchor="w", padx=15, pady=2)
+            # Botões Direita
+            btn_area = ctk.CTkFrame(card, fg_color="transparent")
+            btn_area.pack(side="right", padx=20)
 
-            ctk.CTkLabel(
-                linha,
-                text=f"🏷️ Tipo: {u[5]}",
-                anchor="w"
-            ).pack(anchor="w", padx=15, pady=(2, 10))
+            ctk.CTkButton(btn_area, text="✏️ Editar", width=80, height=28, fg_color="#ffc107", text_color="black", 
+                          command=lambda c=curso: self.editar_curso(c)).pack(side="left", padx=5)
+            
+            ctk.CTkButton(btn_area, text="🗑️", width=40, height=28, fg_color="#dc3545", 
+                          command=lambda c=curso: self.excluir_curso(c)).pack(side="left")
 
-    # ───────────── FILTRO ─────────────
+    # ───────────── LÓGICA ─────────────
     def aplicar_filtro(self, *args):
-        texto = self.busca.get().lower()
-        tipo = self.filtro.get()
+        texto = self.busca_var.get().lower()
+        turno = self.filtro_turno.get()
+        res = [c for c in self.cursos if (texto in c[0].lower()) and (turno == "Todos" or c[1] == turno)]
+        self.carregar_tabela(res)
 
-        resultado = []
-        for u in self.usuarios:
-            bate_texto = texto in " ".join(map(str, u)).lower()
-            bate_tipo = tipo == "Todos" or u[5] == tipo
+    def editar_curso(self, curso):
+        messagebox.showinfo("Editar", f"Editando: {curso[0]}")
 
-            if bate_texto and bate_tipo:
-                resultado.append(u)
+    def excluir_curso(self, curso):
+        confirmar = messagebox.askyesno("Excluir", f"Tem certeza que deseja excluir {curso[0]}?")
+        if confirmar: print(f"Excluído: {curso[0]}")
 
-        self.carregar_tabela(resultado)
-
-
+# ───────────── TESTE ISOLADO ─────────────
 if __name__ == "__main__":
-    ListaUsuariosApp()
+    root = ctk.CTk()
+    root.attributes("-fullscreen", True)
+    
+    # Simulação da estrutura principal com sidebar
+    main_frame = ctk.CTkFrame(root)
+    main_frame.pack(fill="both", expand=True)
+    
+    sidebar_frame, _ = sidebar(main_frame)
+    sidebar_frame.grid(row=0, column=0, sticky="ns")
+    
+    content_area = ctk.CTkFrame(main_frame)
+    content_area.grid(row=0, column=1, sticky="nsew")
+    main_frame.grid_columnconfigure(1, weight=1)
+    main_frame.grid_rowconfigure(0, weight=1)
+
+    app = ListaUsuariosApp(content_area)
+    app.pack(fill="both", expand=True)
+    
+    root.mainloop()

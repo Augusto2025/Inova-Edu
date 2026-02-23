@@ -1,72 +1,63 @@
 import mysql.connector
 import os
-from dotenv import load_dotenv
-import threading
-
+import sys
 import socket
+from dotenv import load_dotenv
 
-# Carregar .env da pasta config
-config_path = os.path.join(os.path.dirname(__file__), '.env')
+def resource_path(relative_path):
+    """ Encontra o caminho real dos arquivos dentro do .exe ou em dev """
+    try:
+        # Caminho da pasta temporária onde o PyInstaller extrai tudo
+        base_path = sys._MEIPASS
+    except Exception:
+        # Caminho em modo de desenvolvimento (VS Code)
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+# --- CARREGAMENTO DO .ENV ---
+# Como este arquivo está em 'config/banco.py', buscamos o .env na pasta 'config' 
+# que será incluída no executável através do comando --add-data
+config_path = resource_path(os.path.join('config', '.env'))
+
 print(f"[BANCO] Procurando .env em: {config_path}")
-load_dotenv(config_path)
+
+if os.path.exists(config_path):
+    load_dotenv(config_path)
+    print("[BANCO] .env carregado com sucesso.")
+else:
+    # Caso não encontre na config interna, tenta na pasta atual (ao lado do .exe)
+    fallback_path = os.path.join(os.path.dirname(sys.executable), "config", ".env")
+    load_dotenv(fallback_path)
+    print(f"[BANCO] Tentando fallback em: {fallback_path}")
 
 # Configurar timeout global de socket
 socket.setdefaulttimeout(3)
 
 def conectar():
-    """Conecta ao banco com timeout real de 3 segundos"""
-    host = os.getenv("HOST", "localhost")
+    """Conecta ao banco com tratamento de erro e carregamento de variáveis"""
+    
+    # IMPORTANTE: No .env, mude 'localhost' para '127.0.0.1' para evitar bloqueios do Windows
+    host = os.getenv("HOST", "127.0.0.1")
     user = os.getenv("USER", "root")
     password = os.getenv("PASSWORD", "")
     database = os.getenv("NAME", "db_repositorio")
-    port = int(os.getenv("PORT", "3306"))
+    
+    try:
+        port = int(os.getenv("PORT", "3306"))
+    except:
+        port = 3306
 
-    # Teste rápido de socket TCP para falha imediata
+    # 1. Teste rápido de socket TCP (falha rápida se o MySQL estiver desligado)
     try:
         print(f"[BANCO] Testando socket {host}:{port}...", flush=True)
         sock = socket.create_connection((host, port), timeout=2)
         sock.close()
     except Exception as e:
-        msg = f"Timeout/TCP error ao conectar em {host}:{port} - {e}"
-        print(f"[BANCO ERRO] {msg}", flush=True)
+        msg = f"Servidor MySQL inacessível em {host}:{port}. Verifique se o banco está ligado."
+        print(f"[BANCO ERRO] {msg}")
         raise Exception(msg)
 
-    # Verificacao via subprocess com timeout absoluto para evitar bloqueio do mysql-connector
-    try:
-        import sys
-        import subprocess
-
-        checker = (
-            "import mysql.connector, json; cfg=%s; "
-            "conn=mysql.connector.connect(**cfg); conn.close(); print('OK')"
-            % (repr({
-                'host': host,
-                'user': user,
-                'password': password,
-                'database': database,
-                'port': port,
-                'connection_timeout': 3,
-                'use_pure': True,
-            }))
-        )
-
-        print(f"[BANCO] Rodando checagem subprocess (timeout=3s)...", flush=True)
-        completed = subprocess.run([sys.executable, "-c", checker], capture_output=True, text=True, timeout=3)
-        if completed.returncode != 0:
-            out = completed.stdout + completed.stderr
-            msg = f"Subprocess de checagem falhou: {out.strip()}"
-            print(f"[BANCO ERRO] {msg}", flush=True)
-            raise Exception(msg)
-        print(f"[BANCO] Checagem subprocess OK", flush=True)
-    except subprocess.TimeoutExpired:
-        msg = f"Timeout absoluto: checagem do MySQL demorou mais de 3 segundos"
-        print(f"[BANCO ERRO] {msg}", flush=True)
-        raise Exception(msg)
-    except Exception as e:
-        # Propaga erro já logado
-        raise
-
-    # Se checagem ok, tenta conectar na mesma thread com parametros seguros
+    # 2. Conexão via mysql-connector
     try:
         db_config = {
             'host': host,
@@ -75,13 +66,13 @@ def conectar():
             'database': database,
             'port': port,
             'connection_timeout': 3,
-            'use_pure': True,
+            'use_pure': True, # Melhora a compatibilidade no PyInstaller
         }
-        print(f"[BANCO] Conectando a {host}:{port} via mysql-connector (final)...", flush=True)
+        print(f"[BANCO] Conectando a {host}:{port} via mysql-connector...", flush=True)
         conn = mysql.connector.connect(**db_config)
-        print(f"[BANCO] Conexao OK", flush=True)
+        print(f"[BANCO] Conexão OK", flush=True)
         return conn
     except Exception as err:
-        msg = f"Erro ao conectar com mysql-connector: {err}"
+        msg = f"Erro de credenciais ou banco inexistente: {err}"
         print(f"[BANCO ERRO] {msg}", flush=True)
-        raise
+        raise Exception(msg)
