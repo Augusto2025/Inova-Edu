@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from sidebar_C import sidebar
+from Desktop.views.Coordenacao.sidebar_C import sidebar
 from PIL import Image
 import os
 

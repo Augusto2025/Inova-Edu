@@ -2,6 +2,7 @@ import customtkinter as ctk
 from views.login_view import tela_login
 import traceback
 import sys
+import tkinter as tk
 
 ctk.set_appearance_mode("light")
 
@@ -17,6 +18,9 @@ class main(ctk.CTk):
     def __init__(self):
         super().__init__()
         try:
+            caminho_icone = "Desktop/assets/img/LOGOBRANCO.ico"
+            self.iconbitmap(caminho_icone)
+
             self.title("Sistema Acadêmico - INOVA EDU")
             self.attributes("-fullscreen", True)
             
