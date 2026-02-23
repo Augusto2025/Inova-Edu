@@ -17,7 +17,7 @@ def conectar():
     """Conecta ao banco com timeout real de 3 segundos"""
     host = os.getenv("HOST", "localhost")
     user = os.getenv("USER", "root")
-    password = os.getenv("PASSWORD", "")
+    password = os.getenv("PASSWORD", "182105")
     database = os.getenv("NAME", "db_repositorio")
     port = int(os.getenv("PORT", "3306"))
 
