@@ -110,37 +110,28 @@ class Turma(models.Model):
     idturma = models.AutoField(db_column='idTurma', primary_key=True)
     codigo_turma = models.CharField(db_column='Codigo_Turma', max_length=11)
     turno = models.CharField(db_column='Turno', max_length=5, blank=True, null=True)
-    ano = models.IntegerField(db_column='Ano')
-    curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='ID_Curso')
-    professor = models.ForeignKey(
-        'Usuario',  # referencia à sua model Usuario
-        on_delete=models.SET_NULL, 
-        null=True,
-        blank=True,
-        related_name='turmas'
-    )
+    ano = models.IntegerField(db_column='Ano', blank=True, null=True)  # Ano pode ser NULL
+    id_curso = models.ForeignKey('Curso', on_delete=models.DO_NOTHING, db_column='ID_Curso')
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'turma'
 
     def __str__(self):
-        return self.codigo_turma
+        return f"{self.codigo_turma} - {self.turno}"
 
 
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
-    nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
-    descricao = models.TextField(db_column='Descricao', blank=True, null=True)
-    imagem = CloudinaryField('imagem_projeto', db_column='Imagem', blank=True, null=True)
-    data_de_criacao = models.DateField(auto_now_add=True)
-    data_de_modificacao = models.DateField(auto_now=True)
-    turma = models.ForeignKey(Turma, models.DO_NOTHING, db_column='ID_Turma')
-    alunos = models.ManyToManyField(Usuario, blank=True, related_name='projetos')
-    alunos_edicao = models.ManyToManyField(Usuario, blank=True, related_name='projetos_edicao')
+    nome_projeto = models.CharField(db_column='Nome_Projeto', max_length=30)
+    data_de_criacao = models.DateField(db_column='Data_de_Criacao', auto_now_add=True)
+    data_de_modificacao = models.DateField(db_column='Data_de_Modificacao', auto_now=True)
+    caminho_do_arquivo = models.CharField(db_column='Caminho_Do_Arquivo', max_length=255, blank=True, null=True)
+    id_turma = models.ForeignKey(Turma, on_delete=models.DO_NOTHING, db_column='ID_Turma')
+    id_curso = models.ForeignKey('Curso', on_delete=models.DO_NOTHING, db_column='ID_Curso', blank=True, null=True)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'projeto'
 
     def __str__(self):
