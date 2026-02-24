@@ -34,9 +34,9 @@
                 <p><strong>Descrição:</strong></p>
                 {{ usuario.descricao|default:"Sem descrição." }}
             </div>
-
+    </main>
     <!-- Projetos -->
-<div class="repos-section">
+{% comment %} <div class="repos-section">
     <div class="section-header">
         <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
     </div>
@@ -81,10 +81,10 @@
         {% endfor %}
     </div>
 </div>
-</div>
+</div> {% endcomment %}
 
 <!-- Modal de Edição de Perfil -->
-<div class="modal" id="profile-modal">
+{% comment %} <div class="modal" id="profile-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
@@ -109,10 +109,10 @@
             <button class="save-btn" onclick="saveProfile()"><i class="fas fa-check"></i> Salvar</button>
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
 <!-- Modal de Curso -->
-<div class="modal" id="curso-modal">
+{% comment %} <div class="modal" id="curso-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="curso-modal-title"><i class="fas fa-plus-circle"></i> Adicionar Curso</h3>
@@ -143,10 +143,10 @@
             <button class="save-btn" onclick="saveCurso()"><i class="fas fa-check"></i> Salvar</button>
         </div>
     </div>
-</div>
+</div> {% endcomment %}
 
 <!-- Loading Overlay -->
-<div class="loading-overlay" id="loading-overlay">
+{% comment %} <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
 </div>
 
@@ -156,7 +156,7 @@
         <i class="fas fa-check-circle toast-icon success"></i>
         <span class="toast-message" id="toast-message"></span>
     </div>
-</div>
+</div> {% endcomment %}
 
 <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
