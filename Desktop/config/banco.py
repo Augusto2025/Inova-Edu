@@ -39,7 +39,7 @@ def conectar():
     # IMPORTANTE: No .env, mude 'localhost' para '127.0.0.1' para evitar bloqueios do Windows
     host = os.getenv("HOST", "127.0.0.1")
     user = os.getenv("USER", "root")
-    password = os.getenv("PASSWORD", "")
+    password = os.getenv("PASSWORD", "182105")
     database = os.getenv("NAME", "db_repositorio")
     
     try:

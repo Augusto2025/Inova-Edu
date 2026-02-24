@@ -5,11 +5,11 @@ from Desktop.views.Coordenacao.sidebar_C import sidebar
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-
-class CursosView:
+class ListaCursoApp(ctk.CTkFrame):
     def __init__(self, master):
-        self.master = master
-
+        # Inicializa como um Frame vinculado ao master (content_frame)
+        super().__init__(master, fg_color="#ffffff", corner_radius=0)
+        
         # ───────────── DADOS DOS CURSOS ─────────────
         self.cursos = [
             ("Desenvolvimento de Sistemas", "Manhã", "2025", "💻", 32),
@@ -18,59 +18,57 @@ class CursosView:
             ("Programação Web", "Manhã", "2025", "🕸️", 30),
         ]
 
-        # VARIÁVEIS DA BUSCA E FILTRO
+        # Variáveis de Filtro
         self.busca_var = ctk.StringVar()
         self.filtro_turno = ctk.StringVar(value="Todos")
 
-        self.montar_tela()
+        # Configuração de Grid do Frame Principal
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-    # ───────────── TELA ─────────────
-    def montar_tela(self):
-        self.container = ctk.CTkFrame(self.master)
-        self.container.pack(fill="both", expand=True)
+        # Montagem dos Componentes
+        self.criar_topo()
+        self.criar_acoes()
+        self.criar_corpo()
+        self.carregar_watermark()
+        
+        # Carga inicial de dados
+        self.carregar_tabela(self.cursos)
 
-        sidebar_frame, _ = sidebar(self.container)
-
-        self.conteudo = ctk.CTkFrame(self.container, fg_color="#f5f6fa")
-        self.conteudo.pack(side="left", fill="both", expand=True)
-
-        # TOPO
-        topo = ctk.CTkFrame(self.conteudo, height=60, fg_color="#004a8f", corner_radius=0)
-        topo.pack(fill="x")
+    # ───────────── TOPO (Design Azul) ─────────────
+    def criar_topo(self):
+        topo = ctk.CTkFrame(self, height=60, fg_color="#004a8f", corner_radius=0)
+        topo.grid(row=0, column=0, sticky="ew")
 
         ctk.CTkLabel(
             topo,
             text="📚  LISTA DE CURSOS",
             text_color="white",
             font=ctk.CTkFont(size=18, weight="bold")
-        ).pack(side="left", padx=20, pady=15)
+        ).grid(row=0, column=0, padx=20, pady=15, sticky="w")
 
-        # ───────────── BARRA DE AÇÕES ─────────────
-        acoes = ctk.CTkFrame(self.conteudo, fg_color="#f5f6fa")
-        acoes.pack(fill="x", padx=20, pady=(15, 0))
+    # ───────────── AÇÕES (Busca e Rádios) ─────────────
+    def criar_acoes(self):
+        acoes = ctk.CTkFrame(self, fg_color="#f5f5f5", height=60, corner_radius=8)
+        acoes.grid(row=1, column=0, sticky="ew", padx=20, pady=15)
 
         acoes.grid_columnconfigure(0, weight=1)
-        acoes.grid_columnconfigure(1, weight=1)
 
-        # BUSCA (ESQUERDA)
-        busca = ctk.CTkEntry(
-            acoes,
-            placeholder_text="Buscar curso...",
-            width=250,
+        # Entrada de Busca
+        self.busca = ctk.CTkEntry(
+            acoes, 
+            placeholder_text="Buscar curso por nome...", 
+            width=300,
             textvariable=self.busca_var
         )
-        busca.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        busca.bind("<KeyRelease>", self.aplicar_filtro)
+        self.busca.grid(row=0, column=0, padx=15, pady=10, sticky="w")
+        self.busca.bind("<KeyRelease>", self.aplicar_filtro)
 
-        # FILTRO (DIREITA)
+        # Frame de Filtros de Turno
         filtro_frame = ctk.CTkFrame(acoes, fg_color="transparent")
-        filtro_frame.grid(row=0, column=1, sticky="e", padx=10, pady=10)
+        filtro_frame.grid(row=0, column=1, padx=10)
 
-        ctk.CTkLabel(
-            filtro_frame,
-            text="Turno:",
-            font=ctk.CTkFont(weight="bold")
-        ).pack(side="left", padx=(0, 8))
+        ctk.CTkLabel(filtro_frame, text="Turno:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=(0, 10))
 
         for turno in ["Todos", "Manhã", "Tarde", "Noite"]:
             ctk.CTkRadioButton(
@@ -78,114 +76,116 @@ class CursosView:
                 text=turno,
                 variable=self.filtro_turno,
                 value=turno,
-                command=self.aplicar_filtro
+                command=self.aplicar_filtro,
+                radiobutton_width=18,
+                radiobutton_height=18
             ).pack(side="left", padx=5)
 
-        # ÁREA DOS CARDS
-        self.tabela = ctk.CTkScrollableFrame(self.conteudo, fg_color="transparent")
-        self.tabela.pack(fill="both", expand=True, padx=20, pady=20)
+        # Botão Cadastro
+        ctk.CTkButton(
+            acoes,
+            text="+ Novo Curso",
+            fg_color="#004a8f",
+            hover_color="#003366",
+            width=120,
+            command=lambda: messagebox.showinfo("Cadastro", "Tela de Cadastro de Cursos")
+        ).grid(row=0, column=2, padx=15, sticky="e")
 
-        self.carregar_tabela(self.cursos)
+    # ───────────── CORPO E TABELA ─────────────
+    def criar_corpo(self):
+        self.corpo_container = ctk.CTkFrame(self, fg_color="#ffffff", corner_radius=0)
+        self.corpo_container.grid(row=2, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        self.corpo_container.grid_columnconfigure(0, weight=1)
+        self.corpo_container.grid_rowconfigure(1, weight=1)
 
-    # ───────────── CARD (IGUAL AO DA TURMA) ─────────────
-    def carregar_tabela(self, lista_cursos):
+        # Header da Lista
+        header = ctk.CTkFrame(self.corpo_container, fg_color="#003f7f", height=40)
+        header.grid(row=0, column=0, sticky="ew")
+
+        ctk.CTkLabel(
+            header, text="CURSOS DISPONÍVEIS", 
+            text_color="white", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=15, pady=10)
+
+        # Scrollable Frame para os Cards
+        self.tabela = ctk.CTkScrollableFrame(self.corpo_container, fg_color="#ffffff", corner_radius=0)
+        self.tabela.grid(row=1, column=0, sticky="nsew")
+
+    # ───────────── LOGO FUNDO (Watermark) ─────────────
+    def carregar_watermark(self):
+        try:
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+            logo_path = os.path.join(BASE_DIR, "assets", "img", "LOGOAZUL.png")
+            img = Image.open(logo_path).convert("RGBA")
+            alpha = img.split()[3].point(lambda p: p * 0.12) # 12% Opacidade
+            img.putalpha(alpha)
+            self.watermark_img = ctk.CTkImage(light_image=img, size=(600, 600))
+        except:
+            self.watermark_img = None
+
+    # ───────────── RENDERIZAÇÃO DOS CARDS ─────────────
+    def carregar_tabela(self, lista):
         for widget in self.tabela.winfo_children():
             widget.destroy()
 
-        for curso in lista_cursos:
-            card = ctk.CTkFrame(
-                self.tabela,
-                fg_color="#ffffff",
-                corner_radius=15,
-                border_width=1,
-                border_color="#e0e0e0"
-            )
-            card.pack(fill="x", padx=30, pady=12)
+        if self.watermark_img:
+            wm = ctk.CTkLabel(self.tabela, image=self.watermark_img, text="")
+            wm.place(relx=0.5, rely=0.5, anchor="center")
+            wm.lower()
 
-            conteudo = ctk.CTkFrame(card, fg_color="transparent")
-            conteudo.pack(fill="both", expand=True, padx=20, pady=15)
+        for curso in lista:
+            card = ctk.CTkFrame(self.tabela, fg_color="#ffffff", border_width=1, border_color="#e0e0e0", corner_radius=10)
+            card.pack(fill="x", pady=8, padx=15)
 
-            # TÍTULO
-            ctk.CTkLabel(
-                conteudo,
-                text=f"{curso[0]}  •  {curso[3]}",
-                font=ctk.CTkFont(size=16, weight="bold"),
-                text_color="#004a8f"
-            ).pack(anchor="w", pady=(0, 6))
+            # Info Esquerda
+            info = ctk.CTkFrame(card, fg_color="transparent")
+            info.pack(side="left", padx=20, pady=15, fill="x", expand=True)
 
-            info = ctk.CTkFrame(conteudo, fg_color="transparent")
-            info.pack(anchor="w")
+            ctk.CTkLabel(info, text=f"{curso[3]} {curso[0]}", font=ctk.CTkFont(size=16, weight="bold"), text_color="#004a8f").pack(anchor="w")
+            ctk.CTkLabel(info, text=f"🕒 Turno: {curso[1]}  |  📅 Ano: {curso[2]}  |  👥 Alunos: {curso[4]}").pack(anchor="w", pady=2)
 
-            ctk.CTkLabel(info, text=f"🕒 Turno: {curso[1]}").pack(anchor="w")
-            ctk.CTkLabel(info, text=f"📅 Ano: {curso[2]}").pack(anchor="w")
-            ctk.CTkLabel(info, text=f"👥 Alunos: {curso[4]}").pack(anchor="w")
+            # Botões Direita
+            btn_area = ctk.CTkFrame(card, fg_color="transparent")
+            btn_area.pack(side="right", padx=20)
 
-            ctk.CTkFrame(conteudo, height=1, fg_color="#eeeeee").pack(fill="x", pady=10)
+            ctk.CTkButton(btn_area, text="✏️ Editar", width=80, height=28, fg_color="#ffc107", text_color="black", 
+                          command=lambda c=curso: self.editar_curso(c)).pack(side="left", padx=5)
+            
+            ctk.CTkButton(btn_area, text="🗑️", width=40, height=28, fg_color="#dc3545", 
+                          command=lambda c=curso: self.excluir_curso(c)).pack(side="left")
 
-            # AÇÕES
-            acoes = ctk.CTkFrame(conteudo, fg_color="transparent")
-            acoes.pack(anchor="e")
-
-            ctk.CTkButton(
-                acoes,
-                text="🔒 Visualizar",
-                width=120,
-                fg_color="#004a8f",
-                hover_color="#003366",
-                command=lambda c=curso: self.visualizar_curso(c)
-            ).pack(side="left", padx=5)
-
-            ctk.CTkButton(
-                acoes,
-                text="✏️ Editar",
-                width=100,
-                fg_color="#ffc107",
-                hover_color="#e0a800",
-                text_color="#212529",
-                command=lambda c=curso: self.editar_curso(c)
-            ).pack(side="left", padx=5)
-
-            ctk.CTkButton(
-                acoes,
-                text="🗑️ Excluir",
-                width=100,
-                fg_color="#dc3545",
-                hover_color="#b52a37",
-                command=lambda c=curso: self.excluir_curso(c)
-            ).pack(side="left", padx=5)
-
-    # ───────────── FILTRO ─────────────
-    def aplicar_filtro(self, event=None):
+    # ───────────── LÓGICA ─────────────
+    def aplicar_filtro(self, *args):
         texto = self.busca_var.get().lower()
         turno = self.filtro_turno.get()
-
-        filtrados = []
-        for curso in self.cursos:
-            bate_texto = texto in curso[0].lower()
-            bate_turno = turno == "Todos" or curso[1] == turno
-
-            if bate_texto and bate_turno:
-                filtrados.append(curso)
-
-        self.carregar_tabela(filtrados)
-
-    # ───────────── AÇÕES ─────────────
-    def visualizar_curso(self, curso):
-        messagebox.showinfo("Curso", f"Curso: {curso[0]}")
+        res = [c for c in self.cursos if (texto in c[0].lower()) and (turno == "Todos" or c[1] == turno)]
+        self.carregar_tabela(res)
 
     def editar_curso(self, curso):
-        messagebox.showinfo("Editar", f"Editar curso: {curso[0]}")
+        messagebox.showinfo("Editar", f"Editando: {curso[0]}")
 
     def excluir_curso(self, curso):
-        messagebox.showwarning("Excluir", f"Excluir curso: {curso[0]}")
+        confirmar = messagebox.askyesno("Excluir", f"Tem certeza que deseja excluir {curso[0]}?")
+        if confirmar: print(f"Excluído: {curso[0]}")
 
-
-# ───────────── APP ─────────────
+# ───────────── TESTE ISOLADO ─────────────
 if __name__ == "__main__":
-    app = ctk.CTk()
-    app.title("Sistema de Gestão")
-    app.attributes("-fullscreen", True)
+    root = ctk.CTk()
+    root.attributes("-fullscreen", True)
+    
+    # Simulação da estrutura principal com sidebar
+    main_frame = ctk.CTkFrame(root)
+    main_frame.pack(fill="both", expand=True)
+    
+    sidebar_frame, _ = sidebar(main_frame)
+    sidebar_frame.grid(row=0, column=0, sticky="ns")
+    
+    content_area = ctk.CTkFrame(main_frame)
+    content_area.grid(row=0, column=1, sticky="nsew")
+    main_frame.grid_columnconfigure(1, weight=1)
+    main_frame.grid_rowconfigure(0, weight=1)
 
-    CursosView(app)
-
-    app.mainloop()
+    app = ListaCursoApp(content_area)
+    app.pack(fill="both", expand=True)
+    
+    root.mainloop()

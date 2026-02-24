@@ -438,7 +438,7 @@ def sidebar(janela, cor_fundo=f"{azulEscuro}", cor_texto=f"{Branco}"):
         mapa_telas = {
             "home": {"modulo": "views.Aluno_e_Professor.home_view", "classe": "Home"},
             "eventos": {"modulo": "views.Aluno_e_Professor.eventos_view", "classe": "CalendarioDesktopApp"},
-            "forum": {"modulo": "views.Aluno_e_Professor.forum_view", "classe": "Forum"},
+            "forum": {"modulo": "views.Aluno_e_Professor.forum_view", "classe": "ForumApp"},
             "perfil": {"modulo": "views.Aluno_e_Professor.perfil_academico", "classe": "UserProfileSystem"}
         }
         
