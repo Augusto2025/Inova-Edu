@@ -5,26 +5,40 @@ def buscar_foruns_db():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT idforum, nome, data_criacao
+        SELECT idForum, Nome, Data_criacao, ID_Usuario
         FROM forum
-        ORDER BY data_criacao DESC
+        ORDER BY idForum DESC
     """)
 
-    dados = cursor.fetchall()
+    forums = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    foruns = []
+    return forums
 
-    for f in dados:
-        foruns.append({
-            "nome": f["nome"],
-            "idforum": f["idforum"],
-            "data_criacao": str(f["data_criacao"]),
-            "topics": []
-        })
+def criar_forum_db(nome, usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
 
-    return foruns
+    cursor.execute("""
+        INSERT INTO forum (Nome, Data_criacao, ID_Usuario)
+        VALUES (%s, NOW(), %s)
+    """, (nome, usuario_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+
+
+
+
+
+
+
+
 
 
 def buscar_topicos_db(forum_id):
@@ -76,3 +90,6 @@ def enviar_mensagem(id_forum, id_usuario, conteudo):
 
     conn.commit()
     conn.close()
+    
+    
+

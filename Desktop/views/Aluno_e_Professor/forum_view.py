@@ -1,11 +1,11 @@
+from tkinter import dialog
+
 import customtkinter as ctk
 from datetime import datetime
 import tkinter.messagebox as messagebox
 import re
-<<<<<<< HEAD
-=======
-from models.forum_model import buscar_foruns_db, buscar_topicos_db, buscar_mensagens_db, enviar_mensagem
->>>>>>> desktop_telas
+from config.banco import conectar
+from models.forum_model import buscar_foruns_db, buscar_topicos_db, buscar_mensagens_db, enviar_mensagem, criar_forum_db
 # from sidebar_C import sidebar
 
 # Configuração de cores moderna
@@ -16,7 +16,7 @@ CORES = {
     "sucesso": "#003568",        # azul botão
     "aviso": "#ffd166",          # Amarelo
     "perigo": "#ef476f",         # Rosa/vermelho
-    "fundo": "#f4f7f9",          # Cinza muito claro
+    "fundo": "#f5f9f4",          # Cinza muito claro
     "card": "#f01414",            # Branco
     "texto_primario": "#212529", # Quase preto
     "texto_secundario": "#6c757d", # Cinza
@@ -35,68 +35,11 @@ class ForumApp:
         self.current_forum_index = 0
         self.current_topic_index = 0
         self.view_mode = "topics"
-<<<<<<< HEAD
-        
-        # Dados dos fóruns
-        self.forums = [
-            {
-                "name": "Administrador de redes",
-                "description": "Discussões sobre administração de redes, protocolos e equipamentos",
-                "created": "20/03/2025",
-                "icon": "🌐",
-                "topics": [
-                    {
-                        "title": "Configuração de OSPF",
-                        "author": "Lucas Amaral",
-                        "created": "20/03/2025",
-                        "replies": 4,
-                        "views": 45,
-                        "last_message": "12:20",
-                        "messages": [
-                            {"author": "Lucas Amaral", "message": "Galera, lembrando que amanhã é a apresentação dos projetos. @carla você já terminou a topologia?", "time": "12:15"},
-                            {"author": "Carla Souza", "message": "Quase! @lucas estou finalizando o OSPF ainda. Mais alguém usando?", "time": "12:17"},
-                            {"author": "Vinícius Junior", "message": "Eu! @carla só travando no balanceamento de carga. 😊", "time": "12:17"},
-                            {"author": "Diego Maradona", "message": "@vinicius fiz isso ontem. Posso te mandar o exemplo!", "time": "12:18"},
-                            {"author": "Ana", "message": "Meu foco é segurança com VLANs. @lucas configurei DHCP snooping e port security 🛡️", "time": "12:20"}
-                        ]
-                    },
-                    {
-                        "title": "Balanceamento de carga",
-                        "author": "Vinícius Junior",
-                        "created": "21/03/2025",
-                        "replies": 1,
-                        "views": 12,
-                        "last_message": "09:30",
-                        "messages": [
-                            {"author": "Vinícius Junior", "message": "Alguém tem experiência com balanceamento de carga em redes corporativas? @carla você conhece?", "time": "09:15"},
-                            {"author": "Carla Souza", "message": "@vinicius Uso o HAProxy aqui, muito bom!", "time": "09:30"}
-                        ]
-                    }
-                ]
-            },
-            {
-                "name": "Suporte e manutenção de notebooks",
-                "description": "Reparo, manutenção e suporte para notebooks",
-                "created": "12/01/2025",
-                "icon": "💻",
-                "topics": []
-            },
-            {
-                "name": "Segurança da informação",
-                "description": "Firewalls, VLANs e políticas de segurança",
-                "created": "28/05/2025",
-                "icon": "🔒",
-                "topics": []
-            }
-        ]
-        
-=======
         
         # Dados dos fóruns
         
         self.forums = buscar_foruns_db()
         
->>>>>>> desktop_telas
         self.build_ui()
     
     def build_ui(self):
@@ -160,7 +103,7 @@ class ForumApp:
         stats_frame.pack(side="right", padx=30)
         
         total_foruns = len(self.forums)
-        total_topics = sum(len(f["topics"]) for f in self.forums)
+        total_topics = sum(len(f.get("topics", [])) for f in self.forums)
         
         ctk.CTkLabel(
             stats_frame,
@@ -211,11 +154,7 @@ class ForumApp:
             text="+ Novo Fórum",
             height=45,
             font=ctk.CTkFont(size=14, weight="bold"),
-<<<<<<< HEAD
-            fg_color=CORES["sucesso"],
-=======
             fg_color="black",
->>>>>>> desktop_telas
             hover_color=CORES["secundaria"],
             corner_radius=10,
             command=self.criar_novo_forum
@@ -350,10 +289,6 @@ class ForumApp:
         for widget in self.forums_list_frame.winfo_children():
             widget.destroy()
         
-<<<<<<< HEAD
-        for i, forum in enumerate(self.forums):
-            self.create_forum_card(forum, i)
-=======
         self.forums = buscar_foruns_db()        
         
         for i, forum in enumerate(self.forums):
@@ -366,7 +301,6 @@ class ForumApp:
                 command=lambda idx=i: self.load_forum(idx)
             )
             btn.pack(fill="x", pady=2)
->>>>>>> desktop_telas
     
     def create_forum_card(self, forum, index):
         """Cria um card de fórum com botões de editar e excluir"""
@@ -398,7 +332,7 @@ class ForumApp:
         # Nome
         name_label = ctk.CTkLabel(
             top_frame,
-            text=forum["name"],
+            text=forum["nome"],
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color=CORES["texto_primario"]
         )
@@ -420,7 +354,7 @@ class ForumApp:
         count_badge.pack(side="right")
         
         # Descrição resumida
-        desc_text = forum["description"][:35] + "..." if len(forum["description"]) > 35 else forum["description"]
+        desc_text = forum["descricao"][:35] + "..." if len(forum["descricao"]) > 35 else forum["descricao"]
         desc_label = ctk.CTkLabel(
             card,
             text=desc_text,
@@ -437,7 +371,7 @@ class ForumApp:
         # Data de criação
         date_label = ctk.CTkLabel(
             actions_frame,
-            text=f"Criado: {forum['created']}",
+            text=f"Criado: {forum['data_criacao']}",
             font=ctk.CTkFont(size=10),
             text_color=CORES["texto_secundario"]
         )
@@ -488,8 +422,8 @@ class ForumApp:
         forum = self.forums[index]
         
         # Atualizar header
-        self.current_title.configure(text=f"📌 {forum['name']}")
-        self.description_label.configure(text=forum["description"])
+        self.current_title.configure(text=f"📌 {forum['nome']}")
+        self.description_label.configure(text=forum["Descricao"])
         
         # Esconder botão voltar e badge
         self.back_button.pack_forget()
@@ -510,23 +444,16 @@ class ForumApp:
     def load_topics(self):
         """Carrega a lista de tópicos"""
         forum = self.forums[self.current_forum_index]
-<<<<<<< HEAD
-=======
         self.topicos = buscar_topicos_db(forum["idforum"])
->>>>>>> desktop_telas
         
         # Limpar o conteúdo antes de carregar
         self.clear_content()
         
-        if not forum["topics"]:
+        if not self.topicos:
             self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
             return
         
-<<<<<<< HEAD
-        for i, topic in enumerate(forum["topics"]):
-=======
         for i, topic in enumerate(self.topicos):
->>>>>>> desktop_telas
             self.create_topic_card(topic, i)
     
     def create_topic_card(self, topic, index):
@@ -846,8 +773,8 @@ class ForumApp:
         self.back_button.pack_forget()
         
         # Atualizar header
-        self.current_title.configure(text=f"📌 {forum['name']}")
-        self.description_label.configure(text=forum["description"])
+        self.current_title.configure(text=f"📌 {forum['nome']}")
+        self.description_label.configure(text=forum["Descricao"])
         
         # Esconder badge
         self.context_badge.pack_forget()
@@ -892,8 +819,9 @@ class ForumApp:
         for widget in self.content_frame.winfo_children():
             widget.destroy()
     
-    # ========== FUNÇÕES DE AÇÃO ==========
+    # ========== FUNÇÕES DE AÇÃO ==========================================================
     def criar_novo_forum(self):
+        print("BOTÃO FUNCIONANDO - CRIAR NOVO FÓRUM")
         """Janela para criar um novo fórum"""
 
         dialog = ctk.CTkToplevel(self.master)
@@ -1001,6 +929,8 @@ class ForumApp:
             command=dialog.destroy
         )
         cancelar_btn.pack(side="left")
+        
+       
 
         def salvar():
             nome = nome_entry.get().strip()
@@ -1011,18 +941,13 @@ class ForumApp:
                 messagebox.showwarning("Atenção", "Preencha nome e descrição.")
                 return
 
-            novo_forum = {
-                "name": nome,
-                "description": desc,
-                "created": datetime.now().strftime("%d/%m/%Y"),
-                "icon": icon,
-                "topics": []
-            }
-
-            self.forums.append(novo_forum)
-            self.load_forums_list()
-            dialog.destroy()
-            messagebox.showinfo("Sucesso", "Fórum criado com sucesso!")
+            try:
+                criar_forum_db(nome, desc)  # salva no banco
+                self.forums = buscar_foruns_db()  # atualiza lista local
+                self.load_forums_list()
+                dialog.destroy()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao salvar fórum:\n{e}")
 
         salvar_btn = ctk.CTkButton(
             btn_area,
@@ -1039,7 +964,7 @@ class ForumApp:
         salvar_btn.pack(side="right")
 
     # 561111111111111111111111111111111111111111111111666666666666666666666666666666666666666666666666666666
-    
+         
     def editar_forum(self, index):
         """Abre diálogo para editar fórum"""
         forum = self.forums[index]
@@ -1077,7 +1002,7 @@ class ForumApp:
         ).pack(anchor="w", pady=(0, 5))
         
         nome_entry = ctk.CTkEntry(content, height=40, corner_radius=8)
-        nome_entry.insert(0, forum["name"])
+        nome_entry.insert(0, forum["nome"])
         nome_entry.pack(fill="x", pady=(0, 20))
         
         # Descrição
@@ -1089,7 +1014,7 @@ class ForumApp:
         ).pack(anchor="w", pady=(0, 5))
         
         desc_entry = ctk.CTkTextbox(content, height=120, corner_radius=8)
-        desc_entry.insert("1.0", forum["description"])
+        desc_entry.insert("1.0", forum["descricao"])
         desc_entry.pack(fill="x", pady=(0, 20))
         
         # Ícone
@@ -1128,22 +1053,17 @@ class ForumApp:
             nome = nome_entry.get().strip()
             desc = desc_entry.get("1.0", "end-1c").strip()
             icon = icon_entry.get().strip() or "📁"
-            
-            if nome and desc:
-                self.forums[index]["name"] = nome
-                self.forums[index]["description"] = desc
-                self.forums[index]["icon"] = icon
-                
-                # Se for o fórum atual, atualizar header
-                if index == self.current_forum_index:
-                    self.current_title.configure(text=f"📌 {nome}")
-                    self.description_label.configure(text=desc)
-                
-                self.load_forums_list()
-                dialog.destroy()
-                messagebox.showinfo("Sucesso", f"Fórum '{nome}' editado com sucesso!")
-            else:
-                messagebox.showwarning("Atenção", "Preencha todos os campos!")
+
+            if not nome:
+                messagebox.showwarning("Atenção", "Preencha o nome do fórum.")
+                return
+
+            usuario_id = self.usuario_logado_id  # ou o id do usuário logado
+
+            criar_forum_db(nome, usuario_id)
+
+            self.load_forums_list()
+            dialog.destroy()
         
         salvar_btn = ctk.CTkButton(
             btn_frame,
@@ -1501,70 +1421,6 @@ class ForumApp:
             self.reply_entry.insert("1.0", "Digite sua resposta...")
     
     def send_message(self):
-<<<<<<< HEAD
-        """Envia mensagem"""
-        message = self.reply_entry.get("1.0", "end-1c").strip()
-        if message and message != "Digite sua resposta...":
-            now = datetime.now()
-            
-            nova_mensagem = {
-                "author": "Você",
-                "message": message,
-                "time": now.strftime("%H:%M")
-            }
-            
-            topic = self.forums[self.current_forum_index]["topics"][self.current_topic_index]
-            topic["messages"].append(nova_mensagem)
-            topic["replies"] += 1
-            topic["last_message"] = now.strftime("%H:%M")
-            
-            # Recarregar mensagens
-            self.clear_content()
-            self.load_messages()
-            
-            # Atualizar badge
-            self.context_badge.configure(text=f"{topic['replies']} respostas")
-            
-            # Limpar campo
-            self.reply_entry.delete("1.0", "end")
-            self.reply_entry.insert("1.0", "Digite sua resposta...")
-            
-            messagebox.showinfo("Sucesso", "Mensagem enviada!")
-    
-    def search_forums(self, event=None):
-        """Busca fóruns"""
-        search_term = self.search_entry.get().lower()
-        
-        if not search_term:
-            self.load_forums_list()
-            return
-        
-        filtered = [f for f in self.forums if search_term in f["name"].lower()]
-        
-        for widget in self.forums_list_frame.winfo_children():
-            widget.destroy()
-        
-        if filtered:
-            for i, forum in enumerate(filtered):
-                self.create_forum_card(forum, i)
-        else:
-            no_results = ctk.CTkLabel(
-                self.forums_list_frame,
-                text="🔍 Nenhum fórum encontrado",
-                font=ctk.CTkFont(size=13),
-                text_color=CORES["texto_secundario"]
-            )
-            no_results.pack(pady=30)
-    
-    def run(self):
-        """Inicia o fórum"""
-        if not self.ui_built:
-            self.build_ui()
-        
-        if hasattr(self.master, 'mainloop'):
-            self.master.mainloop()
-
-=======
         txt = self.reply_entry.get("1.0", "end-1c").strip()
 
         if not txt or txt == "Digite sua resposta...":
@@ -1576,7 +1432,7 @@ class ForumApp:
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO mensagem (ID_Forum, ID_Usuario, Conteudo)
+            INSERT INTO mensagem (IdForum, ID_Usuario, Conteudo)
             VALUES (%s, %s, %s)
         """, (forum_id, 1, txt))  # depois podemos pegar o usuário logado
 
@@ -1624,7 +1480,6 @@ class ForumApp:
         if hasattr(self.master, 'mainloop'):
             self.master.mainloop()
 
->>>>>>> desktop_telas
 
 if __name__ == "__main__":
     app = ForumApp()
