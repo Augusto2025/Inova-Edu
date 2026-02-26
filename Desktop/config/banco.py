@@ -15,11 +15,19 @@ socket.setdefaulttimeout(3)
 
 def conectar():
     """Conecta ao banco com timeout real de 3 segundos"""
+<<<<<<< HEAD
     host = os.getenv("HOST", "localhost")
     user = os.getenv("USER", "root")
     password = os.getenv("PASSWORD", "")
     database = os.getenv("NAME", "db_repositorio")
     port = int(os.getenv("PORT", "3306"))
+=======
+    host = os.getenv("HOST")
+    user = os.getenv("USER")
+    password = os.getenv("PASSWORD")
+    database = os.getenv("NAME")
+    port = int(os.getenv("PORT"))
+>>>>>>> develop
 
     # Teste rápido de socket TCP para falha imediata
     try:

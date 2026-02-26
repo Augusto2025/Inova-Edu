@@ -47,7 +47,7 @@ class CadastroTurmas:
         self.janela.configure(fg_color=self.cor_branco)
 
         # IMPORTAR SIDEBAR
-        from sidebar_C import sidebar
+        from Desktop.views.Coordenacao.sidebar_C import sidebar
         sidebar(self.janela)
         
         self.criar_tela_cadastro()

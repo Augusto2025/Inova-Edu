@@ -68,7 +68,7 @@ class Sidebar(ctk.CTkFrame):
 
     def _criar_botao_sair(self, parent):
         ctk.CTkButton(
-            parent, text="Logout", command=self.master.quit,
+            parent, text="Sair do Sistema", command=self.master.quit,
             height=45, fg_color="#e74c3c", hover_color="#c0392b",
             text_color=Branco, font=ctk.CTkFont(weight="bold"),
             corner_radius=8
@@ -84,7 +84,7 @@ class Sidebar(ctk.CTkFrame):
             "home": {"modulo": "views.Aluno_e_Professor.home_view", "classe": "Home"},
             "eventos": {"modulo": "views.Aluno_e_Professor.eventos_view", "classe": "CalendarioDesktopApp"},
             "forum": {"modulo": "views.Aluno_e_Professor.forum_view", "classe": "ForumApp"},
-            "perfil": {"modulo": "perfil_academico", "classe": "UserProfileSystem"}
+            "perfil": {"modulo": "views.Aluno_e_Professor.perfil_academico", "classe": "UserProfileSystem"}
         }
         
         if nome_tela not in mapa_telas:

@@ -1,8 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from sidebar_C import sidebar
-from PIL import Image
-import os
+from Desktop.views.Coordenacao.sidebar_C import sidebar
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
