@@ -5,6 +5,13 @@ import os
 import importlib
 from assets.cores import *
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class Sidebar(ctk.CTkFrame):
     def __init__(self, master, *, cor_fundo=azulEscuro, cor_texto=Branco):
         super().__init__(master, width=250, corner_radius=0, fg_color=cor_fundo)
@@ -37,11 +44,23 @@ class Sidebar(ctk.CTkFrame):
 
     def _add_logo(self, parent):
         try:
-            caminho = "Desktop/assets/img/LOGOBRANCO.png"
+            # 1. Definimos o caminho usando resource_path e removendo o prefixo Desktop/
+            # O os.path.join garante que as barras funcionem em qualquer sistema
+            caminho = resource_path(os.path.join("assets", "img", "LOGOBRANCO.png"))
+            
+            # 2. Abrimos a imagem
             pil = Image.open(caminho)
-            self._logo_img = ctk.CTkImage(light_image=pil, size=(80, 100))
+            
+            # 3. Criamos o CTkImage
+            self._logo_img = ctk.CTkImage(light_image=pil, dark_image=pil, size=(80, 100))
+            
+            # 4. Exibimos no Label
             ctk.CTkLabel(parent, image=self._logo_img, text="").pack()
-        except:
+            print(f"[LOG] Imagem carregada com sucesso: {caminho}")
+            
+        except Exception as e:
+            # Em caso de erro (ex: arquivo faltando), exibe o ícone de fallback
+            print(f"[ERRO] Falha ao carregar logo: {e}")
             ctk.CTkLabel(parent, text="🎓", font=ctk.CTkFont(size=40)).pack()
 
     def _criar_botoes_menu(self, parent):

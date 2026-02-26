@@ -151,9 +151,22 @@ class Home(ctk.CTkFrame):
             card.pack_propagate(False)
             
             # Imagem do curso
-            img_frame = ctk.CTkFrame(card, fg_color="#ebf0f5", height=140, corner_radius=10)
-            img_frame.pack(fill="x", padx=15, pady=(15, 10))
-            ctk.CTkLabel(img_frame, text="🎓", font=ctk.CTkFont(size=50)).place(relx=0.5, rely=0.5, anchor="center")
+            if "image" in curso and curso["image"]:
+                try:
+                    img_path = os.path.join("Desktop/assets/img/cursos", curso["image"])
+                    if os.path.exists(img_path):
+                        img = Image.open(img_path).resize((300, 140))
+                        img_tk = ctk.CTkImage(img)
+                        ctk.CTkLabel(card, image=img_tk).pack(pady=(15, 10))
+                    else:
+                        raise FileNotFoundError(f"Imagem não encontrada: {img_path}")
+                except Exception as e:
+                    print(f"Erro ao carregar imagem do curso '{curso['name']}': {e}")
+                    ctk.CTkLabel(card, text="🎓", font=ctk.CTkFont(size=50)).place(relx=0.5, rely=0.5, anchor="center")
+            else:
+                img_frame = ctk.CTkFrame(card, fg_color="#ebf0f5", height=140, corner_radius=10)
+                img_frame.pack(fill="x", padx=15, pady=(15, 10))
+                ctk.CTkLabel(img_frame, text="🎓", font=ctk.CTkFont(size=50)).place(relx=0.5, rely=0.5, anchor="center")
             
             # Nome e Descrição
             ctk.CTkLabel(card, text=curso["name"], font=ctk.CTkFont(size=17, weight="bold"), 
@@ -177,6 +190,8 @@ class Home(ctk.CTkFrame):
         print(f"DEBUG HOME: Enviando ID {id_curso} e Nome {nome_curso} para a tela de turmas")
         
         if id_curso is None:
+            import tkinter.messagebox as messagebox
+            messagebox.showerror("Erro", "O curso selecionado não possui um ID válido.")
             print("ERRO CRÍTICO: O curso selecionado não possui um ID!")
             return
 
