@@ -43,13 +43,15 @@ class RepositorioDashboard(ctk.CTkFrame):
             widget.destroy()
 
         # --- HEADER (Azul Escuro) ---
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=80, corner_radius=0)
+        header = ctk.CTkFrame(self.container_principal, fg_color=azulEscuro, height=100, corner_radius=0)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
 
         if self.pasta_atual_id:
             ctk.CTkButton(header, text="⬅", width=40, fg_color="transparent", 
                           hover_color="#334155", command=self.voltar_raiz).pack(side="left", padx=(20, 0))
+        # else:
+        #     ctk.CTkButton(header, text="⬅ Projetos", width=100, text_color=Branco, fg_color=azulEscuro, hover='transparent', command=self.voltar_projetos).pack(side="left", padx=(20, 0)),
 
         ctk.CTkLabel(header, text=self.nome_projeto, 
                      font=ctk.CTkFont(size=24, weight="bold"), 
@@ -96,6 +98,20 @@ class RepositorioDashboard(ctk.CTkFrame):
         else:
             for arq in self.arquivos:
                 self.criar_linha_arquivo(arq)
+
+    # def voltar_projetos(self):
+    #     from views.Aluno_e_Professor.projetos_view import ProjetosDesktopDashboard
+    
+    #     self.pack_forget() 
+        
+    #     tela_projetos = ProjetosDesktopDashboard(
+    #         master=self.janela, 
+    #         id_turma=self.turma_id,    # ID que veio da tela de turmas
+    #         nome_turma=self.nome_projeto, # Nome que veio da tela de turmas
+    #         tipo_usuario=None,  # Você pode passar o tipo de usuário se necessário
+    #         controller1=self.controller1  # Passa o controller para manter a consistência
+    #     )
+    #     tela_projetos.pack(side="right", fill="both", expand=True)
 
     def criar_card_pasta(self, parent, pasta, index):
         # Card igual ao seu design original

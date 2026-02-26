@@ -14,87 +14,106 @@ def resource_path(relative_path):
 
 class Sidebar(ctk.CTkFrame):
     def __init__(self, master, *, cor_fundo=azulEscuro, cor_texto=Branco):
-        super().__init__(master, width=250, corner_radius=0, fg_color=cor_fundo)
+        # Aumentada a largura levemente para melhor equilíbrio visual
+        super().__init__(master, width=280, corner_radius=0, fg_color=cor_fundo)
         self.master = master
         self.cor_texto = cor_texto
         self._logo_img = None
+        
+        # Definição de Fontes Modernas
+        self.fonte_principal = ctk.CTkFont(family="Segoe UI", size=16, weight="normal")
+        self.fonte_bold = ctk.CTkFont(family="Segoe UI", size=16, weight="bold")
+        self.fonte_titulo = ctk.CTkFont(family="Segoe UI", size=24, weight="bold")
+        
         self.pack_propagate(False) 
         self._build_ui()
 
     def _build_ui(self):
+        # Container com margens generosas para um ar "limpo"
         self.menu_container = ctk.CTkFrame(self, fg_color="transparent")
-        self.menu_container.pack(fill="both", expand=True, padx=15, pady=20)
+        self.menu_container.pack(fill="both", expand=True, padx=20, pady=30)
 
-        # Topo
+        # Seção Superior (Logo e Título)
         self._add_logo(self.menu_container)
+        
         ctk.CTkLabel(
-            self.menu_container, text="INOVA EDU",
-            font=ctk.CTkFont(size=22, weight="bold"),
+            self.menu_container, 
+            text="INOVA EDU",
+            font=self.fonte_titulo,
             text_color=self.cor_texto
-        ).pack(pady=(10, 0))
+        ).pack(pady=(15, 25))
 
-        ctk.CTkFrame(self.menu_container, height=2, fg_color=self.cor_texto).pack(fill="x", pady=10)
+        # Divisor Elegante (Linha fina com baixa opacidade)
+        ctk.CTkFrame(self.menu_container, height=1, fg_color="#334155").pack(fill="x", pady=(0, 25))
 
-        # Rodapé (Logout embaixo, Perfil logo acima)
+        # --- Rodapé (Ordem inversa para o pack side="bottom") ---
         self._criar_botao_sair(self.menu_container)
         self._criar_botao_perfil(self.menu_container)
 
-        # Meio (Menu principal)
+        # --- Menu Principal ---
         self._criar_botoes_menu(self.menu_container)
 
     def _add_logo(self, parent):
         try:
-            # 1. Definimos o caminho usando resource_path e removendo o prefixo Desktop/
-            # O os.path.join garante que as barras funcionem em qualquer sistema
             caminho = resource_path(os.path.join("assets", "img", "LOGOBRANCO.png"))
-            
-            # 2. Abrimos a imagem
             pil = Image.open(caminho)
-            
-            # 3. Criamos o CTkImage
-            self._logo_img = ctk.CTkImage(light_image=pil, dark_image=pil, size=(80, 100))
-            
-            # 4. Exibimos no Label
+            self._logo_img = ctk.CTkImage(light_image=pil, dark_image=pil, size=(100, 120))
             ctk.CTkLabel(parent, image=self._logo_img, text="").pack()
-            print(f"[LOG] Imagem carregada com sucesso: {caminho}")
-            
         except Exception as e:
-            # Em caso de erro (ex: arquivo faltando), exibe o ícone de fallback
-            print(f"[ERRO] Falha ao carregar logo: {e}")
-            ctk.CTkLabel(parent, text="🎓", font=ctk.CTkFont(size=40)).pack()
+            ctk.CTkLabel(parent, text="🎓", font=ctk.CTkFont(size=55)).pack()
 
     def _criar_botoes_menu(self, parent):
         botoes = [
-            ("🏠 Repositório", "home"),
-            ("💬 Fórum", "forum"),
-            ("📅 Eventos", "eventos"),
+            ("🏠   Repositório", "home"),
+            ("💬   Fórum", "forum"),
+            ("📅   Eventos", "eventos"),
         ]
         for texto, id_tela in botoes:
-            ctk.CTkButton(
-                parent, text=texto, height=50, anchor="w",
-                fg_color=azulClaro, hover_color=azulEscuro,
+            btn = ctk.CTkButton(
+                parent, 
+                text=texto, 
+                height=55, # Altura uniforme e maior
+                anchor="w",
+                font=self.fonte_principal,
+                fg_color="transparent", # Visual limpo, ganha cor no hover
+                hover_color=azulClaro,
                 text_color=self.cor_texto,
+                corner_radius=12,
+                border_spacing=20, # Texto mais afastado da borda
                 command=lambda t=id_tela: self._navegar(t)
-            ).pack(fill="x", pady=3)
+            )
+            btn.pack(fill="x", pady=6)
 
     def _criar_botao_perfil(self, parent):
         ctk.CTkButton(
-            parent, text="👤 Perfil", height=50, anchor="w",
-            fg_color=azulClaro, hover_color=azulEscuro,
+            parent, 
+            text="👤   Meu Perfil", 
+            height=55, 
+            anchor="w",
+            font=self.fonte_principal,
+            fg_color="transparent",
+            hover_color=azulClaro,
             text_color=self.cor_texto,
+            corner_radius=12,
+            border_spacing=20,
             command=lambda: self._navegar("perfil")
-        ).pack(side="bottom", fill="x", pady=(0, 10))
+        ).pack(side="bottom", fill="x", pady=(0, 20))
 
     def _criar_botao_sair(self, parent):
+        # Estilo "Danger" moderno (Soft Red)
         ctk.CTkButton(
-            parent, text="Sair do Sistema", command=self.master.quit,
-            height=45, fg_color="#e74c3c", hover_color="#c0392b",
-            text_color=Branco, font=ctk.CTkFont(weight="bold"),
-            corner_radius=8
+            parent, 
+            text="Sair do Sistema", 
+            command=self.master.quit,
+            height=52, 
+            fg_color="#ef4444", # Vermelho vibrante moderno
+            hover_color="#b91c1c",
+            text_color="#ffffff", 
+            font=self.fonte_bold,
+            corner_radius=15 # Bem arredondado para destacar como ação final
         ).pack(side="bottom", fill="x")
 
     def _navegar(self, nome_tela):
-        # 1. Limpa apenas as telas de conteúdo (quem não é a Sidebar)
         for widget in self.master.winfo_children():
             if widget != self:
                 widget.destroy()
@@ -111,18 +130,11 @@ class Sidebar(ctk.CTkFrame):
 
         config = mapa_telas[nome_tela]
         try:
-            # Import dinâmico para evitar erro circular
             mod = importlib.import_module(config["modulo"])
-            importlib.reload(mod) # Opcional: garante que pegue mudanças no código
+            importlib.reload(mod)
             cls = getattr(mod, config["classe"])
-            
-            # 2. Instancia a nova tela. 
-            # IMPORTANTE: Passamos o self.master (a janela principal)
             nova_tela = cls(self.master)
-            
-            # 3. Empacota na DIREITA para não cobrir a sidebar
             nova_tela.pack(side="right", fill="both", expand=True)
-            
         except Exception as e:
             print(f"Erro ao carregar tela {nome_tela}: {e}")
 

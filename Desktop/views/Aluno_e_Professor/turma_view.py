@@ -39,9 +39,14 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
 
     def criar_interface(self):
         # 1. HEADER SUPERIOR
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=80, corner_radius=0)
+        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=100, corner_radius=0)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
+
+        ctk.CTkButton(header, text="⬅ Home", 
+                        width=100, text_color=Branco, fg_color=azulEscuro, hover='transparent', 
+                        border_width=1, border_color=Branco, 
+                        command=self.voltar_home).pack(side="left", padx=(20, 0)),
 
         ctk.CTkLabel(header, text="Gestão de Turmas", 
                      font=ctk.CTkFont(size=24, weight="bold"), 
@@ -57,6 +62,13 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         self.main_scroll.pack(fill="both", expand=True, padx=20, pady=10)
 
         self.renderizar_conteudo(self.turmas_por_ano)
+
+    def voltar_home(self):
+        self.pack_forget()
+
+        from views.Aluno_e_Professor.home_view import Home
+        self.tela_home = Home(self.janela)
+        self.tela_home.pack(side="right", fill="both", expand=True)
 
     def renderizar_conteudo(self, dados):
         """Limpa e renderiza as seções de turmas"""

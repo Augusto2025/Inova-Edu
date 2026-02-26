@@ -66,7 +66,7 @@ class Home(ctk.CTkFrame):
         # Botão de Filtros com contorno Branco
         filtros_btn = ctk.CTkButton(search_container, text="⚙️ Filtros", width=100, height=35,
                                     fg_color="transparent", border_width=1, border_color=Branco,
-                                    text_color=Branco, hover_color="#283593",
+                                    text_color=Branco, hover='transparent',
                                     command=self.abrir_modal_filtros)
         filtros_btn.pack(side="left", padx=5)
 
