@@ -88,5 +88,5 @@ if __name__ == "__main__":
     app.geometry("1200x800")
     # Garante que o container principal preencha a tela
     app_frame = UserProfileSystem(master=app)
-    app_frame.pack(fill="both", expand=True)
+    app_frame.pack(fill="both", expand=True) 
     app.mainloop()

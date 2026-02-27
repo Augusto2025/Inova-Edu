@@ -7,8 +7,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from assets.cores import *
-# --- IMPORTAÇÃO DO SEU CONTROLLER ---
-from controllers.eventos_controller import EventosController
 
 class CalendarioDesktopApp(ctk.CTkFrame):
     def __init__(self, master):  
@@ -16,9 +14,6 @@ class CalendarioDesktopApp(ctk.CTkFrame):
         self.janela = master
         self.cor_fundo = "#f5f7fb"
         self.configure(fg_color=self.cor_fundo)
-
-        # Instancia o controller para buscar dados reais
-        self.controller = EventosController()
 
         # --- INTEGRAÇÃO COM A SIDEBAR ---
         from sidebar_AP import Sidebar, sidebar
@@ -32,35 +27,31 @@ class CalendarioDesktopApp(ctk.CTkFrame):
         
         self.pack(side="right", fill="both", expand=True)
 
-        # Agora carregamos os eventos do banco de dados
-        self.eventos = self.carregar_eventos_banco()
-        
+        self.eventos = self.carregar_eventos_exemplo()
         self.ano_atual = datetime.now().year
         self.mes_atual = datetime.now().month
         
         self.criar_interface()
         self.atualizar_calendario()
 
-    def carregar_eventos_banco(self):
-        """Busca os eventos reais do banco através do Controller"""
-        try:
-            dados_brutos = self.controller.obter_todos_eventos()
-            eventos_formatados = []
-            
-            for ev in dados_brutos:
-                # ev[0]=idEventos, ev[1]=Nome, ev[2]=Hora, ev[3]=Data, ev[4]=Descricao, ev[5]=Endereco
-                eventos_formatados.append({
-                    "id": ev[0],
-                    "Nome_do_evento": ev[1],
-                    "Hora_do_evento": str(ev[2]), # Converte time para string
-                    "Data_do_evento": str(ev[3]), # Converte date para string
-                    "Descricao": ev[4],
-                    "Endereco": ev[5]
-                })
-            return eventos_formatados
-        except Exception as e:
-            print(f"Erro ao carregar banco: {e}")
-            return []
+    def carregar_eventos_exemplo(self):
+        hoje = datetime.now().date()
+        return [
+            {
+                "Nome_do_evento": "Reunião de Alinhamento PI",
+                "Hora_do_evento": "10:00",
+                "Data_do_evento": (hoje - timedelta(days=1)).strftime('%Y-%m-%d'),
+                "Descricao": "Discussão técnica sobre a arquitetura do projeto PI. Foco em banco de dados e interface.",
+                "Endereco": "Sala Virtual 02"
+            },
+            {
+                "Nome_do_evento": "Apresentação INOVA EDU",
+                "Hora_do_evento": "14:30",
+                "Data_do_evento": hoje.strftime('%Y-%m-%d'),
+                "Descricao": "Apresentação final do sistema de calendário para a banca examinadora. Teste de todas as funcionalidades ao vivo.",
+                "Endereco": "Auditório Central - Campus I"
+            }
+        ]
 
     def criar_interface(self):
         # --- HEADER (Cabeçalho Azul) ---
@@ -96,7 +87,7 @@ class CalendarioDesktopApp(ctk.CTkFrame):
         # Botão Hoje
         ctk.CTkButton(self.nav_bar, text="Hoje", width=70, fg_color=Branco, text_color=azulEscuro, font=ctk.CTkFont(weight="bold"), hover_color="#e0e0e0", command=self.ir_para_mes_atual).pack(side="left", padx=10)
 
-        # --- ÁREA DE CONTEÚDO ---
+        # --- ÁREA DE CONTEÚDO (Calendário e Detalhes) ---
         self.conteudo = ctk.CTkFrame(self, fg_color="transparent")
         self.conteudo.pack(fill="both", expand=True, padx=25, pady=20)
 
@@ -142,9 +133,6 @@ class CalendarioDesktopApp(ctk.CTkFrame):
         desc_box.configure(state="disabled")
 
     def atualizar_calendario(self):
-        # Atualiza a lista de eventos do banco sempre que mudar o mês/ano
-        self.eventos = self.carregar_eventos_banco()
-        
         for widget in self.days_frame.winfo_children(): widget.destroy()
 
         dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
@@ -166,8 +154,6 @@ class CalendarioDesktopApp(ctk.CTkFrame):
             pos = offset + dia - 1
             row, col = (pos // 7) + 1, pos % 7
             dt_bloco = datetime(self.ano_atual, self.mes_atual, dia).date()
-            
-            # Busca se existe evento para este dia específico no banco
             evento = next((e for e in self.eventos if e["Data_do_evento"] == dt_bloco.strftime('%Y-%m-%d')), None)
 
             dia_frame = ctk.CTkFrame(self.days_frame, fg_color="#f8fafc", border_width=1, border_color="#e2e8f0")
@@ -178,11 +164,8 @@ class CalendarioDesktopApp(ctk.CTkFrame):
 
             if evento:
                 dia_frame.configure(cursor="hand2", fg_color="#ffffff")
-                # Cor da barra: vermelho (passado), amarelo (hoje), verde (futuro)
                 cor = "#ef4444" if dt_bloco < hoje_dt else ("#facc15" if dt_bloco == hoje_dt else "#22c55e")
                 ctk.CTkFrame(dia_frame, height=8, fg_color=cor, corner_radius=0).pack(side="bottom", fill="x")
-                
-                # Bind para exibir detalhes reais do banco
                 dia_frame.bind("<Button-1>", lambda e, ev=evento: self.exibir_detalhes_embaixo(ev))
                 lbl.bind("<Button-1>", lambda e, ev=evento: self.exibir_detalhes_embaixo(ev))
 

@@ -1,5 +1,3 @@
-from tkinter import messagebox
-
 import customtkinter as ctk
 from controllers.login_controller import autenticar
 import threading
@@ -7,7 +5,6 @@ from PIL import Image, ImageOps
 import os
 from assets.cores import *
 from assets.fonts import *
-
 class tela_login(ctk.CTkFrame):  
     def __init__(self, master):  
         super().__init__(master)
@@ -156,24 +153,15 @@ class tela_login(ctk.CTkFrame):
             self.botao_entrar.configure(state="normal", text="Acessar Sistema")
             if isinstance(result, tuple) and len(result) >= 2 and result[1]:
                 tipo = result[0]
-
-                parent = self.master
-                
                 self.destroy()
                 if tipo in ["Aluno", "Professor"]:
                     from views.Aluno_e_Professor.home_view import Home
-                    
-                    self.pack_forget()
-                    
-                    self.home_aluno_screen = Home(parent)
-                    self.home_aluno_screen.pack(side="right", fill="both", expand=True)
-                    
-                    print("[DEBUG] Home instanciada e empacotada")
+                    self.home_aluno_screen = Home(self.master)
+                    self.home_aluno_screen.pack(expand=True, fill="both")
                 elif tipo == "Coordenador":
-                    messagebox.showinfo("Tela em construção", "A tela de coordenador ainda está em desenvolvimento. Por favor, aguarde futuras atualizações.")
-                    # from views.Coordenacao.HomeCoordenador import HomeCoordenador
-                    # self.home_coordenador_screen = HomeCoordenador(self.master)
-                    # self.home_coordenador_screen.pack(expand=True, fill="both")
+                    from views.Coordenacao.HomeCoordenador import HomeCoordenador
+                    self.home_coordenador_screen = HomeCoordenador(self.master)
+                    self.home_coordenador_screen.pack(expand=True, fill="both")
             else:
                 self._mostrar_erro(result[0] if isinstance(result, tuple) else str(result))
         except Exception as e:
