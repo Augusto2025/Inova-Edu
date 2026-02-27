@@ -1,18 +1,21 @@
+import sys
+from tkinter import messagebox
 import customtkinter as ctk
 from controllers.login_controller import autenticar
 import threading
-<<<<<<< HEAD
-import traceback
-from tkinter import messagebox
-
-class tela_login(ctk.CTkFrame):  # use CamelCase por convenção
-=======
 from PIL import Image, ImageOps
 import os
 from assets.cores import *
 from assets.fonts import *
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class tela_login(ctk.CTkFrame):  
->>>>>>> develop
     def __init__(self, master):  
         super().__init__(master)
         self.master = master
@@ -41,13 +44,18 @@ class tela_login(ctk.CTkFrame):
 
         # Logo centralizado mais alto
         try:
-            caminho_imagem = "Desktop/assets/img/LOGOBRANCO.png"
-            img_pil = Image.open(caminho_imagem)
-            self.img_logo = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(180, 220))
-            self.logo_label = ctk.CTkLabel(self.brand_content, image=self.img_logo, text="")
-            self.logo_label.pack(pady=(0, 20))
-        except:
-            pass
+            # Removido "Desktop/" e adicionado resource_path
+            caminho_imagem = resource_path("assets/img/LOGOBRANCO.png")
+            
+            if os.path.exists(caminho_imagem):
+                img_pil = Image.open(caminho_imagem)
+                self.img_logo = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(180, 220))
+                self.logo_label = ctk.CTkLabel(self.brand_content, image=self.img_logo, text="")
+                self.logo_label.pack(pady=(0, 20))
+            else:
+                print(f"[LOGIN] Imagem não encontrada em: {caminho_imagem}")
+        except Exception as e:
+            print(f"[LOGIN ERRO IMAGEM] {e}")
 
         ctk.CTkLabel(
             self.brand_content, text="INOVA EDU", 
@@ -160,15 +168,24 @@ class tela_login(ctk.CTkFrame):
             self.botao_entrar.configure(state="normal", text="Acessar Sistema")
             if isinstance(result, tuple) and len(result) >= 2 and result[1]:
                 tipo = result[0]
+
+                parent = self.master
+                
                 self.destroy()
                 if tipo in ["Aluno", "Professor"]:
                     from views.Aluno_e_Professor.home_view import Home
-                    self.home_aluno_screen = Home(self.master)
-                    self.home_aluno_screen.pack(expand=True, fill="both")
+                    
+                    self.pack_forget()
+                    
+                    self.home_aluno_screen = Home(parent)
+                    self.home_aluno_screen.pack(side="right", fill="both", expand=True)
+                    
+                    print("[DEBUG] Home instanciada e empacotada")
                 elif tipo == "Coordenador":
-                    from views.Coordenacao.HomeCoordenador import HomeCoordenador
-                    self.home_coordenador_screen = HomeCoordenador(self.master)
-                    self.home_coordenador_screen.pack(expand=True, fill="both")
+                    messagebox.showinfo("Tela em construção", "A tela de coordenador ainda está em desenvolvimento. Por favor, aguarde futuras atualizações.")
+                    # from views.Coordenacao.HomeCoordenador import HomeCoordenador
+                    # self.home_coordenador_screen = HomeCoordenador(self.master)
+                    # self.home_coordenador_screen.pack(expand=True, fill="both")
             else:
                 self._mostrar_erro(result[0] if isinstance(result, tuple) else str(result))
         except Exception as e:
@@ -177,43 +194,5 @@ class tela_login(ctk.CTkFrame):
     def _mostrar_erro(self, mensagem):
         try:
             self.erro.configure(text=mensagem)
-<<<<<<< HEAD
-            self.botao_entrar.configure(state="normal", text="Entrar")
-        except:
-            print(f"[LOGIN MOSTRAR ERRO] Nao conseguiu atualizar label de erro")
-
-
-    
-    def autentificacao(self):
-        tipo = ""
-        result = autenticar(self.usuario.get(), self.senha.get(), tipo)
-        print(result)
-        if result[1]:  # Se o segundo valor da tupla é True (autenticado)
-            tipo = result[0]  # O tipo de usuário retornado
-
-            # Abre a HOME como nova janela
-            if tipo == "Aluno" or tipo == "Professor":
-                self.destroy()  # Fecha a tela de login
-                
-                from views.Aluno_e_Professor.home_view import Home
-                self.home_aluno_screen = Home(self.master)
-                self.home_aluno_screen.pack(expand=True, fill="both")
-                
-                # falta implementar a tela do coordenador
-            elif tipo == "Coordenador":
-                print("teste de tela iniciada da home")
-                
-                
-                messagebox.showinfo(
-                    "Em desenvolvimento",
-                    "As telas da Coordenação ainda estão em processo de desenvolvimento."
-                )
-        else:
-            # result é uma tupla (mensagem, False)
-            mensagem, ok = result
-            self.erro.configure(text=mensagem)
-
-=======
             self.botao_entrar.configure(state="normal", text="Acessar Sistema")
         except: pass
->>>>>>> develop

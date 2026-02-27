@@ -21,7 +21,7 @@
         </a>
     </div>
     <div class="parallax" style="background-image: url('{% static "img/imgtransparente.png" %}')">
-        <img class="logo" src="{% static 'img/LOGO_AZUL.png' %}" style="width: 700px;">
+        <img class="logo" src="{% static 'img/Logo_azul_icone.png' %}" style="width: 130px;">
         <h1 style="font-size: 30px;">Bem-vindo ao Repositório Inova Edu</h1>
     </div>
 
@@ -77,6 +77,82 @@
         </div>
     </section>
 
+    <!-- CARROSSEL DE CURSOS -->
+    <section class="secao-cursos">
+        <h2 class="titulo-secao">Cursos em destaque</h2>
+        <p class="descricao">Conheça alguns dos cursos oferecidos na área de tecnologia.</p>
+
+        <div class="carousel-container">
+            <button class="carousel-btn prev">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div class="carousel">
+                <div class="carousel-track">
+
+                    <div class="curso-card">
+                        <img src="{% static 'img/tecnologia.png' %}" alt="Desenvolvimento Web">
+                        <h3>Desenvolvimento Web</h3>
+                        <p>Aprenda a criar sites e sistemas modernos usando HTML, CSS, JavaScript e frameworks.</p>
+                    </div>
+
+                    <div class="curso-card">
+                        <img src="{% static 'img/tecnologia.png' %}" alt="Python">
+                        <h3>Programação em Python</h3>
+                        <p>Introdução à programação com Python, lógica, automações e desenvolvimento de sistemas.</p>
+                    </div>
+
+                    <div class="curso-card">
+                        <img src="{% static 'img/tecnologia.png' %}" alt="Redes de Computadores">
+                        <h3>Redes de Computadores</h3>
+                        <p>Fundamentos de redes, infraestrutura, protocolos e segurança da informação.</p>
+                    </div>
+
+                    <div class="curso-card">
+                        <img src="{% static 'img/tecnologia.png' %}" alt="Design Digital">
+                        <h3>Design Digital</h3>
+                        <p>Criação visual, UX/UI, prototipação e ferramentas modernas de design.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <button class="carousel-btn next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <section class="secao-download">
+        <h2 class="titulo-secao">Baixe nosso App</h2>
+        <p class="descricao">Acesse o Repositório Inova Edu de onde estiver, seja no computador ou no celular.</p>
+        
+        <div class="download-container">
+            <div class="download-box">
+                <i class="fa-solid fa-desktop fa-3x"></i>
+                <h3>Desktop</h3>
+                <p>Versão para Windows e macOS</p>
+                <a href="#" class="btn-download">
+                    <i class="fa-solid fa-download"></i> Baixar para PC
+                </a>
+            </div>
+
+            <div class="download-box">
+                <i class="fa-solid fa-mobile-screen-button fa-3x"></i>
+                <h3>Mobile</h3>
+                <p>Versão para Android e iOS</p>
+                <div class="mobile-buttons">
+                    <a href="#" class="btn-download">
+                        <i class="fa-brands fa-google-play"></i> Play Store
+                    </a>
+                    <a href="#" class="btn-download">
+                        <i class="fa-brands fa-apple"></i> App Store
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FOOTER -->
     <footer>
         <div class="links">
@@ -111,6 +187,57 @@
             &copy; 2025 Desenvolvido por Alcides, Augusto e Clariane
         </p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.querySelector('.carousel-track');
+            const cards = document.querySelectorAll('.curso-card');
+            const btnNext = document.querySelector('.carousel-btn.next');
+            const btnPrev = document.querySelector('.carousel-btn.prev');
+
+            if (!track || cards.length === 0) return;
+
+            let index = 0;
+
+            // Função para calcular a largura do card visível
+            function getCardWidth() {
+                const style = window.getComputedStyle(cards[0]);
+                const marginRight = parseInt(style.marginRight) || 20;
+                return cards[0].offsetWidth + marginRight;
+            }
+
+            function moveCarousel() {
+                const cardWidth = getCardWidth();
+                track.style.transition = 'transform 0.5s ease';
+                track.style.transform = `translateX(-${index * cardWidth}px)`;
+            }
+
+            btnNext.addEventListener('click', () => {
+                index++;
+                if (index >= cards.length) index = 0;
+                moveCarousel();
+            });
+
+            btnPrev.addEventListener('click', () => {
+                index--;
+                if (index < 0) index = cards.length - 1;
+                moveCarousel();
+            });
+
+            // Autoplay infinito
+            setInterval(() => {
+                index++;
+                if (index >= cards.length) index = 0;
+                moveCarousel();
+            }, 4000);
+
+            // Responsividade
+            window.addEventListener('resize', moveCarousel);
+        });
+    </script>
+
+
+
     </body>
     </html>
 {% endblock %}

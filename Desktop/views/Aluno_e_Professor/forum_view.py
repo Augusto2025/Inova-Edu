@@ -580,7 +580,7 @@ class ForumApp:
         """Carrega um tópico"""
         self.current_topic_index = index
         self.view_mode = "messages"
-        topic = self.forums[self.current_forum_index]["topics"][index]
+        topic = self.forums[self.current_forum_index].get("topics", [])[index]
         
         # Incrementar visualizações
         topic['views'] += 1

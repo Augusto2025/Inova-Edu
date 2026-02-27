@@ -9,7 +9,7 @@
 
 body {
     background: #f5f5f5;
-    color: #333;
+    color: #004A8D;
     line-height: 1.6;
 }
 
@@ -105,48 +105,286 @@ section {
     color: #666;
 }
 
+/* ==========================
+   CARROSSEL DE CURSOS
+========================== */
+
+.secao-cursos {
+    padding: 60px 5%;
+    text-align: center;
+}
+
+.carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.carousel {
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.5s ease;
+}
+
+.curso-card {
+    flex: 0 0 calc(33.333% - 20px); /* 3 cards por linha em telas grandes */
+    max-width: calc(33.333% - 20px);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding-bottom: 20px;
+}
+
+.curso-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+.curso-card h3 {
+    margin: 15px 10px 8px;
+    color: #004A8D;
+}
+
+.curso-card p {
+    font-size: 14px;
+    padding: 0 15px;
+    color: #555;
+}
+
+/* Botões */
+.carousel-btn {
+    background: #004A8D;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-btn:hover {
+    background: #F7941D;
+}
+
+.carousel-btn.prev {
+    margin-right: 10px;
+}
+
+.carousel-btn.next {
+    margin-left: 10px;
+}
+
+/* Footer base */
 footer {
     text-align: center;
     padding: 20px;
-    background: #222;
+    background: #004A8D;
     color: white;
     margin-top: 40px;
 }
 
-h3, h2, .descricao, .card p, .card i{
-    color: #155a80;
+/* Links do footer */
+.links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
+.group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-.links a{
+.links-senac, .ferramentas, .pessoal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 180px;
+}
+
+.links-senac p, .ferramentas p, .pessoal p {
+    font-size: 20px;
+    font-family: "Sanchez", serif;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.links a {
     font-family: "Sanchez", serif;
     color: white;
     text-decoration: none;
-    width: 200px;
-    font-size: 15px;
+    margin: 4px 0;
+    font-size: 14px;
+    transition: color 0.2s;
 }
 
-.links-senac, .ferramentas, .pessoal{
-    display: flex; 
+.links a:hover {
+    color: #f77a1c;
+}
+
+/* Copyright */
+footer p {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1024px) {
+    .curso-card {
+        flex: 0 0 calc(50% - 20px); /* 2 cards por linha em tablets */
+        max-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 900px) {
+    .group {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .links-senac, .ferramentas, .pessoal {
+        min-width: 100%;
+    }
+
+    .links-senac p, .ferramentas p, .pessoal p {
+        font-size: 18px;
+    }
+
+    .links a {
+        font-size: 13px;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .curso-card {
+        flex: 0 0 calc(100% - 20px); /* 1 card por linha em mobile */
+        max-width: calc(100% - 20px);
+    }
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.carousel-btn.prev {
+    left: -20px;
+}
+
+.carousel-btn.next {
+    right: -20px;
+}
+
+@media (max-width: 480px) {
+    .links a {
+        font-size: 12px;
+    }
+
+    .links-senac p, .ferramentas p, .pessoal p {
+        font-size: 16px;
+    }
+
+    footer p {
+        font-size: 12px;
+    }
+}
+
+
+/* Estilização da Seção de Download */
+.secao-download {
+    padding: 60px 20px;
+    background-color: #f4f7f9; /* Um tom leve para diferenciar das outras seções */
+    text-align: center;
+}
+
+.download-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap; /* Garante que quebre linha em telas pequenas */
+}
+
+.download-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    width: 50%;
 }
 
-.links-senac p, .ferramentas p, .pessoal p{
-    font-size: 25px;
-    font-family: "Sanchez", serif;
-    font-weight: bolder;
+.download-box:hover {
+    transform: translateY(-5px);
 }
 
-.group{
-    display: flex;
-    width: 50%;
-    justify-self: center;
-}
-
-h4 {
-    font-size: 30px;
+.download-box i {
+    color: #0056b3; /* Cor azul padrão do seu projeto */
     margin-bottom: 15px;
-    font-family: "Sanchez", serif;
+}
+
+.download-box h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.download-box p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.btn-download {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+    margin: 5px;
+}
+
+.btn-download:hover {
+    background-color: #003d7a;
+}
+
+.mobile-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Ajuste para telas pequenas */
+@media (max-width: 768px) {
+    .download-container {
+        flex-direction: column;
+        align-items: center;
+    }
 }

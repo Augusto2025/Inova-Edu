@@ -7,7 +7,13 @@
 
 {% include "partials/header.html" %}
 
-<div class="rota">Página: Todos os fóruns > {{ forum.nome }}</div>
+<div class="rota" style="justify-content: start;">
+  Página: 
+  <a href="{% url 'forum_blocos' %}"> Todos os fóruns </a> >
+  <a href="{% url 'forum_topicos' forum.idforum %}"> Tópicos do fórum </a> 
+  > {{ forum.nome }}
+</div>
+
 
 <!-- Forum Header: título + tópico atual -->
 <div class="forum-header">

@@ -1,13 +1,14 @@
 from config.banco import conectar
+from psycopg2.extras import RealDictCursor
 
 def buscar_foruns_db():
     conn = conectar()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
-        SELECT idForum, Nome, Data_criacao, ID_Usuario
+        SELECT idforum, nome, data_criacao
         FROM forum
-        ORDER BY idForum DESC
+        ORDER BY idforum DESC
     """)
 
     forums = cursor.fetchall()
@@ -17,12 +18,13 @@ def buscar_foruns_db():
 
     return forums
 
+
 def criar_forum_db(nome, usuario_id):
     conn = conectar()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO forum (Nome, Data_criacao, ID_Usuario)
+        INSERT INTO forum (nome, data_criacao, id_usuario)
         VALUES (%s, NOW(), %s)
     """, (nome, usuario_id))
 
@@ -31,19 +33,9 @@ def criar_forum_db(nome, usuario_id):
     conn.close()
 
 
-
-
-
-
-
-
-
-
-
-
 def buscar_topicos_db(forum_id):
     conn = conectar()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT idtopico, titulo, descricao
@@ -58,17 +50,16 @@ def buscar_topicos_db(forum_id):
 
     return topicos
 
-
 def buscar_mensagens_db(forum_id):
     conn = conectar()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
-        SELECT m.Conteudo, m.Data_criacao, u.Nome
+        SELECT m.conteudo, m.data_criacao, u.nome
         FROM mensagem m
-        JOIN usuario u ON u.idUsuario = m.ID_Usuario
-        WHERE m.ID_Forum = %s
-        ORDER BY m.Data_criacao ASC
+        JOIN usuario u ON u.idusuario = m.id_usuario
+        WHERE m.idforum = %s
+        ORDER BY m.data_criacao ASC
     """, (forum_id,))
 
     mensagens = cursor.fetchall()
@@ -84,12 +75,10 @@ def enviar_mensagem(id_forum, id_usuario, conteudo):
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO mensagem (ID_Forum, ID_Usuario, Conteudo)
+        INSERT INTO mensagem (idforum, id_usuario, conteudo)
         VALUES (%s, %s, %s)
     """, (id_forum, id_usuario, conteudo))
 
     conn.commit()
+    cursor.close()
     conn.close()
-    
-    
-

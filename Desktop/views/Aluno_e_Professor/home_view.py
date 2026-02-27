@@ -177,6 +177,8 @@ class Home(ctk.CTkFrame):
         print(f"DEBUG HOME: Enviando ID {id_curso} e Nome {nome_curso} para a tela de turmas")
         
         if id_curso is None:
+            import tkinter.messagebox as messagebox
+            messagebox.showerror("Erro", "O curso selecionado não possui um ID válido.")
             print("ERRO CRÍTICO: O curso selecionado não possui um ID!")
             return
 

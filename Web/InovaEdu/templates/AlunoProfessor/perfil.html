@@ -34,10 +34,133 @@
                 <p><strong>Descrição:</strong></p>
                 {{ usuario.descricao|default:"Sem descrição." }}
             </div>
-
-            <a href="{% url 'editar_perfil' %}" class="Editar_Perfil">Editar Perfil</a>
-        </section>
     </main>
+    <!-- Projetos -->
+{% comment %} <div class="repos-section">
+    <div class="section-header">
+        <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
+    </div>
+    <div class="repos-grid" id="projetos-grid">
+        {% for projeto in projetos %}
+        <div class="repo-card">
+            <div class="repo-icon">
+                <i class="fas fa-code-branch"></i>
+            </div>
+            <h3>{{ projeto.Nome_Projeto }}</h3>
+            <p class="repo-turma">
+                <i class="fas fa-users"></i> 
+                {% if projeto.id_turma %}
+                    Turma: {{ projeto.id_turma.codigo_turma }} - 
+                    {% if projeto.id_turma.id_curso %}
+                        {{ projeto.id_turma.id_curso.nome_curso }}
+                    {% endif %}
+                    {% if projeto.id_turma.ano %}
+                        - {{ projeto.id_turma.ano }}
+                    {% endif %}
+                    ({{ projeto.id_turma.turno }})
+                {% else %}
+                    Turma não informada
+                {% endif %}
+            </p>
+            <p class="repo-date">
+                <i class="far fa-calendar-alt"></i> 
+                Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
+            </p>
+            {% if projeto.caminho_do_arquivo %}
+            <p class="repo-file">
+                <i class="fas fa-file"></i> 
+                Arquivo: {{ projeto.caminho_do_arquivo }}
+            </p>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="no-items">
+            <i class="fas fa-folder-open"></i>
+            <p>Nenhum projeto encontrado.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div> {% endcomment %}
+
+<!-- Modal de Edição de Perfil -->
+{% comment %} <div class="modal" id="profile-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
+            <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="edit-nome"><i class="fas fa-user"></i> Nome</label>
+                <input type="text" id="edit-nome" placeholder="Seu nome" value="{{ usuario.nome }}">
+            </div>
+            <div class="form-group">
+                <label for="edit-sobrenome"><i class="fas fa-user"></i> Sobrenome</label>
+                <input type="text" id="edit-sobrenome" placeholder="Seu sobrenome" value="{{ usuario.sobrenome }}">
+            </div>
+            <div class="form-group">
+                <label for="edit-bio"><i class="fas fa-align-left"></i> Bio</label>
+                <textarea id="edit-bio" placeholder="Fale um pouco sobre você">{{ usuario.descricao }}</textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-btn" onclick="closeProfileModal()"><i class="fas fa-times"></i> Cancelar</button>
+            <button class="save-btn" onclick="saveProfile()"><i class="fas fa-check"></i> Salvar</button>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+<!-- Modal de Curso -->
+{% comment %} <div class="modal" id="curso-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="curso-modal-title"><i class="fas fa-plus-circle"></i> Adicionar Curso</h3>
+            <button class="close-btn" onclick="closeCursoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="curso-nome"><i class="fas fa-graduation-cap"></i> Nome do curso</label>
+                <input type="text" id="curso-nome" placeholder="Ex: Engenharia de Software">
+            </div>
+            <div class="form-group">
+                <label for="curso-descricao"><i class="fas fa-align-left"></i> Descrição</label>
+                <textarea id="curso-descricao" placeholder="Descrição do curso"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="curso-data-inicio"><i class="far fa-calendar-alt"></i> Data de início</label>
+                    <input type="date" id="curso-data-inicio">
+                </div>
+                <div class="form-group">
+                    <label for="curso-data-fim"><i class="far fa-calendar-check"></i> Data de término</label>
+                    <input type="date" id="curso-data-fim">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-btn" onclick="closeCursoModal()"><i class="fas fa-times"></i> Cancelar</button>
+            <button class="save-btn" onclick="saveCurso()"><i class="fas fa-check"></i> Salvar</button>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+<!-- Loading Overlay -->
+{% comment %} <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <div class="toast-content">
+        <i class="fas fa-check-circle toast-icon success"></i>
+        <span class="toast-message" id="toast-message"></span>
+    </div>
+</div> {% endcomment %}
+
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
+<script src="{% static 'scripts/perfil.js' %}"></script>
 
 {% endblock %}
 
