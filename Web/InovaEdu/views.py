@@ -359,62 +359,6 @@ def gerenciar_cursos_ajax(request):
     return JsonResponse({'status': 'error', 'message': 'Método não permitido'}, status=400)
 
 
-@csrf_exempt
-def gerenciar_cursos_ajax(request):
-    email = request.session.get("usuario_email")
-    if not email:
-        return JsonResponse(
-            {"status": "error", "message": "Não autenticado"}, status=401
-        )
-
-    try:
-        usuario = get_object_or_404(Usuario, email=email)
-
-        if request.method == "GET":
-            cursos = Curso.objects.filter(usuario=usuario).values(
-                "idcurso", "nome_curso", "descricao_curso", "data_inicio", "data_final"
-            )
-            return JsonResponse(list(cursos), safe=False)
-
-        elif request.method == "POST":
-            data = json.loads(request.body)
-            curso = Curso.objects.create(
-                nome_curso=data["nome"],
-                descricao_curso=data.get("descricao", ""),
-                data_inicio=(
-                    data.get("data_inicio") if data.get("data_inicio") else None
-                ),
-                data_final=data.get("data_fim") if data.get("data_fim") else None,
-                usuario=usuario,
-            )
-            return JsonResponse({"status": "success", "id": curso.idcurso})
-
-        elif request.method == "PUT":
-            data = json.loads(request.body)
-            curso = get_object_or_404(Curso, idcurso=data["id"], usuario=usuario)
-            curso.nome_curso = data.get("nome", curso.nome_curso)
-            curso.descricao_curso = data.get("descricao", curso.descricao_curso)
-            curso.data_inicio = (
-                data.get("data_inicio")
-                if data.get("data_inicio")
-                else curso.data_inicio
-            )
-            curso.data_final = (
-                data.get("data_fim") if data.get("data_fim") else curso.data_final
-            )
-            curso.save()
-            return JsonResponse({"status": "success"})
-
-        elif request.method == "DELETE":
-            data = json.loads(request.body)
-            curso = get_object_or_404(Curso, idcurso=data["id"], usuario=usuario)
-            curso.delete()
-            return JsonResponse({"status": "success"})
-
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
-    return JsonResponse({"status": "error"}, status=400)
 
 
 def listar_projetos_ajax(request):
