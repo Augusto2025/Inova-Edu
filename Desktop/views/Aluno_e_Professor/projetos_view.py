@@ -48,7 +48,7 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         tela_turma = TurmasDesktopDashboard(
             master=self.janela, 
             id_curso=self.id_turma,    # ID que veio da tela de turmas
-            nome_curso=self.nome_turma # Nome que veio da tela de turmas
+            nome_curso=self.nome_turma, # Nome que veio da tela de turmas
         )
         tela_turma.pack(side="right", fill="both", expand=True)
 
@@ -107,6 +107,7 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         except Exception as e:
             from tkinter import messagebox
             messagebox.showerror("Erro", f"Erro ao abrir repositório: {e}")
+            print(f"ERRO CRÍTICO ao abrir repositório: {e}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("light")
