@@ -14,15 +14,15 @@ CORES = {
     "secundaria": "#004B91",     # Azul escuro
     "destaque": "#4cc9f0",       # Azul claro
     "sucesso": "#003568",        # azul botão
-    "aviso": "#ffd166",          # Amarelo
-    "perigo": "#ef476f",         # Rosa/vermelho
+    # "aviso": "#ffd166",          # Amarelo
+    # "perigo": "#ef476f",         # Rosa/vermelho
     "fundo": "#f5f9f4",          # Cinza muito claro
-    "card": "#f01414",            # Branco
+    # "card": "#f01414",            # Branco
     "texto_primario": "#212529", # Quase preto
     "texto_secundario": "#6c757d", # Cinza
-    "borda": "#dee2e6",           # Cinza claro
-    "mencao": "#1e88e5",           # Azul para menções
-    "mencao_fundo": "#e3f2fd"      # Fundo azul claro para menções
+    "borda": "#e6e5de",           # Cinza claro
+    # "mencao": "#1e88e5",           # Azul para menções
+    # "mencao_fundo": "#e3f2fd"      # Fundo azul claro para menções
 }
 
 class ForumApp:
@@ -76,7 +76,7 @@ class ForumApp:
     
     def build_header(self, parent):
         """Header estilizado"""
-        header = ctk.CTkFrame(parent, fg_color=CORES["primaria"], height=80, corner_radius=0)
+        header = ctk.CTkFrame(parent, fg_color=CORES["secundaria"], height=80, corner_radius=0)
         header.pack(fill="x")
         header.pack_propagate(False)
         
@@ -174,20 +174,20 @@ class ForumApp:
         self.nav_frame.pack_propagate(False)
         
         # Botão Voltar
-        self.back_button = ctk.CTkButton(
-            self.nav_frame,
-            text="← Voltar para tópicos",
-            width=140,
-            height=35,
-            fg_color="transparent",
-            hover_color=CORES["fundo"],
-            text_color=CORES["primaria"],
-            border_width=1,
-            border_color=CORES["primaria"],
-            font=ctk.CTkFont(size=13, weight="bold"),
-            corner_radius=20,
-            command=self.show_topics_view
-        )
+        # self.back_button = ctk.CTkButton(
+        #     self.nav_frame,
+        #     text="← Voltar para tópicos",
+        #     width=140,
+        #     height=35,
+        #     fg_color="transparent",
+        #     hover_color=CORES["fundo"],
+        #     text_color=CORES["primaria"],
+        #     border_width=1,
+        #     border_color=CORES["primaria"],
+        #     font=ctk.CTkFont(size=13, weight="bold"),
+        #     corner_radius=20,
+        #     command=self.show_topics_view
+        # )
         
         # ===== HEADER DO CONTEÚDO =====
         self.header_frame = ctk.CTkFrame(self.right_column, fg_color="transparent")
@@ -237,16 +237,16 @@ class ForumApp:
         self.content_frame.grid_columnconfigure(0, weight=1)
         
         # ===== BOTÃO NOVO TÓPICO =====
-        self.new_topic_btn = ctk.CTkButton(
-            self.right_column,
-            text="+ Novo Tópico",
-            height=45,
-            font=ctk.CTkFont(size=14, weight="bold"),
-            fg_color=CORES["sucesso"],
-            hover_color=CORES["secundaria"],
-            corner_radius=10,
-            command=self.criar_novo_topico
-        )
+        # self.new_topic_btn = ctk.CTkButton(
+        #     self.right_column,
+        #     text="+ Novo Tópico",
+        #     height=45,
+        #     font=ctk.CTkFont(size=14, weight="bold"),
+        #     fg_color=CORES["sucesso"],
+        #     hover_color=CORES["secundaria"],
+        #     corner_radius=10,
+        #     command=self.criar_novo_topico
+        # )
         
         # ===== ÁREA DE RESPOSTA =====
         self.reply_frame = ctk.CTkFrame(self.right_column, fg_color="transparent")
@@ -423,7 +423,7 @@ class ForumApp:
         
         # Atualizar header
         self.current_title.configure(text=f"📌 {forum['nome']}")
-        self.description_label.configure(text=forum["Descricao"])
+        self.description_label.configure(text=forum["descricao"])
         
         # Esconder botão voltar e badge
         self.back_button.pack_forget()
@@ -441,139 +441,139 @@ class ForumApp:
         self.load_forums_list()
     
     # ========== FUNÇÕES DOS TÓPICOS ==========
-    def load_topics(self):
-        """Carrega a lista de tópicos"""
-        forum = self.forums[self.current_forum_index]
-        self.topicos = buscar_topicos_db(forum["idforum"])
+    # def load_topics(self):
+    #     """Carrega a lista de tópicos"""
+    #     forum = self.forums[self.current_forum_index]
+    #     self.topicos = buscar_topicos_db(forum["idforum"])
         
-        # Limpar o conteúdo antes de carregar
-        self.clear_content()
+    #     # Limpar o conteúdo antes de carregar
+    #     self.clear_content()
         
-        if not self.topicos:
-            self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
-            return
+    #     if not self.topicos:
+    #         self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
+    #         return
         
-        for i, topic in enumerate(self.topicos):
-            self.create_topic_card(topic, i)
+    #     for i, topic in enumerate(self.topicos):
+    #         self.create_topic_card(topic, i)
     
-    def create_topic_card(self, topic, index):
-        """Cria um card de tópico com botões de editar e excluir"""
-        card = ctk.CTkFrame(
-            self.content_frame,
-            fg_color="white",
-            corner_radius=15,
-            border_width=1,
-            border_color=CORES["borda"]
-        )
-        card.pack(fill="x", pady=(0, 15))
+    # def create_topic_card(self, topic, index):
+    #     """Cria um card de tópico com botões de editar e excluir"""
+    #     card = ctk.CTkFrame(
+    #         self.content_frame,
+    #         fg_color="white",
+    #         corner_radius=15,
+    #         border_width=1,
+    #         border_color=CORES["borda"]
+    #     )
+    #     card.pack(fill="x", pady=(0, 15))
         
-        # Header do card
-        header = ctk.CTkFrame(card, fg_color="transparent")
-        header.pack(fill="x", padx=18, pady=(15, 10))
+    #     # Header do card
+    #     header = ctk.CTkFrame(card, fg_color="transparent")
+    #     header.pack(fill="x", padx=18, pady=(15, 10))
         
-        # Título
-        title_label = ctk.CTkLabel(
-            header,
-            text=f"💬 {topic['title']}",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color=CORES["texto_primario"]
-        )
-        title_label.pack(side="left")
+    #     # Título
+    #     title_label = ctk.CTkLabel(
+    #         header,
+    #         text=f"💬 {topic['title']}",
+    #         font=ctk.CTkFont(size=16, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     )
+    #     title_label.pack(side="left")
         
-        # Estatísticas
-        stats_frame = ctk.CTkFrame(header, fg_color="transparent")
-        stats_frame.pack(side="right")
+    #     # Estatísticas
+    #     stats_frame = ctk.CTkFrame(header, fg_color="transparent")
+    #     stats_frame.pack(side="right")
         
-        views_label = ctk.CTkLabel(
-            stats_frame,
-            text=f"👁️ {topic['views']}",
-            font=ctk.CTkFont(size=12),
-            text_color=CORES["texto_secundario"]
-        )
-        views_label.pack(side="left", padx=(0, 10))
+    #     views_label = ctk.CTkLabel(
+    #         stats_frame,
+    #         text=f"👁️ {topic['views']}",
+    #         font=ctk.CTkFont(size=12),
+    #         text_color=CORES["texto_secundario"]
+    #     )
+    #     views_label.pack(side="left", padx=(0, 10))
         
-        replies_label = ctk.CTkLabel(
-            stats_frame,
-            text=f"💬 {topic['replies']}",
-            font=ctk.CTkFont(size=12),
-            text_color=CORES["texto_secundario"]
-        )
-        replies_label.pack(side="left")
+    #     replies_label = ctk.CTkLabel(
+    #         stats_frame,
+    #         text=f"💬 {topic['replies']}",
+    #         font=ctk.CTkFont(size=12),
+    #         text_color=CORES["texto_secundario"]
+    #     )
+    #     replies_label.pack(side="left")
         
-        # Informações do autor
-        info_frame = ctk.CTkFrame(card, fg_color="transparent")
-        info_frame.pack(fill="x", padx=18, pady=(0, 10))
+    #     # Informações do autor
+    #     info_frame = ctk.CTkFrame(card, fg_color="transparent")
+    #     info_frame.pack(fill="x", padx=18, pady=(0, 10))
         
-        author_label = ctk.CTkLabel(
-            info_frame,
-            text=f"👤 {topic['author']}  •  📅 {topic['created']}",
-            font=ctk.CTkFont(size=12),
-            text_color=CORES["texto_secundario"]
-        )
-        author_label.pack(side="left")
+    #     author_label = ctk.CTkLabel(
+    #         info_frame,
+    #         text=f"👤 {topic['author']}  •  📅 {topic['created']}",
+    #         font=ctk.CTkFont(size=12),
+    #         text_color=CORES["texto_secundario"]
+    #     )
+    #     author_label.pack(side="left")
         
-        # Badge de última mensagem
-        last_msg_frame = ctk.CTkFrame(card, fg_color=CORES["fundo"], corner_radius=8)
-        last_msg_frame.pack(fill="x", padx=18, pady=(0, 15))
+    #     # Badge de última mensagem
+    #     last_msg_frame = ctk.CTkFrame(card, fg_color=CORES["fundo"], corner_radius=8)
+    #     last_msg_frame.pack(fill="x", padx=18, pady=(0, 15))
         
-        last_msg_label = ctk.CTkLabel(
-            last_msg_frame,
-            text=f"🕒 Última mensagem: {topic['last_message']}",
-            font=ctk.CTkFont(size=12, slant="italic"),
-            text_color=CORES["texto_secundario"]
-        )
-        last_msg_label.pack(anchor="w", padx=12, pady=8)
+    #     last_msg_label = ctk.CTkLabel(
+    #         last_msg_frame,
+    #         text=f"🕒 Última mensagem: {topic['last_message']}",
+    #         font=ctk.CTkFont(size=12, slant="italic"),
+    #         text_color=CORES["texto_secundario"]
+    #     )
+    #     last_msg_label.pack(anchor="w", padx=12, pady=8)
         
-        # Botões de ação
-        actions_frame = ctk.CTkFrame(card, fg_color="transparent")
-        actions_frame.pack(fill="x", padx=18, pady=(0, 15))
+    #     # Botões de ação
+    #     actions_frame = ctk.CTkFrame(card, fg_color="transparent")
+    #     actions_frame.pack(fill="x", padx=18, pady=(0, 15))
         
-        # Botão Ver Tópico
-        view_btn = ctk.CTkButton(
-            actions_frame,
-            text="Ver Tópico",
-            width=100,
-            height=32,
-            fg_color=CORES["primaria"],
-            hover_color=CORES["secundaria"],
-            font=ctk.CTkFont(size=12, weight="bold"),
-            corner_radius=8,
-            command=lambda: self.load_topic(index)
-        )
-        view_btn.pack(side="left", padx=(0, 10))
+    #     # Botão Ver Tópico
+    #     view_btn = ctk.CTkButton(
+    #         actions_frame,
+    #         text="Ver Tópico",
+    #         width=100,
+    #         height=32,
+    #         fg_color=CORES["primaria"],
+    #         hover_color=CORES["secundaria"],
+    #         font=ctk.CTkFont(size=12, weight="bold"),
+    #         corner_radius=8,
+    #         command=lambda: self.load_topic(index)
+    #     )
+    #     view_btn.pack(side="left", padx=(0, 10))
         
-        # Botões de edição
-        edit_btn = ctk.CTkButton(
-            actions_frame,
-            text="✏️ Editar",
-            width=80,
-            height=32,
-            fg_color="transparent",
-            hover_color=CORES["fundo"],
-            text_color=CORES["texto_secundario"],
-            border_width=1,
-            border_color=CORES["borda"],
-            corner_radius=8,
-            font=ctk.CTkFont(size=12),
-            command=lambda idx=index: self.editar_topico(idx)
-        )
-        edit_btn.pack(side="left", padx=(0, 5))
+    #     # Botões de edição
+    #     edit_btn = ctk.CTkButton(
+    #         actions_frame,
+    #         text="✏️ Editar",
+    #         width=80,
+    #         height=32,
+    #         fg_color="transparent",
+    #         hover_color=CORES["fundo"],
+    #         text_color=CORES["texto_secundario"],
+    #         border_width=1,
+    #         border_color=CORES["borda"],
+    #         corner_radius=8,
+    #         font=ctk.CTkFont(size=12),
+    #         command=lambda idx=index: self.editar_topico(idx)
+    #     )
+    #     edit_btn.pack(side="left", padx=(0, 5))
         
-        delete_btn = ctk.CTkButton(
-            actions_frame,
-            text="🗑️ Excluir",
-            width=80,
-            height=32,
-            fg_color="transparent",
-            hover_color="#fee2e2",
-            text_color=CORES["perigo"],
-            border_width=1,
-            border_color=CORES["borda"],
-            corner_radius=8,
-            font=ctk.CTkFont(size=12),
-            command=lambda idx=index: self.excluir_topico(idx)
-        )
-        delete_btn.pack(side="left")
+    #     delete_btn = ctk.CTkButton(
+    #         actions_frame,
+    #         text="🗑️ Excluir",
+    #         width=80,
+    #         height=32,
+    #         fg_color="transparent",
+    #         hover_color="#fee2e2",
+    #         text_color=CORES["perigo"],
+    #         border_width=1,
+    #         border_color=CORES["borda"],
+    #         corner_radius=8,
+    #         font=ctk.CTkFont(size=12),
+    #         command=lambda idx=index: self.excluir_topico(idx)
+    #     )
+    #     delete_btn.pack(side="left")
     
     # ========== FUNÇÕES DAS MENSAGENS ==========
     def load_topic(self, index):
@@ -965,119 +965,119 @@ class ForumApp:
 
     # 561111111111111111111111111111111111111111111111666666666666666666666666666666666666666666666666666666
          
-    def editar_forum(self, index):
-        """Abre diálogo para editar fórum"""
-        forum = self.forums[index]
+    # def editar_forum(self, index):
+    #     """Abre diálogo para editar fórum"""
+    #     forum = self.forums[index]
         
-        dialog = ctk.CTkToplevel(self.master)
-        dialog.title("Editar Fórum")
-        dialog.geometry("500x500")
-        dialog.grab_set()
-        dialog.focus_force()
-        dialog.resizable(False, False)
+    #     dialog = ctk.CTkToplevel(self.master)
+    #     dialog.title("Editar Fórum")
+    #     dialog.geometry("500x500")
+    #     dialog.grab_set()
+    #     dialog.focus_force()
+    #     dialog.resizable(False, False)
         
-        # Centralizar
-        dialog.update_idletasks()
-        x = self.master.winfo_x() + (self.master.winfo_width() // 2) - (500 // 2)
-        y = self.master.winfo_y() + (self.master.winfo_height() // 2) - (500 // 2)
-        dialog.geometry(f"+{x}+{y}")
+    #     # Centralizar
+    #     dialog.update_idletasks()
+    #     x = self.master.winfo_x() + (self.master.winfo_width() // 2) - (500 // 2)
+    #     y = self.master.winfo_y() + (self.master.winfo_height() // 2) - (500 // 2)
+    #     dialog.geometry(f"+{x}+{y}")
         
-        # Conteúdo
-        content = ctk.CTkFrame(dialog, fg_color="white")
-        content.pack(fill="both", expand=True, padx=25, pady=25)
+    #     # Conteúdo
+    #     content = ctk.CTkFrame(dialog, fg_color="white")
+    #     content.pack(fill="both", expand=True, padx=25, pady=25)
         
-        ctk.CTkLabel(
-            content,
-            text="✏️ Editar Fórum",
-            font=ctk.CTkFont(size=22, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(pady=(0, 25))
+    #     ctk.CTkLabel(
+    #         content,
+    #         text="✏️ Editar Fórum",
+    #         font=ctk.CTkFont(size=22, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(pady=(0, 25))
         
-        # Nome
-        ctk.CTkLabel(
-            content,
-            text="Nome do Fórum:",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(anchor="w", pady=(0, 5))
+    #     # Nome
+    #     ctk.CTkLabel(
+    #         content,
+    #         text="Nome do Fórum:",
+    #         font=ctk.CTkFont(size=14, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(anchor="w", pady=(0, 5))
         
-        nome_entry = ctk.CTkEntry(content, height=40, corner_radius=8)
-        nome_entry.insert(0, forum["nome"])
-        nome_entry.pack(fill="x", pady=(0, 20))
+    #     nome_entry = ctk.CTkEntry(content, height=40, corner_radius=8)
+    #     nome_entry.insert(0, forum["nome"])
+    #     nome_entry.pack(fill="x", pady=(0, 20))
         
-        # Descrição
-        ctk.CTkLabel(
-            content,
-            text="Descrição:",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(anchor="w", pady=(0, 5))
+    #     # Descrição
+    #     ctk.CTkLabel(
+    #         content,
+    #         text="Descrição:",
+    #         font=ctk.CTkFont(size=14, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(anchor="w", pady=(0, 5))
         
-        desc_entry = ctk.CTkTextbox(content, height=120, corner_radius=8)
-        desc_entry.insert("1.0", forum["descricao"])
-        desc_entry.pack(fill="x", pady=(0, 20))
+    #     desc_entry = ctk.CTkTextbox(content, height=120, corner_radius=8)
+    #     desc_entry.insert("1.0", forum["descricao"])
+    #     desc_entry.pack(fill="x", pady=(0, 20))
         
-        # Ícone
-        ctk.CTkLabel(
-            content,
-            text="Ícone:",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(anchor="w", pady=(0, 5))
+    #     # Ícone
+    #     ctk.CTkLabel(
+    #         content,
+    #         text="Ícone:",
+    #         font=ctk.CTkFont(size=14, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(anchor="w", pady=(0, 5))
         
-        icon_entry = ctk.CTkEntry(content, height=40, corner_radius=8)
-        icon_entry.insert(0, forum.get("icon", "📁"))
-        icon_entry.pack(fill="x", pady=(0, 25))
+    #     icon_entry = ctk.CTkEntry(content, height=40, corner_radius=8)
+    #     icon_entry.insert(0, forum.get("icon", "📁"))
+    #     icon_entry.pack(fill="x", pady=(0, 25))
         
-        # Botões
-        btn_frame = ctk.CTkFrame(content, fg_color="transparent")
-        btn_frame.pack(fill="x", pady=(10, 0))
+    #     # Botões
+    #     btn_frame = ctk.CTkFrame(content, fg_color="transparent")
+    #     btn_frame.pack(fill="x", pady=(10, 0))
         
-        cancelar_btn = ctk.CTkButton(
-            btn_frame,
-            text="Cancelar",
-            width=120,
-            height=45,
-            fg_color="transparent",
-            hover_color=CORES["fundo"],
-            text_color=CORES["texto_secundario"],
-            border_width=1,
-            border_color=CORES["borda"],
-            corner_radius=8,
-            font=ctk.CTkFont(size=14),
-            command=dialog.destroy
-        )
-        cancelar_btn.pack(side="left", padx=(0, 10))
+    #     cancelar_btn = ctk.CTkButton(
+    #         btn_frame,
+    #         text="Cancelar",
+    #         width=120,
+    #         height=45,
+    #         fg_color="transparent",
+    #         hover_color=CORES["fundo"],
+    #         text_color=CORES["texto_secundario"],
+    #         border_width=1,
+    #         border_color=CORES["borda"],
+    #         corner_radius=8,
+    #         font=ctk.CTkFont(size=14),
+    #         command=dialog.destroy
+    #     )
+    #     cancelar_btn.pack(side="left", padx=(0, 10))
         
-        def salvar():
-            nome = nome_entry.get().strip()
-            desc = desc_entry.get("1.0", "end-1c").strip()
-            icon = icon_entry.get().strip() or "📁"
+    #     def salvar():
+    #         nome = nome_entry.get().strip()
+    #         desc = desc_entry.get("1.0", "end-1c").strip()
+    #         icon = icon_entry.get().strip() or "📁"
 
-            if not nome:
-                messagebox.showwarning("Atenção", "Preencha o nome do fórum.")
-                return
+    #         if not nome:
+    #             messagebox.showwarning("Atenção", "Preencha o nome do fórum.")
+    #             return
 
-            usuario_id = self.usuario_logado_id  # ou o id do usuário logado
+    #         usuario_id = self.usuario_logado_id  # ou o id do usuário logado
 
-            criar_forum_db(nome, usuario_id)
+    #         criar_forum_db(nome, usuario_id)
 
-            self.load_forums_list()
-            dialog.destroy()
+    #         self.load_forums_list()
+    #         dialog.destroy()
         
-        salvar_btn = ctk.CTkButton(
-            btn_frame,
-            text="Salvar Alterações",
-            width=160,
-            height=45,
-            fg_color=CORES["primaria"],
-            hover_color=CORES["secundaria"],
-            text_color="white",
-            corner_radius=8,
-            font=ctk.CTkFont(size=14, weight="bold"),
-            command=salvar
-        )
-        salvar_btn.pack(side="right")
+    #     salvar_btn = ctk.CTkButton(
+    #         btn_frame,
+    #         text="Salvar Alterações",
+    #         width=160,
+    #         height=45,
+    #         fg_color=CORES["primaria"],
+    #         hover_color=CORES["secundaria"],
+    #         text_color="white",
+    #         corner_radius=8,
+    #         font=ctk.CTkFont(size=14, weight="bold"),
+    #         command=salvar
+    #     )
+    #     salvar_btn.pack(side="right")
     
     def excluir_forum(self, index):
         """Confirma e exclui fórum"""
@@ -1119,283 +1119,283 @@ class ForumApp:
     def criar_novo_topico(self):
             """Janela moderna para criar novo tópico"""
 
-            forum = self.forums[self.current_forum_index]
+            # forum = self.forums[self.current_forum_index]
 
-            dialog = ctk.CTkToplevel(self.master)
-            dialog.title("Novo Tópico")
-            dialog.geometry("620x620")
-            dialog.resizable(False, False)
-            dialog.grab_set()
-            dialog.focus_force()
+            # dialog = ctk.CTkToplevel(self.master)
+            # dialog.title("Novo Tópico")
+            # dialog.geometry("620x620")
+            # dialog.resizable(False, False)
+            # dialog.grab_set()
+            # dialog.focus_force()
 
-            # Centralizar
-            dialog.update_idletasks()
-            x = self.master.winfo_x() + (self.master.winfo_width() // 2) - 310
-            y = self.master.winfo_y() + (self.master.winfo_height() // 2) - 310
-            dialog.geometry(f"+{x}+{y}")
+            # # Centralizar
+            # dialog.update_idletasks()
+            # x = self.master.winfo_x() + (self.master.winfo_width() // 2) - 310
+            # y = self.master.winfo_y() + (self.master.winfo_height() // 2) - 310
+            # dialog.geometry(f"+{x}+{y}")
 
-            container = ctk.CTkFrame(
-                dialog,
-                fg_color="white",
-                corner_radius=15,
-                border_width=1,
-                border_color=CORES["borda"]
-            )
-            container.pack(fill="both", expand=True, padx=25, pady=25)
+            # container = ctk.CTkFrame(
+            #     dialog,
+            #     fg_color="white",
+            #     corner_radius=15,
+            #     border_width=1,
+            #     border_color=CORES["borda"]
+            # )
+            # container.pack(fill="both", expand=True, padx=25, pady=25)
 
             # Título
-            ctk.CTkLabel(
-                container,
-                text=f"💬 Novo Tópico - {forum['name']}",
-                font=ctk.CTkFont(size=22, weight="bold"),
-                text_color=CORES["texto_primario"]
-            ).pack(pady=(10, 25))
+            # ctk.CTkLabel(
+            #     container,
+            #     text=f"💬 Novo Tópico - {forum['name']}",
+            #     font=ctk.CTkFont(size=22, weight="bold"),
+            #     text_color=CORES["texto_primario"]
+            # ).pack(pady=(10, 25))
 
-            form = ctk.CTkFrame(container, fg_color="transparent")
-            form.pack(fill="both", expand=True, padx=10)
+            # form = ctk.CTkFrame(container, fg_color="transparent")
+            # form.pack(fill="both", expand=True, padx=10)
 
-            # Campo título
-            ctk.CTkLabel(
-                form,
-                text="Título do tópico",
-                font=ctk.CTkFont(size=14, weight="bold"),
-                text_color=CORES["texto_primario"]
-            ).pack(anchor="w")
+            # # Campo título
+            # ctk.CTkLabel(
+            #     form,
+            #     text="Título do tópico",
+            #     font=ctk.CTkFont(size=14, weight="bold"),
+            #     text_color=CORES["texto_primario"]
+            # ).pack(anchor="w")
 
-            titulo_entry = ctk.CTkEntry(
-                form,
-                height=42,
-                corner_radius=8,
-                border_color=CORES["borda"]
-            )
-            titulo_entry.pack(fill="x", pady=(5, 18))
+            # titulo_entry = ctk.CTkEntry(
+            #     form,
+            #     height=42,
+            #     corner_radius=8,
+            #     border_color=CORES["borda"]
+            # )
+            # titulo_entry.pack(fill="x", pady=(5, 18))
 
             # Mensagem
-            ctk.CTkLabel(
-                form,
-                text="Mensagem",
-                font=ctk.CTkFont(size=14, weight="bold"),
-                text_color=CORES["texto_primario"]
-            ).pack(anchor="w")
+            # ctk.CTkLabel(
+            #     form,
+            #     text="Mensagem",
+            #     font=ctk.CTkFont(size=14, weight="bold"),
+            #     text_color=CORES["texto_primario"]
+            # ).pack(anchor="w")
 
-            msg_entry = ctk.CTkTextbox(
-                form,
-                height=160,
-                corner_radius=8,
-                border_color=CORES["borda"]
-            )
-            msg_entry.pack(fill="x", pady=(5, 18))
+            # msg_entry = ctk.CTkTextbox(
+            #     form,
+            #     height=160,
+            #     corner_radius=8,
+            #     border_color=CORES["borda"]
+            # )
+            # msg_entry.pack(fill="x", pady=(5, 18))
 
             # Autor
-            ctk.CTkLabel(
-                form,
-                text="Autor (opcional)",
-                font=ctk.CTkFont(size=14, weight="bold"),
-                text_color=CORES["texto_primario"]
-            ).pack(anchor="w")
+            # ctk.CTkLabel(
+            #     form,
+            #     text="Autor (opcional)",
+            #     font=ctk.CTkFont(size=14, weight="bold"),
+            #     text_color=CORES["texto_primario"]
+            # ).pack(anchor="w")
 
-            autor_entry = ctk.CTkEntry(
-                form,
-                placeholder_text="Deixe vazio para usar 'Você'",
-                height=42,
-                corner_radius=8,
-                border_color=CORES["borda"]
-            )
-            autor_entry.pack(fill="x", pady=(5, 25))
+            # autor_entry = ctk.CTkEntry(
+            #     form,
+            #     placeholder_text="Deixe vazio para usar 'Você'",
+            #     height=42,
+            #     corner_radius=8,
+            #     border_color=CORES["borda"]
+            # )
+            # autor_entry.pack(fill="x", pady=(5, 25))
 
-            # Botões
-            btn_area = ctk.CTkFrame(container, fg_color="transparent")
-            btn_area.pack(fill="x", pady=(10, 5), padx=10)
+            # # Botões
+            # btn_area = ctk.CTkFrame(container, fg_color="transparent")
+            # btn_area.pack(fill="x", pady=(10, 5), padx=10)
 
-            cancelar_btn = ctk.CTkButton(
-                btn_area,
-                text="Cancelar",
-                width=140,
-                height=45,
-                fg_color="#f1f1f1",
-                hover_color="#e5e5e5",
-                text_color=CORES["texto_secundario"],
-                border_width=1,
-                border_color=CORES["borda"],
-                corner_radius=10,
-                command=dialog.destroy
-            )
-            cancelar_btn.pack(side="left")
+            # cancelar_btn = ctk.CTkButton(
+            #     btn_area,
+            #     text="Cancelar",
+            #     width=140,
+            #     height=45,
+            #     fg_color="#f1f1f1",
+            #     hover_color="#e5e5e5",
+            #     text_color=CORES["texto_secundario"],
+            #     border_width=1,
+            #     border_color=CORES["borda"],
+            #     corner_radius=10,
+            #     command=dialog.destroy
+            # )
+            # cancelar_btn.pack(side="left")
 
-            def salvar():
-                titulo = titulo_entry.get().strip()
-                mensagem = msg_entry.get("1.0", "end-1c").strip()
-                autor = autor_entry.get().strip() or "Você"
+            # def salvar():
+            #     titulo = titulo_entry.get().strip()
+            #     mensagem = msg_entry.get("1.0", "end-1c").strip()
+            #     autor = autor_entry.get().strip() or "Você"
 
-                if not titulo or not mensagem:
-                    messagebox.showwarning("Atenção", "Preencha o título e a mensagem.")
-                    return
+            #     if not titulo or not mensagem:
+            #         messagebox.showwarning("Atenção", "Preencha o título e a mensagem.")
+            #         return
 
-                now = datetime.now()
+            #     now = datetime.now()
 
-                novo_topico = {
-                    "title": titulo,
-                    "author": autor,
-                    "created": now.strftime("%d/%m/%Y"),
-                    "replies": 0,
-                    "views": 0,
-                    "last_message": now.strftime("%H:%M"),
-                    "messages": [
-                        {"author": autor, "message": mensagem, "time": now.strftime("%H:%M")}
-                    ]
-                }
+            #     novo_topico = {
+            #         "title": titulo,
+            #         "author": autor,
+            #         "created": now.strftime("%d/%m/%Y"),
+            #         "replies": 0,
+            #         "views": 0,
+            #         "last_message": now.strftime("%H:%M"),
+            #         "messages": [
+            #             {"author": autor, "message": mensagem, "time": now.strftime("%H:%M")}
+            #         ]
+            #     }
 
-                self.forums[self.current_forum_index]["topics"].append(novo_topico)
-                self.load_forum(self.current_forum_index)
+            #     self.forums[self.current_forum_index]["topics"].append(novo_topico)
+            #     self.load_forum(self.current_forum_index)
 
-                dialog.destroy()
-                messagebox.showinfo("Sucesso", "Tópico criado com sucesso!")
+            #     dialog.destroy()
+            #     messagebox.showinfo("Sucesso", "Tópico criado com sucesso!")
 
-            salvar_btn = ctk.CTkButton(
-                btn_area,
-                text="Criar Tópico",
-                width=190,
-                height=50,
-                fg_color=CORES["sucesso"],
-                hover_color="#05b586",
-                text_color="white",
-                corner_radius=12,
-                font=ctk.CTkFont(size=15, weight="bold"),
-                command=salvar
-            )
-            salvar_btn.pack(side="right")
+            # salvar_btn = ctk.CTkButton(
+            #     btn_area,
+            #     text="Criar Tópico",
+            #     width=190,
+            #     height=50,
+            #     fg_color=CORES["sucesso"],
+            #     hover_color="#05b586",
+            #     text_color="white",
+            #     corner_radius=12,
+            #     font=ctk.CTkFont(size=15, weight="bold"),
+            #     command=salvar
+            # )
+            # salvar_btn.pack(side="right")
 
     
-    def editar_topico(self, index):
-        """Janela moderna para editar tópico"""
+    # def editar_topico(self, index):
+    #     """Janela moderna para editar tópico"""
 
-        topic = self.forums[self.current_forum_index]["topics"][index]
+    #     topic = self.forums[self.current_forum_index]["topics"][index]
 
-        dialog = ctk.CTkToplevel(self.master)
-        dialog.title("Editar Tópico")
-        dialog.geometry("520x320")
-        dialog.resizable(False, False)
-        dialog.grab_set()
-        dialog.focus_force()
+    #     dialog = ctk.CTkToplevel(self.master)
+    #     dialog.title("Editar Tópico")
+    #     dialog.geometry("520x320")
+    #     dialog.resizable(False, False)
+    #     dialog.grab_set()
+    #     dialog.focus_force()
 
-        dialog.update_idletasks()
-        x = self.master.winfo_x() + (self.master.winfo_width() // 2) - 260
-        y = self.master.winfo_y() + (self.master.winfo_height() // 2) - 160
-        dialog.geometry(f"+{x}+{y}")
+    #     dialog.update_idletasks()
+    #     x = self.master.winfo_x() + (self.master.winfo_width() // 2) - 260
+    #     y = self.master.winfo_y() + (self.master.winfo_height() // 2) - 160
+    #     dialog.geometry(f"+{x}+{y}")
 
-        container = ctk.CTkFrame(
-            dialog,
-            fg_color="white",
-            corner_radius=15,
-            border_width=1,
-            border_color=CORES["borda"]
-        )
-        container.pack(fill="both", expand=True, padx=25, pady=25)
+    #     container = ctk.CTkFrame(
+    #         dialog,
+    #         fg_color="white",
+    #         corner_radius=15,
+    #         border_width=1,
+    #         border_color=CORES["borda"]
+    #     )
+    #     container.pack(fill="both", expand=True, padx=25, pady=25)
 
-        ctk.CTkLabel(
-            container,
-            text="✏️ Editar Tópico",
-            font=ctk.CTkFont(size=22, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(pady=(10, 25))
+    #     ctk.CTkLabel(
+    #         container,
+    #         text="✏️ Editar Tópico",
+    #         font=ctk.CTkFont(size=22, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(pady=(10, 25))
 
-        ctk.CTkLabel(
-            container,
-            text="Novo título",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color=CORES["texto_primario"]
-        ).pack(anchor="w")
+    #     ctk.CTkLabel(
+    #         container,
+    #         text="Novo título",
+    #         font=ctk.CTkFont(size=14, weight="bold"),
+    #         text_color=CORES["texto_primario"]
+    #     ).pack(anchor="w")
 
-        titulo_entry = ctk.CTkEntry(
-            container,
-            height=42,
-            corner_radius=8,
-            border_color=CORES["borda"]
-        )
-        titulo_entry.insert(0, topic["title"])
-        titulo_entry.pack(fill="x", pady=(5, 25))
+    #     titulo_entry = ctk.CTkEntry(
+    #         container,
+    #         height=42,
+    #         corner_radius=8,
+    #         border_color=CORES["borda"]
+    #     )
+    #     titulo_entry.insert(0, topic["title"])
+    #     titulo_entry.pack(fill="x", pady=(5, 25))
 
-        btn_area = ctk.CTkFrame(container, fg_color="transparent")
-        btn_area.pack(fill="x", pady=(10, 5))
+    #     btn_area = ctk.CTkFrame(container, fg_color="transparent")
+    #     btn_area.pack(fill="x", pady=(10, 5))
 
-        cancelar_btn = ctk.CTkButton(
-            btn_area,
-            text="Cancelar",
-            width=140,
-            height=45,
-            fg_color="#f1f1f1",
-            hover_color="#e5e5e5",
-            text_color=CORES["texto_secundario"],
-            border_width=1,
-            border_color=CORES["borda"],
-            corner_radius=10,
-            command=dialog.destroy
-        )
-        cancelar_btn.pack(side="left")
+    #     cancelar_btn = ctk.CTkButton(
+    #         btn_area,
+    #         text="Cancelar",
+    #         width=140,
+    #         height=45,
+    #         fg_color="#f1f1f1",
+    #         hover_color="#e5e5e5",
+    #         text_color=CORES["texto_secundario"],
+    #         border_width=1,
+    #         border_color=CORES["borda"],
+    #         corner_radius=10,
+    #         command=dialog.destroy
+    #     )
+    #     cancelar_btn.pack(side="left")
 
-        def salvar():
-            titulo = titulo_entry.get().strip()
+    #     def salvar():
+    #         titulo = titulo_entry.get().strip()
 
-            if not titulo:
-                messagebox.showwarning("Atenção", "O título não pode estar vazio.")
-                return
+    #         if not titulo:
+    #             messagebox.showwarning("Atenção", "O título não pode estar vazio.")
+    #             return
 
-            self.forums[self.current_forum_index]["topics"][index]["title"] = titulo
+    #         self.forums[self.current_forum_index]["topics"][index]["title"] = titulo
 
-            if self.view_mode == "messages" and index == self.current_topic_index:
-                self.current_title.configure(text=f"💬 {titulo}")
+    #         if self.view_mode == "messages" and index == self.current_topic_index:
+    #             self.current_title.configure(text=f"💬 {titulo}")
 
-            self.load_topics()
-            dialog.destroy()
-            messagebox.showinfo("Sucesso", "Tópico atualizado!")
+    #         self.load_topics()
+    #         dialog.destroy()
+    #         messagebox.showinfo("Sucesso", "Tópico atualizado!")
 
-        salvar_btn = ctk.CTkButton(
-            btn_area,
-            text="Salvar Alterações",
-            width=190,
-            height=50,
-            fg_color=CORES["primaria"],
-            hover_color=CORES["secundaria"],
-            text_color="white",
-            corner_radius=12,
-            font=ctk.CTkFont(size=15, weight="bold"),
-            command=salvar
-        )
-        salvar_btn.pack(side="right")
+    #     salvar_btn = ctk.CTkButton(
+    #         btn_area,
+    #         text="Salvar Alterações",
+    #         width=190,
+    #         height=50,
+    #         fg_color=CORES["primaria"],
+    #         hover_color=CORES["secundaria"],
+    #         text_color="white",
+    #         corner_radius=12,
+    #         font=ctk.CTkFont(size=15, weight="bold"),
+    #         command=salvar
+    #     )
+    #     salvar_btn.pack(side="right")
 
     # 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-    def excluir_topico(self, index):
-        """Confirma e exclui tópico"""
-        topic = self.forums[self.current_forum_index]["topics"][index]
+    # def excluir_topico(self, index):
+    #     """Confirma e exclui tópico"""
+    #     topic = self.forums[self.current_forum_index]["topics"][index]
         
-        resposta = messagebox.askyesno(
-            "Confirmar Exclusão",
-            f"Tem certeza que deseja excluir o tópico '{topic['title']}'?\n\nTodas as mensagens serão perdidas!"
-        )
+    #     resposta = messagebox.askyesno(
+    #         "Confirmar Exclusão",
+    #         f"Tem certeza que deseja excluir o tópico '{topic['title']}'?\n\nTodas as mensagens serão perdidas!"
+    #     )
         
-        if resposta:
-            # Remover tópico
-            del self.forums[self.current_forum_index]["topics"][index]
+    #     if resposta:
+    #         # Remover tópico
+    #         del self.forums[self.current_forum_index]["topics"][index]
             
-            # ATUALIZAÇÃO EM TEMPO REAL
-            self.clear_content()
+    #         # ATUALIZAÇÃO EM TEMPO REAL
+    #         self.clear_content()
             
-            # Se estava visualizando este tópico, voltar para lista
-            if self.view_mode == "messages" and index == self.current_topic_index:
-                self.show_topics_view()
-            else:
-                # Recarregar a lista de tópicos
-                self.load_topics()
+    #         # Se estava visualizando este tópico, voltar para lista
+    #         if self.view_mode == "messages" and index == self.current_topic_index:
+    #             self.show_topics_view()
+    #         else:
+    #             # Recarregar a lista de tópicos
+    #             self.load_topics()
             
-            # Atualizar contador no card do fórum
-            self.load_forums_list()
+    #         # Atualizar contador no card do fórum
+    #         self.load_forums_list()
             
-            # Verificar se ainda há tópicos
-            forum_atual = self.forums[self.current_forum_index]
-            if not forum_atual["topics"]:
-                self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
+    #         # Verificar se ainda há tópicos
+    #         forum_atual = self.forums[self.current_forum_index]
+    #         if not forum_atual["topics"]:
+    #             self.show_empty_state("📭 Nenhum tópico ainda", "Seja o primeiro a criar um tópico!")
             
-            messagebox.showinfo("Sucesso", "Tópico excluído com sucesso!")
+    #         messagebox.showinfo("Sucesso", "Tópico excluído com sucesso!")
     
     def responder_mensagem(self, mensagem):
         """Preenche o campo de resposta com uma menção"""
