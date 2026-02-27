@@ -166,7 +166,7 @@ header > div {
 .container {
     max-width: 1000px;  /* Reduzido de 1200px */
     margin: 0 auto;
-    padding: 10px;      /* Reduzido de 20px */
+    padding: 30px;      /* Reduzido de 20px */
 }
 
 /* -------------------- PROFILE CARD (MAIS COMPACTO) -------------------- */
@@ -177,6 +177,7 @@ header > div {
     margin-bottom: 15px;     /* Reduzido de 30px */
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);  /* Sombra mais suave */
     animation: slideIn 0.5s ease;
+    position: relative;
 }
 
 @keyframes slideIn {
@@ -276,7 +277,7 @@ header > div {
 }
 
 .edit-btn {
-    background: var(--azul-Senac);
+    background: #28a745;
     color: white;
     border: none;
     padding: 8px 20px;       /* Reduzido de 12px 30px */
@@ -768,4 +769,24 @@ header > div {
     .repos-grid {
         grid-template-columns: 1fr;  /* Um card por linha em mobile */
     }
+}
+
+
+.edit-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    margin-top: 85px;
+}
+
+.Entrar {
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    cursor: pointer;
+    width: 80px;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    margin: 5%;
+    margin-left: 35%;
 }

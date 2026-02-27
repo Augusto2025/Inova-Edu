@@ -93,7 +93,7 @@
         {% for projeto in projetos %}
         <div class="repo-card">
             <div class="repo-icon">
-                <i class="fas fa-code-branch"></i>
+                {#  <i class="fas fa-code-branch"></i>  #}
             </div>
             <h3>{{ projeto.nome_projeto }}</h3>
             <p class="repo-turma">
@@ -117,8 +117,9 @@
             </p>
             {% if projeto.caminho_do_arquivo %}
             <p class="repo-file">
-                <i class="fas fa-file"></i> 
-                Arquivo: {{ projeto.caminho_do_arquivo }}
+                {#  <i class="fas fa-file"></i>   #}
+                <button class="Entrar">Entrar</button>
+                
             </p>
             {% endif %}
         </div>
