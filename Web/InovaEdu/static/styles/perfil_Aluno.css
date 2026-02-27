@@ -1,119 +1,39 @@
-/* Importando a fonte Roboto do header */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-/* -------------------- VARIÁVEIS -------------------- */
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
-    --azul-Senac: #004A8D;
-    --cinza-Senac: #D9D9D9;
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFFFFF;
+    --azul-Senac:#004A8D;
+    --cinza-Senac:#E9E9E9;
+    --cinza-claro:#F5F5F5;
+    --preto:#222;
+    --sombra: 0 3px 10px rgba(0,0,0,0.12);
 }
 
-/* -------------------- RESET -------------------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
-    font-family: "Roboto", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    background-image: url("../img/Fundo.png"); 
-    /* padding-top: 80px;
-    padding-bottom: 60px; */
-    position: relative;
+    background-color: var(--cinza-claro);
 }
 
-/* -------------------- HEADER -------------------- */
-/* header {
+/* --------- CONTEÚDO PRINCIPAL --------- */
+
+main {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 80px;
-    padding: 0px 10px;
-    background-color: var(--azul-Senac);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    overflow: hidden;
-    box-sizing: border-box;
-} */
-
-.logo_e_texto {
-    align-items: center;
-    display: flex;
-}
-
-/* header a {
-    display: flex;
-    text-decoration: none;
-    color: var(--branco-Senac);
-} */
-
-/* .logo {
-    width: 50px;
-    height: 50px;
-    margin: 10px;
-    flex-shrink: 0;
-}
-
-.texto_InovaEdu {
-    margin: 10px;
-    color: var(--branco-Senac);
-    font-size: 20px;
-    font-weight: 400;
-    width: 140px;
-}
-
-.Nome_Usu {
-    color: var(--branco-Senac);
-}
-
-.Paginas {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    width: auto;
-    font-size: 16px;
-    gap: 50px;
+    justify-self: center;
+    margin: 40px 0 80px 0;
+    min-height: calc(80vh - 90px);
 }
 
-.Paginas a {
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
+/* --------- CONTAINER --------- */
 
-.Paginas a:hover {
-    border-bottom: solid;
-    border-bottom-color: var(--laranja-Senac);
-}
-
-.sair {
-    color: var(--branco-Senac);
-    margin-left: 10px;
-}
-
-.hamburger {
-    display: none;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    margin-left: 8px;
-    align-items: center;
-    justify-content: center;
-    color: var(--branco-Senac);
-}
-
-.hamburger .bar {
-    display: block;
-    width: 20px;
-    height: 2px;
+.perfil-container {
     background: var(--branco-Senac);
+<<<<<<< HEAD
     position: relative;
 }
 
@@ -192,31 +112,35 @@ header > div {
 }
 
 .profile-header {
+=======
+    width: 420px;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: var(--sombra);
+>>>>>>> Deploys
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;  /* Reduzido de 40px */
-    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.profile-photo-container {
-    position: relative;
-    width: 100px;   /* Reduzido de 150px */
-    height: 100px;  /* Reduzido de 150px */
-}
+/* --------- FOTO & NOME --------- */
 
-.profile-photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+.perfil-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
     object-fit: cover;
-    border: 3px solid var(--azul-Senac);  /* Borda mais fina */
-    transition: transform 0.3s ease;
+    border: 4px solid var(--azul-Senac);
 }
 
-.profile-photo:hover {
-    transform: scale(1.05);
+.Nome_Usuario {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--preto);
 }
 
+<<<<<<< HEAD
 .photo-edit-btn {
     position: absolute;
     bottom: 0px;
@@ -326,401 +250,84 @@ header > div {
 }
 
 .section-header h2 i {
+=======
+.tipo_usuario {
+    font-size: 14px;
+>>>>>>> Deploys
     color: var(--laranja-Senac);
-    font-size: 1.2em;         /* Ícone menor */
+    font-weight: 600;
+    margin-top: -10px;
 }
 
-.add-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 6px 15px;        /* Reduzido de 10px 20px */
-    border-radius: 20px;      /* Reduzido de 25px */
-    cursor: pointer;
-    font-size: 0.9em;         /* Reduzido de 1em */
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;                 /* Reduzido de 8px */
+/* --------- CARD DE INFORMAÇÕES --------- */
+
+.info-card {
+    background-color: var(--cinza-claro);
+    width: 100%;
+    padding: 18px 20px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
 }
 
-.add-btn:hover {
-    background: #218838;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
-}
-
-/* -------------------- GRIDS -------------------- */
-.certificates-grid,
-.repos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));  /* Reduzido de 300px */
-    gap: 15px;                /* Reduzido de 20px */
-}
-
-/* -------------------- CERTIFICATE CARDS (MAIS COMPACTOS) -------------------- */
-.certificate-card {
-    background: #f8f9fa;
-    border-radius: 10px;      /* Reduzido de 15px */
-    padding: 15px;            /* Reduzido de 20px */
-    border-left: 3px solid var(--azul-Senac);  /* Borda mais fina */
-    position: relative;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.certificate-card:hover {
-    transform: translateY(-3px) scale(1.01);  /* Efeito mais sutil */
-    box-shadow: 0 10px 20px rgba(0, 74, 141, 0.2);
-    border-left: 3px solid var(--laranja-Senac);
-}
-
-.certificate-icon {
-    font-size: 1.5em;         /* Reduzido de 2em */
-    color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
-}
-
-.certificate-card h3 {
+.info-card p {
+    font-size: 15px;
+    margin-bottom: 8px;
     color: #333;
-    margin-bottom: 8px;       /* Reduzido de 10px */
-    font-size: 1.1em;         /* Reduzido de 1.2em */
 }
 
-.certificate-card p {
-    color: #666;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    margin-bottom: 4px;       /* Reduzido de 5px */
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
-}
-
-.certificate-card p i {
+.info-card strong {
     color: var(--azul-Senac);
-    width: 16px;              /* Reduzido de 20px */
-    font-size: 0.9em;
 }
 
-.certificate-actions {
-    display: flex;
-    gap: 8px;                 /* Reduzido de 10px */
-    margin-top: 10px;         /* Reduzido de 15px */
+/* --------- DESCRIÇÃO --------- */
+
+.descricao {
+    background-color: var(--cinza-claro);
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.06);
+    font-size: 15px;
+    text-align: start;
+    min-height: 80px;
+    color: #444;
 }
 
-.cert-btn {
-    padding: 4px 12px;        /* Reduzido de 6px 15px */
-    border: none;
-    border-radius: 12px;      /* Reduzido de 15px */
-    cursor: pointer;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
+/* --------- BOTÃO EDITAR --------- */
+
+.Editar_Perfil {
+    background-color: var(--azul-Senac);
+    color: var(--branco-Senac);
+    text-decoration: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.25s ease;
+    box-shadow: var(--sombra);
 }
 
-/* -------------------- REPOSITORY CARDS (MAIS COMPACTOS) -------------------- */
-.repo-card {
-    background: #f8f9fa;
-    border-radius: 10px;      /* Reduzido de 15px */
-    padding: 15px;            /* Reduzido de 20px */
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
-}
-
-.repo-card:hover {
+.Editar_Perfil:hover {
+    background-color: var(--laranja-Senac);
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
 }
 
-.repo-icon {
-    font-size: 1.5em;         /* Reduzido de 2em */
-    color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
-}
+/* --------- RESPONSIVIDADE --------- */
 
-.repo-card h3 {
-    color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
-    font-size: 1.1em;         /* Reduzido de 1.2em */
-}
-
-.repo-turma {
-    color: #666;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    margin-bottom: 6px;       /* Reduzido de 8px */
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
-}
-
-.repo-date {
-    font-size: 0.8em;         /* Reduzido de 0.85em */
-    color: #888;
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
-}
-
-.repo-file {
-    font-size: 0.8em;
-    color: #888;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 6px;
-}
-
-/* -------------------- MODAL (MESMO TAMANHO) -------------------- */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    backdrop-filter: blur(5px);
-}
-
-.modal.active {
-    display: flex;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.modal-content {
-    background: white;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 450px;  /* Reduzido de 500px */
-    animation: modalAppear 0.3s ease;
-    overflow: hidden;
-}
-
-@keyframes modalAppear {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.modal-header {
-    background: var(--azul-Senac);
-    color: white;
-    padding: 15px;  /* Reduzido de 20px */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h3 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1.2em;  /* Reduzido */
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 22px;  /* Reduzido de 24px */
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.close-btn:hover {
-    transform: scale(1.2);
-}
-
-.modal-body {
-    padding: 15px;  /* Reduzido de 20px */
-}
-
-.form-group {
-    margin-bottom: 12px;  /* Reduzido de 15px */
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 4px;  /* Reduzido de 5px */
-    color: #333;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;  /* Reduzido */
-}
-
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 8px;  /* Reduzido de 10px */
-    border: 1px solid #ddd;
-    border-radius: 8px;  /* Reduzido de 10px */
-    font-size: 0.95em;  /* Reduzido de 1em */
-    transition: all 0.3s ease;
-}
-
-.form-group textarea {
-    min-height: 80px;  /* Reduzido de 100px */
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;  /* Reduzido de 15px */
-}
-
-.modal-footer {
-    padding: 15px;  /* Reduzido de 20px */
-    border-top: 1px solid #eee;
-    display: flex;
-    gap: 8px;  /* Reduzido de 10px */
-    justify-content: flex-end;
-}
-
-.modal-footer button {
-    padding: 8px 15px;  /* Reduzido de 10px 20px */
-    border: none;
-    border-radius: 8px;  /* Reduzido de 10px */
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;  /* Reduzido */
-}
-
-/* -------------------- NO ITEMS -------------------- */
-.no-items {
-    text-align: center;
-    padding: 20px;  /* Reduzido de 40px */
-    color: #999;
-    grid-column: 1 / -1;
-}
-
-.no-items i {
-    font-size: 2.5em;  /* Reduzido de 3em */
-    margin-bottom: 8px;  /* Reduzido de 10px */
-    color: #ddd;
-}
-
-/* -------------------- LOADING OVERLAY -------------------- */
-.loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 2500;
-}
-
-.loading-overlay.active {
-    display: flex;
-}
-
-.spinner {
-    width: 40px;  /* Reduzido de 50px */
-    height: 40px;  /* Reduzido de 50px */
-    border: 4px solid #f3f3f3;  /* Borda mais fina */
-    border-top: 4px solid var(--azul-Senac);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* -------------------- TOAST NOTIFICATION -------------------- */
-.toast {
-    position: fixed;
-    bottom: 70px;
-    right: 15px;
-    background: white;
-    border-radius: 8px;
-    padding: 10px 20px;  /* Reduzido */
-    box-shadow: 0 3px 15px rgba(0,0,0,0.15);
-    transform: translateX(400px);
-    transition: transform 0.3s ease;
-    z-index: 2300;
-}
-
-.toast.show {
-    transform: translateX(0);
-}
-
-.toast-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9em;
-}
-
-.toast-icon {
-    font-size: 1.1em;
-}
-
-/* -------------------- UTILS -------------------- */
-#photo-upload {
-    display: none;
-}
-
-.none-value {
-    color: #999;
-    font-style: italic;
-}
-
-/* -------------------- RESPONSIVIDADE -------------------- */
-@media (max-width: 1024px) {
-    #site-nav a {
-        margin: 5%;
-    }
-}
-
-@media (max-width: 768px) {
-    body {
-        padding-top: 60px;
-    }
-    
-    .hamburger {
-        display: inline-flex;
+@media (max-width: 480px) {
+    .perfil-container {
+        width: 90%;
+        padding: 25px;
     }
 
-    #site-nav.Paginas {
-        display: none;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 60px;
-        background: var(--azul-Senac);
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px 0;
-        align-items: center;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-        z-index: 900;
-        width: 100%;
+    .Nome_Usuario {
+        font-size: 22px;
     }
 
-    header.nav-open #site-nav.Paginas {
-        display: flex;
+    .titulo p {
+        font-size: 26px;
     }
+<<<<<<< HEAD
 
     header {
         height: 60px;
@@ -790,3 +397,6 @@ header > div {
     margin: 5%;
     margin-left: 35%;
 }
+=======
+}
+>>>>>>> Deploys

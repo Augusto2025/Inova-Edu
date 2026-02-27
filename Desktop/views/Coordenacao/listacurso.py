@@ -1,13 +1,11 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from sidebar_C import sidebar
-from PIL import Image
-import os
+from Desktop.views.Coordenacao.sidebar_C import sidebar
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-class ListaUsuariosApp(ctk.CTkFrame):
+class ListaCursoApp(ctk.CTkFrame):
     def __init__(self, master):
         # Inicializa como um Frame vinculado ao master (content_frame)
         super().__init__(master, fg_color="#ffffff", corner_radius=0)
@@ -187,7 +185,7 @@ if __name__ == "__main__":
     main_frame.grid_columnconfigure(1, weight=1)
     main_frame.grid_rowconfigure(0, weight=1)
 
-    app = ListaUsuariosApp(content_area)
+    app = ListaCursoApp(content_area)
     app.pack(fill="both", expand=True)
     
     root.mainloop()

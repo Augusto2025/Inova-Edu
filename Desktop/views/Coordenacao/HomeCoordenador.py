@@ -12,7 +12,7 @@ class HomeCoordenador(ctk.CTkFrame):
 
         self.janela = master
 
-        from sidebar_C import Sidebar, sidebar
+        from Desktop.views.Coordenacao.sidebar_C import Sidebar, sidebar
         
         sidebar_existente = None
         for widget in self.janela.winfo_children():
