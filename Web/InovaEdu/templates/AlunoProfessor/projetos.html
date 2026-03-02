@@ -33,8 +33,6 @@
             <div class="card-image">
                 {% if projeto.imagem %}
                     <img src="{{ projeto.imagem.url }}" alt="{{ projeto.nome_projeto }}">
-                {% else %}
-                    <img src="{% static 'img/project_placeholder.png' %}" alt="{{ projeto.nome_projeto }}">
                 {% endif %}
             </div>
             <div class="card-content">
