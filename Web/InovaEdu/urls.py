@@ -26,7 +26,7 @@ urlpatterns = [
     path("calendario/", views.calendario, name="calendario"),
     path('calendario/criar/', views.criar_evento, name='criar_evento'),
     path("perfil/", views.perfil, name="perfil"),
-    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
+    # path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('turma/<int:turma_id>/projetos/', views.projetos_da_turma, name='projetos_da_turma'),
     path('projeto/<int:projeto_id>/repositorio/', views.repositorio_projeto, name='repositorio_projeto'),
@@ -47,8 +47,8 @@ urlpatterns = [
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
     path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
     path('api/listar-projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
-    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
+    path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
     path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
 ]
 

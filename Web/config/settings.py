@@ -6,7 +6,7 @@ import secrets
 
 # --- Diretórios e .env ---
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(dotenv_path=BASE_DIR / '.env')  # força leitura do .env
+load_dotenv()  # força leitura do .env
 
 import cloudinary
 
@@ -71,14 +71,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Banco de dados ---
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('ENGINE'),
-        'NAME': os.environ.get('NAME'),
-        'USER': os.environ.get('USER'),
-        'HOST': os.environ.get('HOST'),
-        'PORT': os.environ.get('PORT'),
-        'PASSWORD': os.environ.get('PASSWORD'),
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+    )
 }
 
 # --- Email ---
@@ -123,4 +119,3 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # --- media files ---
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
