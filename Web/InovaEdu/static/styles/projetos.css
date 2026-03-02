@@ -1,4 +1,4 @@
-/* ================== MODAL GERAL ================== */
+/* ================== MODAL GERAL (ATUALIZADO PARA MODERNO) ================== */
 .modal {
     display: none;
     position: fixed;
@@ -9,80 +9,93 @@
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.3s ease-in-out;
+    backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.modal-content, .modal-moderno {
     background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
+    padding: 16px; 
+    border-radius: 20px; 
     max-width: 500px;
     width: 90%;
     position: relative;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
     animation: slideDown 0.3s ease-out;
+    overflow: hidden;
 }
 
 .fechar {
     position: absolute;
-    top: 12px;
-    right: 18px;
-    font-size: 1.6rem;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
     cursor: pointer;
-    color: #888;
+    color: #94a3b8;
     transition: color 0.2s;
+    z-index: 10;
 }
-.fechar:hover { color: #333; }
+.fechar:hover { color: #ef4444; }
 
-#fecharExcluirBtn{
+#fecharExcluirBtn {
     background-color: red;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
     color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-.modal-footer {
+.modal-footer, .modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 20px;
+    padding: 16px 24px;
+    border-top: 1px solid #f1f5f9;
 }
 
-/* ================== MODAL CADASTRO PROJETO ================== */
+/* ================== MODAL CADASTRO PROJETO (ESTILO MODERNO) ================== */
 #modalProjeto .modal-content {
-    max-width: 450px;
-    padding: 30px 25px;
-    border-radius: 15px;
-    background-color: #f9f9f9;
+    max-width: 480px;
+    padding: 0; 
+    border-radius: 20px;
+    background-color: #fff;
 }
 
 #modalProjeto h2 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 24px 24px 10px 24px;
     color: var(--azul-Senac);
-    text-align: center;
+    text-align: left;
+}
+
+#modalProjeto form {
+    padding: 0 24px 24px 24px;
 }
 
 #modalProjeto input[type="text"],
 #modalProjeto textarea,
 #modalProjeto input[type="file"] {
-    width: 94%;
-    padding: 10px 12px;
+    width: 100%; 
+    padding: 12px;
     border-radius: 10px;
-    border: 2px solid var(--azul-Senac);
+    border: 2px solid #e2e8f0;
     font-size: 0.95rem;
-    margin-top: 5px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
 #modalProjeto input[type="text"]:focus,
 #modalProjeto textarea:focus {
-    border-color: #2f4ac4;
-    box-shadow: 0 0 6px rgba(47,74,196,0.4);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     outline: none;
 }
 
-/* ================== CARDS ================== */
+/* ================== CARDS (ORIGINAL PRESERVADO) ================== */
 .cards-container {
     display: flex;
     flex-direction: column;
@@ -139,31 +152,16 @@
     font-size: 0.95rem;
 }
 
-/* Botões à direita */
 .card-action {
     display: flex;
-    /* flex-direction: column; */
     gap: 10px;
     align-items: center;
     min-width: 140px;
 }
 
-.card-action-top {
-    width: 100%;
-}
-
-.card-action-bottom {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-/* ================== BOTÕES ================== */
+/* ================== BOTÕES (ORIGINAL PRESERVADO) ================== */
 .btn-repositorio,
 .btn-primary,
-/* .btn-secondary, */
-/* .btn-danger, */
 .btn-warning {
     padding: 10px 16px;
     border-radius: 8px;
@@ -178,10 +176,11 @@
     justify-content: center;
 }
 
-.btn-danger, .btn-secondary{
+.btn-danger, .btn-secondary {
     border: none;
     background-color: #fff;
     font-size: larger;
+    cursor: pointer;
 }
 
 .btn-repositorio { background-color: #007bff; color: #fff; }
@@ -190,65 +189,10 @@
 .btn-primary { background-color: var(--laranja-Senac); color: #fff;}
 .btn-primary:hover { transform: translateY(-2px); }
 
-/* .btn-secondary { background-color: #6c757d; color: #fff; }
-.btn-secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
-
-.btn-danger { background-color: #dc3545; color: #fff; }
-.btn-danger:hover { background-color: #c82333; transform: translateY(-2px); } */
-
 .btn-warning { background-color: #04b338; color: #fff; }
 .btn-warning:hover { background-color: #03952f; transform: translateY(-2px); }
 
-/* ================== RESPONSIVIDADE ================== */
-@media (max-width: 768px) {
-    .card {
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-    }
-    .card-image img { width: 80px; height: 80px; }
-    .card-content { padding: 0; }
-    .card-action {
-        width: 100%;
-        align-items: center;
-    }
-    .card-action-top,
-    .card-action-bottom {
-        justify-content: center;
-        width: 100%;
-    }
-    .btn-repositorio,
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger,
-    .btn-warning {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    #modalProjeto input[type="text"],
-    #modalProjeto textarea,
-    #modalProjeto input[type="file"],
-    #modalProjeto .btn-primary {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-}
-
-
-/* Estilização do Modal Moderno */
-.modal-moderno {
-    background: #fff;
-    width: 90%;
-    max-width: 480px;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-    animation: fadeIn 0.3s ease;
-    margin: auto;
-}
-
+/* ================== DESIGN MODERNO DE ALUNOS ================== */
 .modal-header {
     padding: 24px 24px 16px;
     display: flex;
@@ -274,7 +218,6 @@
     padding: 8px 16px;
 }
 
-/* Linha do Aluno */
 .aluno-row {
     display: flex;
     align-items: center;
@@ -287,7 +230,6 @@
 }
 
 .aluno-row:hover { background-color: #f8fafc; }
-
 .aluno-row input[type="checkbox"] { display: none; }
 
 .aluno-content {
@@ -297,90 +239,91 @@
 }
 
 .avatar-circle {
-    width: 38px;
-    height: 38px;
-    background: #e2e8f0;
-    color: #475569;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    width: 38px; height: 38px;
+    background: #e2e8f0; color: #475569;
+    border-radius: 50%; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
 }
 
-.nome-completo {
-    font-weight: 500;
-    color: #334155;
-}
+.nome-completo { font-weight: 500; color: #334155; }
 
-/* Checkbox Customizado */
 .custom-check {
-    width: 22px;
-    height: 22px;
-    border: 2px solid #cbd5e1;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
+    width: 22px; height: 22px;
+    border: 2px solid #cbd5e1; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
 }
 
-.custom-check svg {
-    width: 14px;
-    height: 14px;
-    color: white;
-    display: none;
-}
-
-/* Estado Ativo (Checked) */
 .aluno-row input:checked + .aluno-content + .custom-check {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
+    background-color: #3b82f6; border-color: #3b82f6;
 }
 
-.aluno-row input:checked + .aluno-content + .custom-check svg {
-    display: block;
+.aluno-row input:checked + .aluno-content + .custom-check::after {
+    content: '✓'; color: white; font-size: 14px; font-weight: bold;
 }
 
 .aluno-row input:checked ~ .aluno-content .avatar-circle {
-    background-color: #dbeafe;
-    color: #3b82f6;
-}
-
-/* Footer */
-.modal-actions {
-    padding: 16px 24px;
-    background: #f8fafc;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    background-color: #dbeafe; color: #3b82f6;
 }
 
 .btn-cancel {
-    background: transparent;
-    border: none;
-    color: #64748b;
-    font-weight: 600;
-    cursor: pointer;
+    background: transparent; border: none;
+    color: #64748b; font-weight: 600; cursor: pointer;
     padding: 10px 16px;
 }
 
 .btn-save {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 600;
+    background: #3b82f6; color: white;
+    border: none; padding: 10px 20px;
+    border-radius: 10px; font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
 }
 
-.btn-save:hover { background: #2563eb; }
+/* ================== RESPONSIVIDADE (OTIMIZADA) ================== */
+@media (max-width: 768px) {
+    /* Cards ficam em coluna */
+    .card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        max-height: none;
+        padding: 24px;
+    }
+    
+    .card-content {
+        padding: 0;
+    }
 
+    .card-action {
+        width: 100%;
+        flex-direction: column; /* Botões um embaixo do outro no mobile */
+        gap: 8px;
+    }
+
+    .btn-repositorio, .btn-primary, .btn-secondary, .btn-danger, .btn-warning {
+        width: 100%;
+    }
+
+    /* Modais ficam mais largos no mobile para aproveitar espaço */
+    .modal-content, .modal-moderno {
+        width: 95%;
+        margin: 10px;
+    }
+
+    /* Ajuste de ações no footer do modal para não apertar botões */
+    .modal-footer, .modal-actions {
+        flex-direction: column-reverse; /* Salvar em cima, Cancelar embaixo */
+        align-items: stretch;
+    }
+}
+
+/* Animações */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
