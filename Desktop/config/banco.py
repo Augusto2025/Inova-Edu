@@ -1,7 +1,9 @@
-import mysql.connector
+import psycopg2
+from psycopg2 import OperationalError
 import os
 import sys
 import socket
+from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 def resource_path(relative_path):
@@ -14,65 +16,40 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
-# --- CARREGAMENTO DO .ENV ---
-# Como este arquivo está em 'config/banco.py', buscamos o .env na pasta 'config' 
-# que será incluída no executável através do comando --add-data
-config_path = resource_path(os.path.join('config', '.env'))
-
-print(f"[BANCO] Procurando .env em: {config_path}")
-
-if os.path.exists(config_path):
-    load_dotenv(config_path)
-    print("[BANCO] .env carregado com sucesso.")
-else:
-    # Caso não encontre na config interna, tenta na pasta atual (ao lado do .exe)
-    fallback_path = os.path.join(os.path.dirname(sys.executable), "config", ".env")
-    load_dotenv(fallback_path)
-    print(f"[BANCO] Tentando fallback em: {fallback_path}")
-
-# Configurar timeout global de socket
-socket.setdefaulttimeout(3)
-
 def conectar():
-    """Conecta ao banco com tratamento de erro e carregamento de variáveis"""
+    """Conecta ao PostgreSQL usando DATABASE_URL ou parâmetros individuais"""
     
-    # IMPORTANTE: No .env, mude 'localhost' para '127.0.0.1' para evitar bloqueios do Windows
-    host = os.getenv("HOST", "127.0.0.1")
-    user = os.getenv("USER", "root")
-    password = os.getenv("PASSWORD", "")
-    database = os.getenv("NAME", "db_repositorio")
-    
-    try:
-        port = int(os.getenv("PORT", "3306"))
-    except:
-        port = 3306
+    database_url = os.getenv("DATABASE_URL")
 
-    # 1. Teste rápido de socket TCP (falha rápida se o MySQL estiver desligado)
-    try:
-        print(f"[BANCO] Testando socket {host}:{port}...", flush=True)
-        sock = socket.create_connection((host, port), timeout=2)
-        sock.close()
-    except Exception as e:
-        msg = f"Servidor MySQL inacessível em {host}:{port}. Verifique se o banco está ligado."
-        print(f"[BANCO ERRO] {msg}")
-        raise Exception(msg)
+    if database_url:
+        try:
+            # 1. Teste rápido de socket antes de tentar a conexão pesada
+            # Extraímos o host e porta da URL para testar se o banco externo responde
+            result = urlparse(database_url)
+            hostname = result.hostname
+            port = result.port or 5432
+            
+            print(f"[BANCO] Testando socket externo {hostname}:{port}...", flush=True)
+            socket.create_connection((hostname, port), timeout=3)
+            
+            # 2. Conexão real via URL
+            print(f"[BANCO] Conectando via DATABASE_URL...", flush=True)
+            conn = psycopg2.connect(database_url, connect_timeout=5)
+            print(f"[BANCO] Conexão PostgreSQL Externa OK", flush=True)
+            return conn
 
-    # 2. Conexão via mysql-connector
-    try:
-        db_config = {
-            'host': host,
-            'user': user,
-            'password': password,
-            'database': database,
-            'port': port,
-            'connection_timeout': 3,
-            'use_pure': True, # Melhora a compatibilidade no PyInstaller
-        }
-        print(f"[BANCO] Conectando a {host}:{port} via mysql-connector...", flush=True)
-        conn = mysql.connector.connect(**db_config)
-        print(f"[BANCO] Conexão OK", flush=True)
-        return conn
-    except Exception as err:
-        msg = f"Erro de credenciais ou banco inexistente: {err}"
-        print(f"[BANCO ERRO] {msg}", flush=True)
-        raise Exception(msg)
+        except socket.timeout:
+            msg = "Timeout: O servidor externo do banco não respondeu ao teste de socket."
+            print(f"[BANCO ERRO] {msg}")
+            raise Exception(msg)
+        except OperationalError as err:
+            msg = f"Erro operacional no PostgreSQL (URL): {err}"
+            print(f"[BANCO ERRO] {msg}")
+            raise Exception(msg)
+        except Exception as err:
+            msg = f"Falha na conexão externa: {err}"
+            print(f"[BANCO ERRO] {msg}")
+            raise Exception(msg)
+    else:
+        print("[BANCO ERRO] DATABASE_URL não encontrada no .env")
+        raise Exception("Configuração de banco de dados ausente.")

@@ -1,3 +1,5 @@
+import sys
+from tkinter import messagebox
 import customtkinter as ctk
 from controllers.login_controller import autenticar
 import threading
@@ -5,6 +7,14 @@ from PIL import Image, ImageOps
 import os
 from assets.cores import *
 from assets.fonts import *
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 class tela_login(ctk.CTkFrame):  
     def __init__(self, master):  
         super().__init__(master)
@@ -34,13 +44,18 @@ class tela_login(ctk.CTkFrame):
 
         # Logo centralizado mais alto
         try:
-            caminho_imagem = "Desktop/assets/img/LOGOBRANCO.png"
-            img_pil = Image.open(caminho_imagem)
-            self.img_logo = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(180, 220))
-            self.logo_label = ctk.CTkLabel(self.brand_content, image=self.img_logo, text="")
-            self.logo_label.pack(pady=(0, 20))
-        except:
-            pass
+            # Removido "Desktop/" e adicionado resource_path
+            caminho_imagem = resource_path("assets/img/LOGOBRANCO.png")
+            
+            if os.path.exists(caminho_imagem):
+                img_pil = Image.open(caminho_imagem)
+                self.img_logo = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(180, 220))
+                self.logo_label = ctk.CTkLabel(self.brand_content, image=self.img_logo, text="")
+                self.logo_label.pack(pady=(0, 20))
+            else:
+                print(f"[LOGIN] Imagem não encontrada em: {caminho_imagem}")
+        except Exception as e:
+            print(f"[LOGIN ERRO IMAGEM] {e}")
 
         ctk.CTkLabel(
             self.brand_content, text="INOVA EDU", 

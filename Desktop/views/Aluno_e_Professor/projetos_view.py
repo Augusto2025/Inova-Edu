@@ -23,9 +23,14 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
 
     def criar_interface(self):
         # Header simples apenas com o título da turma
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=70, corner_radius=0)
+        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=100, corner_radius=0)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
+
+        ctk.CTkButton(header, text="⬅ Turma", width=100, text_color=Branco, 
+                    fg_color=azulEscuro, hover='transparent', 
+                    border_width=1, border_color=Branco, 
+                    command=self.voltar_turma).pack(side="left", padx=(20, 0)),
 
         ctk.CTkLabel(header, text=f"Projetos da Turma: {self.nome_turma}",
                     font=ctk.CTkFont(size=20, weight="bold"),
@@ -34,6 +39,18 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         self.main_scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.main_scroll.pack(fill="both", expand=True, padx=30, pady=20)
         self.carregar_projetos()
+
+    def voltar_turma(self):
+        from views.Aluno_e_Professor.turma_view import TurmasDesktopDashboard
+    
+        self.pack_forget() 
+        
+        tela_turma = TurmasDesktopDashboard(
+            master=self.janela, 
+            id_curso=self.id_turma,    # ID que veio da tela de turmas
+            nome_curso=self.nome_turma, # Nome que veio da tela de turmas
+        )
+        tela_turma.pack(side="right", fill="both", expand=True)
 
     def carregar_projetos(self):
         # Limpa a tela antes de carregar
@@ -90,6 +107,7 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         except Exception as e:
             from tkinter import messagebox
             messagebox.showerror("Erro", f"Erro ao abrir repositório: {e}")
+            print(f"ERRO CRÍTICO ao abrir repositório: {e}")
 
 if __name__ == "__main__":
     ctk.set_appearance_mode("light")

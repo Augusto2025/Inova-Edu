@@ -10,12 +10,13 @@ from assets.cores import *
 from controllers.repositorio_controller import RepositorioController
 
 class RepositorioDashboard(ctk.CTkFrame):
-    def __init__(self, master, turma_id, pasta_id=None, nome_projeto="Repositório Principal"):
+    def __init__(self, master, turma_id, nome_projeto, pasta_id=None):
         super().__init__(master)
         self.janela = master
         self.turma_id = turma_id
-        self.pasta_atual_id = pasta_id 
+        self.pasta_atual_id = pasta_id
         self.nome_projeto = nome_projeto
+        self.container_principal = self
         
         self.controller = RepositorioController()
         
@@ -43,13 +44,13 @@ class RepositorioDashboard(ctk.CTkFrame):
             widget.destroy()
 
         # --- HEADER (Azul Escuro) ---
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=80, corner_radius=0)
+        header = ctk.CTkFrame(self.container_principal, fg_color=azulEscuro, height=100, corner_radius=0)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
 
         if self.pasta_atual_id:
             ctk.CTkButton(header, text="⬅", width=40, fg_color="transparent", 
-                          hover_color="#334155", command=self.voltar_raiz).pack(side="left", padx=(20, 0))
+                          hover="transparent", command=self.voltar_raiz).pack(side="left", padx=(20, 0))
 
         ctk.CTkLabel(header, text=self.nome_projeto, 
                      font=ctk.CTkFont(size=24, weight="bold"), 
