@@ -27,7 +27,7 @@ class CadastroCursos:
         self.janela.configure(fg_color=self.cor_branco)
         
         # IMPORTAR SIDEBAR
-        from Desktop.views.Coordenacao.sidebar_C import sidebar
+        from sidebar_C import sidebar
         self.menu_frame, self.botoes_menu = sidebar(self.janela)
 
         # self.criar_menu_lateral()

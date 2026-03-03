@@ -6,10 +6,15 @@ import socket
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 
-# Carregar .env da pasta config
-config_path = os.path.join(os.path.dirname(__file__), '.env')
-print(f"[BANCO] Procurando .env em: {config_path}")
-load_dotenv(config_path)
+def resource_path(relative_path):
+    """ Encontra o caminho real dos arquivos dentro do .exe ou em dev """
+    try:
+        # Caminho da pasta temporária onde o PyInstaller extrai tudo
+        base_path = sys._MEIPASS
+    except Exception:
+        # Caminho em modo de desenvolvimento (VS Code)
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 def conectar():
     """Conecta ao PostgreSQL usando DATABASE_URL ou parâmetros individuais"""
