@@ -167,6 +167,7 @@ header > div {
     max-width: 1000px;  /* Reduzido de 1200px */
     margin: 0 auto;
     padding: 30px;      /* Reduzido de 20px */
+    min-height: calc(95vh - 93px);
 }
 
 /* -------------------- PROFILE CARD (MAIS COMPACTO) -------------------- */
