@@ -160,22 +160,21 @@ def home(request):
 # perfil aluno
 
 def perfil(request):
-    usuario = request.session.get('usuario_id')  # ou como você salva na sessão
+    email = request.session.get('usuario_email')
 
-    # pegar as turmas do usuário
-    turmas_ids = UsuarioDaTurma.objects.filter(
-        id_usuario_id=usuario
-    ).values_list('id_turma_id', flat=True)
+    if not email:
+        return redirect('login')
 
-    # pegar os projetos dessas turmas
-    projetos = Projeto.objects.filter(
-        
-    )
-    return render(request, 'AlunoProfessor/perfil.html',{
+    usuario = Usuario.objects.get(email=email)
+
+    certificados = Certificado.objects.filter(usuario=usuario)
+    projetos = Projeto.objects.filter(alunos=usuario)
+
+    return render(request, 'perfil.html', {
+        'usuario': usuario,
+        'certificados': certificados,
         'projetos': projetos
-    
     })
-
 
 @require_POST
 def atualizar_perfil_ajax(request):
@@ -218,7 +217,10 @@ def atualizar_perfil_ajax(request):
         return JsonResponse({'message': str(e)}, status=500)
 
 @require_POST
-def upload_foto_ajax(request):
+def upload_foto(request):
+    if request.method != 'POST':
+        return JsonResponse({'message': 'Método não permitido.'}, status=405)
+
     email = request.session.get('usuario_email')
 
     if not email:
@@ -229,22 +231,21 @@ def upload_foto_ajax(request):
     except Usuario.DoesNotExist:
         return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
 
-    if 'imagem' not in request.FILES:
+    foto = request.FILES.get('foto')
+
+    if not foto:
         return JsonResponse({'message': 'Nenhuma imagem enviada.'}, status=400)
 
-    imagem = request.FILES['imagem']
+    try:
+        usuario.imagem = foto
+        usuario.save()
 
-    # Opcional: validação simples
-    if not imagem.content_type.startswith('image/'):
-        return JsonResponse({'message': 'Arquivo inválido. Envie uma imagem.'}, status=400)
+        return JsonResponse({
+            'foto_url': usuario.imagem.url
+        })
 
-    usuario.imagem = imagem
-    usuario.save()
-
-    return JsonResponse({
-        'message': 'Foto atualizada com sucesso!',
-        'imagem_url': usuario.imagem.url
-    })
+    except Exception as e:
+        return JsonResponse({'message': str(e)}, status=500)
 
 @require_GET
 def listar_projetos_ajax(request):
@@ -278,16 +279,17 @@ def listar_projetos_ajax(request):
     })
 
 
+
 def gerenciar_cursos_ajax(request):
     email = request.session.get('usuario_email')
 
     if not email:
-        return JsonResponse({'message': 'Usuário não autenticado.'}, status=403)
+        return JsonResponse({'erro': 'Usuário não autenticado.'}, status=403)
 
     try:
         usuario = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
-        return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
+        return JsonResponse({'erro': 'Usuário não encontrado.'}, status=404)
 
     # ======================
     # LISTAR CURSOS (GET)
@@ -296,12 +298,15 @@ def gerenciar_cursos_ajax(request):
         cursos = Curso.objects.filter(usuario=usuario)
 
         lista_cursos = []
+
         for curso in cursos:
             lista_cursos.append({
-                'id': curso.id,
-                'nome': curso.nome,
-                'instituicao': curso.instituicao,
-                'ano_conclusao': curso.ano_conclusao
+                'id': curso.idcurso,
+                'nome': curso.nome_curso,  # ← CORRIGIDO
+                'descricao': curso.descricao_curso,
+                'data_inicio': curso.data_inicio,
+                'data_final': curso.data_final,
+                'imagem': curso.imagem.url if curso.imagem else None
             })
 
         return JsonResponse({'cursos': lista_cursos})
@@ -311,55 +316,51 @@ def gerenciar_cursos_ajax(request):
     # ======================
     if request.method == 'POST':
         try:
+            import json
             data = json.loads(request.body)
 
             nome = data.get('nome', '').strip()
-            instituicao = data.get('instituicao', '').strip()
-            ano_conclusao = data.get('ano_conclusao')
+            descricao = data.get('descricao', '').strip()
+            data_inicio = data.get('data_inicio')
+            data_final = data.get('data_final')
 
-            if not nome:
-                return JsonResponse({'message': 'Nome do curso é obrigatório.'}, status=400)
+            if request.method == 'POST':
+                usuario = Usuario.objects.get(email=request.session.get('usuario_email'))
 
-            curso = Curso.objects.create(
-                usuario=usuario,
-                nome=nome,
-                instituicao=instituicao,
-                ano_conclusao=ano_conclusao
-            )
+                Certificado.objects.create(
+                    nome=nome,
+                    descricao=descricao,
+                    data_inicio=data_inicio,
+                    data_final=data_final,
+                    usuario=usuario
+                )
 
-            return JsonResponse({
-                'message': 'Curso adicionado com sucesso!',
-                'curso': {
-                    'id': curso.id,
-                    'nome': curso.nome,
-                    'instituicao': curso.instituicao,
-                    'ano_conclusao': curso.ano_conclusao
-                }
-            })
+                return JsonResponse({'success': True})
 
-        except json.JSONDecodeError:
-            return JsonResponse({'message': 'JSON inválido.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
 
     # ======================
     # EXCLUIR CURSO (DELETE)
     # ======================
     if request.method == 'DELETE':
         try:
+            import json
             data = json.loads(request.body)
             curso_id = data.get('id')
 
-            curso = Curso.objects.get(id=curso_id, usuario=usuario)
+            curso = Curso.objects.get(idcurso=curso_id, usuario=usuario)
             curso.delete()
 
-            return JsonResponse({'message': 'Curso removido com sucesso!'})
+            return JsonResponse({'sucesso': True})
 
         except Curso.DoesNotExist:
-            return JsonResponse({'message': 'Curso não encontrado.'}, status=404)
+            return JsonResponse({'erro': 'Curso não encontrado.'}, status=404)
 
         except Exception as e:
-            return JsonResponse({'message': str(e)}, status=500)
+            return JsonResponse({'erro': str(e)}, status=500)
 
-    return JsonResponse({'message': 'Método não permitido.'}, status=405)
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
 
 
 def turmas(request, curso_id):

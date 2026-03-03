@@ -45,10 +45,9 @@ urlpatterns = [
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
-    path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
     path('api/listar-projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
-    path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
+    path('api/upload-foto/', views.upload_foto, name='upload_foto'),
     path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
 ]
 

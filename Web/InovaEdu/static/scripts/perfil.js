@@ -275,11 +275,10 @@ async function saveCurso() {
             method: method,
             headers: headers,
             body: JSON.stringify({
-                id: currentCursoId,
                 nome: nome,
                 descricao: descricao,
                 data_inicio: dataInicio || null,
-                data_fim: dataFim || null
+                data_final: dataFim || null
             })
         });
 
@@ -344,19 +343,4 @@ window.addEventListener('click', function(event) {
 });
 
 // Fechar modais com tecla ESC
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        const modals = document.querySelectorAll('.modal.active');
-        modals.forEach(modal => {
-            modal.classList.remove('active');
-        });
-    }
-});
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Perfil carregado com sucesso!');
-    console.log('CSRF Token encontrado?', csrftoken ? 'Sim' : 'Não');
-    console.log('Modal de perfil:', document.getElementById('profile-modal'));
-    console.log('Modal de curso:', document.getElementById('curso-modal'));
-});

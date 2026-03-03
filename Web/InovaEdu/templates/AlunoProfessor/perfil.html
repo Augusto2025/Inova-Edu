@@ -3,7 +3,6 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
-{#  <link rel="stylesheet" href="{% static 'styles/global.css' %}">  #}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 {% block header %}
@@ -11,7 +10,8 @@
 {% endblock %}
 
 <div class="container">
-    <!-- Perfil -->
+
+    <!-- PERFIL -->
     <div class="profile-card">
         <div class="profile-header">
             <div class="profile-photo-container">
@@ -20,24 +20,31 @@
                 {% else %}
                     <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-photo" id="profile-photo">
                 {% endif %}
+
                 <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
                     <i class="fas fa-camera"></i>
                 </div>
-                <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
-                {#  <input type="hidden" id="csrf-token" value="{{ csrf_token }}">  #}
+
+                <input type="file" id="photo-upload" accept="image/*"
+                       style="display: none;" onchange="updateProfilePhoto(event)">
             </div>
+
             <div class="profile-info">
                 <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
-                
+
+                <!-- BADGES CERTIFICADOS -->
                 <div class="course-badges">
-                    {% for curso in cursos %}
-                        <span class="course-badge">{{ curso.nome_curso }}</span>
+                    {% for certificado in certificados %}
+                        <span class="course-badge">{{ certificado.nome }}</span>
                     {% empty %}
-                        <span class="course-badge">Nenhum curso cadastrado</span>
+                        <span class="course-badge">Nenhum certificado cadastrado</span>
                     {% endfor %}
                 </div>
-                
-                <p class="profile-bio" id="profile-bio">{{ usuario.descricao|default:"Sem descrição cadastrada." }}</p>
+
+                <p class="profile-bio" id="profile-bio">
+                    {{ usuario.descricao|default:"Sem descrição cadastrada." }}
+                </p>
+
                 <button class="edit-btn" onclick="openProfileModal()">
                     <i class="fas fa-edit"></i> Editar Perfil
                 </button>
@@ -45,33 +52,59 @@
         </div>
     </div>
 
-    <!-- Cursos -->
+    <!-- CERTIFICADOS -->
     <div class="certificates-section">
         <div class="section-header">
             <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
-            <button class="add-btn" onclick="openCursoModal()">
-                <i class="fas fa-plus"></i> Adicionar Certificados
+
+            <button class="add-btn" onclick="openCertificadoModal()">
+                <i class="fas fa-plus"></i> Adicionar Certificado
             </button>
         </div>
-        <div class="certificates-grid" id="cursos-grid">
-            {% for curso in cursos %}
-            <div class="certificate-card" data-id="{{ curso.idcurso }}">
+
+        <div class="certificates-grid" id="certificados-grid">
+            {% for certificado in certificados %}
+            <div class="certificate-card" data-id="{{ certificado.idcertificado }}">
                 <div class="certificate-icon">
                     <i class="fas fa-certificate"></i>
                 </div>
-                <h3>{{ curso.nome_curso }}</h3>
-                <p><strong>Descrição:</strong> {{ curso.descricao_curso|default:"Sem descrição" }}</p>
-                {% if curso.data_inicio %}
-                    <p><i class="far fa-calendar-alt"></i> <strong>Início:</strong> {{ curso.data_inicio|date:"d/m/Y" }}</p>
+
+                <h3>{{ certificado.nome }}</h3>
+
+                <p><strong>Descrição:</strong>
+                    {{ certificado.descricao|default:"Sem descrição" }}
+                </p>
+
+                {% if certificado.data_inicio %}
+                    <p>
+                        <i class="far fa-calendar-alt"></i>
+                        <strong>Início:</strong>
+                        {{ certificado.data_inicio|date:"d/m/Y" }}
+                    </p>
                 {% endif %}
-                {% if curso.data_final %}
-                    <p><i class="far fa-calendar-check"></i> <strong>Término:</strong> {{ curso.data_final|date:"d/m/Y" }}</p>
+
+                {% if certificado.data_final %}
+                    <p>
+                        <i class="far fa-calendar-check"></i>
+                        <strong>Término:</strong>
+                        {{ certificado.data_final|date:"d/m/Y" }}
+                    </p>
                 {% endif %}
+
                 <div class="certificate-actions">
-                    <button class="cert-btn edit-cert" onclick='openEditCursoModal({{ curso.idcurso }}, "{{ curso.nome_curso|escapejs }}", "{{ curso.descricao_curso|escapejs }}", "{{ curso.data_inicio|date:'Y-m-d' }}", "{{ curso.data_final|date:'Y-m-d' }}")'>
+                    <button class="cert-btn edit-cert"
+                        onclick='openEditCertificadoModal(
+                            {{ certificado.idcertificado }},
+                            "{{ certificado.nome|escapejs }}",
+                            "{{ certificado.descricao|escapejs }}",
+                            "{{ certificado.data_inicio|date:'Y-m-d' }}",
+                            "{{ certificado.data_final|date:'Y-m-d' }}"
+                        )'>
                         <i class="fas fa-edit"></i> Editar
                     </button>
-                    <button class="cert-btn delete-cert" onclick="deleteCurso({{ curso.idcurso }})">
+
+                    <button class="cert-btn delete-cert"
+                        onclick="deleteCertificado({{ certificado.idcertificado }})">
                         <i class="fas fa-trash"></i> Excluir
                     </button>
                 </div>
@@ -79,131 +112,127 @@
             {% empty %}
             <div class="no-items">
                 <i class="fas fa-book-open"></i>
-                <p>Nenhum curso cadastrado ainda.</p>
+                <p>Nenhum certificado cadastrado ainda.</p>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Projetos -->
-<div class="repos-section">
-    <div class="section-header">
-        <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
-    </div>
-    <div class="repos-grid" id="projetos-grid">
-        {% for projeto in projetos %}
-        <div class="repo-card">
-            <div class="repo-icon">
-                {#  <i class="fas fa-code-branch"></i>  #}
+    <!-- PROJETOS -->
+    <div class="repos-section">
+        <div class="section-header">
+            <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
+        </div>
+
+        <div class="repos-grid" id="projetos-grid">
+            {% for projeto in projetos %}
+            <div class="repo-card">
+                <h3>{{ projeto.nome_projeto }}</h3>
+
+                <p class="repo-turma">
+                    <i class="fas fa-users"></i>
+                    {% if projeto.turma %}
+                        Turma: {{ projeto.turma.codigo_turma }} -
+                        {{ projeto.turma.curso.nome_curso }} -
+                        {{ projeto.turma.ano }}
+                        ({{ projeto.turma.turno }})
+                    {% else %}
+                        Turma não informada
+                    {% endif %}
+                </p>
+
+                <p class="repo-date">
+                    <i class="far fa-calendar-alt"></i>
+                    Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                </p>
+
+                {% if projeto.caminho_do_arquivo %}
+                <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
+                    <button class="Entrar">Entrar</button>
+                </a>
+                {% endif %}
             </div>
-            <h3>{{ projeto.nome_projeto }}</h3>
-            <p class="repo-turma">
-                <i class="fas fa-users"></i> 
-                {% if projeto.turma %}
-                Turma: {{ projeto.turma.codigo_turma }} -
-                {{ projeto.turma.curso.nome_curso }}
-                - {{ projeto.turma.ano }}
-                ({{ projeto.turma.turno }})
-            {% else %}
-                Turma não informada
-            {% endif %}
-            </p>
-            <p class="repo-date">
-                <i class="far fa-calendar-alt"></i> 
-                Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
-            </p>
-            {% if projeto.caminho_do_arquivo %}
-            <p class="repo-file">
-                {#  <i class="fas fa-file"></i>   #}
-            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
-                <button class="Entrar">Entrar</button>
-            </a>
-                
-            </p>
-            {% endif %}
+            {% empty %}
+            <div class="no-items">
+                <i class="fas fa-folder-open"></i>
+                <p>Nenhum projeto encontrado.</p>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="no-items">
-            <i class="fas fa-folder-open"></i>
-            <p>Nenhum projeto encontrado.</p>
-        </div>
-        {% endfor %}
     </div>
-</div>
+
 </div>
 
-<!-- Modal de Edição de Perfil -->
+<!-- MODAL PERFIL -->
 <div class="modal" id="profile-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
             <button class="close-btn" onclick="closeProfileModal()">&times;</button>
         </div>
+
         <div class="modal-body">
             <div class="form-group">
-                <label for="edit-nome"><i class="fas fa-user"></i> Nome</label>
-                <input type="text" id="edit-nome" placeholder="Seu nome" value="{{ usuario.nome }}">
+                <label>Nome</label>
+                <input type="text" id="edit-nome" value="{{ usuario.nome }}">
             </div>
+
             <div class="form-group">
-                <label for="edit-sobrenome"><i class="fas fa-user"></i> Sobrenome</label>
-                <input type="text" id="edit-sobrenome" placeholder="Seu sobrenome" value="{{ usuario.sobrenome }}">
+                <label>Sobrenome</label>
+                <input type="text" id="edit-sobrenome" value="{{ usuario.sobrenome }}">
             </div>
+
             <div class="form-group">
-                <label for="edit-bio"><i class="fas fa-align-left"></i> Bio</label>
-                <textarea id="edit-bio" placeholder="Fale um pouco sobre você">{{ usuario.descricao }}</textarea>
+                <label>Bio</label>
+                <textarea id="edit-bio">{{ usuario.descricao }}</textarea>
             </div>
         </div>
+
         <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeProfileModal()"><i class="fas fa-times"></i> Cancelar</button>
-            <button class="save-btn" onclick="saveProfile()"><i class="fas fa-check"></i> Salvar</button>
+            <button class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
+            <button class="save-btn" onclick="saveProfile()">Salvar</button>
         </div>
     </div>
 </div>
 
-<!-- Modal de Curso -->
-<div class="modal" id="curso-modal">
+<!-- MODAL CERTIFICADO -->
+<div class="modal" id="certificado-modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="curso-modal-title"><i class="fas fa-plus-circle"></i> Adicionar Curso</h3>
-            <button class="close-btn" onclick="closeCursoModal()">&times;</button>
+            <h3 id="certificado-modal-title">
+                <i class="fas fa-plus-circle"></i> Adicionar Certificado
+            </h3>
+            <button class="close-btn" onclick="closeCertificadoModal()">&times;</button>
         </div>
+
         <div class="modal-body">
             <div class="form-group">
-                <label for="curso-nome"><i class="fas fa-graduation-cap"></i> Nome do curso</label>
-                <input type="text" id="curso-nome" placeholder="Ex: Engenharia de Software">
+                <label>Nome do Certificado</label>
+                <input type="text" id="certificado-nome">
             </div>
+
             <div class="form-group">
-                <label for="curso-descricao"><i class="fas fa-align-left"></i> Descrição</label>
-                <textarea id="curso-descricao" placeholder="Descrição do curso"></textarea>
+                <label>Descrição</label>
+                <textarea id="certificado-descricao"></textarea>
             </div>
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="curso-data-inicio"><i class="far fa-calendar-alt"></i> Data de início</label>
-                    <input type="date" id="curso-data-inicio">
+                    <label>Data de início</label>
+                    <input type="date" id="certificado-data-inicio">
                 </div>
+
                 <div class="form-group">
-                    <label for="curso-data-fim"><i class="far fa-calendar-check"></i> Data de término</label>
-                    <input type="date" id="curso-data-fim">
+                    <label>Data de término</label>
+                    <input type="date" id="certificado-data-fim">
                 </div>
             </div>
         </div>
+
         <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeCursoModal()"><i class="fas fa-times"></i> Cancelar</button>
-            <button class="save-btn" onclick="saveCurso()"><i class="fas fa-check"></i> Salvar</button>
+            <button class="cancel-btn" onclick="closeCertificadoModal()">Cancelar</button>
+            <button class="save-btn" onclick="saveCertificado()">Salvar</button>
         </div>
-    </div>
-</div>
-
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loading-overlay">
-    <div class="spinner"></div>
-</div>
-
-<!-- Toast Notification -->
-<div class="toast" id="toast">
-    <div class="toast-content">
-        <i class="fas fa-check-circle toast-icon success"></i>
-        <span class="toast-message" id="toast-message"></span>
     </div>
 </div>
 
