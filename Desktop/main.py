@@ -3,7 +3,6 @@ import customtkinter as ctk
 from views.login_view import tela_login
 import traceback
 import sys
-import tkinter as tk
 
 ctk.set_appearance_mode("light")
 

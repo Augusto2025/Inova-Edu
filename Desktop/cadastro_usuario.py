@@ -32,7 +32,7 @@ class CadastroUsuarios:
         self.janela.configure(fg_color=self.cor_branco)
 
         # Importar o sidebar de forma tardia para evitar importação circular
-        from Desktop.views.Coordenacao.sidebar_C import sidebar
+        from sidebar_C import sidebar
         sidebar(self.janela)
 
         self.view_container = ctk.CTkFrame(self.janela, fg_color=self.cor_branco)

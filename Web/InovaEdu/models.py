@@ -113,7 +113,7 @@ class Turma(models.Model):
     ano = models.IntegerField(db_column='Ano')
     curso = models.ForeignKey(Curso, models.DO_NOTHING, db_column='ID_Curso')
     professor = models.ForeignKey(
-        'Usuario',  # referencia à sua model Usuario
+        'Usuario',  # referencia Ã  sua model Usuario
         on_delete=models.SET_NULL, 
         null=True,
         blank=True,

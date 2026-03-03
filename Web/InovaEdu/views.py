@@ -15,6 +15,11 @@ import io
 import zipfile
 import requests
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
+from .models import Projeto, UsuarioDaTurma
+
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -152,36 +157,210 @@ def home(request):
         'eventos_json': json.dumps(eventos_json),
     })
 
+# perfil aluno
 
 def perfil(request):
-    return render(request, 'AlunoProfessor/perfil.html')
+    usuario = request.session.get('usuario_id')  # ou como você salva na sessão
 
-def editar_perfil(request):
-    email = request.session.get('usuario_email')  # Pegando o email da sessão
+    # pegar as turmas do usuário
+    turmas_ids = UsuarioDaTurma.objects.filter(
+        id_usuario_id=usuario
+    ).values_list('id_turma_id', flat=True)
+
+    # pegar os projetos dessas turmas
+    projetos = Projeto.objects.filter(
+        
+    )
+    return render(request, 'AlunoProfessor/perfil.html',{
+        'projetos': projetos
+    
+    })
+
+
+@require_POST
+def atualizar_perfil_ajax(request):
+    email = request.session.get('usuario_email')
 
     if not email:
-        return redirect('login')
+        return JsonResponse({'message': 'Usuário não autenticado.'}, status=403)
 
-    # Busca pelo email em vez do ID
-    usuario = get_object_or_404(Usuario, email=email)
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
 
-    if request.method == "POST":
-        usuario.nome = request.POST.get('nome')
-        usuario.sobrenome = request.POST.get('sobrenome')
-        usuario.email = request.POST.get('email')
-        usuario.descricao = request.POST.get('descricao')
+    try:
+        data = json.loads(request.body)
 
-        if 'imagem' in request.FILES:
-            usuario.imagem = request.FILES['imagem']
+        nome = data.get('nome', '').strip()
+        sobrenome = data.get('sobrenome', '').strip()
+        bio = data.get('bio', '').strip()
 
+        if not nome or not sobrenome:
+            return JsonResponse(
+                {'message': 'Nome e sobrenome são obrigatórios.'},
+                status=400
+            )
+
+        usuario.nome = nome
+        usuario.sobrenome = sobrenome
+        usuario.descricao = bio
         usuario.save()
 
-        # Atualiza o email se o usuário alterar
-        request.session['usuario_email'] = usuario.email
+        return JsonResponse({
+            'message': 'Perfil atualizado com sucesso!'
+        })
 
-        return redirect('perfil')
+    except json.JSONDecodeError:
+        return JsonResponse({'message': 'JSON inválido.'}, status=400)
 
-    return render(request, 'AlunoProfessor/editar_perfil.html', {'usuario': usuario})
+    except Exception as e:
+        return JsonResponse({'message': str(e)}, status=500)
+
+@require_POST
+def upload_foto_ajax(request):
+    email = request.session.get('usuario_email')
+
+    if not email:
+        return JsonResponse({'message': 'Usuário não autenticado.'}, status=403)
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
+
+    if 'imagem' not in request.FILES:
+        return JsonResponse({'message': 'Nenhuma imagem enviada.'}, status=400)
+
+    imagem = request.FILES['imagem']
+
+    # Opcional: validação simples
+    if not imagem.content_type.startswith('image/'):
+        return JsonResponse({'message': 'Arquivo inválido. Envie uma imagem.'}, status=400)
+
+    usuario.imagem = imagem
+    usuario.save()
+
+    return JsonResponse({
+        'message': 'Foto atualizada com sucesso!',
+        'imagem_url': usuario.imagem.url
+    })
+
+@require_GET
+def listar_projetos_ajax(request):
+    email = request.session.get('usuario_email')
+
+    if not email:
+        return JsonResponse({'message': 'Usuário não autenticado.'}, status=403)
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
+
+    projetos = Projeto.objects.filter(
+        alunos=usuario
+    ).select_related('turma')
+
+    lista_projetos = []
+
+    for projeto in projetos:
+        lista_projetos.append({
+            'id': projeto.id,
+            'titulo': projeto.titulo,
+            'descricao': projeto.descricao,
+            'turma': projeto.turma.nome if projeto.turma else None,
+            'data_criacao': projeto.data_criacao.strftime('%d/%m/%Y') if hasattr(projeto, 'data_criacao') else None
+        })
+
+    return JsonResponse({
+        'projetos': lista_projetos
+    })
+
+
+def gerenciar_cursos_ajax(request):
+    email = request.session.get('usuario_email')
+
+    if not email:
+        return JsonResponse({'message': 'Usuário não autenticado.'}, status=403)
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'message': 'Usuário não encontrado.'}, status=404)
+
+    # ======================
+    # LISTAR CURSOS (GET)
+    # ======================
+    if request.method == 'GET':
+        cursos = Curso.objects.filter(usuario=usuario)
+
+        lista_cursos = []
+        for curso in cursos:
+            lista_cursos.append({
+                'id': curso.id,
+                'nome': curso.nome,
+                'instituicao': curso.instituicao,
+                'ano_conclusao': curso.ano_conclusao
+            })
+
+        return JsonResponse({'cursos': lista_cursos})
+
+    # ======================
+    # ADICIONAR CURSO (POST)
+    # ======================
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            nome = data.get('nome', '').strip()
+            instituicao = data.get('instituicao', '').strip()
+            ano_conclusao = data.get('ano_conclusao')
+
+            if not nome:
+                return JsonResponse({'message': 'Nome do curso é obrigatório.'}, status=400)
+
+            curso = Curso.objects.create(
+                usuario=usuario,
+                nome=nome,
+                instituicao=instituicao,
+                ano_conclusao=ano_conclusao
+            )
+
+            return JsonResponse({
+                'message': 'Curso adicionado com sucesso!',
+                'curso': {
+                    'id': curso.id,
+                    'nome': curso.nome,
+                    'instituicao': curso.instituicao,
+                    'ano_conclusao': curso.ano_conclusao
+                }
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'JSON inválido.'}, status=400)
+
+    # ======================
+    # EXCLUIR CURSO (DELETE)
+    # ======================
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            curso_id = data.get('id')
+
+            curso = Curso.objects.get(id=curso_id, usuario=usuario)
+            curso.delete()
+
+            return JsonResponse({'message': 'Curso removido com sucesso!'})
+
+        except Curso.DoesNotExist:
+            return JsonResponse({'message': 'Curso não encontrado.'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
+
+    return JsonResponse({'message': 'Método não permitido.'}, status=405)
+
 
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
@@ -198,6 +377,7 @@ def turmas(request, curso_id):
         "curso": curso,
         "turmas_por_ano": turmas_por_ano
     })
+
 
 # checagens futuras de permissão para editar o projeto (não funciona)
 def usuario_pode_editar_projeto(usuario, projeto):

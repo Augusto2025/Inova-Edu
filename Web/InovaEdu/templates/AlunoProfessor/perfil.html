@@ -2,41 +2,91 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
+{#  <link rel="stylesheet" href="{% static 'styles/global.css' %}">  #}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+{% block header %}
+    {% include "partials/header.html" %}
+{% endblock %}
 
-    <div class="titulo">
-        <p>Meu Perfil</p>
+<div class="container">
+    <!-- Perfil -->
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-photo-container">
+                {% if usuario.imagem %}
+                    <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                {% endif %}
+                <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
+                {#  <input type="hidden" id="csrf-token" value="{{ csrf_token }}">  #}
+            </div>
+            <div class="profile-info">
+                <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
+                
+                <div class="course-badges">
+                    {% for curso in cursos %}
+                        <span class="course-badge">{{ curso.nome_curso }}</span>
+                    {% empty %}
+                        <span class="course-badge">Nenhum curso cadastrado</span>
+                    {% endfor %}
+                </div>
+                
+                <p class="profile-bio" id="profile-bio">{{ usuario.descricao|default:"Sem descrição cadastrada." }}</p>
+                <button class="edit-btn" onclick="openProfileModal()">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </button>
+            </div>
+        </div>
     </div>
 
-    <main>
-        <section class="perfil-container">
-
-            <div class="foto-nome">
-                {% if usuario.imagem %}
-                    <img class="perfil-img" src="{{ usuario.imagem.url }}" alt="Foto do usuário">
-                {% else %}
-                    <img class="perfil-img" src="{% static 'img/default_user.png' %}" alt="Foto do usuário">
+    <!-- Cursos -->
+    <div class="certificates-section">
+        <div class="section-header">
+            <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
+            <button class="add-btn" onclick="openCursoModal()">
+                <i class="fas fa-plus"></i> Adicionar Certificados
+            </button>
+        </div>
+        <div class="certificates-grid" id="cursos-grid">
+            {% for curso in cursos %}
+            <div class="certificate-card" data-id="{{ curso.idcurso }}">
+                <div class="certificate-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3>{{ curso.nome_curso }}</h3>
+                <p><strong>Descrição:</strong> {{ curso.descricao_curso|default:"Sem descrição" }}</p>
+                {% if curso.data_inicio %}
+                    <p><i class="far fa-calendar-alt"></i> <strong>Início:</strong> {{ curso.data_inicio|date:"d/m/Y" }}</p>
                 {% endif %}
-                <p class="Nome_Usuario">{{ usuario.nome }} {{ usuario.sobrenome }}</p>
+                {% if curso.data_final %}
+                    <p><i class="far fa-calendar-check"></i> <strong>Término:</strong> {{ curso.data_final|date:"d/m/Y" }}</p>
+                {% endif %}
+                <div class="certificate-actions">
+                    <button class="cert-btn edit-cert" onclick='openEditCursoModal({{ curso.idcurso }}, "{{ curso.nome_curso|escapejs }}", "{{ curso.descricao_curso|escapejs }}", "{{ curso.data_inicio|date:'Y-m-d' }}", "{{ curso.data_final|date:'Y-m-d' }}")'>
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="cert-btn delete-cert" onclick="deleteCurso({{ curso.idcurso }})">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
             </div>
+            {% empty %}
+            <div class="no-items">
+                <i class="fas fa-book-open"></i>
+                <p>Nenhum curso cadastrado ainda.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-            <div class="info-card">
-                <p><strong>Email:</strong> {{ usuario.email }}</p>
-                <p><strong>Tipo:</strong> {{ usuario.tipo }}</p>
-            </div>
-            
-            <div class="descricao">
-                <p><strong>Descrição:</strong></p>
-                {{ usuario.descricao|default:"Sem descrição." }}
-            </div>
-    </main>
     <!-- Projetos -->
-{% comment %} <div class="repos-section">
+<div class="repos-section">
     <div class="section-header">
         <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
     </div>
@@ -44,23 +94,19 @@
         {% for projeto in projetos %}
         <div class="repo-card">
             <div class="repo-icon">
-                <i class="fas fa-code-branch"></i>
+                {#  <i class="fas fa-code-branch"></i>  #}
             </div>
-            <h3>{{ projeto.Nome_Projeto }}</h3>
+            <h3>{{ projeto.nome_projeto }}</h3>
             <p class="repo-turma">
                 <i class="fas fa-users"></i> 
-                {% if projeto.id_turma %}
-                    Turma: {{ projeto.id_turma.codigo_turma }} - 
-                    {% if projeto.id_turma.id_curso %}
-                        {{ projeto.id_turma.id_curso.nome_curso }}
-                    {% endif %}
-                    {% if projeto.id_turma.ano %}
-                        - {{ projeto.id_turma.ano }}
-                    {% endif %}
-                    ({{ projeto.id_turma.turno }})
-                {% else %}
-                    Turma não informada
-                {% endif %}
+                {% if projeto.turma %}
+                Turma: {{ projeto.turma.codigo_turma }} -
+                {{ projeto.turma.curso.nome_curso }}
+                - {{ projeto.turma.ano }}
+                ({{ projeto.turma.turno }})
+            {% else %}
+                Turma não informada
+            {% endif %}
             </p>
             <p class="repo-date">
                 <i class="far fa-calendar-alt"></i> 
@@ -68,8 +114,11 @@
             </p>
             {% if projeto.caminho_do_arquivo %}
             <p class="repo-file">
-                <i class="fas fa-file"></i> 
-                Arquivo: {{ projeto.caminho_do_arquivo }}
+                {#  <i class="fas fa-file"></i>   #}
+            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
+                <button class="Entrar">Entrar</button>
+            </a>
+                
             </p>
             {% endif %}
         </div>
@@ -81,10 +130,10 @@
         {% endfor %}
     </div>
 </div>
-</div> {% endcomment %}
+</div>
 
 <!-- Modal de Edição de Perfil -->
-{% comment %} <div class="modal" id="profile-modal">
+<div class="modal" id="profile-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
@@ -109,10 +158,10 @@
             <button class="save-btn" onclick="saveProfile()"><i class="fas fa-check"></i> Salvar</button>
         </div>
     </div>
-</div> {% endcomment %}
+</div>
 
 <!-- Modal de Curso -->
-{% comment %} <div class="modal" id="curso-modal">
+<div class="modal" id="curso-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="curso-modal-title"><i class="fas fa-plus-circle"></i> Adicionar Curso</h3>
@@ -143,10 +192,10 @@
             <button class="save-btn" onclick="saveCurso()"><i class="fas fa-check"></i> Salvar</button>
         </div>
     </div>
-</div> {% endcomment %}
+</div>
 
 <!-- Loading Overlay -->
-{% comment %} <div class="loading-overlay" id="loading-overlay">
+<div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
 </div>
 
@@ -156,7 +205,7 @@
         <i class="fas fa-check-circle toast-icon success"></i>
         <span class="toast-message" id="toast-message"></span>
     </div>
-</div> {% endcomment %}
+</div>
 
 <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
