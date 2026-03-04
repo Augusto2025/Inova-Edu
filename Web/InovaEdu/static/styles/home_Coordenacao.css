@@ -122,13 +122,13 @@
   }
 
   .icone-padrao {
-    background: #e0e0e0;
-    color: #555;
+    background: var(--branco-Senac);
+    color: black;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 30px;
   }
 
   /* SAIR */
