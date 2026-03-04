@@ -14,7 +14,7 @@
 
 .modal-content, .modal-moderno {
     background-color: #fff;
-    padding: 16px; 
+    /* padding: 16px; */
     border-radius: 20px; 
     max-width: 500px;
     width: 90%;
@@ -65,19 +65,20 @@
 #modalProjeto h2 {
     font-size: 1.4rem;
     font-weight: 700;
-    margin: 24px 24px 10px 24px;
-    color: var(--azul-Senac);
+    /* margin: 24px 24px 10px 24px; */
+    color: var(--branco-Senac);
     text-align: left;
 }
 
 #modalProjeto form {
-    padding: 0 24px 24px 24px;
+    padding: 20px;
 }
 
 #modalProjeto input[type="text"],
 #modalProjeto textarea,
 #modalProjeto input[type="file"] {
     width: 100%; 
+    max-width: 440px;
     padding: 12px;
     border-radius: 10px;
     border: 2px solid #e2e8f0;
@@ -202,13 +203,13 @@
 
 .header-text h2 {
     font-size: 1.25rem;
-    color: #1e293b;
+    /* color: #1e293b; */
     margin: 0;
 }
 
 .header-text p {
     font-size: 0.875rem;
-    color: #64748b;
+    /* color: #64748b; */
     margin: 4px 0 0;
 }
 

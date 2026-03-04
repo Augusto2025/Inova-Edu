@@ -2,169 +2,182 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'styles/global.css' %}">
-<link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-{% include "partials/header.html" %}
+    {% include "partials/header.html" %}
 
-<div class="barra-topo">
-    <div class="rota" style="display: flex; justify-content: space-between; align-items: center;">
-        <p>
-            Página:
-            <a href="{% url 'forum_blocos' %}">Todos os fóruns</a> >
-            {{ forum.nome }}
-        </p>
-        <div class="acoes-topo">
-            <button id="abrirModalTopico" class="botao-criar-forum" type="button">
-                + Criar Tópico
-            </button>
+    <div class="barra-topo">
+        <div class="rota" style="display: flex; justify-content: space-between; align-items: center;">
+            <p>
+                Página:
+                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a> >
+                {{ forum.nome }}
+            </p>
+            <div class="acoes-topo">
+                <button id="abrirModalTopico" class="botao-criar-forum" type="button">
+                    + Criar Tópico
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- MODAL CRIAR TÓPICO -->
-<div id="modalCriarTopico" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Criar novo tópico</h2>
-        <form method="POST" action="{% url 'criar_topico' forum.idforum %}">
-            {% csrf_token %}
-            <label>Título do tópico</label>
-            <input name="titulo" required maxlength="100">
+    <div class="titulo">
+        <p>Tópicos do fórum</p>
+    </div>
 
-            <label>Descrição</label>
-            <textarea name="descricao" maxlength="500" placeholder="Opcional"></textarea>
+    <div class="grid-topicos">
+        {% if topicos %}
+            {% for topico in topicos %}
+                <div class="card-topico">
+                    <div style="width: 429px;">
+                        <h3 class="titulo-topico">{{ topico.titulo }}</h3>
+                        {% if topico.descricao %}
+                            <p class="resumo-topico">{{ topico.descricao }}</p>
+                        {% endif %}
+                    </div>
 
-            <div class="modal-actions">
-                <button type="submit" class="btn-primary">Criar</button>
+                    <div style="display: flex; flex-direction: column; justify-content: center;"> 
+                        <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                            Entrar na Conversa
+                        </a>
+        
+                        {% if request.session.usuario_email == topico.usuario.email %}
+                            <div class="acoes-forum">
+                                <button class="btn-editar-topico"
+                                        data-topico-id="{{ topico.idtopico }}"
+                                        data-topico-titulo="{{ topico.titulo }}"
+                                        data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="btn-excluir-topico"
+                                        data-topico-id="{{ topico.idtopico }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="sem-topicos">Nenhum tópico encontrado neste fórum.</p>
+        {% endif %}
+    </div>
+
+    <!-- MODAL CRIAR TÓPICO -->
+    <div id="modalCriarTopico" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar novo tópico</h2>
+                {% comment %} <button id="fecharModalTopico" class="close-button">&times;</button> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="formCriarTopico" method="POST" action="{% url 'criar_topico' forum.idforum %}">
+                    {% csrf_token %}
+                    <label>Título do tópico</label>
+                    <input name="titulo" required maxlength="100">
+
+                    <label>Descrição</label>
+                    <textarea name="descricao" maxlength="500" placeholder="Opcional"></textarea>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary" form="formCriarTopico">Criar</button>
                 <button type="button" id="fecharModalTopico" class="btn-secondary">Cancelar</button>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div class="titulo">
-    <p>Tópicos do fórum</p>
-</div>
-
-<div class="grid-topicos">
-    {% if topicos %}
-        {% for topico in topicos %}
-            <div class="card-topico">
-                <div style="width: 429px;">
-                    <h3 class="titulo-topico">{{ topico.titulo }}</h3>
-                    {% if topico.descricao %}
-                        <p class="resumo-topico">{{ topico.descricao }}</p>
-                    {% endif %}
-                </div>
-
-                <div style="display: flex; flex-direction: column; justify-content: center;"> 
-                    <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
-                        Entrar na Conversa
-                    </a>
-    
-                    {% if request.session.usuario_email == topico.usuario.email %}
-                        <div class="acoes-forum">
-                            <button class="btn-editar-topico"
-                                    data-topico-id="{{ topico.idtopico }}"
-                                    data-topico-titulo="{{ topico.titulo }}"
-                                    data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button class="btn-excluir-topico"
-                                    data-topico-id="{{ topico.idtopico }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    {% endif %}
-                </div>
+    <!-- MODAL EDITAR TÓPICO -->
+    <div id="modalEditarTopico" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Tópico</h2>
+                {% comment %} <button id="fecharModalEditarTopico" class="close-button">&times;</button> {% endcomment %}
             </div>
-        {% endfor %}
-    {% else %}
-        <p class="sem-topicos">Nenhum tópico encontrado neste fórum.</p>
-    {% endif %}
-</div>
+            <div class="modal-body">
+                <form method="POST" id="formEditarTopico">
+                    {% csrf_token %}
+                    <label>Título do tópico</label>
+                    <input type="text" name="titulo" id="inputTituloTopico" required>
 
-<!-- MODAL EDITAR TÓPICO -->
-<div id="modalEditarTopico" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Editar Tópico</h2>
-        <form method="POST" id="formEditarTopico">
-            {% csrf_token %}
-            <label>Título do tópico</label>
-            <input type="text" name="titulo" id="inputTituloTopico" required>
+                    <label>Descrição</label>
+                    <textarea name="descricao" id="inputDescricaoTopico" maxlength="500"></textarea>
 
-            <label>Descrição</label>
-            <textarea name="descricao" id="inputDescricaoTopico" maxlength="500"></textarea>
-
-            <div class="modal-actions">
-                <button type="submit" class="btn-primary">Salvar</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary" form="formEditarTopico">Salvar</button>
                 <button type="button" id="fecharModalEditarTopico" class="btn-secondary">Cancelar</button>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<!-- MODAL EXCLUIR TÓPICO -->
-<div id="modalExcluirTopico" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Excluir Tópico</h2>
-        <p>Tem certeza que deseja excluir este tópico?</p>
-        <form method="POST" id="formExcluirTopico">
-            {% csrf_token %}
-            <div class="modal-actions">
-                <button type="submit" class="btn-primary">Sim, excluir</button>
-                <button type="button" id="fecharModalExcluirTopico" class="btn-secondary">Cancelar</button>
+    <!-- MODAL EXCLUIR TÓPICO -->
+    <div id="modalExcluirTopico" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                {% comment %} <button id="fecharModalExcluirTopico" class="close-button">&times;</button> {% endcomment %}
             </div>
-        </form>
+            <p class="modal-body">Tem certeza que deseja excluir este tópico?</p>
+            <form method="POST" id="formExcluirTopico">
+                {% csrf_token %}
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary">Sim, excluir</button>
+                    <button type="button" id="fecharModalExcluirTopico" class="btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // MODAL CRIAR
-    const abrirModal = document.getElementById('abrirModalTopico');
-    const fecharModal = document.getElementById('fecharModalTopico');
-    const modalCriar = document.getElementById('modalCriarTopico');
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // MODAL CRIAR
+        const abrirModal = document.getElementById('abrirModalTopico');
+        const fecharModal = document.getElementById('fecharModalTopico');
+        const modalCriar = document.getElementById('modalCriarTopico');
 
-    abrirModal?.addEventListener('click', () => modalCriar.classList.add('open'));
-    fecharModal?.addEventListener('click', () => modalCriar.classList.remove('open'));
-    modalCriar?.addEventListener('click', e => { if (e.target === modalCriar) modalCriar.classList.remove('open'); });
+        abrirModal?.addEventListener('click', () => modalCriar.classList.add('open'));
+        fecharModal?.addEventListener('click', () => modalCriar.classList.remove('open'));
+        modalCriar?.addEventListener('click', e => { if (e.target === modalCriar) modalCriar.classList.remove('open'); });
 
-    // MODAL EDITAR / EXCLUIR
-    const modalEditar = document.getElementById('modalEditarTopico');
-    const modalExcluir = document.getElementById('modalExcluirTopico');
-    const formEditar = document.getElementById('formEditarTopico');
-    const formExcluir = document.getElementById('formExcluirTopico');
-    const inputTitulo = document.getElementById('inputTituloTopico');
-    const inputDescricao = document.getElementById('inputDescricaoTopico');
+        // MODAL EDITAR / EXCLUIR
+        const modalEditar = document.getElementById('modalEditarTopico');
+        const modalExcluir = document.getElementById('modalExcluirTopico');
+        const formEditar = document.getElementById('formEditarTopico');
+        const formExcluir = document.getElementById('formExcluirTopico');
+        const inputTitulo = document.getElementById('inputTituloTopico');
+        const inputDescricao = document.getElementById('inputDescricaoTopico');
 
-    // EDITAR
-    document.querySelectorAll('.btn-editar-topico').forEach(btn => {
-        btn.addEventListener('click', () => {
-            inputTitulo.value = btn.dataset.topicoTitulo;
-            inputDescricao.value = btn.dataset.topicoDescricao || '';
-            formEditar.action = `/topico/editar/${btn.dataset.topicoId}/`;
-            modalEditar.classList.add('open');
+        // EDITAR
+        document.querySelectorAll('.btn-editar-topico').forEach(btn => {
+            btn.addEventListener('click', () => {
+                inputTitulo.value = btn.dataset.topicoTitulo;
+                inputDescricao.value = btn.dataset.topicoDescricao || '';
+                formEditar.action = `/topico/editar/${btn.dataset.topicoId}/`;
+                modalEditar.classList.add('open');
+            });
         });
-    });
 
-    // EXCLUIR
-    document.querySelectorAll('.btn-excluir-topico').forEach(btn => {
-        btn.addEventListener('click', () => {
-            formExcluir.action = `/topico/excluir/${btn.dataset.topicoId}/`;
-            modalExcluir.classList.add('open');
+        // EXCLUIR
+        document.querySelectorAll('.btn-excluir-topico').forEach(btn => {
+            btn.addEventListener('click', () => {
+                formExcluir.action = `/topico/excluir/${btn.dataset.topicoId}/`;
+                modalExcluir.classList.add('open');
+            });
         });
+
+        // FECHAR MODAIS
+        document.getElementById('fecharModalEditarTopico')?.addEventListener('click', () => modalEditar.classList.remove('open'));
+        document.getElementById('fecharModalExcluirTopico')?.addEventListener('click', () => modalExcluir.classList.remove('open'));
+
+        modalEditar?.addEventListener('click', e => { if (e.target === modalEditar) modalEditar.classList.remove('open'); });
+        modalExcluir?.addEventListener('click', e => { if (e.target === modalExcluir) modalExcluir.classList.remove('open'); });
     });
+    </script>
 
-    // FECHAR MODAIS
-    document.getElementById('fecharModalEditarTopico')?.addEventListener('click', () => modalEditar.classList.remove('open'));
-    document.getElementById('fecharModalExcluirTopico')?.addEventListener('click', () => modalExcluir.classList.remove('open'));
-
-    modalEditar?.addEventListener('click', e => { if (e.target === modalEditar) modalEditar.classList.remove('open'); });
-    modalExcluir?.addEventListener('click', e => { if (e.target === modalExcluir) modalExcluir.classList.remove('open'); });
-});
-</script>
-
-{% include "partials/footer.html" %}
+    {% include "partials/footer.html" %}
 {% endblock %}

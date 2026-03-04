@@ -91,18 +91,18 @@
   font-size: 16px;
 }
 
-.modal-overlay {
+/* .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  display: none;              /* ESCONDIDO */
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
 .modal-overlay.open {
-  display: flex;              /* APARECE */
+  display: flex;
 }
 
 .modal-content {
@@ -160,7 +160,7 @@
   text-decoration: none;
   width: 70%;
   transition: background 0.2s ease;
-}
+} */
 
 .acoes-forum button {
   margin-top: 20px;

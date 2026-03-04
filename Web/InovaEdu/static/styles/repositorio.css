@@ -118,10 +118,10 @@
 
 .modal-content {
     background-color: #ffffff;
-    padding: 20px;
+    /* padding: 20px; */
     border-radius: 12px;
     width: 90%;
-    max-width: 400px;
+    max-width: 480px;
     position: fixed;
     top: 50%;
     left: 50%;

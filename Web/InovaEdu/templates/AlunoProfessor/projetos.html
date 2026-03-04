@@ -131,8 +131,10 @@
         <div id="modalProjeto" class="modal">
             <div class="modal-content">
                 <!-- X para fechar -->
-                <span class="fechar">&times;</span>
-                <h2 id="modalTitle">Cadastrar Projeto</h2>
+                <div class="modal-header">
+                    <span class="fechar">&times;</span>
+                    <h2 id="modalTitle">Cadastrar Projeto</h2>
+                </div>
                 <form id="formProjeto" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" name="action" id="actionInput" value="cadastrar_projeto">
@@ -162,7 +164,7 @@
 
         <!-- Modal Excluir Projeto -->
         <div id="modalExcluir" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="padding: 16px;">
                 <span class="fechar">&times;</span>
                 <h2>⚠️ Confirmar Exclusão</h2>
                 <p>Tem certeza que deseja excluir o projeto <strong id="nomeProjetoExcluir"></strong>?</p>
