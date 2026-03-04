@@ -21,7 +21,7 @@ main{
     justify-content: flex-start;
     flex-direction: column;
     margin: 50px;
-    min-height: calc(80vh - 90px);
+    min-height: calc(80vh - 125px);
 }
 
 section{
@@ -63,7 +63,7 @@ section .Botao_entrar_curso{
 
 .accordion-container {
     width: 96%;
-    margin: 20px auto;
+    margin: auto;
 }
 
 .accordion-item {
