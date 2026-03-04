@@ -1,6 +1,5 @@
 /* DESKTOP – inclusive notebook pequeno */
 @media (min-width: 1025px) {
-
   /* ======= CORES PADRÃO ======= */
   :root {
     --laranja-Senac: #f7941d;
@@ -26,24 +25,100 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    margin: 0;
   }
 
-  /* =======INICIAL IMAGEM ======= */
+  /* ======= DASHBOARD ======= */
 
-  .painel-imagem {
+  /* Centraliza todo o dashboard */
+  .dashboard {
     width: 100%;
-    /* height: 300%; Ou defina uma altura específica, ex: 300px */
+    /* min-height: 100vh; */
     display: flex;
+    flex-direction: column;
+    align-items: center; /* centraliza */
     justify-content: center;
-    /* Centraliza horizontal */
-    align-items: center;
-    /* Centraliza vertical */
+    padding: 40px 0;
   }
 
-  .painel-imagem img {
-    max-width: 35%;
-    height: auto;
+  /* Largura menor igual ao da imagem */
+  .cards_dashboard,
+  .card-baixo {
+    width: 900px; /* controla o tamanho geral */
   }
+
+  /* Cards de cima */
+  .cards_dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Estilo dos cards */
+  .cardDashboard {
+    background: #f5fbfc;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Cards de baixo */
+  .card-baixo {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+  }
+
+  /* Cards grandes */
+  .cardDashboard.grande {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Ícones */
+  .icone {
+    font-size: 22px;
+  }
+
+  /* Texto */
+  .titulo {
+    margin: 0;
+    font-size: 14px;
+    color: #5f6b73;
+  }
+
+  .cardDashboard h2 {
+    margin: 4px 0 0 0;
+    font-size: 18px;
+  }
+
+  /* Gráfico */
+  .grafico {
+    width: 100%;
+    height: 140px;
+    margin-top: 10px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #cfe7ea, #e9f5f7);
+  }
+
+  /* Atividades */
+  .atividades {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .atividades li {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* ======= DASHBOARD FIM  ======= */
 
   .toast-sucesso {
     position: fixed;
@@ -1149,9 +1224,6 @@
     top: 0;
     left: 0;
     z-index: 1000%;
-
-
-
   }
 
   .logo-header img {
@@ -1180,7 +1252,6 @@
     border-radius: 5px;
     font-size: 14px;
   }
-
 
   /* =======img=========== */
 
@@ -1255,9 +1326,4 @@
   }
 
   /* ===== LISTA USUÁRIO (DESKTOP) ===== */
-
-
-
-
-
 }
