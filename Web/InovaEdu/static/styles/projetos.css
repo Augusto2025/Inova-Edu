@@ -282,8 +282,13 @@
 
 /* ================== RESPONSIVIDADE (OTIMIZADA) ================== */
 @media (max-width: 768px) {
+    .cards-container{
+        min-height: calc(80vh - 83px);
+    }
+
     /* Cards ficam em coluna */
     .card {
+        width: 300px;
         flex-direction: column;
         text-align: center;
         gap: 12px;
@@ -297,12 +302,20 @@
 
     .card-action {
         width: 100%;
-        flex-direction: column; /* Botões um embaixo do outro no mobile */
         gap: 8px;
     }
 
-    .btn-repositorio, .btn-primary, .btn-secondary, .btn-danger, .btn-warning {
-        width: 100%;
+    .btn-primary, .btn-secondary, .btn-danger {
+        width: 55%;
+    }
+
+    .btn-warning{
+        width: 100%; 
+        margin-top: 10px;
+    }
+
+    .btn-repositorio{
+        width: 90%;
     }
 
     /* Modais ficam mais largos no mobile para aproveitar espaço */
