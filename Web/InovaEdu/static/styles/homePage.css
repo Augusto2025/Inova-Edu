@@ -44,7 +44,7 @@ body {
     box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3);
 }
 
-.parallax h1 {
+.parallax h1, .parallax h2 {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(5px); /* Efeito de vidro moderno */
     padding: 20px 40px;
@@ -365,6 +365,34 @@ footer p {
     opacity: 0.6;
     border-top: 1px solid rgba(255,255,255,0.1);
     padding-top: 30px;
+}
+
+/* Definição da Animação */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px); /* Começa 30px abaixo */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Sobe para a posição original */
+    }
+}
+
+@keyframes titleGlow {
+    0% { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+    50% { text-shadow: 0 0 20px rgba(255,255,255,0.6); }
+    100% { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+}
+
+/* Aplicação no H1 */
+.titulo-animado, #titulo-animado {
+    display: inline-block;
+    opacity: 0; /* Começa invisível para a animação funcionar */
+    animation: 
+        fadeInUp 1.2s ease-out forwards, 
+        titleGlow 3s ease-in-out infinite;
+    animation-delay: 0.5s; /* Espera um pouco antes de começar */
 }
 
 /* ==========================
