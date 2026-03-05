@@ -30,7 +30,7 @@
 
   /* ======= DASHBOARD ======= */
 
-  /* Centraliza todo o dashboard */
+  /* Centraliza todo o dashboard */  
   .dashboard {
     width: 100%;
     /* min-height: 100vh; */
@@ -59,7 +59,7 @@
   .cardDashboard {
     background: #f5fbfc;
     border-radius: 14px;
-    padding: 18px 20px;
+    padding: 60px 45px;
     display: flex;
     align-items: center;
     gap: 12px;
