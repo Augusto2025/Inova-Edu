@@ -4,6 +4,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 <link rel="stylesheet" href="{% static 'styles/repositorio.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 {% include "partials/header.html" %}
 
@@ -37,11 +38,7 @@
         {% endif %}
     {% endif %}
 
-    {% if can_modify %}
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
-    {% endif %}
+    
 
     <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">
         ⬇️ Baixar Repositório
@@ -74,8 +71,8 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="header-text">
-                <h2>Enviar Arquivo</h2>
-                <p>Selecione um arquivo do seu dispositivo.</p>
+                <h2>Upload Arquivo</h2>
+                <p>Selecione um arquivo do seu dispositivo para upload.</p>
             </div>
             <span class="fechar" onclick="fecharModal('modal-upload')"></span>
         </div>
@@ -96,7 +93,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="header-text">
-                <h2>Enviar Pasta</h2>
+                <h2>Upload Pasta</h2>
                 <p>Isso enviará todos os arquivos contidos na pasta selecionada.</p>
             </div>
             <span class="fechar" onclick="fecharModal('modal-upload-pasta')"></span>
@@ -165,6 +162,13 @@
 <div class="turma-repositorio">
 
 <div class="pastas">
+    {% if can_modify %}
+        <div style="display: flex;">
+            <button type="button" class="acao-btn" style="margin-right: 10px;" onclick="abrirModal('modal-criar-pasta')">
+                <i class="fa-solid fa-plus" style="color: rgb(255, 178, 0);"></i> Criar Pasta</button>
+            <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📥 Upload Pasta</button>
+        </div>
+    {% endif %}
     <div class="section-header">
         <h4>Pastas</h4>
         {% if can_modify and pastas %}
@@ -210,6 +214,9 @@
 </div>
 
 <div class="arquivos">
+    {% if can_modify %}
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Upload Arquivo</button>
+    {% endif %}
     <div class="section-header">
         <h4>Arquivos</h4>
         {% if can_modify and arquivos %}

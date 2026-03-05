@@ -422,6 +422,10 @@ footer p {
 }
 
 @media (max-width: 768px) {
+    #subtitulo-animado{
+        display: none;
+    }
+
     .download-container {
         flex-direction: column;
         align-items: center;

@@ -1,82 +1,82 @@
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
-    --azul-Senac: #004A8D;
-    --azulEsverdiado-InovaEdu: #1A6F9D;
-    --shadow: 0 3px 12px rgba(0,0,0,0.12);
+  --laranja-Senac: #F7941D;
+  --branco-Senac: #FFF;
+  --azul-Senac: #004A8D;
+  --azulEsverdiado-InovaEdu: #1A6F9D;
+  --shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
-body{
-    margin: 0;
-    padding: 0;
-    background-image: url("../img/Fundo.png"); 
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("../img/Fundo.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .titulo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 40px 0px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0px;
 }
 
 .titulo p {
-    color: var(--azul-Senac);
-    font-size: 26px;
-    font-weight: 600;
-    border-bottom: 4px solid var(--laranja-Senac);
+  color: var(--azul-Senac);
+  font-size: 26px;
+  font-weight: 600;
+  border-bottom: 4px solid var(--laranja-Senac);
 }
 
 .campo_pesq {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto 20px auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
 }
 
 
 main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    justify-self: center;
-    flex-wrap: wrap;
-    margin: 25px auto;
-    gap: 26px;
-    min-height: calc(81vh - 90px);
-    gap: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  flex-wrap: wrap;
+  margin: 25px auto;
+  gap: 26px;
+  min-height: calc(81vh - 145px);
+  gap: 30px;
 }
 
 section {
-    display: flex;
-    align-items: center;
-    text-align: start;
-    border: solid 1px rgb(228, 228, 228);
-    border-radius: 23px;
-    transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  text-align: start;
+  border: solid 1px rgb(228, 228, 228);
+  border-radius: 23px;
+  transition: 0.2s ease;
 }
 
 section:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
 }
 
 .rota {
-    width: 96%;
-    color: var(--azul-Senac);
-    font-size: 14px;
-    font-weight: 600;
-    margin: 20px;
-    display: flex;
-    justify-content: space-between;
+  width: 96%;
+  color: var(--azul-Senac);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .rota a {
-    color: var(--azul-Senac);
+  color: var(--azul-Senac);
 }
 
 /* ---- Modal ----- */
@@ -135,7 +135,8 @@ section:hover {
   font-size: 0.9em;
 }
 
-.modal-content input, .modal-content textarea {
+.modal-content input,
+.modal-content textarea {
   width: 97%;
   padding: 8px;
   border: 1px solid #ddd;
@@ -171,7 +172,7 @@ section:hover {
 
 
 @media (max-width: 600px) {
-    .rota {
-        width: 92%;
-    }
+  .rota {
+    width: 92%;
+  }
 }
