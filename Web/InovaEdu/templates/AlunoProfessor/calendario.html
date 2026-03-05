@@ -66,14 +66,18 @@
   <!-- MODAL -->
   <div id="eventModal" class="modal hidden">
     <div class="modal-content">
-      <span class="modal-close">&times;</span>
 
-      <h2 id="modal-nome"></h2>
-
-      <p><strong>Data:</strong> <span id="modal-date"></span></p>
-      <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
-      <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
-      <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
+      <div class="modal-header">
+        <h2 id="modal-nome"></h2>
+        <span class="modal-close">&times;</span>
+      </div>
+      {% comment %} <h2 id="modal-nome"></h2> {% endcomment %}
+      <div class="modal-body">
+        <p><strong>Data:</strong> <span id="modal-date"></span></p>
+        <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
+        <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
+        <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
+      </div>
     </div>
   </div>
 
