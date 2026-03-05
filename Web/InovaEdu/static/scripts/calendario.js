@@ -141,12 +141,30 @@ function renderEventsOfMonth() {
         const div = document.createElement("div");
         div.classList.add("event-item");
 
-        div.innerHTML = `
-            <p><strong>${ev.nome}</strong></p>
-            <p>${ev.descricao}</p>
-            <p>${ev.hora}</p>
-            <hr>
-        `;
+        if (ev.nome) {
+            div.innerHTML += `<p><strong>${ev.nome}</strong></p>`;
+        } else {
+            div.innerHTML += `<p><strong>Evento sem nome</strong></p>`;
+        }
+
+        if (ev.descricao) {
+            div.innerHTML += `<p>${ev.descricao}</p>`;
+        } else {
+            div.innerHTML += `<p>Sem descrição</p>`;
+        }
+
+        if (ev.hora) {
+            div.innerHTML += `<p>${ev.hora}</p>`;
+        } else {
+            div.innerHTML += `<p>Hora não definida</p>`;
+        }
+        
+        // div.innerHTML = `
+        //     <p><strong>${ev.nome}</strong></p>
+        //     <p>${ev.descricao}</p>
+        //     <p>${ev.hora}</p>
+        //     <hr>
+        // `;
 
         div.addEventListener("click", () => openModal(ev));
 
