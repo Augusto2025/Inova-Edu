@@ -89,11 +89,22 @@ function renderCalendar() {
             const dot = document.createElement("span");
             dot.classList.add("dot");
 
+            // Criamos as datas para comparação
             const dataEvento = new Date(ev.data);
+            const hoje = new Date();
 
-            if (dataEvento < new Date()) dot.classList.add("red");
-            else if (dataEvento.toDateString() === new Date().toDateString()) dot.classList.add("yellow");
-            else dot.classList.add("green");
+            // Extraímos os componentes para evitar erro de fuso horário
+            const mesmoDia = dataEvento.getUTCDate() === hoje.getDate() &&
+                            dataEvento.getUTCMonth() === hoje.getMonth() &&
+                            dataEvento.getUTCFullYear() === hoje.getFullYear();
+
+            if (mesmoDia) {
+                dot.classList.add("yellow");
+            } else if (dataEvento < hoje) {
+                dot.classList.add("red");
+            } else {
+                dot.classList.add("green");
+            }
 
             dots.appendChild(dot);
         });

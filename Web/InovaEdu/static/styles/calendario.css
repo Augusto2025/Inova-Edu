@@ -1,6 +1,6 @@
 :root {
   --azul: #004A8D;
-  --azul-light: #0E66B3;
+  --azul-light: #1d80d8;
   --laranja: #F7941D;
   --bg: #F5F7FA;
   --white: #fff;
@@ -155,7 +155,7 @@ body{
 }
 
 .day-box:hover {
-  background: var(--azul-light);
+  background: var(--azul);
   color: white;
 }
 
@@ -166,7 +166,7 @@ body{
 
 /* Destacar o dia atual */
 .today {
-  background: var(--laranja) !important;
+  background: var(--azul-light) !important;
   color: white;
   font-weight: 700;
 }
