@@ -159,12 +159,7 @@ function renderEventsOfMonth() {
             div.innerHTML += `<p>Hora não definida</p>`;
         }
         
-        // div.innerHTML = `
-        //     <p><strong>${ev.nome}</strong></p>
-        //     <p>${ev.descricao}</p>
-        //     <p>${ev.hora}</p>
-        //     <hr>
-        // `;
+        div.innerHTML += `<hr>`;
 
         div.addEventListener("click", () => openModal(ev));
 
