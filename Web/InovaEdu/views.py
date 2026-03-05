@@ -1065,6 +1065,15 @@ def home_Coordenacao(request):
     usuarios = Usuario.objects.all()
     cursos = Curso.objects.all()
     turmas = Turma.objects.select_related('curso').all()
+    
+    #dashoard total de usuários, cursos e turmas
+    
+    total_usuarios = usuarios.count()
+    total_cursos = cursos.count()  
+    total_turmas = turmas.count()
+    
+    
+   
 
     if request.method == 'POST':
         print(request.POST)
@@ -1108,6 +1117,10 @@ def home_Coordenacao(request):
         'cursos': cursos,
         'turmas': turmas,
         'usuario_logado': usuario_logado,
+        
+        'total_usuarios': total_usuarios,
+        'total_cursos': total_cursos,  
+        'total_turmas': total_turmas,
     })
 
 
