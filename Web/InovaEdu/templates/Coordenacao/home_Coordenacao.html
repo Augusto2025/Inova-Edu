@@ -96,9 +96,12 @@
         <div id="painelImagem" class="dashboard">
 
             <!-- CARDS DE CIMA -->
+            <h2 class="titulocoord">Bem-Vindo a Coordenação</h2>
             <div class="cards_dashboard">
 
+
                 <div class="cardDashboard">
+                    <p class="titulocima">Total de Usuarios</p>
                     <div class="icone">👤</div>
                     <div>
                         <p class="titulo">Usuarios</p>
@@ -107,6 +110,7 @@
                 </div>
 
                 <div class="cardDashboard">
+                    <p class="titulocima">Total de Turmas</p>
                     <div class="icone">🎓</div>
                     <div>
                         <p class="titulo">Turmas</p>
@@ -115,6 +119,7 @@
                 </div>
 
                 <div class="cardDashboard">
+                    <p class="titulocima">Total de Cursos</p>
                     <div class="icone">👩‍🏫</div>
                     <div>
                         <p class="titulo">Cursos</p>
@@ -125,7 +130,7 @@
             </div>
 
             <!-- CARDS DE BAIXO -->
-            <div class="card-baixo">
+            {% comment %} <div class="card-baixo">
 
                 <div class="cardDashboard grande">
                     <h3>......</h3>
@@ -140,7 +145,7 @@
                     </ul>
                 </div>
 
-            </div>
+            </div> {% endcomment %}
 
         </div>
         <!-- DASHBOARD INICIAL FIM-->
@@ -723,7 +728,7 @@
 
     <!-- FOOTER -->
     <footer class="footer-fixo">
-        <p>&copy; 2025 Desenvolvido pela Trindade Tech </p>
+        <p>&copy; 2025 Desenvolvido pela Tríade Tech </p>
     </footer>
 
     <script src="{% static 'scripts/home_coordenacao.js' %}"></script>
