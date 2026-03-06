@@ -52,7 +52,7 @@ function mostrarLista(id) {
 // ====== EDITAR ======
 document.addEventListener("DOMContentLoaded", function () {
 
-    const botoesEditar = document.querySelectorAll('.botao-editar');
+    const botoesEditar = document.querySelectorAll('.btn-editar');
     const modalEditar = document.getElementById('modalEditar');
     const fecharEditar = document.getElementById('fecharEditar');
     const cancelarEditar = document.getElementById('cancelarEditar');

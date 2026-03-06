@@ -186,7 +186,7 @@
                             <span>{{ usuario.email }}</span>
 
                             <i class="fa-solid fa-align-center icon-descricao" title="Ver descrição"
-                                data-descricao="{{ usuario.descricao|escapejs }}"></i>
+                            data-descricao="{{ usuario.descricao|escapejs }}"></i>
 
                             <span>
                                 {% if usuario.imagem %}
@@ -203,7 +203,9 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                <form method="POST">
+                               <form method="POST" action="{% url 'excluir_usuario' usuario.idusuario %}">
+                                    {% csrf_token %}
+                                    
                                     <button type="submit" class="btn-excluir" title="Excluir">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
