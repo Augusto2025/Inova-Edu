@@ -9,7 +9,7 @@
 {% include "partials/header.html" %}
 
 <div class="rota">
-    Página: Cursos > Turmas > Projetos > Repositório
+    Página: Cursos > Turmas > {{ projeto.nome_projeto }} > Repositório
     {% for p in path %}
             > {{ p.nome }}
     {% endfor %}

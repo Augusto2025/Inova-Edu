@@ -522,6 +522,7 @@ def repositorio_projeto(request, projeto_id):
         return redirect('login')
     usuario = get_object_or_404(Usuario, email=email)
     projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
+    # turma = Turma.objects.all()
     can_modify = usuario_pode_editar_projeto(usuario, projeto)
 
     if request.method == 'POST' and can_modify:

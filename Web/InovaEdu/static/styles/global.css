@@ -174,5 +174,6 @@ section:hover {
 @media (max-width: 600px) {
   .rota {
     width: 92%;
+    align-items: center;
   }
 }
