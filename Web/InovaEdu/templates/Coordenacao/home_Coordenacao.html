@@ -21,6 +21,25 @@
     </div>
     {% endfor %}
     {% endif %}
+    
+
+
+    {% comment %} modal de exclusão geral {% endcomment %}
+   <div id="modalExcluir" class="modal-excluir-bg">
+        <div class="modal-box-excluir">
+
+            <h3>⚠️ Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este item?</p>
+
+            <div class="modal-botoes-excluir">
+                <button type="button" id="cancelarExcluir" class="btn-cancelar-excluir">Cancelar</button>
+                <button type="button" id="confirmarExcluir" class="btn-confirmar-excluir">Excluir</button>
+            </div>
+
+        </div>
+
+    </div>
+
 
 
 
@@ -206,7 +225,7 @@
                                <form method="POST" action="{% url 'excluir_usuario' usuario.idusuario %}">
                                     {% csrf_token %}
                                     
-                                    <button type="submit" class="btn-excluir" title="Excluir">
+                                    <button type="button" class="btn-excluir abrir-modal-excluir">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
@@ -380,8 +399,7 @@
                                 <form action="{% url 'excluir_curso' curso.idcurso %}" method="POST"
                                     class="form-excluir-curso">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-excluir-curso" title="Excluir curso"
-                                        onclick="return confirm('Tem certeza que deseja excluir este curso?')">
+                                    <button type="button" class="btn-excluir-curso abrir-modal-excluir" title="Excluir curso">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
@@ -523,8 +541,8 @@
                                 <form action="{% url 'excluir_turma' turma.idturma %}" method="POST"
                                     class="form-excluir-turma">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-excluir-turma" title="Excluir turma"
-                                        onclick="return confirm('Tem certeza que deseja excluir esta turma?')">
+
+                                    <button type="button" class="btn-excluir-turma abrir-modal-excluir" title="Excluir turma">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>
@@ -737,7 +755,7 @@
     <script src="{% static 'scripts/modal_descricao.js' %}"></script>
 
 
-    <div id="modalDescricao" class="modal">
+    <div id="modalDescricao" class="Descricao-modal">
         <div class="modal-content">
             <span class="fechar-descricao">&times;</span>
             <h3>Descrição</h3>
