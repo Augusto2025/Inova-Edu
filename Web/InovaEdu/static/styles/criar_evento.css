@@ -24,7 +24,7 @@
 
 .criar-evento-form input,
 .criar-evento-form textarea{
-  padding:10px 12px;
+  padding: 10px 12px;
   border-radius:8px;
   border:1px solid #e6e9ef;
   outline:none;
@@ -43,6 +43,6 @@
 
 .erro{ color:#b70303; background: #fff0f0; padding:8px; border-radius:6px; }
 @media (max-width:520px){
-  .criar-evento-container{ margin:40px 12px; padding:16px; }
+  .criar-evento-container{ margin: 65px 12px; padding:16px; }
   .criar-evento-actions{ flex-direction:column-reverse; }
 }

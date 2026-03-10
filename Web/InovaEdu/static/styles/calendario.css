@@ -299,7 +299,7 @@ body{
   }
 
   .sidebar {
-      width: 98%;
+      width: 95%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -319,7 +319,7 @@ body{
   }
 
   .calendar-card {
-      width: 92%;
+      width: 90%;
   }
 
   .event-panel {
