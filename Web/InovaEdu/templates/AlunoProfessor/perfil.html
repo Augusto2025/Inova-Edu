@@ -34,11 +34,13 @@
 
                 <!-- BADGES CERTIFICADOS -->
                 <div class="course-badges">
-                    {% for certificado in certificados %}
-                        <span class="course-badge">{{ certificado.nome }}</span>
-                    {% empty %}
-                        <span class="course-badge">Nenhum certificado cadastrado</span>
-                    {% endfor %}
+                    {% if usuario.turma %}
+                        <span class="course-badge">
+                            {{ usuario.turma.curso.nome_curso }}
+                        </span>
+                    {% else %}
+                        <span class="course-badge">Curso não informado</span>
+                    {% endif %}
                 </div>
 
                 <p class="profile-bio" id="profile-bio">

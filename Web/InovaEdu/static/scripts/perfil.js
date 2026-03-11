@@ -300,47 +300,120 @@ async function saveCurso() {
     }
 }
 
-async function deleteCurso(id) {
-    if (!confirm('Tem certeza que deseja excluir este curso?')) {
+async function deleteCertificado(id) {
+
+    if (!confirm("Deseja excluir este certificado?")) return;
+
+    showLoading();
+
+    try {
+
+        const response = await fetch("/api/certificados/", {
+            method: "DELETE",
+            headers: headers,
+            body: JSON.stringify({
+                id: id
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showToast("Certificado excluído!");
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(data.message || "Erro ao excluir", "error");
+        }
+
+    } catch (error) {
+        console.error(error);
+        showToast("Erro ao excluir certificado", "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+// Fechar modais com tecla ESC
+
+// =========================
+// CERTIFICADOS
+// =========================
+
+let currentCertificadoId = null;
+
+function openCertificadoModal() {
+
+    currentCertificadoId = null;
+
+    document.getElementById("certificado-nome").value = "";
+    document.getElementById("certificado-descricao").value = "";
+    document.getElementById("certificado-data-inicio").value = "";
+    document.getElementById("certificado-data-fim").value = "";
+
+    document.getElementById("certificado-modal-title").innerHTML =
+        '<i class="fas fa-plus-circle"></i> Adicionar Certificado';
+
+    document.getElementById("certificado-modal").classList.add("active");
+}
+
+function closeCertificadoModal() {
+    document.getElementById("certificado-modal").classList.remove("active");
+}
+
+function openEditCertificadoModal(id, nome, descricao, inicio, fim) {
+
+    currentCertificadoId = id;
+
+    document.getElementById("certificado-nome").value = nome || "";
+    document.getElementById("certificado-descricao").value = descricao || "";
+    document.getElementById("certificado-data-inicio").value = inicio || "";
+    document.getElementById("certificado-data-fim").value = fim || "";
+
+    document.getElementById("certificado-modal-title").innerHTML =
+        '<i class="fas fa-edit"></i> Editar Certificado';
+
+    document.getElementById("certificado-modal").classList.add("active");
+}
+
+async function saveCertificado() {
+
+    const nome = document.getElementById("certificado-nome").value.trim();
+    const descricao = document.getElementById("certificado-descricao").value.trim();
+    const dataInicio = document.getElementById("certificado-data-inicio").value;
+    const dataFim = document.getElementById("certificado-data-fim").value;
+
+    if (!nome) {
+        showToast("Digite o nome do certificado", "error");
         return;
     }
 
     showLoading();
 
     try {
-        const response = await fetch('/api/cursos/', {
-            method: 'DELETE',
+
+        const response = await fetch("/api/certificados/", {
+            method: "POST",
             headers: headers,
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({
+                id: currentCertificadoId,   // 👈 envia o ID se for edição
+                nome: nome,
+                descricao: descricao,
+                data_inicio: dataInicio,
+                data_final: dataFim
+            })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            showToast('Curso excluído com sucesso!');
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
-        } else {
-            showToast(data.message || 'Erro ao deletar curso', 'error');
-            hideLoading();
+            showToast("Certificado salvo!");
+            setTimeout(() => location.reload(), 1200);
         }
+
     } catch (error) {
-        console.error('Erro:', error);
-        showToast('Erro ao deletar curso. Tente novamente.', 'error');
+        console.error(error);
+        showToast("Erro ao salvar", "error");
+    } finally {
         hideLoading();
     }
 }
-
-// Fechar modais ao clicar fora
-window.addEventListener('click', function(event) {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        if (event.target === modal) {
-            modal.classList.remove('active');
-        }
-    });
-});
-
-// Fechar modais com tecla ESC
-
