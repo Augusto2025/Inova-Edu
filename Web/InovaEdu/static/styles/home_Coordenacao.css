@@ -113,6 +113,149 @@
   }
   /* ======= DASHBOARD FIM  ======= */
 
+  /* ===== FUNDO MODAL EXCLUIR ===== */
+  .modal-excluir-bg {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* ===== CAIXA MODAL ===== */
+  .modal-box-excluir {
+    background: #ffffff;
+    padding: 25px;
+    width: 340px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    animation: animarModalExcluir 0.25s ease;
+  }
+
+  /* ===== TITULO ===== */
+  .modal-box-excluir h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 20px;
+  }
+
+  /* ===== TEXTO ===== */
+  .modal-box-excluir p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+
+  /* ===== BOTÕES ===== */
+  .modal-botoes-excluir {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* BOTÃO CANCELAR */
+  .btn-cancelar-excluir {
+    padding: 8px 16px;
+    border: none;
+    background: #bfc5c9;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-cancelar-excluir:hover {
+    background: #aab0b4;
+  }
+
+  /* BOTÃO EXCLUIR */
+  .btn-confirmar-excluir {
+    padding: 8px 16px;
+    border: none;
+    background: #e74c3c;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-confirmar-excluir:hover {
+    background: #c0392b;
+  }
+
+  /* ===== MODAL DESCRIÇÃO ===== */
+
+  /* Fundo escuro */
+  .Descricao-modal {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Caixa da modal */
+  .Descricao-modal .modal-content {
+    background: #ffffff;
+    width: 500px;
+    max-width: 90%;
+    padding: 25px 30px;
+    border-radius: 12px;
+    position: relative;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+    animation: abrirDescricao 0.25s ease;
+  }
+
+  /* Título */
+  .Descricao-modal h3 {
+    font-size: 22px;
+    color: #004a8d;
+    margin-bottom: 15px;
+    border-bottom: 3px solid #f7941d;
+    padding-bottom: 6px;
+  }
+
+  /* Texto da descrição */
+  #textoDescricao {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.6;
+
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  /* Botão fechar */
+  .fechar-descricao {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .fechar-descricao:hover {
+    color: #f44336;
+    transform: scale(1.1);
+  }
+
+  /* ======================== */
+
   .toast-sucesso {
     position: fixed;
     top: 20px;
@@ -161,13 +304,18 @@
   .logo-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+  }
+
+  .logo-header a {
+    display: inline-block;
   }
 
   .logo-img {
-    width: 3%;
-    /* ajuste o tamanho que desejar */
+    width: 55px;
     height: auto;
     display: block;
+    cursor: pointer;
   }
 
   /* AÇÕES */
