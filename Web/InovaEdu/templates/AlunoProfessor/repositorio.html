@@ -17,11 +17,12 @@
 
 <div class="titulo">
     <p> 
-        {% if path|length == 0 %}
-            Repositório
-        {% else %}
+        <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">Repositório</a>
+    
+        {% if path %}
             {% for p in path %}
-                Repositório > {{ p.nome }}
+                <span> > </span>
+                <a href="{% url 'repositorio_pasta' p.id %}">{{ p.nome }}</a>
             {% endfor %}
         {% endif %}
     </p>
@@ -29,13 +30,26 @@
 
 <div class="acoes-repositorio">
     {% if path %}
+        {# Se o path tem mais de 1 item, o usuário está em uma subpasta de outra pasta #}
         {% if path|length > 1 %}
-            {% with pasta_pai=path|slice:'-2'|last %}
-                <a href="{% url 'repositorio_pasta' pasta_pai.id %}" style="background-color: #f7941d;" class="acao-btn">Voltar</a>
+            {% with pasta_pai=path|slice:":-1"|last %}
+                <a href="{% url 'repositorio_pasta' pasta_pai.id %}" 
+                style="background-color: #f7941d;" 
+                class="acao-btn">
+                Voltar
+                </a>
             {% endwith %}
-        {% else %}
-            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" style="background-color: #f7941d;" class="acao-btn">Voltar</a>
+            
+        {# Se o path tem exatamente 1 item, o usuário está na primeira subpasta (filha direta do projeto) #}
+        {% elif path|length == 1 %}
+            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" 
+            style="background-color: #f7941d;" 
+            class="acao-btn">
+            Voltar
+            </a>
         {% endif %}
+        
+        {# Se o path for 0 (raiz), o código entra aqui e não renderiza nada #}
     {% endif %}
 
     

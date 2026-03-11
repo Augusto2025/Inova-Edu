@@ -29,6 +29,10 @@ body {
   border-bottom: 4px solid var(--laranja-Senac);
 }
 
+.titulo a{
+  color: var(--azul-Senac);
+}
+
 .campo_pesq {
   display: flex;
   align-items: center;
