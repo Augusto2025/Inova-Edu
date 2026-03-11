@@ -42,6 +42,10 @@
   /* height: 300px; */
 }
 
+.card-content{
+  width: 429px;
+}
+
 .card-topico:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
@@ -183,10 +187,15 @@
 
 @media (max-width: 480px) {
   .card-topico {
+    display: block;
     padding: 16px;
     min-height: auto;      
     height: auto;
     border-radius: 14px;
+  }
+
+  .card-content{
+    width: 100%;
   }
 
   .titulo-topico {
