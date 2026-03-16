@@ -197,6 +197,22 @@ function openModal(ev) {
     modal.querySelector("#modal-descricao").textContent = ev.descricao;
     modal.querySelector("#modal-endereco").textContent = ev.endereco;
 
+    const footerBtns = modal.querySelector("#modal-footer-btns");
+    const btnExcluir = modal.querySelector("#btn-excluir-evento");
+    const btnEditar = modal.querySelector("#btn-editar-evento");
+
+    // 🔒 Verifica se o usuário logado é o dono
+    if (ev.dono_email === usuarioLogadoEmail) {
+        footerBtns.classList.remove("hidden");
+        btnExcluir.href = `/calendario/excluir/${ev.id}/`; // Ajuste sua URL
+        
+        btnEditar.onclick = () => {
+            window.location.href = `/calendario/editar/${ev.id}/`; // Ajuste sua URL
+        };
+    } else {
+        footerBtns.classList.add("hidden");
+    }
+
     modal.classList.remove("hidden");
 }
 

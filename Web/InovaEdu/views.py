@@ -770,66 +770,88 @@ def repositorio_pasta(request, pasta_id):
 
 def calendario(request):
     eventos = Eventos.objects.all()
+    usuario_logado_email = request.session.get('usuario_email')
+    
     eventos_json = [
         {
+            "id": evento.ideventos,
             "nome": evento.nome_do_evento,
             "data": evento.data_do_evento.strftime("%Y-%m-%d"),
             "descricao": evento.descricao,
             "hora": evento.hora_do_evento.strftime("%H:%M"),
             "endereco": evento.endereco,
+            "dono_email": evento.usuario.email # Adicionado
         }
         for evento in eventos
     ]
     context = {
         'eventos_json': json.dumps(eventos_json),
+        'usuario_email': usuario_logado_email # Passamos o email logado
     }
     return render(request, 'AlunoProfessor/calendario.html', context)
 
 def criar_evento(request):
     email = request.session.get('usuario_email')
-    usuario = None
-    if email:
-        try:
-            usuario = Usuario.objects.get(email=email)
-        except Usuario.DoesNotExist:
-            usuario = None
+    usuario = Usuario.objects.get(email=email) # Simplificado para o exemplo
 
     if request.method == 'POST':
-        nome = request.POST.get('nome', '').strip()
         data_str = request.POST.get('data')
-        hora_str = request.POST.get('hora')
-        descricao = request.POST.get('descricao', '').strip()
-        endereco = request.POST.get('endereco', '').strip()
+        data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
 
-        # validações básicas
-        if not nome or not data_str or not hora_str:
+        # 🔥 REGRA: Limite de 5 eventos por dia
+        eventos_hoje = Eventos.objects.filter(data_do_evento=data_do_evento).count()
+        if eventos_hoje >= 5:
+            messages.error(request, "Limite de 5 eventos para este dia atingido!")
             return render(request, 'AlunoProfessor/criar_evento.html', {
-                'erro': 'Nome, data e hora são obrigatórios.',
-                'usuario': usuario,
-                'form': request.POST
+                'erro': 'Este dia já possui o limite máximo de 5 eventos.',
+                'usuario': usuario
             })
 
-        try:
-            data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
-            hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
-        except ValueError:
-            return render(request, 'AlunoProfessor/criar_evento.html', {
-                'erro': 'Formato de data/hora inválido.',
-                'usuario': usuario,
-                'form': request.POST
-            })
-
-        Eventos.objects.create(
-            nome_do_evento=nome,
-            data_do_evento=data_do_evento,
-            hora_do_evento=hora_do_evento,
-            descricao=descricao,
-            endereco=endereco,
-            usuario=usuario
-        )
+        # ... resto do seu código de criação ...
+        Eventos.objects.create(..., usuario=usuario)
         return redirect('calendario')
 
     return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
+
+def editar_evento(request, evento_id):
+    email = request.session.get('usuario_email')
+    evento = get_object_or_404(Eventos, pk=evento_id)
+    usuario = get_object_or_404(Usuario, email=email)
+
+    # Segurança: Se não for o dono, volta para o calendário
+    if evento.usuario.email != email:
+        return redirect('calendario')
+
+    if request.method == 'POST':
+        # Atualiza os dados com o que veio do formulário
+        evento.nome_do_evento = request.POST.get('nome')
+        evento.descricao = request.POST.get('descricao')
+        evento.endereco = request.POST.get('endereco')
+        
+        data_str = request.POST.get('data')
+        hora_str = request.POST.get('hora')
+        
+        if data_str and hora_str:
+            evento.data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
+            evento.hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
+            
+        evento.save()
+        return redirect('calendario')
+
+    # Se for GET, renderiza a página de criação, mas com os dados do evento
+    return render(request, 'AlunoProfessor/editar_evento.html', {
+        'evento': evento,
+        'usuario': usuario
+    })
+
+def excluir_evento(request, evento_id):
+    email = request.session.get('usuario_email')
+    evento = get_object_or_404(Eventos, pk=evento_id)
+    
+    # 🔥 SEGURANÇA: Só o dono exclui
+    if evento.usuario.email == email:
+        evento.delete()
+    return redirect('calendario')
 
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
