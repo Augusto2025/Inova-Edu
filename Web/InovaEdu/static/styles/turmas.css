@@ -90,22 +90,26 @@ section .Botao_entrar_curso{
 
 .accordion-header .icon {
     font-size: 22px;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease;
+    display: inline-block;
 }
 
 .accordion-content {
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease-out, opacity 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    padding: 15px;
     background: #f5f5f5;
-}
-
-.accordion-content {
-    display: none;
+    padding: 0 15px;
 }
 
 .accordion-content.open {
-    display: flex;
+    max-height: 1000px;
+    opacity: 1;
+    padding: 15px;
 }
 
 .turma-card {
