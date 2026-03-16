@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404 
 from .models import *
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 import json
 from django.core.mail import send_mail
@@ -950,10 +950,20 @@ def excluir_mensagem(request, msg_id):
 def editar_mensagem(request, msg_id):
     if request.method == 'POST':
         msg = get_object_or_404(Mensagem, pk=msg_id, autor__email=request.session.get('usuario_email'))
+        
+        # Lógica dos 30 minutos
+        agora = timezone.now()
+        prazo_limite = msg.criado_em + timedelta(minutes=30)
+
+        if agora > prazo_limite:
+            # Opcional: enviar uma mensagem de erro (messages.error)
+            return redirect(request.META.get('HTTP_REFERER'))
+
         novo_conteudo = request.POST.get('conteudo')
         if novo_conteudo:
             msg.conteudo = novo_conteudo
             msg.save()
+            
     return redirect(request.META.get('HTTP_REFERER'))
 
 def forum_blocos(request):

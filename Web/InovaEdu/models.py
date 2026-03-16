@@ -1,3 +1,5 @@
+from django.utils import timezone  
+from datetime import timedelta
 from django.db import models
 from cloudinary.models import CloudinaryField
 from cloudinary.utils import cloudinary_url
@@ -222,6 +224,9 @@ class Mensagem(models.Model):
     excluida = models.BooleanField(default=False)
     conteudo = models.TextField(db_column='Conteudo')
     criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
+
+    def pode_editar(self):
+        return timezone.now() < self.criado_em + timedelta(minutes=30)
 
     class Meta:
         managed = True

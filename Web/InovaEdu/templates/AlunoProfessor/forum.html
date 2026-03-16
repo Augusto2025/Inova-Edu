@@ -45,7 +45,10 @@
                                 <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
                                 <button class="btn-opcoes" onclick="toggleMenu('menu-{{ msg.id }}')">⋮</button>
                                 <div id="menu-{{ msg.id }}" class="msg-menu shadow-sm hidden">
-                                    <button onclick="prepararEdicao('{{ msg.id }}', '{{ msg.conteudo|escapejs }}')">Editar</button>
+                                    {% if msg.pode_editar %}
+                                        <button onclick="prepararEdicao('{{ msg.id }}', '{{ msg.conteudo|escapejs }}')">Editar</button>
+                                    {% endif %}
+                                    
                                     <a style="color: red;" href="{% url 'excluir_mensagem' msg.id %}">Excluir</a>
                                 </div>
                             </div>
