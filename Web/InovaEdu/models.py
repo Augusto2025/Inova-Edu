@@ -219,6 +219,7 @@ class Mensagem(models.Model):
         on_delete=models.CASCADE,
         db_column='ID_Usuario'
     )
+    excluida = models.BooleanField(default=False)
     conteudo = models.TextField(db_column='Conteudo')
     criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
 

@@ -785,32 +785,51 @@ def calendario(request):
     }
     return render(request, 'AlunoProfessor/calendario.html', context)
 
-def forum_blocos(request):
-    query = request.GET.get("q", "").strip()
-    data_criacao = request.GET.get("data_criacao", "")
-    ordenar = request.GET.get("ordenar", "")
+def criar_evento(request):
+    email = request.session.get('usuario_email')
+    usuario = None
+    if email:
+        try:
+            usuario = Usuario.objects.get(email=email)
+        except Usuario.DoesNotExist:
+            usuario = None
 
-    foruns = Forum.objects.all()
+    if request.method == 'POST':
+        nome = request.POST.get('nome', '').strip()
+        data_str = request.POST.get('data')
+        hora_str = request.POST.get('hora')
+        descricao = request.POST.get('descricao', '').strip()
+        endereco = request.POST.get('endereco', '').strip()
 
-    if query:
-        foruns = foruns.filter(nome__icontains=query)
+        # validações básicas
+        if not nome or not data_str or not hora_str:
+            return render(request, 'AlunoProfessor/criar_evento.html', {
+                'erro': 'Nome, data e hora são obrigatórios.',
+                'usuario': usuario,
+                'form': request.POST
+            })
 
-    if data_criacao:
-        foruns = foruns.filter(data_criacao=data_criacao)
+        try:
+            data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
+            hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
+        except ValueError:
+            return render(request, 'AlunoProfessor/criar_evento.html', {
+                'erro': 'Formato de data/hora inválido.',
+                'usuario': usuario,
+                'form': request.POST
+            })
 
-    if ordenar == "asc":
-        foruns = foruns.order_by("nome")
-    elif ordenar == "desc":
-        foruns = foruns.order_by("-nome")
+        Eventos.objects.create(
+            nome_do_evento=nome,
+            data_do_evento=data_do_evento,
+            hora_do_evento=hora_do_evento,
+            descricao=descricao,
+            endereco=endereco,
+            usuario=usuario
+        )
+        return redirect('calendario')
 
-    return render(
-        request,
-        'AlunoProfessor/forum_blocos.html',
-        {
-            'foruns': foruns,
-            'query': query,
-        }
-    )
+    return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
 
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
@@ -922,6 +941,47 @@ def forum_chat(request, forum_id):
         'mensagens': mensagens
     })
 
+def excluir_mensagem(request, msg_id):
+    msg = get_object_or_404(Mensagem, pk=msg_id, autor__email=request.session.get('usuario_email'))
+    msg.excluida = True
+    msg.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+def editar_mensagem(request, msg_id):
+    if request.method == 'POST':
+        msg = get_object_or_404(Mensagem, pk=msg_id, autor__email=request.session.get('usuario_email'))
+        novo_conteudo = request.POST.get('conteudo')
+        if novo_conteudo:
+            msg.conteudo = novo_conteudo
+            msg.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+def forum_blocos(request):
+    query = request.GET.get("q", "").strip()
+    data_criacao = request.GET.get("data_criacao", "")
+    ordenar = request.GET.get("ordenar", "")
+
+    foruns = Forum.objects.all()
+
+    if query:
+        foruns = foruns.filter(nome__icontains=query)
+
+    if data_criacao:
+        foruns = foruns.filter(data_criacao=data_criacao)
+
+    if ordenar == "asc":
+        foruns = foruns.order_by("nome")
+    elif ordenar == "desc":
+        foruns = foruns.order_by("-nome")
+
+    return render(
+        request,
+        'AlunoProfessor/forum_blocos.html',
+        {
+            'foruns': foruns,
+            'query': query,
+        }
+    )
 
 def editar_forum(request, forum_id):
     forum = get_object_or_404(Forum, pk=forum_id)
@@ -1004,54 +1064,6 @@ def criar_forum(request):
 
     # 🚫 Não renderiza template próprio (modal cuida disso)
     return redirect('forum_blocos')
-
-def criar_evento(request):
-    email = request.session.get('usuario_email')
-    usuario = None
-    if email:
-        try:
-            usuario = Usuario.objects.get(email=email)
-        except Usuario.DoesNotExist:
-            usuario = None
-
-    if request.method == 'POST':
-        nome = request.POST.get('nome', '').strip()
-        data_str = request.POST.get('data')
-        hora_str = request.POST.get('hora')
-        descricao = request.POST.get('descricao', '').strip()
-        endereco = request.POST.get('endereco', '').strip()
-
-        # validações básicas
-        if not nome or not data_str or not hora_str:
-            return render(request, 'AlunoProfessor/criar_evento.html', {
-                'erro': 'Nome, data e hora são obrigatórios.',
-                'usuario': usuario,
-                'form': request.POST
-            })
-
-        try:
-            data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
-            hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
-        except ValueError:
-            return render(request, 'AlunoProfessor/criar_evento.html', {
-                'erro': 'Formato de data/hora inválido.',
-                'usuario': usuario,
-                'form': request.POST
-            })
-
-        Eventos.objects.create(
-            nome_do_evento=nome,
-            data_do_evento=data_do_evento,
-            hora_do_evento=hora_do_evento,
-            descricao=descricao,
-            endereco=endereco,
-            usuario=usuario
-        )
-        return redirect('calendario')
-
-    return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
-
-
 
 # ================ TELAS COORDENAÇÃO ====================
 
