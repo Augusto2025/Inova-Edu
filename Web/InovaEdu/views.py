@@ -1286,3 +1286,19 @@ def excluir_turma(request, idturma):
 def lista_curso(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
+
+
+def buscar_alunos(request):
+
+    alunos = Usuario.objects.filter(tipo='Aluno')
+
+    data = []
+
+    for a in alunos:
+        data.append({
+            "id": a.idusuario,
+            "nome": a.nome,
+            "sobrenome": a.sobrenome
+        })
+
+    return JsonResponse(data, safe=False)

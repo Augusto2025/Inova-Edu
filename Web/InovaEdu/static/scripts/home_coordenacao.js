@@ -209,36 +209,141 @@ document.addEventListener("DOMContentLoaded", function () {
 // ===== MODAL USUÁRIOS DA TURMA =====
 document.addEventListener("DOMContentLoaded", function () {
 
-  const modal = document.getElementById("modalUsuariosTurma");
-  const fechar = document.getElementById("fecharUsuariosTurma");
-  const lista = document.getElementById("listaUsuariosTurma");
+    const modal = document.getElementById("modalUsuariosTurma");
+    const fechar = document.getElementById("fecharUsuariosTurma");
 
-  document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
-    btn.addEventListener("click", function () {
+    const listaBanco = document.getElementById("listaAlunosBanco");
+    const listaSelecionados = document.getElementById("listaSelecionados");
+    const busca = document.getElementById("buscarAlunoModal");
 
-      const usuarios = JSON.parse(this.dataset.usuarios || "[]");
+    let alunosSelecionados = [];
+    let turmaAtual = null;
 
-      lista.innerHTML = "";
 
-      if (usuarios.length === 0) {
-        lista.innerHTML = "<li>Nenhum usuário vinculado.</li>";
-      } else {
-        usuarios.forEach(user => {
-          const li = document.createElement("li");
-          li.textContent = `${user.nome} ${user.sobrenome}`;
-          lista.appendChild(li);
+    // =========================
+    // ABRIR MODAL
+    // =========================
+    document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
+
+        btn.addEventListener("click", function () {
+
+            turmaAtual = this.dataset.turma;
+
+            modal.style.display = "flex";
+
+            carregarAlunos();
+
         });
-      }
 
-      modal.style.display = "flex";
     });
-  });
 
-  fechar.onclick = () => modal.style.display = "none";
 
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.style.display = "none";
-  });
+    // =========================
+    // FECHAR MODAL
+    // =========================
+    fechar.onclick = () => modal.style.display = "none";
+
+    window.onclick = function (e) {
+        if (e.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+
+
+    // =========================
+    // CARREGAR ALUNOS DO BANCO
+    // =========================
+    function carregarAlunos() {
+
+        fetch("/buscar_alunos/")
+            .then(res => res.json())
+            .then(data => {
+
+                listaBanco.innerHTML = "";
+
+                data.forEach(aluno => {
+
+                    const li = document.createElement("li");
+
+                    li.innerHTML = `
+                        <span>${aluno.nome} ${aluno.sobrenome}</span>
+                        <button class="btn-add">Adicionar</button>
+                    `;
+
+                    li.querySelector("button").onclick = () => adicionarAluno(aluno);
+
+                    listaBanco.appendChild(li);
+
+                });
+
+            });
+
+    }
+
+
+    // =========================
+    // ADICIONAR ALUNO
+    // =========================
+    function adicionarAluno(aluno) {
+
+        if (alunosSelecionados.find(a => a.id === aluno.id)) return;
+
+        alunosSelecionados.push(aluno);
+
+        renderSelecionados();
+
+    }
+
+
+    // =========================
+    // RENDER ALUNOS SELECIONADOS
+    // =========================
+    function renderSelecionados() {
+
+        listaSelecionados.innerHTML = "";
+
+        alunosSelecionados.forEach((aluno, index) => {
+
+            const li = document.createElement("li");
+
+            li.innerHTML = `
+                <span>${aluno.nome} ${aluno.sobrenome}</span>
+                <button class="btn-remover">Remover</button>
+            `;
+
+            li.querySelector("button").onclick = () => {
+
+                alunosSelecionados.splice(index, 1);
+
+                renderSelecionados();
+
+            };
+
+            listaSelecionados.appendChild(li);
+
+        });
+
+    }
+
+
+    // =========================
+    // PESQUISA DE ALUNO
+    // =========================
+    busca.addEventListener("keyup", function () {
+
+        const valor = this.value.toLowerCase();
+
+        const itens = listaBanco.querySelectorAll("li");
+
+        itens.forEach(li => {
+
+            const texto = li.innerText.toLowerCase();
+
+            li.style.display = texto.includes(valor) ? "flex" : "none";
+
+        });
+
+    });
 
 });
 

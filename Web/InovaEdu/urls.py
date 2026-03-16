@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
     path('api/upload-foto/', views.upload_foto_ajax, name='upload_foto_ajax'),
     path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
+    path('buscar_alunos/', views.buscar_alunos, name='buscar_alunos'),
 ]
 
 if settings.DEBUG and hasattr(settings, 'MEDIA_ROOT'):

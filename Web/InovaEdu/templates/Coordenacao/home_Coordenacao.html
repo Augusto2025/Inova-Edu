@@ -558,16 +558,36 @@
                 </section>
             </section>
 
-            <div id="modalUsuariosTurma" class="modal" style="display:none;">
-                <div class="modal-conteudo">
-                    <span class="fechar" id="fecharUsuariosTurma">&times;</span>
+           <div id="modalUsuariosTurma" class="modal-usuarios">
+                <div class="modal-usuarios-box">
 
-                    <h3>Usuários da Turma</h3>
+                    <div class="modal-usuarios-topo">
+                        <h3>Adicionar alunos na turma</h3>
+                        <span class="modal-usuarios-fechar" id="fecharUsuariosTurma">&times;</span>
+                    </div>
 
-                    <ul id="listaUsuariosTurma" class="lista-usuarios-modal">
-                        <!-- preenchido via JS -->
-                    </ul>
+                    <!-- PESQUISA -->
+                    <div class="modal-usuarios-busca">
+                        <input type="text" id="buscarAlunoModal" placeholder="Digite o nome do aluno...">
+                    </div>
+
+                    <!-- LISTA DO BANCO -->
+                    <div class="modal-usuarios-lista">
+                        <ul id="listaAlunosBanco"></ul>
+                    </div>
+
+                    <!-- ALUNOS SELECIONADOS -->
+                    <div class="modal-usuarios-selecionados">
+                        <h4>Alunos adicionados</h4>
+                        <ul id="listaSelecionados"></ul>
+                    </div>
+
+                    <div class="modal-usuarios-footer">
+                        <button class="btn-salvar-alunos">Salvar alunos</button>
+                    </div>
+
                 </div>
+
             </div>
 
 
