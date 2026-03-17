@@ -128,21 +128,22 @@
                     </div>
                 </div>
 
-                <div class="cardDashboard">
-                    <p class="titulocima">Total de Turmas</p>
-                    <div class="icone">🎓</div>
-                    <div>
-                        <p class="titulo">Turmas</p>
-                        <h2>{{ total_turmas }}</h2>
-                    </div>
-                </div>
-
+                
                 <div class="cardDashboard">
                     <p class="titulocima">Total de Cursos</p>
                     <div class="icone">👩‍🏫</div>
                     <div>
                         <p class="titulo">Cursos</p>
                         <h2>{{ total_cursos }}</h2>
+                    </div>
+                </div>
+                
+                <div class="cardDashboard">
+                    <p class="titulocima">Total de Turmas</p>
+                    <div class="icone">🎓</div>
+                    <div>
+                        <p class="titulo">Turmas</p>
+                        <h2>{{ total_turmas }}</h2>
                     </div>
                 </div>
 
@@ -311,8 +312,8 @@
                         <label for="EmailEdit">Email:</label>
                         <input type="email" id="EmailEdit" name="email" required placeholder="exemplo@gmail.com">
 
-                        <label for="SenhaEdit">Senha:</label>
-                        <input type="password" id="SenhaEdit" name="senha" required placeholder="***********">
+                        {% comment %} <label for="SenhaEdit">Senha:</label>
+                        <input type="password" id="SenhaEdit" name="senha" required placeholder="***********"> {% endcomment %}
 
                         <label for="descricaoEdit">Descrição:</label>
                         <textarea id="descricaoEdit" name="descricao" rows="4"
@@ -523,7 +524,7 @@
                             <span class="turma-usuarios">
                                 <button type="button" class="btn-ver-usuarios" title="Ver usuários da turma"
                                     data-turma="{{ turma.idturma }}" data-usuarios='{{ turma.usuarios_json|escapejs }}'>
-                                    <i class="fa-solid fa-users"></i>
+                                    <i class="fa-solid fa-user-plus"></i>
                                 </button>
                             </span>
 

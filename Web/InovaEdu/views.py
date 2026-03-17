@@ -1340,16 +1340,7 @@ def home_Coordenacao(request):
 
 
 
-    return render(
-        request,
-        "Coordenacao/home_Coordenacao.html",
-        {
-            "usuarios": usuarios,
-            "cursos": cursos,
-            "turmas": turmas,
-            "usuario_logado": usuario_logado,
-        },
-    )
+ 
 
 
 def homePage(request):
