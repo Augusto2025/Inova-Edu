@@ -128,37 +128,34 @@
 
         <div class="repos-grid" id="projetos-grid">
             {% for projeto in projetos %}
-            <div class="repo-card">
-                <h3>{{ projeto.nome_projeto }}</h3>
+                <div class="repo-card">
 
-                <p class="repo-turma">
-                    <i class="fas fa-users"></i>
-                    {% if projeto.turma %}
-                        Turma: {{ projeto.turma.codigo_turma }} -
-                        {{ projeto.turma.curso.nome_curso }} -
-                        {{ projeto.turma.ano }}
-                        ({{ projeto.turma.turno }})
-                    {% else %}
-                        Turma não informada
-                    {% endif %}
-                </p>
+                    <h3>{{ projeto.nome_projeto }}</h3>
 
-                <p class="repo-date">
-                    <i class="far fa-calendar-alt"></i>
-                    Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
-                </p>
+                    <p class="repo-turma">
+                        <i class="fas fa-users"></i>
+                        {% if projeto.turma %}
+                            Turma: {{ projeto.turma.codigo_turma }} -
+                            {{ projeto.turma.curso.nome_curso }} -
+                            {{ projeto.turma.ano }}
+                            ({{ projeto.turma.turno }})
+                        {% else %}
+                            Turma não informada
+                        {% endif %}
+                    </p>
 
-                {% if projeto.caminho_do_arquivo %}
-                <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
-                    <button class="Entrar">Entrar</button>
-                </a>
-                {% endif %}
-            </div>
-            {% empty %}
-            <div class="no-items">
-                <i class="fas fa-folder-open"></i>
-                <p>Nenhum projeto encontrado.</p>
-            </div>
+                    <p class="repo-date">
+                        <i class="far fa-calendar-alt"></i>
+                        Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                    </p>
+
+                    <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
+                        <button class="entrar-projeto">
+                            <i class="fas fa-folder-open"></i> Entrar
+                        </button>
+                    </a>
+
+                </div>
             {% endfor %}
         </div>
     </div>

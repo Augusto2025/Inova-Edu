@@ -30,7 +30,6 @@ urlpatterns = [
     path('calendario/excluir/<int:evento_id>/', views.excluir_evento, name='excluir_evento'),
     path('calendario/editar/<int:evento_id>/', views.editar_evento, name='editar_evento'),
     path("perfil/", views.perfil, name="perfil"),
-    # path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     path("curso/<int:curso_id>/turmas/", views.turmas, name="turmas"),
     path('turma/<int:turma_id>/projetos/', views.projetos_da_turma, name='projetos_da_turma'),
     path('projeto/<int:projeto_id>/repositorio/', views.repositorio_projeto, name='repositorio_projeto'),
@@ -52,8 +51,6 @@ urlpatterns = [
     path('api/listar-projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
     path('api/upload-foto/', views.upload_foto, name='upload_foto'),
-    # path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
-    # path('salvar-certificado/', views.salvar_certificado, name='salvar_certificado'),
     path('api/certificados/', views.salvar_certificado, name='certificados_api'),
 ]
 
