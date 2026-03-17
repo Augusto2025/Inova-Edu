@@ -780,14 +780,25 @@ header > div {
     margin-top: 85px;
 }
 
-.Entrar {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    cursor: pointer;
-    width: 80px;
-    height: 30px;
+.repo-link{
+    text-decoration: none;
+    color: inherit;
+}
+.entrar-projeto{
+    margin-top: 10px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 20px;
-    margin: 5%;
-    margin-left: 35%;
+    border-radius: 6px;
+    background-color: var(--azul-Senac);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+    
+}
+
+.entrar-projeto:hover{
+    background-color: var(--azul-Senac);
+}
+.delete-cert {
+    color: red;
 }
