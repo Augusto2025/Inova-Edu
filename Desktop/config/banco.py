@@ -7,11 +7,14 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 def resource_path(relative_path):
-    """ Encontra o caminho do arquivo na mesma pasta do script ou no .exe """
+    """ Encontra o caminho do arquivo no .exe ou no ambiente de dev """
     if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
+        # No .exe, o PyInstaller coloca o conteúdo de 'config' dentro de 'config'
+        # ou na raiz de _internal dependendo de como foi o --add-data.
+        # Vamos tentar o caminho que inclui a subpasta 'config'
+        return os.path.join(sys._MEIPASS, "config", relative_path)
     
-    # Pega a pasta onde o banco.py está (pasta config)
+    # No VS Code (desenvolvimento), o banco.py já está na pasta config
     base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
 
