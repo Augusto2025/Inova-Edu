@@ -209,6 +209,8 @@ body{
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  overflow-y: auto;
+  height: 76vh;
 }
 
 .event-panel h3 {
@@ -299,7 +301,7 @@ body{
   }
 
   .sidebar {
-      width: 98%;
+      width: 95%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -323,8 +325,9 @@ body{
   }
 
   .event-panel {
-      width: 95%;
+      width: 93%;
       margin-top: 15px;
+      height: 45vh;
   }
 }
 

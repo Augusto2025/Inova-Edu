@@ -305,8 +305,13 @@
         gap: 8px;
     }
 
-    .btn-primary, .btn-secondary, .btn-danger {
+    .btn-secondary, .btn-danger {
         width: 55%;
+    }
+
+    .btn-primary{
+        width: 40%;
+        font-size: 0.80rem;
     }
 
     .btn-warning{

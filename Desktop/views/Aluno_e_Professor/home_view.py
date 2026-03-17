@@ -13,15 +13,13 @@ class Home(ctk.CTkFrame):
         self.janela = master
 
         from sidebar_AP import Sidebar, sidebar
-        
         sidebar_existente = None
         for widget in self.janela.winfo_children():
             if isinstance(widget, Sidebar):
                 sidebar_existente = widget
                 break
-
         if not sidebar_existente:
-            sidebar_existente, _ = sidebar(self.janela)
+            sidebar(self.janela)
         
         self.pack(side="right", fill="both", expand=True)
 

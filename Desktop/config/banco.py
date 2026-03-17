@@ -7,49 +7,44 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 def resource_path(relative_path):
-    """ Encontra o caminho real dos arquivos dentro do .exe ou em dev """
-    try:
-        # Caminho da pasta temporária onde o PyInstaller extrai tudo
-        base_path = sys._MEIPASS
-    except Exception:
-        # Caminho em modo de desenvolvimento (VS Code)
-        base_path = os.path.abspath(".")
+    """ Encontra o caminho do arquivo na mesma pasta do script ou no .exe """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    
+    # Pega a pasta onde o banco.py está (pasta config)
+    base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
 
 def conectar():
-    """Conecta ao PostgreSQL usando DATABASE_URL ou parâmetros individuais"""
+    env_path = resource_path(".env")
+    
+    # Carrega o arquivo
+    if not load_dotenv(env_path):
+        print(f"[BANCO ERRO] Não encontrou o .env em: {env_path}")
     
     database_url = os.getenv("DATABASE_URL")
 
     if database_url:
         try:
-            # 1. Teste rápido de socket antes de tentar a conexão pesada
-            # Extraímos o host e porta da URL para testar se o banco externo responde
+            # Remova espaços em branco extras que podem vir do .env
+            database_url = database_url.strip()
+            
             result = urlparse(database_url)
             hostname = result.hostname
             port = result.port or 5432
             
-            print(f"[BANCO] Testando socket externo {hostname}:{port}...", flush=True)
+            print(f"[BANCO] Testando socket em {hostname}:{port}...", flush=True)
             socket.create_connection((hostname, port), timeout=3)
             
-            # 2. Conexão real via URL
-            print(f"[BANCO] Conectando via DATABASE_URL...", flush=True)
             conn = psycopg2.connect(database_url, connect_timeout=5)
-            print(f"[BANCO] Conexão PostgreSQL Externa OK", flush=True)
+            print(f"[BANCO] Conexão OK!", flush=True)
             return conn
 
-        except socket.timeout:
-            msg = "Timeout: O servidor externo do banco não respondeu ao teste de socket."
-            print(f"[BANCO ERRO] {msg}")
-            raise Exception(msg)
-        except OperationalError as err:
-            msg = f"Erro operacional no PostgreSQL (URL): {err}"
-            print(f"[BANCO ERRO] {msg}")
-            raise Exception(msg)
         except Exception as err:
-            msg = f"Falha na conexão externa: {err}"
-            print(f"[BANCO ERRO] {msg}")
-            raise Exception(msg)
+            print(f"[BANCO ERRO] Falha: {err}")
+            raise
     else:
-        print("[BANCO ERRO] DATABASE_URL não encontrada no .env")
-        raise Exception("Configuração de banco de dados ausente.")
+        print(f"[BANCO ERRO] DATABASE_URL não encontrada. Verifique o conteúdo de: {env_path}")
+        raise Exception("Configuração ausente.")
+
+conectar()

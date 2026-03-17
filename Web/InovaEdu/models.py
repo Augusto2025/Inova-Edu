@@ -1,3 +1,5 @@
+from django.utils import timezone  
+from datetime import timedelta
 from django.db import models
 from cloudinary.models import CloudinaryField
 from cloudinary.utils import cloudinary_url
@@ -219,8 +221,12 @@ class Mensagem(models.Model):
         on_delete=models.CASCADE,
         db_column='ID_Usuario'
     )
+    excluida = models.BooleanField(default=False)
     conteudo = models.TextField(db_column='Conteudo')
     criado_em = models.DateTimeField(db_column='Data_criacao', auto_now_add=True)
+
+    def pode_editar(self):
+        return timezone.now() < self.criado_em + timedelta(minutes=30)
 
     class Meta:
         managed = True
@@ -270,3 +276,19 @@ class Arquivo(models.Model):
             attachment=self.nome
         )
         return url
+
+class Certificado(models.Model):
+    idcertificado = models.AutoField(db_column='idCertificado', primary_key=True)
+    nome = models.CharField(max_length=100)
+    descricao = models.CharField(max_length=150, blank=True, null=True)
+    data_inicio = models.DateField(blank=True, null=True)
+    data_final = models.DateField(blank=True, null=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='certificados')
+
+    class Meta:
+        db_table = 'certificado'
+
+    def __str__(self):
+        return self.nome
+    
+        
