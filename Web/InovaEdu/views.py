@@ -175,24 +175,29 @@ def perfil(request):
     if not email:
         return redirect('login')
 
-    usuario = Usuario.objects.get(email=email)
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return redirect('login')
 
     certificados = Certificado.objects.filter(usuario=usuario)
 
-    turmas_ids = UsuarioDaTurma.objects.filter(
+    # pegar a turma do usuário
+    turma_usuario = UsuarioDaTurma.objects.filter(
         id_usuario=usuario
-    ).values_list('id_turma_id', flat=True)
+    ).select_related('id_turma').first()
 
-    projetos = Projeto.objects.filter(
-        turma_id__in=turmas_ids
-    )
+    turma = turma_usuario.id_turma if turma_usuario else None
+
+    # pegar projetos da turma
+    projetos = Projeto.objects.filter(turma=turma) if turma else []
 
     return render(request, 'AlunoProfessor/perfil.html', {
         'usuario': usuario,
         'certificados': certificados,
-        'projetos': projetos
+        'projetos': projetos,
+        'turma': turma
     })
-
 
 @require_POST
 def atualizar_perfil_ajax(request):
