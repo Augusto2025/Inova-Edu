@@ -13,15 +13,13 @@ class Home(ctk.CTkFrame):
         self.janela = master
 
         from sidebar_AP import Sidebar, sidebar
-        
         sidebar_existente = None
         for widget in self.janela.winfo_children():
             if isinstance(widget, Sidebar):
                 sidebar_existente = widget
                 break
-
         if not sidebar_existente:
-            sidebar_existente, _ = sidebar(self.janela)
+            sidebar(self.janela)
         
         self.pack(side="right", fill="both", expand=True)
 
@@ -66,7 +64,7 @@ class Home(ctk.CTkFrame):
         # Botão de Filtros com contorno Branco
         filtros_btn = ctk.CTkButton(search_container, text="⚙️ Filtros", width=100, height=35,
                                     fg_color="transparent", border_width=1, border_color=Branco,
-                                    text_color=Branco, hover_color="#283593",
+                                    text_color=Branco, hover='transparent',
                                     command=self.abrir_modal_filtros)
         filtros_btn.pack(side="left", padx=5)
 
@@ -177,6 +175,8 @@ class Home(ctk.CTkFrame):
         print(f"DEBUG HOME: Enviando ID {id_curso} e Nome {nome_curso} para a tela de turmas")
         
         if id_curso is None:
+            import tkinter.messagebox as messagebox
+            messagebox.showerror("Erro", "O curso selecionado não possui um ID válido.")
             print("ERRO CRÍTICO: O curso selecionado não possui um ID!")
             return
 

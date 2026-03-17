@@ -21,36 +21,6 @@
         </div>
     </div>
 
-    <!-- MODAL CRIAR FÓRUM -->
-    <div id="modalCriarForum" class="modal-overlay">
-        <div class="modal-content">
-
-            <h2>Criar novo fórum</h2>
-
-            <form method="POST" action="{% url 'criar_forum' %}">
-                {% csrf_token %}
-
-                <label>Nome do fórum</label>
-                <input name="nome" required>
-
-                <label>Título do primeiro tópico</label>
-                <input name="titulo_topico" required>
-
-                <label>Descrição do tópico</label>
-                <textarea name="descricao_topico"></textarea>
-
-                <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Criar</button>
-                    <button type="button" id="fecharModalForum" class="btn-secondary">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-
     <div class="titulo">
         <p>Temas dos fóruns</p>
     </div>
@@ -85,13 +55,6 @@
         </form>
     </aside>
 
-    {% if query %}
-    {% for Forum in foruns %}
-    {% empty %}
-    <p style="justify-self: center; margin-top: 20px;">Nenhum resultado encontrado.</p>
-    {% endfor %}
-    {% endif %}
-
     <main>
         {% for Forum in foruns %}
             <section>
@@ -119,29 +82,73 @@
                     </div>
                 {% endif %}
             </section>
+
+            {% empty %}
+                {% if query %}
+                    <p style="text-align:center; margin-top:40px;">
+                        Nenhum resultado encontrado.
+                    </p>
+                {% else %}
+                    <p style="text-align:center; margin-top:40px;">
+                        Nenhum fórum criado até o momento.
+                    </p>
+                {% endif %}
         {% endfor %}
     </main>
+
+    <!-- MODAL CRIAR FÓRUM -->
+    <div id="modalCriarForum" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Fórum</h2>
+            </div>
+            <div class="modal-body">
+                <form id="formCriarForum" method="POST" action="{% url 'criar_forum' %}">
+                    {% csrf_token %}
+
+                    <label>Nome do fórum</label>
+                    <input name="nome" required required maxlength="40" placeholder="Ex: Dúvidas sobre Python">
+
+                    <label>Título do primeiro tópico</label>
+                    <input name="titulo_topico" required maxlength="30" placeholder="Ex: Como começar com Python">
+
+                    <label>Descrição do tópico</label>
+                    <textarea name="descricao_topico" maxlength="300" placeholder="Ex: Tenho dúvidas sobre como começar a aprender Python."></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="formCriarForum" class="btn-primary">Criar</button>
+                <button type="button" id="fecharModalForum" class="btn-secondary">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Editar Fórum e Tópico -->
     <div id="modalEditarForum" class="modal-overlay">
         <div class="modal-content">
-            <h2>Editar Fórum</h2>
-            <form method="POST" id="formEditarForum">
-                {% csrf_token %}
-                <label>Nome do Fórum:</label>
-                <input type="text" name="nome" id="inputNomeForum" required>
+            <div class="modal-header">
+                <h2>Editar Fórum</h2>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="formEditarForum">
+                    {% csrf_token %}
+                    <label>Nome do Fórum:</label>
+                    <input type="text" name="nome" id="inputNomeForum" required>
 
-                <label>Título do Tópico:</label>
-                <input type="text" name="titulo" id="inputTituloTopico" required>
+                    <label>Título do Tópico:</label>
+                    <input type="text" name="titulo" id="inputTituloTopico" required>
 
-                <label>Descrição do Tópico:</label>
-                <textarea name="descricao" id="inputDescricaoTopico"></textarea>
+                    <label>Descrição do Tópico:</label>
+                    <textarea name="descricao" id="inputDescricaoTopico"></textarea>
 
-                <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Salvar</button>
-                    <button type="button" id="fecharModalEditar" class="btn-secondary">Cancelar</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary" form="formEditarForum">Salvar</button>
+                <button type="button" id="fecharModalEditar" class="btn-secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -149,15 +156,19 @@
     <!-- Modal Confirmar Exclusão -->
     <div id="modalExcluirForum" class="modal-overlay">
         <div class="modal-content">
-            <h2>Excluir Fórum</h2>
-            <p>Tem certeza que deseja excluir este fórum?</p>
-            <form method="POST" id="formExcluirForum">
-                {% csrf_token %}
-                <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Sim, excluir</button>
-                    <button type="button" id="fecharModalExcluir" class="btn-secondary">Cancelar</button>
-                </div>
-            </form>
+            <div class="modal-header">
+                <h2>Excluir Fórum</h2>
+            </div>
+            <p style="padding-left: 15px;">Tem certeza que deseja excluir este fórum?</p>
+            <div class="modal-body">
+                <form method="POST" id="formExcluirForum">
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary" form="formExcluirForum">Sim, excluir</button>
+                <button type="button" id="fecharModalExcluir" class="btn-secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 

@@ -1,6 +1,6 @@
 :root {
   --azul: #004A8D;
-  --azul-light: #0E66B3;
+  --azul-light: #1d80d8;
   --laranja: #F7941D;
   --bg: #F5F7FA;
   --white: #fff;
@@ -155,7 +155,7 @@ body{
 }
 
 .day-box:hover {
-  background: var(--azul-light);
+  background: var(--azul);
   color: white;
 }
 
@@ -166,7 +166,7 @@ body{
 
 /* Destacar o dia atual */
 .today {
-  background: var(--laranja) !important;
+  background: var(--azul-light) !important;
   color: white;
   font-weight: 700;
 }
@@ -209,6 +209,8 @@ body{
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  overflow-y: auto;
+  height: 76vh;
 }
 
 .event-panel h3 {
@@ -227,37 +229,50 @@ body{
   color: var(--azul);
 }
 
-/* MODAL --------------------------------------------------------------- */
+/* ------------------------------- MODAL ------------------------------- */
 .modal {
-  position: fixed;
-  top: 0; 
-  left: 0;
-  width: 100%; 
-  height: 100%;
-  background: rgba(0,0,0,0.55);
   display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 450px;
+  animation: modalAppear 0.3s ease;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: var(--azul-Senac);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
 }
 
 .hidden {
   display: none;
 }
 
-.modal-content {
-  background: white;
-  padding: 25px;
-  width: 90%;
-  max-width: 400px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  position: relative;
-}
 
 .modal-close {
-  position: absolute;
-  top: 12px;
-  right: 18px;
+  justify-self: start;
   font-size: 26px;
   cursor: pointer;
 }
@@ -286,7 +301,7 @@ body{
   }
 
   .sidebar {
-      width: 98%;
+      width: 95%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -306,12 +321,13 @@ body{
   }
 
   .calendar-card {
-      width: 95%;
+      width: 92%;
   }
 
   .event-panel {
-      width: 95%;
+      width: 93%;
       margin-top: 15px;
+      height: 45vh;
   }
 }
 
@@ -397,6 +413,6 @@ body{
 
   .modal-content {
       width: 92%;
-      padding: 18px;
+      /* padding: 18px; */
   }
 }

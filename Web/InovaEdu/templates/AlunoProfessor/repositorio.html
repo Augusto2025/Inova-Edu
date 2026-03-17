@@ -2,227 +2,367 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/repositorio.css' %}">
+<link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/repositorio.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+{% include "partials/header.html" %}
+
+<div class="rota">
+    Página: Cursos > Turmas > {{ projeto.nome_projeto }} > Repositório
+    {% for p in path %}
+            > {{ p.nome }}
+    {% endfor %}
+</div>
+
+<div class="titulo">
+    <p> 
+        <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">Repositório</a>
     
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+        {% if path %}
+            {% for p in path %}
+                <span> > </span>
+                <a href="{% url 'repositorio_pasta' p.id %}">{{ p.nome }}</a>
+            {% endfor %}
+        {% endif %}
+    </p>
+</div>
 
-    <div class="rota">Página: Cursos > Turmas > Repositório{% for p in path %} > {{ p.nome }}{% endfor %}</div>
-
-    <div class="titulo">
-        <p>Repositório</p>
-    </div>
-
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
-        {% endfor %}
-    </div>
+<div class="acoes-repositorio">
+    {% if path %}
+        {# Se o path tem mais de 1 item, o usuário está em uma subpasta de outra pasta #}
+        {% if path|length > 1 %}
+            {% with pasta_pai=path|slice:":-1"|last %}
+                <a href="{% url 'repositorio_pasta' pasta_pai.id %}" 
+                style="background-color: #f7941d;" 
+                class="acao-btn">
+                Voltar
+                </a>
+            {% endwith %}
+            
+        {# Se o path tem exatamente 1 item, o usuário está na primeira subpasta (filha direta do projeto) #}
+        {% elif path|length == 1 %}
+            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" 
+            style="background-color: #f7941d;" 
+            class="acao-btn">
+            Voltar
+            </a>
+        {% endif %}
+        
+        {# Se o path for 0 (raiz), o código entra aqui e não renderiza nada #}
     {% endif %}
 
-    {% if can_modify %}
-    <div class="acoes-repositorio">
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-criar-pasta')">📁 Criar Pasta</button>
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Enviar Arquivo</button>
-        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📁 Enviar Pasta</button>
-    </div>
-    {% endif %}
+    
 
-    <!-- Modal Criar Pasta -->
-    <div id="modal-criar-pasta" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal('modal-criar-pasta')">&times;</span>
-            <h4>Criar Pasta</h4>
+    <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">
+        ⬇️ Baixar Repositório
+    </a>
+</div>
+
+<div id="modal-criar-pasta" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-text">
+                <h2>Criar Nova Pasta</h2>
+                <p>Digite o nome da pasta que deseja criar.</p>
+            </div>
+            <span class="fechar" onclick="fecharModal('modal-criar-pasta')"></span>
+        </div>
+        <div class="modal-body">
             <form method="post">
                 {% csrf_token %}
-                <input type="text" name="nome_pasta" placeholder="Nome da pasta" required>
-                <button type="submit">Criar</button>
+                <input type="text" name="nome_pasta" required placeholder="Ex: Documentação">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-criar-pasta')">Cancelar</button>
+                    <button type="submit" name="action" value="criar_pasta" class="btn-save">Criar</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Modal Enviar Arquivo -->
-    <div id="modal-upload" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal('modal-upload')">&times;</span>
-            <h4>Enviar Arquivo</h4>
+<div id="modal-upload" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-text">
+                <h2>Upload Arquivo</h2>
+                <p>Selecione um arquivo do seu dispositivo para upload.</p>
+            </div>
+            <span class="fechar" onclick="fecharModal('modal-upload')"></span>
+        </div>
+        <div class="modal-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="file" name="arquivo" required>
-                <input type="text" name="nome_arquivo" placeholder="Nome do arquivo (opcional)">
-                <button type="submit">Enviar</button>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-upload')">Cancelar</button>
+                    <button type="submit" name="action" value="upload_arquivo" class="btn-save">Enviar</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Modal Enviar Pasta -->
-    <div id="modal-upload-pasta" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal('modal-upload-pasta')">&times;</span>
-            <h4>Enviar Pasta</h4>
-            <p style="font-size: 14px; color: #666;">Selecione uma pasta para enviar todos os arquivos e subpastas. Pastas vazias não serão criadas automaticamente - crie-as manualmente se necessário.</p>
+<div id="modal-upload-pasta" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-text">
+                <h2>Upload Pasta</h2>
+                <p>Isso enviará todos os arquivos contidos na pasta selecionada.</p>
+            </div>
+            <span class="fechar" onclick="fecharModal('modal-upload-pasta')"></span>
+        </div>
+        <div class="modal-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="file" name="arquivos" multiple webkitdirectory required>
-                <button type="submit" name="upload_pasta">Enviar</button>
+                <input type="file" name="arquivos" webkitdirectory multiple required>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-upload-pasta')">Cancelar</button>
+                    <button type="submit" name="action" value="upload_pasta" class="btn-save">Enviar</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Modal Editar Pasta -->
-    <div id="modal-edit-pasta" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal('modal-edit-pasta')">&times;</span>
-            <h4>Editar Pasta</h4>
+<div id="modal-edit-pasta" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-text">
+                <h2>Editar Nome</h2>
+                <p>Altere o nome da pasta selecionada.</p>
+            </div>
+            <span class="fechar" onclick="fecharModal('modal-edit-pasta')"></span>
+        </div>
+        <div class="modal-body">
             <form method="post">
                 {% csrf_token %}
-                <input type="hidden" id="edit_pasta_id" name="pasta_id" value="">
-                <input type="text" name="novo_nome" placeholder="Novo nome da pasta" required>
-                <button type="submit" name="edit_pasta">Salvar</button>
+                <input type="hidden" name="pasta_id" id="edit_pasta_id">
+                <input type="text" name="novo_nome" id="edit_nome_input" required>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-edit-pasta')">Cancelar</button>
+                    <button type="submit" name="action" value="editar_pasta" class="btn-save">Salvar Alterações</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <div class="turma-repositorio">
-        <h3>{{ turma.curso.nome_curso }} - {{ turma.codigo_turma }} ({{ turma.turno }}){% for p in path %} > {{ p.nome }}{% endfor %}</h3>
-        {% if path %}
-            {% if path|length > 1 %}
-                <a href="{% url 'repositorio_pasta' path.0.id %}">Voltar</a>
-            {% else %}
-                <a href="{% url 'repositorio' turma.idturma %}">Voltar ao repositório principal</a>
-            {% endif %}
+<div id="modal-confirm-excluir" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-text">
+                <h2 id="excluir-titulo">Confirmar Exclusão</h2>
+                <p id="excluir-msg">Tem certeza que deseja excluir este item?</p>
+            </div>
+            <span class="fechar" onclick="fecharModal('modal-confirm-excluir')"></span>
+        </div>
+        <div class="modal-body">
+            <form id="form-excluir-dinamico" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="pasta_id" id="confirm_pasta_id">
+                <input type="hidden" name="arquivo_id" id="confirm_arquivo_id">
+                <input type="hidden" name="action" id="confirm_action_val">
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="fecharModal('modal-confirm-excluir')">Cancelar</button>
+                    <button type="submit" id="fecharExcluirBtn">Confirmar Exclusão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="turma-repositorio">
+
+<div class="pastas">
+    {% if can_modify %}
+        <div style="display: flex;">
+            <button type="button" class="acao-btn" style="margin-right: 10px;" onclick="abrirModal('modal-criar-pasta')">
+                <i class="fa-solid fa-plus" style="color: rgb(255, 178, 0);"></i> Criar Pasta</button>
+            <button type="button" class="acao-btn" onclick="abrirModal('modal-upload-pasta')">📥 Upload Pasta</button>
+        </div>
+    {% endif %}
+    <div class="section-header">
+        <h4>Pastas</h4>
+        {% if can_modify and pastas %}
+            <button type="button" id="btn-selecionar-pastas" class="btn-selecionar" onclick="toggleSelecao('pastas')">Selecionar</button>
         {% endif %}
-
-        <!-- Pastas -->
-        <div class="pastas">
-            <div class="section-header">
-                <h4>Pastas</h4>
-                {% if can_modify and pastas %}
-                <button type="button" id="btn-selecionar-pastas" class="btn-selecionar" onclick="toggleSelecao('pastas')">Selecionar</button>
-                {% endif %}
-            </div>
-            {% if can_modify %}
-            <form method="post" id="form-excluir-pastas">
-                {% csrf_token %}
-            {% endif %}
-            <ul class="lista-pastas">
-                {% for pasta in pastas %}
-                <li class="pasta-item">
-                    <div class="pasta-info">
-                        {% if can_modify %}
-                        <input type="checkbox" name="pastas_selecionadas" value="{{ pasta.id }}" class="checkbox-pastas" style="display: none;">
-                        {% endif %}
-                        <a class="pasta-link" href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
-                        <p><strong>Criada por:</strong> {{ pasta.criada_por.nome }} - <strong>Em:</strong> {{ pasta.criada_em|date:"d/m/Y" }}</p>
-                    </div>
-                    {% if can_modify %}
-                    <div class="pasta-actions">
-                        <button type="button" onclick="abrirModalEdit('modal-edit-pasta', {{ pasta.id }})">✏️</button>
-                        <button type="submit" name="delete_pasta" value="{{ pasta.id }}" onclick="return confirm('Excluir pasta? Isso também excluirá todas as subpastas e arquivos dentro dela.')">🗑️</button>
-                    </div>
-                    {% endif %}
-                </li>
-                {% empty %}
-                <li class="sem-pasta">Nenhuma pasta</li>
-                {% endfor %}
-            </ul>
-            {% if can_modify %}
-                <button type="submit" name="delete_pastas_selecionadas" id="btn-excluir-pastas" class="btn-excluir-selecionadas" onclick="return confirm('Excluir pastas selecionadas?')" style="display: none;">🗑️ Excluir Selecionadas</button>
-            </form>
-            {% endif %}
-        </div>
-
-        <!-- Arquivos -->
-        <div class="arquivos">
-            <div class="section-header">
-                <h4>Arquivos</h4>
-                {% if can_modify and arquivos %}
-                <button type="button" id="btn-selecionar-arquivos" class="btn-selecionar" onclick="toggleSelecao('arquivos')">Selecionar</button>
-                {% endif %}
-            </div>
-            {% if can_modify %}
-            <form method="post" id="form-excluir-arquivos">
-                {% csrf_token %}
-            {% endif %}
-            <ul class="lista-arquivos">
-                {% for arquivo in arquivos %}
-                <li class="arquivo-item">
-                    <div class="arquivo-info">
-                        {% if can_modify %}
-                        <input type="checkbox" name="arquivos_selecionados" value="{{ arquivo.id }}" class="checkbox-arquivos" style="display: none;">
-                        {% endif %}
-                        <a href="{{ arquivo.arquivo.url }}" download="{{ arquivo.nome }}">
-                            📄 {{ arquivo.nome }}
-                        </a>
-                        <p><strong>Criado por:</strong> {{ arquivo.enviado_por.nome }} - <strong>Em:</strong> {{ arquivo.enviado_em|date:"d/m/Y" }}</p>
-                    </div>
-                    {% if can_modify %}
-                    <div class="pasta-actions">
-                        <button type="submit" name="delete_arquivo" value="{{ arquivo.id }}" onclick="return confirm('Excluir arquivo?')">🗑️</button>
-                    </div>
-                    {% endif %}
-                </li>
-                {% empty %}
-                <li class="sem-arquivo">Nenhum arquivo</li>
-                {% endfor %}
-            </ul>
-            {% if can_modify %}
-                <button type="submit" name="delete_arquivos_selecionados" id="btn-excluir-arquivos" class="btn-excluir-selecionadas" onclick="return confirm('Excluir arquivos selecionados?')" style="display: none;">🗑️ Excluir Selecionados</button>
-            </form>
-            {% endif %}
-        </div>
     </div>
+
+    <ul class="lista-pastas">
+        {% if pastas %}
+            {% for pasta in pastas %}
+            <li class="pasta-item">
+                <div class="pasta-info">
+                    <input type="checkbox" name="pastas_selecionadas" form="form-selecao-pastas" value="{{ pasta.id }}" class="checkbox-pastas" style="display:none;">
+                    <a href="{% url 'repositorio_pasta' pasta.id %}">📁 {{ pasta.nome }}</a>
+                </div>
+
+                {% if can_modify %}
+                <div class="pasta-actions">
+                    <button type="button" onclick="abrirModalEdit('modal-edit-pasta', '{{ pasta.id }}', '{{ pasta.nome }}')">✏️</button>
+                    <button type="button" onclick="confirmarExclusao('pasta', '{{ pasta.id }}', '{{ pasta.nome }}')">🗑️</button>
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="sem-itens">Não existe nenhuma pasta até o momento.</li>
+        {% endif %}
+    </ul>
+
+    {% if can_modify %}
+    <form id="form-selecao-pastas" method="post">
+        {% csrf_token %}
+        <div id="botoes-excluir-pastas" style="display:none;">
+            <button type="button" class="btn-excluir-selecionadas" onclick="confirmarExclusaoEmMassa('pastas_selecionadas', 'excluir_pastas_selecionadas')">
+                🗑️ Excluir Selecionadas
+            </button>
+            <button type="button" class="btn-excluir-selecionadas" onclick="confirmarExclusaoEmMassa('todas_pastas', 'excluir_todos_pastas')">
+                ⚠️ Excluir Todas
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<div class="arquivos">
+    {% if can_modify %}
+        <button type="button" class="acao-btn" onclick="abrirModal('modal-upload')">📄 Upload Arquivo</button>
+    {% endif %}
+    <div class="section-header">
+        <h4>Arquivos</h4>
+        {% if can_modify and arquivos %}
+            <button type="button" id="btn-selecionar-arquivos" class="btn-selecionar" onclick="toggleSelecao('arquivos')">Selecionar</button>
+        {% endif %}
+    </div>
+
+    <ul class="lista-arquivos">
+        {% if arquivos %}
+            {% for arquivo in arquivos %}
+            <li class="arquivo-item">
+                <div class="arquivo-info">
+                    <input type="checkbox" name="arquivos_selecionados" form="form-selecao-arquivos" value="{{ arquivo.id }}" class="checkbox-arquivos" style="display:none;">
+                    <a href="{{ arquivo.url }}" download>📄 {{ arquivo.nome }}</a>
+                </div>
+
+                {% if can_modify %}
+                <div class="pasta-actions">
+                    <button type="button" onclick="confirmarExclusao('arquivo', '{{ arquivo.id }}', '{{ arquivo.nome }}')">🗑️</button>
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="sem-itens">Não existe nenhum arquivo até o momento.</li>
+        {% endif %}
+    </ul>
+
+    {% if can_modify %}
+    <form id="form-selecao-arquivos" method="post">
+        {% csrf_token %}
+        <div id="botoes-excluir-arquivos" style="display:none;">
+            <button type="button" class="btn-excluir-selecionadas" onclick="confirmarExclusaoEmMassa('arquivos_selecionados', 'excluir_arquivos_selecionadas')">
+                🗑️ Excluir Selecionadas
+            </button>
+            <button type="button" class="btn-excluir-selecionadas" onclick="confirmarExclusaoEmMassa('todos_arquivos', 'excluir_todos_arquivos')">
+                ⚠️ Excluir Todos
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+</div>
 
 <script>
 function abrirModal(id) {
-    document.getElementById(id).style.display = 'block';
-}
-
-function abrirModalEdit(id, pastaId) {
-    document.getElementById('edit_pasta_id').value = pastaId;
-    abrirModal(id);
+    document.getElementById(id).style.display = 'flex';
 }
 
 function fecharModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
-function toggleSelecao(tipo) {
-    console.log('Toggle para', tipo);
-    const checkboxes = document.querySelectorAll(`.checkbox-${tipo}`);
-    console.log('Checkboxes encontrados:', checkboxes.length);
-    const btnExcluir = document.getElementById(`btn-excluir-${tipo}`);
-    const btnSelecionar = document.getElementById(`btn-selecionar-${tipo}`);
-    
-    if (!btnSelecionar) return; // Se o botão não existe, sair
-    
-    const isVisible = checkboxes[0] && checkboxes[0].style.display !== 'none';
-    console.log('Is visible:', isVisible);
-    
-    if (isVisible) {
-        checkboxes.forEach(cb => cb.style.display = 'none');
-        if (btnExcluir) btnExcluir.style.display = 'none';
-        btnSelecionar.textContent = 'Selecionar';
-    } else {
-        checkboxes.forEach(cb => cb.style.display = 'block');
-        if (btnExcluir) btnExcluir.style.display = 'block';
-        btnSelecionar.textContent = 'Cancelar Seleção';
-    }
+function abrirModalEdit(id, pastaId, nomeAtual) {
+    document.getElementById('edit_pasta_id').value = pastaId;
+    document.getElementById('edit_nome_input').value = nomeAtual;
+    abrirModal(id);
 }
 
-// Fechar modal ao clicar fora
+// Função para exclusão de item único (Pasta ou Arquivo)
+function confirmarExclusao(tipo, id, nome) {
+    const modal = document.getElementById('modal-confirm-excluir');
+    const titulo = document.getElementById('excluir-titulo');
+    const msg = document.getElementById('excluir-msg');
+    const inputPasta = document.getElementById('confirm_pasta_id');
+    const inputArquivo = document.getElementById('confirm_arquivo_id');
+    const inputAction = document.getElementById('confirm_action_val');
+
+    // Reset de campos
+    inputPasta.value = "";
+    inputArquivo.value = "";
+
+    if (tipo === 'pasta') {
+        titulo.innerText = "Excluir Pasta";
+        msg.innerText = `Tem certeza que deseja excluir a pasta "${nome}"? Esta ação não pode ser desfeita.`;
+        inputPasta.value = id;
+        inputAction.value = "excluir_pasta";
+    } else {
+        titulo.innerText = "Excluir Arquivo";
+        msg.innerText = `Tem certeza que deseja excluir o arquivo "${nome}"?`;
+        inputArquivo.value = id;
+        inputAction.value = "excluir_arquivo";
+    }
+
+    abrirModal('modal-confirm-excluir');
+}
+
+// Função para exclusão em massa (Selecionados ou Tudo)
+function confirmarExclusaoEmMassa(tipoMassa, actionValue) {
+    const titulo = document.getElementById('excluir-titulo');
+    const msg = document.getElementById('excluir-msg');
+    const inputAction = document.getElementById('confirm_action_val');
+    const formOriginal = (actionValue.includes('pastas')) ? document.getElementById('form-selecao-pastas') : document.getElementById('form-selecao-arquivos');
+
+    titulo.innerText = "Atenção!";
+    msg.innerText = (tipoMassa.includes('todos')) ? "Você está prestes a excluir TODOS os itens desta seção. Confirmar?" : "Confirmar a exclusão dos itens selecionados?";
+    
+    // Configuramos o botão de confirmar para submeter o form de listagem original
+    const btnConfirmar = document.getElementById('fecharExcluirBtn');
+    btnConfirmar.onclick = function(e) {
+        e.preventDefault();
+        const inputHiddenAction = document.createElement('input');
+        inputHiddenAction.type = 'hidden';
+        inputHiddenAction.name = 'action';
+        inputHiddenAction.value = actionValue;
+        formOriginal.appendChild(inputHiddenAction);
+        formOriginal.submit();
+    };
+
+    abrirModal('modal-confirm-excluir');
+}
+
+function toggleSelecao(tipo) {
+    const checkboxes = document.querySelectorAll('.checkbox-' + tipo);
+    const botoes = document.getElementById('botoes-excluir-' + tipo);
+    const btn = document.getElementById('btn-selecionar-' + tipo);
+
+    const ativo = checkboxes.length && checkboxes[0].style.display !== 'none';
+
+    checkboxes.forEach(cb => cb.style.display = ativo ? 'none' : 'inline-block');
+    botoes.style.display = ativo ? 'none' : 'block';
+    btn.textContent = ativo ? 'Selecionar' : 'Cancelar';
+}
+
+// Fechar modal ao clicar fora dele
 window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
+    if (event.target.className === 'modal') {
+        event.target.style.display = "none";
     }
 }
 </script>
 
-{% endblock %}
-
-{% block footer %}
-    {% include "partials/footer.html" %}
+{% include "partials/footer.html" %}
 {% endblock %}

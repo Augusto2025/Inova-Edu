@@ -228,7 +228,236 @@ main{
   position: absolute;
   inset: 0;
   width: 100%;
+  height: 100%;@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* -------------------- VARIÁVEIS -------------------- */
+:root {
+    --laranja-Senac:#F7941D;
+    --branco-Senac:#FFF;
+    --azul-Senac: #004A8D;
+    --cinza-Senac: #D9D9D9;
+}
+
+/* -------------------- RESET -------------------- */
+body{
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+}
+
+/* -------------------- HEADER -------------------- */
+header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; /* Ajustado para 100% para o canvas ocupar tudo */
+    height: 80px;
+    padding: 0px 10px;
+    background-color: var(--azul-Senac);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Área com logo + texto */
+.logo_e_texto{
+    align-items: center;
+    display: flex;
+}
+
+header a {
+    display: flex;
+    text-decoration: none;
+    color: var(--branco-Senac);
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    flex-shrink: 0;
+}
+
+.texto_InovaEdu{
+    margin: 10px;
+    color: var(--branco-Senac);
+    font-size: 20px;
+    font-weight: 400;
+    width: 140px;
+}
+
+.Nome_Usu{
+    color: var(--branco-Senac);
+}
+
+/* -------------------- NAV SUPERIOR -------------------- */
+.Paginas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto; /* Deixei auto para os links aparecerem corretamente */
+    font-size: 16px;
+    gap: 50px;
+}
+
+.Paginas a{
+    text-decoration: none;
+    color: var(--branco-Senac);
+}
+
+.Paginas a:hover{
+    border-bottom: solid;
+    border-bottom-color: #F7941D;
+}
+
+a{
+    text-decoration: none;
+}
+
+.sair{
+    color: var(--branco-Senac);
+    margin-left: 10px;
+}
+
+/* -------------------- TÍTULO DAS PÁGINAS -------------------- */
+.titulo{
+    display: flex;
+    justify-content: space-between;
+    justify-self: center;
+    width: 50%;
+}
+
+.titulo p{
+    border-bottom: solid;
+    border-color: var(--laranja-Senac);
+    color: var(--azul-Senac);
+    margin: 0%;
+    font-size: 20px;
+}
+
+/* -------------------- PESQUISA -------------------- */
+.filtro_icone{
+    width: 30px;
+    flex-shrink: 0;
+}
+
+.campo_pesq{
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+}
+  
+.pesquisa{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    height: 30px;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 2px solid var(--azul-Senac);
+}
+
+main{
+    max-width: 1022px;
+    min-height: calc(70vh - 80px);
+}
+
+/* -------------------- RESPONSIVIDADE -------------------- */
+@media (max-width: 1024px) {
+    #site-nav a{
+        margin: 5%;
+    }
+    .titulo{
+        width: 90%;
+    }
+    .pesquisa{
+        width: 60%;
+    }
+}
+
+/* Estilo do botão hamburger */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+  align-items: center;
+  justify-content: center;
+  color: var(--branco-Senac);
+}
+.hamburger .bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--branco-Senac);
+  position: relative;
+}
+.hamburger .bar::before,
+.hamburger .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 2px;
+  background: var(--branco-Senac);
+}
+.hamburger .bar::before { top: -6px; }
+.hamburger .bar::after  { top: 6px; }
+
+@media (max-width: 768px) {
+  .hamburger { display: inline-flex; }
+
+  #site-nav.Paginas {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 60px;
+    background: var(--azul-Senac);
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 0;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    z-index: 900;
+    width: 100%;
+  }
+
+  header.nav-open #site-nav.Paginas {
+    display: flex;
+  }
+
+  header {
+    height: 60px;
+    padding: 0px;
+  }
+  
+  .logo { width: 40px; height: 40px; margin: 8px 6px; }
+  .texto_InovaEdu { display: none; }
+  .Paginas { gap: 12px; font-size: 15px; }
+}
+
+/* canvas do header */
+#header-stars {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* garantir que o conteúdo do header fique acima do canvas */
+header > .hamburger,
+header > .logo_e_texto,
+header > #site-nav,
+header > div {
+  position: relative;
+  z-index: 2;
+}
   display: block;
   z-index: 0;
   pointer-events: none;

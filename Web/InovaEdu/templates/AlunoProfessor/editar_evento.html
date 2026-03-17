@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="calendar-container">
+        <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+        <link rel="stylesheet" href="{% static 'styles/criar_evento.css' %}">
+
+        {% block header %}
+            {% include "partials/header.html" %}
+        {% endblock %}
+
+        <div class="criar-evento-container">
+            <h2>Editando Evento: {{ evento.nome_do_evento }}</h2>
+            
+            <form method="POST" class="criar-evento-form" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                {% csrf_token %}
+                
+                <label for="nome">Nome do Evento:</label>
+                <input id="nome" type="text" name="nome" value="{{ evento.nome_do_evento }}" required>
+
+                <label for="data">Data:</label>
+                <input id="data" type="date" name="data" value="{{ evento.data_do_evento|date:'Y-m-d' }}" required>
+
+                <label for="hora">Hora:</label>
+                <input id="hora" type="time" name="hora" value="{{ evento.hora_do_evento|time:'H:i' }}" required>
+                
+                <label for="endereco">Endereço:</label>
+                <input id="endereco" type="text" name="endereco" value="{{ evento.endereco }}">
+
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" rows="4">{{ evento.descricao }}</textarea>
+
+                <div class="criar-evento-actions" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                    <a href="{% url 'calendario' %}" style="text-decoration: none; color: gray; padding: 10px;">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include "partials/footer.html" %}
+{% endblock %}

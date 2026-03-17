@@ -6,7 +6,7 @@
   
   {% include "partials/header.html" %}
 
-  <div class="rota">Página: Calendário</div>
+  {% comment %} <div class="rota">Página: Calendário</div> {% endcomment %}
 
   <section class="calendar-container">
     <!-- Sidebar com meses -->
@@ -66,19 +66,27 @@
   <!-- MODAL -->
   <div id="eventModal" class="modal hidden">
     <div class="modal-content">
-      <span class="modal-close">&times;</span>
 
-      <h2 id="modal-nome"></h2>
-
-      <p><strong>Data:</strong> <span id="modal-date"></span></p>
-      <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
-      <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
-      <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
+      <div class="modal-header">
+        <h2 id="modal-nome"></h2>
+        <span class="modal-close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p><strong>Data:</strong> <span id="modal-date"></span></p>
+        <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
+        <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
+        <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
+        <div id="modal-footer-btns" class="hidden" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+          <button id="btn-editar-evento" class="btn-create" style="background: orange;width: 96%;border: none;">Editar</button>
+          <a id="btn-excluir-evento" href="#" class="btn-create" style="background: red;" onclick="return confirm('Excluir evento?')">Excluir</a>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     const eventos = JSON.parse("{{ eventos_json|escapejs }}");
+    const usuarioLogadoEmail = "{{ request.session.usuario_email }}";
   </script>
   <script src="{% static 'scripts/calendario.js' %}"></script>
   

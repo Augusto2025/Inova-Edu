@@ -3,23 +3,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=logout" />
 
 <header>
-    <!-- canvas de fundo para estrelas cadentes (permanece no topo do header) -->
     <canvas id="header-stars" aria-hidden="true"></canvas>
 
     <div class="logo_e_texto">
-        <!-- botão hamburger no início (garante que o script antigo funcione) -->
         <button id="menuToggle" class="hamburger" aria-label="Abrir menu" aria-expanded="false">
           <span class="bar" aria-hidden="true"></span>
         </button>
         
-        <!-- <img class="logo" src="{% static 'img/Logo Laranja.svg' %}" alt="Logo Inova Edu Laranja"> -->
         <a href="{% url "home" %}">
-          <img src="{% static 'img/LOGO_BRANCO.png' %}" alt="" style="width: 150px;">
-            {% comment %} <p class="texto_InovaEdu">Inova Edu</p> {% endcomment %}
+          <img src="{% static 'img/Logo_branco_icone.png' %}" alt="" style="width: 50px;">
         </a>
     </div>
 
-    <!-- nav e ações do usuário permanecem -->
     <nav id="site-nav" class="Paginas">
         <a href="{% url "home" %}">Cursos</a>
         <a href="{% url "forum_blocos" %}">Fórum</a>
@@ -37,7 +32,6 @@
     </div>
 </header>
 
-<!-- script antigo do menu (mantido) -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const btn = document.getElementById('menuToggle');
@@ -57,14 +51,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<!-- script das estrelas cadentes (acrescentado logo abaixo do script antigo) -->
 <script>
 (function () {
   const canvas = document.getElementById('header-stars');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let stars = [];
-  const STAR_COUNT = 18;
+  let clouds = [];
+  const CLOUD_COUNT = 6;
 
   function resize() {
     const headerEl = document.querySelector('header');
@@ -76,21 +69,35 @@ document.addEventListener('DOMContentLoaded', function () {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function initStars() {
-    stars = [];
+  function initClouds() {
+    clouds = [];
     const w = canvas.width / (window.devicePixelRatio || 1);
     const h = canvas.height / (window.devicePixelRatio || 1);
-    for (let i = 0; i < STAR_COUNT; i++) {
-      stars.push({
+    for (let i = 0; i < CLOUD_COUNT; i++) {
+      clouds.push({
         x: Math.random() * w,
-        y: Math.random() * (h * 0.8) - h,
-        len: 60 + Math.random() * 120,
-        speed: 1 + Math.random() * 3.2,
-        alpha: 0.4 + Math.random() * 0.9,
-        thickness: 1 + Math.random() * 1.2,
-        angle: Math.PI * 0.75 + (Math.random() - 0.5) * 0.2
+        y: h - (10 + Math.random() * 15), // Posiciona na base do header
+        speed: 0.15 + Math.random() * 0.3,
+        alpha: 0.2 + Math.random() * 0.3,
+        scale: 0.6 + Math.random() * 0.5
       });
     }
+  }
+
+  function drawCloud(c) {
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.scale(c.scale, 0.4); // Achata os círculos para parecer névoa horizontal
+    ctx.fillStyle = `rgba(255, 255, 255, ${c.alpha})`;
+    ctx.filter = 'blur(12px)'; 
+    
+    ctx.beginPath();
+    // Desenha o corpo da nuvem com 3 círculos sobrepostos
+    ctx.arc(0, 0, 50, 0, Math.PI * 2);
+    ctx.arc(-35, 5, 35, 0, Math.PI * 2);
+    ctx.arc(35, 5, 35, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   function tick() {
@@ -98,32 +105,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const h = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, w, h);
 
-    for (let s of stars) {
-      const vx = Math.cos(s.angle) * s.speed * 3;
-      const vy = Math.sin(s.angle) * s.speed * 3;
-
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255,255,255,' + (s.alpha * 0.9) + ')';
-      ctx.lineWidth = s.thickness;
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(s.x - vx * s.len * 0.06, s.y - vy * s.len * 0.06);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.fillStyle = 'rgba(255,255,255,' + s.alpha + ')';
-      ctx.arc(s.x, s.y, Math.max(0.8, s.thickness * 1.2), 0, Math.PI * 2);
-      ctx.fill();
-
-      s.x += vx;
-      s.y += vy;
-
-      if (s.x < -50 || s.x > w + 50 || s.y > h + 50) {
-        s.x = Math.random() * w;
-        s.y = -10 - Math.random() * h * 0.6;
-        s.len = 60 + Math.random() * 120;
-        s.speed = 1 + Math.random() * 3.2;
-        s.alpha = 0.4 + Math.random() * 0.9;
-        s.thickness = 1 + Math.random() * 1.2;
+    for (let c of clouds) {
+      drawCloud(c);
+      c.x += c.speed;
+      if (c.x - 120 > w) {
+        c.x = -120;
       }
     }
     requestAnimationFrame(tick);
@@ -131,13 +117,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function start() {
     resize();
-    initStars();
+    initClouds();
     requestAnimationFrame(tick);
   }
 
   window.addEventListener('resize', function () {
     resize();
-    initStars();
+    initClouds();
   });
 
   document.addEventListener('readystatechange', function () {

@@ -67,7 +67,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 18px; /* Mantido original */
     box-shadow: 0 10px 35px rgba(0,0,0,0.05);
 }
 
@@ -79,22 +79,24 @@ body {
 }
 
 /* POSICIONAMENTO DAS BOLHAS */
-.msg-wrapper { display: flex; width: 100%; }
+.msg-wrapper { display: flex; width: 100%; position: relative; }
 .msg-wrapper.right { justify-content: flex-end; }
 .msg-wrapper.left { justify-content: flex-start; }
 
 /* BOLHA DE MENSAGEM */
 .msg {
     max-width: 75%;
-    padding: 14px 18px;
+    padding: 14px 18px; /* Mantido original */
     border-radius: var(--radius);
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     animation: fadeIn .25s ease;
+    position: relative; /* Necessário para o menu */
 }
 
 .msg-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 13px;
     margin-bottom: 6px;
 }
@@ -114,9 +116,63 @@ body {
 }
 
 .msg-content {
-    white-space: pre-wrap;
+    /* white-space: pre-wrap; */
     word-wrap: break-word;
 }
+
+/* --- NOVOS ELEMENTOS DO MENU --- */
+
+.msg-menu-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-opcoes {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 5px;
+    color: inherit; /* Segue a cor do texto da bolha */
+    line-height: 1;
+    margin-left: 17px;
+}
+
+.msg-menu {
+    position: absolute;
+    bottom: 100%; /* Abre para CIMA */
+    right: 0;
+    margin-bottom: 14px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.msg-menu button, .msg-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    /* color: var(--text-dark) !important; */
+    font-size: 14px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.msg-menu button:hover, .msg-menu a:hover {
+    background-color: #f1f5f9;
+}
+
+.hidden { display: none; }
+
+/* --- FIM DOS NOVOS ELEMENTOS --- */
 
 .empty {
     text-align: center;
@@ -163,6 +219,26 @@ body {
 .chat-input-area button:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Estilo rápido para o botão cancelar se quiser seguir seu padrão */
+.btn-secondary {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 22px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.15s;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1 !important;
 }
 
 @keyframes fadeIn {

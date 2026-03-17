@@ -6,14 +6,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <link rel="icon" href="{% static 'img/LOGOBRANCO.png' %}">
     <title>Inova Edu</title>
 </head>
 <body>
     <!-- Card do login -->
     <form class="card_login" action="" method="POST">
         {% csrf_token %}
-            <img src="{% static 'img/LOGO_AZUL.png' %}" style="width: 300px; margin-bottom: 45px;">
-            <h1>Login</h1>
+            <a href="{% url "homePage" %}">
+                <img src="{% static 'img/Logo_azul_icone.png' %}" style="width: 150px;">
+            </a>
             <input type="text" placeholder="Email" name="email" value="{{ email|default:'' }}">
             <input type="password" placeholder="Senha" name="senha" value="{{ senha|default:'' }}">
             <button type="submit">Entrar</button>

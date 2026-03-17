@@ -7,7 +7,13 @@
 
 {% include "partials/header.html" %}
 
-<div class="rota">Página: Todos os fóruns > {{ forum.nome }}</div>
+<div class="rota" style="justify-content: start;">
+  Página: 
+  <a href="{% url 'forum_blocos' %}"> Todos os fóruns </a> >
+  <a href="{% url 'forum_topicos' forum.idforum %}"> Tópicos do fórum </a> 
+  > {{ forum.nome }}
+</div>
+
 
 <!-- Forum Header: título + tópico atual -->
 <div class="forum-header">
@@ -29,13 +35,33 @@
 <div class="chat-container">
     <div class="mensagens">
         {% for msg in mensagens %}
-            <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}">
+            <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}" id="msg-{{ msg.id }}">
                 <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
                     <div class="msg-header">
-                        <strong>{{ msg.autor.nome }}</strong>
-                        <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
+                        <strong style="margin-right: 20px;">{{ msg.autor.nome }}</strong>
+                        
+                        {% if msg.autor.email == request.session.usuario_email and not msg.excluida %}
+                            <div class="msg-menu-container">
+                                <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
+                                <button class="btn-opcoes" onclick="toggleMenu('menu-{{ msg.id }}')">⋮</button>
+                                <div id="menu-{{ msg.id }}" class="msg-menu shadow-sm hidden">
+                                    {% if msg.pode_editar %}
+                                        <button onclick="prepararEdicao('{{ msg.id }}', '{{ msg.conteudo|escapejs }}')">Editar</button>
+                                    {% endif %}
+                                    
+                                    <a style="color: red;" href="{% url 'excluir_mensagem' msg.id %}">Excluir</a>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="msg-content">{{ msg.conteudo }}</div>
+
+                    <div class="msg-content" id="content-{{ msg.id }}">
+                        {% if msg.excluida %}
+                            <i style="color: white;">Mensagem excluída</i>
+                        {% else %}
+                            {{ msg.conteudo }}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% empty %}
@@ -43,12 +69,63 @@
         {% endfor %}
     </div>
 
-    <form method="POST" class="chat-input-area">
+    <form method="POST" class="chat-input-area" id="chat-form">
         {% csrf_token %}
-        <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off">
-        <button type="submit">Enviar</button>
+        <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off" required>
+        
+        <button type="button" id="btn-cancelar" class="btn-secondary hidden" onclick="cancelarEdicao()" style="background: #6c757d; margin-right: 5px;">
+            Cancelar
+        </button>
+        
+        <button type="submit" id="btn-submit">Enviar</button>
     </form>
 </div>
+
+<script>
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = chatForm.querySelector('input[name="conteudo"]');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const originalAction = chatForm.action; // Guarda a URL original de envio
+
+    function toggleMenu(id) {
+        // Fecha outros menus abertos antes de abrir o novo
+        document.querySelectorAll('.msg-menu').forEach(m => {
+            if(m.id !== id) m.classList.add('hidden');
+        });
+        document.getElementById(id).classList.toggle('hidden');
+    }
+
+    function prepararEdicao(id, texto) {
+        // 1. Configura o formulário para edição
+        chatForm.action = `/mensagem/editar/${id}/`; 
+        chatInput.value = texto;
+        chatInput.focus();
+        
+        // 2. Ajusta os botões
+        btnSubmit.innerText = "Salvar";
+        btnCancelar.classList.remove('hidden');
+        
+        // 3. Fecha o menu de 3 pontos
+        document.querySelectorAll('.msg-menu').forEach(m => m.classList.add('hidden'));
+    }
+
+    function cancelarEdicao() {
+        // 1. Volta o form para o estado original (POST para a mesma página)
+        chatForm.action = originalAction;
+        chatInput.value = "";
+        
+        // 2. Restaura os botões
+        btnSubmit.innerText = "Enviar";
+        btnCancelar.classList.add('hidden');
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.btn-opcoes')) {
+            document.querySelectorAll('.msg-menu').forEach(m => m.classList.add('hidden'));
+        }
+    }
+</script>
 
 {% endblock %}
 

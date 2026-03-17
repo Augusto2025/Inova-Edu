@@ -7,15 +7,18 @@ class EventosController:
         self.eventos_model = Eventos()
     
     def obter_todos_eventos(self):
-        """Busca todos os eventos"""
+        """Busca todos os eventos e garante retorno seguro para a View"""
         try:
             print("[CONTROLLER EVENTOS] Obtendo todos os eventos...")
             eventos = self.eventos_model.obter_todos_eventos()
-            return eventos
+            
+            # Garante que se o model retornar None por algum motivo, a View receba uma lista
+            return eventos if eventos else []
+            
         except Exception as e:
             print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            print(f"[CONTROLLER EVENTOS TRACEBACK] {traceback.format_exc()}")
-            raise
+            # Retorna lista vazia para o calendário não quebrar ao tentar iterar
+            return []
     
     def obter_evento_por_id(self, id_evento):
         """Busca um evento específico"""
@@ -40,17 +43,19 @@ class EventosController:
             raise
     
     def criar_evento(self, nome, hora, data, descricao, endereco, id_usuario):
-        """Cria um novo evento"""
+        """Cria um novo evento com validação de dados"""
         try:
             print(f"[CONTROLLER EVENTOS] Criando evento: {nome}")
-            if not nome or not hora or not data or not endereco:
-                raise ValueError("Preencha todos os campos obrigatórios")
+            
+            # Validação: CustomTkinter .get() pode retornar string vazia
+            if not nome.strip() or not hora.strip() or not data.strip():
+                return ("Nome, Data e Hora são obrigatórios!", False)
             
             self.eventos_model.criar_evento(nome, hora, data, descricao, endereco, id_usuario)
             return ("Evento criado com sucesso!", True)
+            
         except Exception as e:
             print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            print(f"[CONTROLLER EVENTOS TRACEBACK] {traceback.format_exc()}")
             return (f"Erro ao criar evento: {str(e)}", False)
     
     def deletar_evento(self, id_evento):

@@ -52,7 +52,7 @@ function mostrarLista(id) {
 // ====== EDITAR ======
 document.addEventListener("DOMContentLoaded", function () {
 
-    const botoesEditar = document.querySelectorAll('.botao-editar');
+    const botoesEditar = document.querySelectorAll('.btn-editar');
     const modalEditar = document.getElementById('modalEditar');
     const fecharEditar = document.getElementById('fecharEditar');
     const cancelarEditar = document.getElementById('cancelarEditar');
@@ -243,3 +243,45 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
+
+
+
+
+// ===== MODAL GLOBAL EXCLUIR =====
+
+let formExcluirAtual = null;
+
+const modalExcluir = document.getElementById("modalExcluir");
+const confirmarExcluir = document.getElementById("confirmarExcluir");
+const cancelarExcluir = document.getElementById("cancelarExcluir");
+
+document.querySelectorAll(".abrir-modal-excluir").forEach(botao => {
+
+    botao.addEventListener("click", function () {
+
+        formExcluirAtual = this.closest("form");
+
+        modalExcluir.style.display = "flex";
+
+    });
+
+});
+
+cancelarExcluir.onclick = function () {
+    modalExcluir.style.display = "none";
+};
+
+confirmarExcluir.onclick = function () {
+
+    if (formExcluirAtual) {
+        formExcluirAtual.submit();
+    }
+
+};
+
+window.addEventListener("click", function(e){
+    if(e.target === modalExcluir){
+        modalExcluir.style.display = "none";
+    }
+});

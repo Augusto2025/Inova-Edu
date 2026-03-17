@@ -17,26 +17,30 @@
     
     <main class="accordion-container">
 
-        {% for ano, turmas_do_ano in turmas_por_ano.items %}
-        
-        <div class="accordion-item">
-            <button class="accordion-header">
-                <span>Ano {{ ano }}</span>
-                <span class="icon">+</span>
-            </button>
-    
-            <div class="accordion-content">
-                {% for Turma in turmas_do_ano %}
+        {% if not turmas_por_ano %}
+            <p class="sem-turmas">Nenhuma turma encontrada.</p>
+        {% else %}
+            {% for ano, turmas_do_ano in turmas_por_ano.items %}
+            
+            <div class="accordion-item">
+                <button class="accordion-header">
+                    <span>Ano {{ ano }}</span>
+                    <span class="icon">+</span>
+                </button>
+                
+                <div class="accordion-content">
+                    {% for Turma in turmas_do_ano %}
                     <section class="turma-card">
                         <p><strong>Código:</strong> {{ Turma.codigo_turma }}</p>
                         <p><strong>Turno:</strong> {{ Turma.turno }}</p>
-                        <a class="Botao_entrar_curso" href="{% url 'repositorio' Turma.idturma %}">Entrar</a>
+                        <a class="Botao_entrar_curso" href="{% url 'projetos_da_turma' Turma.idturma %}">Ver Projetos</a>
                     </section>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    
-        {% endfor %}
+            
+            {% endfor %}
+        {% endif %}
     
     </main>
 

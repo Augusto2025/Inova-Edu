@@ -89,11 +89,22 @@ function renderCalendar() {
             const dot = document.createElement("span");
             dot.classList.add("dot");
 
+            // Criamos as datas para comparação
             const dataEvento = new Date(ev.data);
+            const hoje = new Date();
 
-            if (dataEvento < new Date()) dot.classList.add("red");
-            else if (dataEvento.toDateString() === new Date().toDateString()) dot.classList.add("yellow");
-            else dot.classList.add("green");
+            // Extraímos os componentes para evitar erro de fuso horário
+            const mesmoDia = dataEvento.getUTCDate() === hoje.getDate() &&
+                            dataEvento.getUTCMonth() === hoje.getMonth() &&
+                            dataEvento.getUTCFullYear() === hoje.getFullYear();
+
+            if (mesmoDia) {
+                dot.classList.add("yellow");
+            } else if (dataEvento < hoje) {
+                dot.classList.add("red");
+            } else {
+                dot.classList.add("green");
+            }
 
             dots.appendChild(dot);
         });
@@ -130,12 +141,25 @@ function renderEventsOfMonth() {
         const div = document.createElement("div");
         div.classList.add("event-item");
 
-        div.innerHTML = `
-            <p><strong>${ev.nome}</strong></p>
-            <p>${ev.descricao}</p>
-            <p>${ev.hora}</p>
-            <hr>
-        `;
+        if (ev.nome) {
+            div.innerHTML += `<p><strong>${ev.nome}</strong></p>`;
+        } else {
+            div.innerHTML += `<p><strong>Evento sem nome</strong></p>`;
+        }
+
+        if (ev.descricao) {
+            div.innerHTML += `<p>${ev.descricao}</p>`;
+        } else {
+            div.innerHTML += `<p>Sem descrição</p>`;
+        }
+
+        if (ev.hora) {
+            div.innerHTML += `<p>${ev.hora}</p>`;
+        } else {
+            div.innerHTML += `<p>Hora não definida</p>`;
+        }
+        
+        div.innerHTML += `<hr>`;
 
         div.addEventListener("click", () => openModal(ev));
 
@@ -172,6 +196,22 @@ function openModal(ev) {
     modal.querySelector("#modal-hour").textContent = ev.hora;
     modal.querySelector("#modal-descricao").textContent = ev.descricao;
     modal.querySelector("#modal-endereco").textContent = ev.endereco;
+
+    const footerBtns = modal.querySelector("#modal-footer-btns");
+    const btnExcluir = modal.querySelector("#btn-excluir-evento");
+    const btnEditar = modal.querySelector("#btn-editar-evento");
+
+    // 🔒 Verifica se o usuário logado é o dono
+    if (ev.dono_email === usuarioLogadoEmail) {
+        footerBtns.classList.remove("hidden");
+        btnExcluir.href = `/calendario/excluir/${ev.id}/`; // Ajuste sua URL
+        
+        btnEditar.onclick = () => {
+            window.location.href = `/calendario/editar/${ev.id}/`; // Ajuste sua URL
+        };
+    } else {
+        footerBtns.classList.add("hidden");
+    }
 
     modal.classList.remove("hidden");
 }
