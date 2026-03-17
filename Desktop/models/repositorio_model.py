@@ -6,6 +6,7 @@ class RepositorioModel:
     def buscar_conteudo(self, projeto_id, pasta_pai_id=None):
         conn = None
         try:
+            projeto_id = int(projeto_id)
             conn = conectar()
             # RealDictCursor faz o resultado virar um dicionário (ex: pasta['nome'])
             cursor = conn.cursor(cursor_factory=RealDictCursor)

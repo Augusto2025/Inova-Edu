@@ -94,12 +94,12 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
             
             self.pack_forget() 
             
-            # O erro estava aqui: os nomes devem ser 'turma_id' e 'nome_projeto'
-            # conforme definido no __init__ do RepositorioDashboard
+            # O SEGREDO: Use projeto["idprojeto"] para filtrar pastas e arquivos
+            # O nome do parâmetro na View pode ser 'turma_id', mas o VALOR deve ser o do Projeto
             tela_repo = RepositorioDashboard(
                 master=self.janela, 
-                turma_id=self.id_turma,      # Passando o ID da turma
-                pasta_id=None,               # Começa na raiz (None)
+                turma_id=projeto["idprojeto"],   # <--- AQUI: Use o ID do Projeto específico
+                pasta_id=None, 
                 nome_projeto=projeto["nome_projeto"]
             )
             tela_repo.pack(side="right", fill="both", expand=True)

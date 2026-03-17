@@ -34,7 +34,7 @@ def conectar():
             port = result.port or 5432
             
             print(f"[BANCO] Testando socket em {hostname}:{port}...", flush=True)
-            socket.create_connection((hostname, port), timeout=3)
+            socket.create_connection((hostname, port), timeout=4)
             
             conn = psycopg2.connect(database_url, connect_timeout=5)
             print(f"[BANCO] Conexão OK!", flush=True)
