@@ -696,7 +696,7 @@ header > div {
 
 @media (max-width: 768px) {
     body {
-        padding-top: 60px;
+        padding-top: 0px;
     }
     
     .hamburger {
