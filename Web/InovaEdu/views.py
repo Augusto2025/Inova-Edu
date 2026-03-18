@@ -1325,11 +1325,37 @@ def home_Coordenacao(request):
 
 
 
+def listar_alunos(request):
+    alunos = Usuario.objects.filter(tipo__iexact='Aluno')
+
+    data = [
+        {
+            "id": aluno.idusuario,
+            "nome": aluno.nome,
+            "sobrenome": aluno.sobrenome
+        }
+        for aluno in alunos
+    ]
+
+    return JsonResponse(data, safe=False)
 
 
+def salvar_alunos_turma(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
 
+        turma_id = data.get("turma")
+        alunos_ids = data.get("alunos")
 
+        turma = Turma.objects.get(idturma=turma_id)
 
+        turma.alunos.clear()
+
+        for aluno_id in alunos_ids:
+            aluno = Usuario.objects.get(idusuario=aluno_id)
+            turma.alunos.add(aluno)
+
+        return JsonResponse({"status": "ok"})
 
 
 

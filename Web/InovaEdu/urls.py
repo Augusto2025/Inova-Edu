@@ -45,6 +45,9 @@ urlpatterns = [
     path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
     path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('turma/editar/', views.editar_turma, name='editar_turma'),
+    
+    path('listar-alunos/', views.listar_alunos, name='listar_alunos'),
+    path('salvar-alunos-turma/', views.salvar_alunos_turma, name='salvar_alunos_turma'),
 
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
@@ -52,9 +55,11 @@ urlpatterns = [
     path('api/listar-projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
     path('api/upload-foto/', views.upload_foto, name='upload_foto'),
+    
     # path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
     # path('salvar-certificado/', views.salvar_certificado, name='salvar_certificado'),
     path('api/certificados/', views.salvar_certificado, name='certificados_api'),
+    
 ]
 
 if settings.DEBUG and hasattr(settings, 'MEDIA_ROOT'):

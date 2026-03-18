@@ -209,143 +209,144 @@ document.addEventListener("DOMContentLoaded", function () {
 // ===== MODAL USUÁRIOS DA TURMA =====
 document.addEventListener("DOMContentLoaded", function () {
 
-    const modal = document.getElementById("modalUsuariosTurma");
-    const fechar = document.getElementById("fecharUsuariosTurma");
+    const modal = document.getElementById("modalUsuariosTurma")
+    const fechar = document.getElementById("fecharUsuariosTurma")
 
-    const listaBanco = document.getElementById("listaAlunosBanco");
-    const listaSelecionados = document.getElementById("listaSelecionados");
-    const busca = document.getElementById("buscarAlunoModal");
+    const listaBanco = document.getElementById("listaAlunosBanco")
+    const listaSelecionados = document.getElementById("listaSelecionados")
+    const busca = document.getElementById("buscarAlunoModal")
+    const btnSalvar = document.querySelector(".btn-salvar-alunos")
 
-    let alunosSelecionados = [];
-    let turmaAtual = null;
+    let alunosSelecionados = []
+    let alunosBanco = []
+    let turmaAtual = null
 
+    // 🔹 ABRIR MODAL
+    document.querySelectorAll(".btn-ver-usuarios").forEach(botao => {
+        botao.addEventListener("click", function () {
 
-    // =========================
-    // ABRIR MODAL
-    // =========================
-    document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
+            turmaAtual = this.dataset.turma
 
-        btn.addEventListener("click", function () {
+            alunosSelecionados = []
+            listaSelecionados.innerHTML = ""
 
-            turmaAtual = this.dataset.turma;
+            modal.style.display = "flex"
 
-            modal.style.display = "flex";
+            carregarAlunos()
+        })
+    })
 
-            carregarAlunos();
+    // 🔹 FECHAR MODAL
+    fechar.addEventListener("click", () => {
+        modal.style.display = "none"
+    })
 
-        });
-
-    });
-
-
-    // =========================
-    // FECHAR MODAL
-    // =========================
-    fechar.onclick = () => modal.style.display = "none";
-
-    window.onclick = function (e) {
-        if (e.target == modal) {
-            modal.style.display = "none";
-        }
-    };
-
-
-    // =========================
-    // CARREGAR ALUNOS DO BANCO
-    // =========================
+    // 🔹 CARREGAR ALUNOS
     function carregarAlunos() {
-
-        fetch("/buscar_alunos/")
+        fetch("/listar-alunos/")
             .then(res => res.json())
             .then(data => {
-
-                listaBanco.innerHTML = "";
-
-                data.forEach(aluno => {
-
-                    const li = document.createElement("li");
-
-                    li.innerHTML = `
-                        <span>${aluno.nome} ${aluno.sobrenome}</span>
-                        <button class="btn-add">Adicionar</button>
-                    `;
-
-                    li.querySelector("button").onclick = () => adicionarAluno(aluno);
-
-                    listaBanco.appendChild(li);
-
-                });
-
-            });
-
+                alunosBanco = data
+                renderListaBanco(data)
+            })
     }
 
+    // 🔹 LISTA DO BANCO
+    function renderListaBanco(alunos) {
+        listaBanco.innerHTML = ""
 
-    // =========================
-    // ADICIONAR ALUNO
-    // =========================
-    function adicionarAluno(aluno) {
+        alunos.forEach(aluno => {
 
-        if (alunosSelecionados.find(a => a.id === aluno.id)) return;
-
-        alunosSelecionados.push(aluno);
-
-        renderSelecionados();
-
-    }
-
-
-    // =========================
-    // RENDER ALUNOS SELECIONADOS
-    // =========================
-    function renderSelecionados() {
-
-        listaSelecionados.innerHTML = "";
-
-        alunosSelecionados.forEach((aluno, index) => {
-
-            const li = document.createElement("li");
+            const li = document.createElement("li")
 
             li.innerHTML = `
-                <span>${aluno.nome} ${aluno.sobrenome}</span>
-                <button class="btn-remover">Remover</button>
-            `;
+                ${aluno.nome} ${aluno.sobrenome}
+                <button class="btn-add">Adicionar</button>
+            `
 
-            li.querySelector("button").onclick = () => {
+            li.querySelector(".btn-add").addEventListener("click", () => {
+                adicionarAluno(aluno.id)
+            })
 
-                alunosSelecionados.splice(index, 1);
-
-                renderSelecionados();
-
-            };
-
-            listaSelecionados.appendChild(li);
-
-        });
-
+            listaBanco.appendChild(li)
+        })
     }
 
+    // 🔹 ADICIONAR
+    function adicionarAluno(id) {
+        if (!alunosSelecionados.includes(id)) {
+            alunosSelecionados.push(id)
+            renderSelecionados()
+        }
+    }
 
-    // =========================
-    // PESQUISA DE ALUNO
-    // =========================
-    busca.addEventListener("keyup", function () {
+    // 🔹 REMOVER
+    function removerAluno(id) {
+        alunosSelecionados = alunosSelecionados.filter(a => a !== id)
+        renderSelecionados()
+    }
 
-        const valor = this.value.toLowerCase();
+    // 🔹 LISTA SELECIONADOS
+    function renderSelecionados() {
+        listaSelecionados.innerHTML = ""
 
-        const itens = listaBanco.querySelectorAll("li");
+        alunosSelecionados.forEach(id => {
 
-        itens.forEach(li => {
+            const aluno = alunosBanco.find(a => a.id === id)
 
-            const texto = li.innerText.toLowerCase();
+            const li = document.createElement("li")
 
-            li.style.display = texto.includes(valor) ? "flex" : "none";
+            li.innerHTML = `
+                ${aluno.nome} ${aluno.sobrenome}
+                <button class="btn-remove">Remover</button>
+            `
 
-        });
+            li.querySelector(".btn-remove").addEventListener("click", () => {
+                removerAluno(id)
+            })
 
-    });
+            listaSelecionados.appendChild(li)
+        })
+    }
 
-});
+    // 🔹 BUSCA
+    busca.addEventListener("input", function () {
+
+        const valor = this.value.toLowerCase()
+
+        const filtrados = alunosBanco.filter(a =>
+            (a.nome + " " + a.sobrenome).toLowerCase().includes(valor)
+        )
+
+        renderListaBanco(filtrados)
+    })
+
+    // 🔹 SALVAR
+    btnSalvar.addEventListener("click", function () {
+
+        fetch("/salvar-alunos-turma/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: JSON.stringify({
+                turma: turmaAtual,
+                alunos: alunosSelecionados
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert("Alunos salvos com sucesso!")
+            modal.style.display = "none"
+        })
+    })
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value
+    }
+
+})
 
 
 

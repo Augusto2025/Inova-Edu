@@ -249,7 +249,7 @@
             <div id="modalCadastro" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModal">&times;</span>
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_usuario">
                         <p>Cadastro Usuário</p>
                     </div>
                     <form action="{% url 'home_Coordenacao' %}" method="POST" enctype="multipart/form-data">
@@ -295,7 +295,7 @@
             <div id="modalEditar" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditar">&times;</span>
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_usuario">
                         <p>Editar Usuário</p>
                     </div>
                     <form id="formEditarUsuario" method="POST" enctype="multipart/form-data">
@@ -425,7 +425,7 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModalCurso">&times;</span>
 
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_curso">
                         <p>Cadastro de Curso</p>
                     </div>
 
@@ -458,7 +458,7 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditarCurso">&times;</span>
 
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_curso">
                         <p>Editar Curso</p>
                     </div>
 
@@ -602,7 +602,9 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModalTurma">&times;</span>
 
-                    <h3>Cadastro de Turma</h3>
+                    <div class="titulo_lista_turma">
+                        <p>Cadastro Turma</p>
+                    </div>
 
                     <form action="{% url 'criar_turma' %}" method="POST">
                         {% csrf_token %}
@@ -636,7 +638,9 @@
                 <div class="modal-conteudo">
                     <span id="fecharEditarTurma" class="fechar">&times;</span>
 
-                    <h3>Editar Turma</h3>
+                    <div class="titulo_lista_turma">
+                        <p>Editar Turma</p>
+                    </div>
 
                     <form method="POST" action="{% url 'editar_turma' %}">
                         {% csrf_token %}

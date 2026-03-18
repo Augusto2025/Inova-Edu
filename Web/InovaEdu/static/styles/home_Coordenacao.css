@@ -648,6 +648,29 @@
     color: #333;
   }
 
+  .titulo_lista_usuario {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_usuario p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_usuario p::after {
+    content: "";
+    display: block;
+    width: 306%;
+    height: 3px;
+    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
   /* ======= COLUNA DE CARDS ======= */
   .cards-home {
     display: flex;
@@ -1353,6 +1376,36 @@
     cursor: pointer;
   }
 
+   .titulo_lista_curso {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_curso p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_curso p::after {
+    content: "";
+    display: block;
+    width: 306%;
+    height: 3px;
+    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+
+
+
+
+
+
+
   /* ====================CURSO=============================================================*/
 
   /* Container */
@@ -1446,6 +1499,39 @@
   .btn-excluir-curso:hover {
     background-color: #da190b;
   }
+
+  .titulo_lista_turma {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_turma p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_turma p::after {
+    content: "";
+    display: block;
+    width: 306%;
+    height: 3px;
+    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+
+
+
+
+
+
+
+
+
 
   /* ===== VAZIO ===== */
   .curso-vazio {
