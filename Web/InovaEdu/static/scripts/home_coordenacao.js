@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             li.innerHTML = `
                 ${aluno.nome} ${aluno.sobrenome}
-                <button class="btn-add">Adicionar</button>
+                <button class="btn-add"><i class="fa-solid fa-plus"></i></button>
             `
 
             li.querySelector(".btn-add").addEventListener("click", () => {
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             li.innerHTML = `
                 ${aluno.nome} ${aluno.sobrenome}
-                <button class="btn-remove">Remover</button>
+                <button class="btn-remove"><i class="fa-regular fa-trash-can"></i></button>
             `
 
             li.querySelector(".btn-remove").addEventListener("click", () => {
@@ -324,6 +324,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🔹 SALVAR
     btnSalvar.addEventListener("click", function () {
 
+        console.log("IDs enviados:", alunosSelecionados) // 👈 TESTE
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
         fetch("/salvar-alunos-turma/", {
             method: "POST",
             headers: {
@@ -336,15 +341,17 @@ document.addEventListener("DOMContentLoaded", function () {
             })
         })
         .then(res => res.json())
-        .then(() => {
-            alert("Alunos salvos com sucesso!")
-            modal.style.display = "none"
+        .then(data => {
+            if (data.status === "ok") {
+                alert("Alunos salvos com sucesso!")
+            } else {
+                alert("Erro: " + data.msg)
+            }
+        })
+        .catch(err => {
+            console.error("Erro:", err)
         })
     })
-
-    function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value
-    }
 
 })
 

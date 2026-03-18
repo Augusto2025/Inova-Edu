@@ -1006,6 +1006,41 @@
     animation: aparecer 0.3s ease;
   }
 
+  .titulo_lista_editar {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar p::after {
+    content: "";
+    display: block;
+    width: 30%;
+    height: 3px;
+    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
   @keyframes aparecer {
     from {
       transform: scale(0.8);
@@ -1376,7 +1411,7 @@
     cursor: pointer;
   }
 
-   .titulo_lista_curso {
+  .titulo_lista_curso {
     margin-bottom: 15px;
   }
 
@@ -1399,12 +1434,25 @@
     border-radius: 2px;
   }
 
+  .btn-remove {
+    background-color: #ff4d4d; /* vermelho */
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-left: 10px;
+  }
 
+  .btn-remove i {
+    pointer-events: none; /* evita bug no clique no ícone */
+  }
 
-
-
-
-
+  .btn-remove:hover {
+    background-color: #e60000;
+    transform: scale(1.05);
+  }
 
   /* ====================CURSO=============================================================*/
 
@@ -1522,16 +1570,6 @@
     margin-top: 5px;
     border-radius: 2px;
   }
-
-
-
-
-
-
-
-
-
-
 
   /* ===== VAZIO ===== */
   .curso-vazio {

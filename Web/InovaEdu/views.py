@@ -1349,19 +1349,16 @@ def salvar_alunos_turma(request):
 
         turma = Turma.objects.get(idturma=turma_id)
 
-        turma.alunos.clear()
+        turma.Usuario.clear()  # 👈 limpa antes
 
         for aluno_id in alunos_ids:
             aluno = Usuario.objects.get(idusuario=aluno_id)
-            turma.alunos.add(aluno)
+
+            # 🔥 GARANTE QUE É ALUNO
+            if aluno.tipo.lower() == "aluno":
+                turma.usuarios.add(aluno)
 
         return JsonResponse({"status": "ok"})
-
-
-
-
-
-
 
 
 

@@ -295,7 +295,7 @@
             <div id="modalEditar" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditar">&times;</span>
-                    <div class="titulo_lista_usuario">
+                    <div class="titulo_lista_editar">
                         <p>Editar Usuário</p>
                     </div>
                     <form id="formEditarUsuario" method="POST" enctype="multipart/form-data">
@@ -584,9 +584,10 @@
                     </div>
 
                     <div class="modal-usuarios-footer">
-                        <button class="btn-salvar-alunos">Salvar alunos</button>
+                        <button type="button" class="btn-salvar-alunos">Salvar alunos</button>
                     </div>
 
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 </div>
 
             </div>
