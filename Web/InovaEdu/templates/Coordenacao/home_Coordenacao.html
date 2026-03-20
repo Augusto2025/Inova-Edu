@@ -578,14 +578,16 @@
                     </div>
 
                     <!-- ALUNOS SELECIONADOS -->
-                    <div class="modal-usuarios-selecionados modal-usuarios-topo">
+                    <div class="modal-usuarios-selecionados ">
                         <h3>Alunos adicionados</h3>
                         <ul id="listaSelecionados"></ul>
                     </div>
 
                     <div class="modal-usuarios-footer">
-                        <button type="button" class="btn-salvar-alunos">Salvar alunos</button>
+                        <button type="button" id="btnSalvar" class="btn-salvar-alunos">Salvar alunos</button>
                     </div>
+
+                    <p id="mensagemSucesso" style="display:none; color:green;">salvo com sucesso</p>
 
                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 </div>

@@ -215,7 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const listaBanco = document.getElementById("listaAlunosBanco")
     const listaSelecionados = document.getElementById("listaSelecionados")
     const busca = document.getElementById("buscarAlunoModal")
-    const btnSalvar = document.querySelector(".btn-salvar-alunos")
+    const btnSalvar = document.getElementById("btnSalvar")
+    const mensagem = document.getElementById("mensagemSucesso")
 
     let alunosSelecionados = []
     let alunosBanco = []
@@ -324,11 +325,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🔹 SALVAR
     btnSalvar.addEventListener("click", function () {
 
-        console.log("IDs enviados:", alunosSelecionados) // 👈 TESTE
+        console.log("IDs enviados:", alunosSelecionados)
 
         function getCSRFToken() {
             return document.querySelector('[name=csrfmiddlewaretoken]').value
         }
+
         fetch("/salvar-alunos-turma/", {
             method: "POST",
             headers: {
@@ -343,7 +345,15 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(res => res.json())
         .then(data => {
             if (data.status === "ok") {
-                alert("Alunos salvos com sucesso!")
+
+                // ✅ Mostra mensagem
+                mensagem.style.display = "block"
+
+                // some depois de 3s
+                setTimeout(() => {
+                    mensagem.style.display = "none"
+                }, 3000)
+
             } else {
                 alert("Erro: " + data.msg)
             }

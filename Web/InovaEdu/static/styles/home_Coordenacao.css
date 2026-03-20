@@ -666,7 +666,9 @@
     display: block;
     width: 306%;
     height: 3px;
-    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
@@ -876,7 +878,6 @@
     object-fit: cover;
   }
 
-  
   /* ===== AÇÕES GERAIS ===== */
   .acoes-geral {
     display: flex;
@@ -885,7 +886,6 @@
     align-items: center;
     margin-left: 87px;
   }
-
 
   /* FORM DENTRO DAS AÇÕES */
   .acoes-geral form {
@@ -935,7 +935,6 @@
     margin-left: -15px;
   }
 
-
   /* FORM DENTRO DAS AÇÕES */
   .acoes-geral_usuario form {
     margin: 0;
@@ -975,9 +974,6 @@
     background-color: #da190b;
   }
 
-
-
-
   /* ===== AÇÕES GERAL TURMA ===== */
   .acoes-geral_turma {
     display: flex;
@@ -986,7 +982,6 @@
     align-items: center;
     margin-left: 80px;
   }
-
 
   /* FORM DENTRO DAS AÇÕES */
   .acoes-geral_turma form {
@@ -1026,16 +1021,6 @@
   .acoes-geral_turma .btn-excluir:hover {
     background-color: #da190b;
   }
-
-
-
-
-
-
-
-
-
-
 
   /* ===== VAZIO ===== */
   .usuario-vazio {
@@ -1137,22 +1122,12 @@
     display: block;
     width: 400px;
     height: 3px;
-    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   @keyframes aparecer {
     from {
@@ -1442,8 +1417,8 @@
   }
 
   .modal-usuarios-topo h3 {
-  position: relative;
-  padding-bottom: 8px;
+    position: relative;
+    padding-bottom: 8px;
   }
 
   .modal-usuarios-topo h3::after {
@@ -1453,8 +1428,26 @@
     bottom: 0;
     width: 100%;
     height: 3px;
-    background-color:var(--laranja-Senac); /* pode trocar pela sua variável */
+    background-color: var(--laranja-Senac); /* pode trocar pela sua variável */
   }
+
+  /* Linha de baixo no add aluno */
+  .modal-usuarios-selecionados h3 {
+    position: relative;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .modal-usuarios-selecionados h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 32%;
+    height: 3px;
+    background-color: var(--laranja-Senac);
+  }
+  /* fim Linha de baixo no add aluno */
 
   .modal-usuarios-fechar {
     font-size: 26px;
@@ -1539,12 +1532,6 @@
     cursor: pointer;
   }
 
-
-
-
-
-
-
   /* Título da lista de cursos */
   .titulo_lista_curso {
     margin-bottom: 15px;
@@ -1564,7 +1551,9 @@
     display: block;
     width: 285%;
     height: 3px;
-    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
@@ -1607,23 +1596,12 @@
     display: block;
     width: 420%;
     height: 3px;
-    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* ====================CURSO=============================================================*/
 
@@ -1737,7 +1715,9 @@
     display: block;
     width: 335%;
     height: 3px;
-    background-color:var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
@@ -1760,17 +1740,12 @@
     display: block;
     width: 418%;
     height: 3px;
-    background-color:var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
-
-
-
-
-
-
-
 
   /* ===== VAZIO ===== */
   .curso-vazio {

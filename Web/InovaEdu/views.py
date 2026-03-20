@@ -1340,26 +1340,36 @@ def listar_alunos(request):
     return JsonResponse(data, safe=False)
 
 
+import json
+from django.http import JsonResponse
+
 def salvar_alunos_turma(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        turma_id = data.get("turma")
-        alunos_ids = data.get("alunos")
+            turma_id = data.get("turma")
+            alunos_ids = data.get("alunos", [])  # 👈 evita erro
 
-        turma = Turma.objects.get(idturma=turma_id)
+            turma = Turma.objects.get(idturma=turma_id)
 
-        turma.Usuario.clear()  # 👈 limpa antes
+            # 🔥 limpa antes
+            turma.usuarios.clear()
 
-        for aluno_id in alunos_ids:
-            aluno = Usuario.objects.get(idusuario=aluno_id)
+            for aluno_id in alunos_ids:
+                try:
+                    aluno = Usuario.objects.get(idusuario=aluno_id)
 
-            # 🔥 GARANTE QUE É ALUNO
-            if aluno.tipo.lower() == "aluno":
-                turma.usuarios.add(aluno)
+                    if aluno.tipo.lower() == "aluno":
+                        turma.usuarios.add(Aluno)  # 👈 salva só ID automaticamente
 
-        return JsonResponse({"status": "ok"})
+                except Usuario.DoesNotExist:
+                    continue
 
+            return JsonResponse({"status": "ok"})
+
+        except Exception as e:
+            return JsonResponse({"status": "erro", "msg": str(e)})
 
 
 
