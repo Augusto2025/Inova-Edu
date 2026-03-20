@@ -666,7 +666,7 @@
     display: block;
     width: 306%;
     height: 3px;
-    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
@@ -840,7 +840,7 @@
   /* ===== CABEÇALHO ===== */
   .usuario-cabecalho {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1.2fr 2fr 1.8fr 1.2fr 1fr;
     gap: 10px;
     padding: 12px;
     background-color: var(--azul-Senac);
@@ -855,7 +855,7 @@
   /* ===== ITEM ===== */
   .usuario-item {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1.2fr 2fr 1.8fr 1.2fr 1fr;
     gap: 10px;
     padding: 12px;
     align-items: center;
@@ -876,14 +876,16 @@
     object-fit: cover;
   }
 
-  /* ===== AÇÕES ===== */
+  
   /* ===== AÇÕES GERAIS ===== */
   .acoes-geral {
     display: flex;
     gap: 8px;
     justify-content: center;
     align-items: center;
+    margin-left: 87px;
   }
+
 
   /* FORM DENTRO DAS AÇÕES */
   .acoes-geral form {
@@ -923,6 +925,117 @@
   .acoes-geral .btn-excluir:hover {
     background-color: #da190b;
   }
+  /* ===== AÇÕES GERAL USUARIO ===== */
+
+  .acoes-geral_usuario {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-left: -15px;
+  }
+
+
+  /* FORM DENTRO DAS AÇÕES */
+  .acoes-geral_usuario form {
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* BOTÕES GERAIS */
+  .acoes-geral_usuario button {
+    padding: 6px 10px;
+    min-width: 36px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* EDITAR */
+  .acoes-geral_usuario .btn-editar {
+    background-color: var(--azul-Senac);
+  }
+
+  .acoes-geral_usuario .btn-editar:hover {
+    background-color: var(--azul_Claro-Senac);
+  }
+
+  /* EXCLUIR */
+  .acoes-geral_usuario .btn-excluir {
+    background-color: #f44336;
+  }
+
+  .acoes-geral_usuario .btn-excluir:hover {
+    background-color: #da190b;
+  }
+
+
+
+
+  /* ===== AÇÕES GERAL TURMA ===== */
+  .acoes-geral_turma {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 80px;
+  }
+
+
+  /* FORM DENTRO DAS AÇÕES */
+  .acoes-geral_turma form {
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* BOTÕES GERAIS */
+  .acoes-geral_turma button {
+    padding: 6px 10px;
+    min-width: 36px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* EDITAR */
+  .acoes-geral_turma .btn-editar {
+    background-color: var(--azul-Senac);
+  }
+
+  .acoes-geral_turma .btn-editar:hover {
+    background-color: var(--azul_Claro-Senac);
+  }
+
+  /* EXCLUIR */
+  .acoes-geral_turma .btn-excluir {
+    background-color: #f44336;
+  }
+
+  .acoes-geral_turma .btn-excluir:hover {
+    background-color: #da190b;
+  }
+
+
+
+
+
+
+
+
+
+
 
   /* ===== VAZIO ===== */
   .usuario-vazio {
@@ -1022,7 +1135,7 @@
   .titulo_lista_editar p::after {
     content: "";
     display: block;
-    width: 30%;
+    width: 400px;
     height: 3px;
     background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
@@ -1328,6 +1441,21 @@
     margin-bottom: 10px;
   }
 
+  .modal-usuarios-topo h3 {
+  position: relative;
+  padding-bottom: 8px;
+  }
+
+  .modal-usuarios-topo h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background-color:var(--laranja-Senac); /* pode trocar pela sua variável */
+  }
+
   .modal-usuarios-fechar {
     font-size: 26px;
     cursor: pointer;
@@ -1411,6 +1539,13 @@
     cursor: pointer;
   }
 
+
+
+
+
+
+
+  /* Título da lista de cursos */
   .titulo_lista_curso {
     margin-bottom: 15px;
   }
@@ -1427,9 +1562,9 @@
   .titulo_lista_curso p::after {
     content: "";
     display: block;
-    width: 306%;
+    width: 285%;
     height: 3px;
-    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
@@ -1454,6 +1589,42 @@
     transform: scale(1.05);
   }
 
+  .titulo_lista_editar_curso {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar_curso p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar_curso p::after {
+    content: "";
+    display: block;
+    width: 420%;
+    height: 3px;
+    background-color: var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /* ====================CURSO=============================================================*/
 
   /* Container */
@@ -1477,7 +1648,7 @@
   /* ===== CABEÇALHO ===== */
   .curso-cabecalho {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     padding: 12px;
     background-color: var(--azul-Senac);
@@ -1492,7 +1663,7 @@
   /* ===== ITEM ===== */
   .curso-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     padding: 12px;
     align-items: center;
@@ -1564,12 +1735,42 @@
   .titulo_lista_turma p::after {
     content: "";
     display: block;
-    width: 306%;
+    width: 335%;
     height: 3px;
-    background-color: orange; /* ou var(--laranja-Senac) se tiver */
+    background-color:var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
     margin-top: 5px;
     border-radius: 2px;
   }
+
+  .titulo_lista_editar_turma {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar_turma p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar_turma p::after {
+    content: "";
+    display: block;
+    width: 418%;
+    height: 3px;
+    background-color:var(--laranja-Senac); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+
+
+
+
+
+
 
   /* ===== VAZIO ===== */
   .curso-vazio {

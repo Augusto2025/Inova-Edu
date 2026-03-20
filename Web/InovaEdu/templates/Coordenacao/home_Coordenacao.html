@@ -194,7 +194,7 @@
                             <span>Sobrenome</span>
                             <span>Email</span>
                             <span>Descrição</span>
-                            <span>Imagem</span>
+                            {% comment %} <span>Imagem</span> {% endcomment %}
                             <span>Tipo</span>
                             <span class="usuario-acoes">Ações</span>
                         </li>
@@ -207,18 +207,18 @@
 
                             <i class="fa-solid fa-align-center icon-descricao" title="Ver descrição"
                             data-descricao="{{ usuario.descricao|escapejs }}"></i>
-
+{% comment %} 
                             <span>
                                 {% if usuario.imagem %}
                                 <img src="{{ usuario.imagem.url }}" alt="Foto">
                                 {% else %}
                                 <img src="{% static 'img/default_user.png' %}" alt="Sem foto">
                                 {% endif %}
-                            </span>
+                            </span> {% endcomment %}
 
                             <span>{{ usuario.tipo }}</span>
 
-                            <span class="acoes-geral">
+                            <span class="acoes-geral_usuario">
                                 <button type="button" class="btn-editar" title="Editar">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
@@ -272,8 +272,8 @@
                         <label>Descrição</label>
                         <textarea name="descricao"></textarea>
 
-                        <label>Imagem</label>
-                        <input type="file" name="imagem">
+                        {% comment %} <label>Imagem</label>
+                        <input type="file" name="imagem"> {% endcomment %}
 
                         <label>Tipo</label>
                         <select name="tipoCadastro" required>
@@ -319,8 +319,8 @@
                         <textarea id="descricaoEdit" name="descricao" rows="4"
                             placeholder="Lorem ipsum dolor sit amet...."></textarea>
 
-                        <label for="imagemEdit">Imagem:</label>
-                        <input type="file" id="imagemEdit" name="imagem" accept="image/*">
+                        {% comment %} <label for="imagemEdit">Imagem:</label>
+                        <input type="file" id="imagemEdit" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label for="tipoCadastroEdit">Escolha sua opção de cadastro:</label>
                         <select id="tipoCadastroEdit" name="tipoCadastro" required>
@@ -366,7 +366,7 @@
                             <span>Nome</span>
                             <span>Início</span>
                             <span>Término</span>
-                            <span>Imagem</span>
+                            {% comment %} <span>Imagem</span> {% endcomment %}
                             <span>Descrição</span>
                             <span class="curso-acoes">Ações</span>
                         </li>
@@ -377,11 +377,11 @@
                             <span>{{ curso.data_inicio }}</span>
                             <span>{{ curso.data_final }}</span>
 
-                            <span>
+                            {% comment %} <span>
                                 {% if curso.imagem %}
                                 <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
-                                {% else %}-{% endif %}
-                            </span>
+                                {% else %}<i class="fa-solid fa-file-image"></i>{% endif %}
+                            </span> {% endcomment %}
 
                             <i class="fa-solid fa-align-center icon-descricao" title="Ver descrição"
                                 data-descricao="{{ curso.descricao|escapejs }}"></i>
@@ -441,8 +441,8 @@
                         <label for="data_final">Data de Término:</label>
                         <input type="date" id="data_final" name="data_final">
 
-                        <label for="imagem">Imagem do Curso:</label>
-                        <input type="file" id="imagem" name="imagem" accept="image/*">
+                        {% comment %} <label for="imagem">Imagem do Curso:</label>
+                        <input type="file" id="imagem" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label for="descricao_curso">Descrição:</label>
                         <textarea id="descricao_curso" name="descricao_curso" rows="4"></textarea>
@@ -458,7 +458,7 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditarCurso">&times;</span>
 
-                    <div class="titulo_lista_curso">
+                    <div class="titulo_lista_editar_curso">
                         <p>Editar Curso</p>
                     </div>
 
@@ -476,8 +476,8 @@
                         <label>Data de Término:</label>
                         <input type="date" id="edit_data_final" name="data_final">
 
-                        <label>Imagem do Curso:</label>
-                        <input type="file" id="edit_imagem" name="imagem" accept="image/*">
+                        {% comment %} <label>Imagem do Curso:</label>
+                        <input type="file" id="edit_imagem" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label>Descrição:</label>
                         <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
@@ -529,7 +529,7 @@
                             </span>
 
 
-                            <span class="acoes-geral">
+                            <span class="acoes-geral_turma">
                                 <!-- EDITAR -->
                                 <button type="button" class="btn-editar-turma" title="Editar turma"
                                     data-id="{{ turma.idturma }}" data-codigo="{{ turma.codigo_turma }}"
@@ -578,8 +578,8 @@
                     </div>
 
                     <!-- ALUNOS SELECIONADOS -->
-                    <div class="modal-usuarios-selecionados">
-                        <h4>Alunos adicionados</h4>
+                    <div class="modal-usuarios-selecionados modal-usuarios-topo">
+                        <h3>Alunos adicionados</h3>
                         <ul id="listaSelecionados"></ul>
                     </div>
 
@@ -591,11 +591,6 @@
                 </div>
 
             </div>
-
-
-
-
-
 
 
 
@@ -639,7 +634,7 @@
                 <div class="modal-conteudo">
                     <span id="fecharEditarTurma" class="fechar">&times;</span>
 
-                    <div class="titulo_lista_turma">
+                    <div class="titulo_lista_editar_turma">
                         <p>Editar Turma</p>
                     </div>
 
