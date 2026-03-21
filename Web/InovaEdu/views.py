@@ -1340,28 +1340,28 @@ def listar_alunos(request):
     return JsonResponse(data, safe=False)
 
 
-import json
-from django.http import JsonResponse
-
 def salvar_alunos_turma(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
 
             turma_id = data.get("turma")
-            alunos_ids = data.get("alunos", [])  # 👈 evita erro
+            alunos_ids = data.get("alunos", [])
 
             turma = Turma.objects.get(idturma=turma_id)
 
-            # 🔥 limpa antes
-            turma.usuarios.clear()
+            # 🔥 remove todos vínculos antigos
+            UsuarioDaTurma.objects.filter(id_turma=turma).delete()
 
             for aluno_id in alunos_ids:
                 try:
                     aluno = Usuario.objects.get(idusuario=aluno_id)
 
                     if aluno.tipo.lower() == "aluno":
-                        turma.usuarios.add(Aluno)  # 👈 salva só ID automaticamente
+                        UsuarioDaTurma.objects.create(
+                            id_usuario=aluno,
+                            id_turma=turma
+                        )
 
                 except Usuario.DoesNotExist:
                     continue
@@ -1370,6 +1370,8 @@ def salvar_alunos_turma(request):
 
         except Exception as e:
             return JsonResponse({"status": "erro", "msg": str(e)})
+
+
 
 
 
