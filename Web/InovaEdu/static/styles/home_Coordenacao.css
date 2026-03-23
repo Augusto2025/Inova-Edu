@@ -1767,6 +1767,13 @@
 
 /* TABLET e NOTE MUITO PEQUENO */
 @media (max-width: 1024px) {
+  body {
+    padding-top: 80px;
+  }
+  #painelImagem {
+    display: none;
+  }
+
   .headerperfil {
     width: 95%;
     height: 60px;
@@ -1828,63 +1835,53 @@
 
   /* ========card========== */
 
-  /* menu vira rodapé fixo */
+  /*MENU DOS 3 CADS */
   .menu-lateral {
-    position: fixed;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    background: #fff;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 8px 0;
+    padding: 15px;
+    display: block;
   }
 
   .cards-home {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column; /* um embaixo do outro */
     align-items: center;
+    gap: 15px;
   }
 
   .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    padding: 5px;
-    background: none;
-    box-shadow: none;
+    width: 80%; /* diminui o tamanho do card */
+    max-width: 350px; /* limite pra não ficar grande */
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   }
 
   .card img {
-    width: 22px;
-    height: 22px;
-    margin-bottom: 4px;
+    width: 40px; /* menor */
+    margin-bottom: 8px;
   }
 
   .card h3 {
-    font-size: 11px;
-    margin: 0;
+    font-size: 16px;
+    margin-bottom: 6px;
   }
 
   .card p {
-    display: none; /* esconde descrição no mobile */
+    font-size: 13px;
+    margin-bottom: 10px;
   }
 
   .botao-card {
-    font-size: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 5px;
+    background: #ff7a00;
+    color: #fff;
     text-decoration: none;
-    margin-top: 2px;
-  }
-  .maincontainer {
-    padding-bottom: 80px;
   }
 
   /* evita conteúdo ficar escondido atrás do menu */
-  body {
-    padding-bottom: 80px;
-  }
-
-  /* ===== LISTA USUÁRIO (DESKTOP) ===== */
 }
