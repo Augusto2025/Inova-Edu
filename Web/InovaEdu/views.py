@@ -1331,7 +1331,7 @@ def home_Coordenacao(request):
 
 
 def listar_alunos(request):
-    alunos = Usuario.objects.filter(tipo__iexact='Aluno')
+    alunos = Usuario.objects.filter(tipo__in=['Aluno', 'Professor'])
 
     data = [
         {
@@ -1362,7 +1362,7 @@ def salvar_alunos_turma(request):
                 try:
                     aluno = Usuario.objects.get(idusuario=aluno_id)
 
-                    if aluno.tipo.lower() == "aluno":
+                    if aluno.tipo.lower() in ["aluno", "professor"]:
                         UsuarioDaTurma.objects.create(
                             id_usuario=aluno,
                             id_turma=turma
