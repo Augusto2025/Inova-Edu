@@ -1404,7 +1404,7 @@ def editar_usuario(request, idusuario):
         usuario.nome = request.POST.get("nome")
         usuario.sobrenome = request.POST.get("sobrenome")
         usuario.email = request.POST.get("email")
-        usuario.senha = request.POST.get("senha")
+        # usuario.senha = request.POST.get("senha")
         usuario.descricao = request.POST.get("descricao")
         usuario.tipo = request.POST.get("tipoCadastro")
 
