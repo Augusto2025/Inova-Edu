@@ -1330,31 +1330,57 @@ def home_Coordenacao(request):
 
 
 
+def listar_alunos(request):
+    alunos = Usuario.objects.filter(tipo__iexact='Aluno')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return render(
-        request,
-        "Coordenacao/home_Coordenacao.html",
+    data = [
         {
-            "usuarios": usuarios,
-            "cursos": cursos,
-            "turmas": turmas,
-            "usuario_logado": usuario_logado,
-        },
-    )
+            "id": aluno.idusuario,
+            "nome": aluno.nome,
+            "sobrenome": aluno.sobrenome
+        }
+        for aluno in alunos
+    ]
+
+    return JsonResponse(data, safe=False)
+
+
+def salvar_alunos_turma(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            turma_id = data.get("turma")
+            alunos_ids = data.get("alunos", [])
+
+            turma = Turma.objects.get(idturma=turma_id)
+
+            # 🔥 remove todos vínculos antigos
+            UsuarioDaTurma.objects.filter(id_turma=turma).delete()
+
+            for aluno_id in alunos_ids:
+                try:
+                    aluno = Usuario.objects.get(idusuario=aluno_id)
+
+                    if aluno.tipo.lower() == "aluno":
+                        UsuarioDaTurma.objects.create(
+                            id_usuario=aluno,
+                            id_turma=turma
+                        )
+
+                except Usuario.DoesNotExist:
+                    continue
+
+            return JsonResponse({"status": "ok"})
+
+        except Exception as e:
+            return JsonResponse({"status": "erro", "msg": str(e)})
+
+
+
+
+
+ 
 
 
 def homePage(request):
@@ -1489,4 +1515,4 @@ def excluir_turma(request, idturma):
 
 def lista_curso(request):
     cursos = Curso.objects.all()
-    return render(request, "Coordenacao/ListaCurso.html", {"cursos": cursos})
+    return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
