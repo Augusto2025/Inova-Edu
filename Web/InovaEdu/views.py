@@ -175,24 +175,29 @@ def perfil(request):
     if not email:
         return redirect('login')
 
-    usuario = Usuario.objects.get(email=email)
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return redirect('login')
 
     certificados = Certificado.objects.filter(usuario=usuario)
 
-    turmas_ids = UsuarioDaTurma.objects.filter(
+    # pegar a turma do usuário
+    turma_usuario = UsuarioDaTurma.objects.filter(
         id_usuario=usuario
-    ).values_list('id_turma_id', flat=True)
+    ).select_related('id_turma').first()
 
-    projetos = Projeto.objects.filter(
-        turma_id__in=turmas_ids
-    )
+    turma = turma_usuario.id_turma if turma_usuario else None
+
+    # pegar projetos da turma
+    projetos = Projeto.objects.filter(turma=turma) if turma else []
 
     return render(request, 'AlunoProfessor/perfil.html', {
         'usuario': usuario,
         'certificados': certificados,
-        'projetos': projetos
+        'projetos': projetos,
+        'turma': turma
     })
-
 
 @require_POST
 def atualizar_perfil_ajax(request):
@@ -1325,31 +1330,57 @@ def home_Coordenacao(request):
 
 
 
+def listar_alunos(request):
+    alunos = Usuario.objects.filter(tipo__in=['Aluno', 'Professor'])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return render(
-        request,
-        "Coordenacao/home_Coordenacao.html",
+    data = [
         {
-            "usuarios": usuarios,
-            "cursos": cursos,
-            "turmas": turmas,
-            "usuario_logado": usuario_logado,
-        },
-    )
+            "id": aluno.idusuario,
+            "nome": aluno.nome,
+            "sobrenome": aluno.sobrenome
+        }
+        for aluno in alunos
+    ]
+
+    return JsonResponse(data, safe=False)
+
+
+def salvar_alunos_turma(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            turma_id = data.get("turma")
+            alunos_ids = data.get("alunos", [])
+
+            turma = Turma.objects.get(idturma=turma_id)
+
+            # 🔥 remove todos vínculos antigos
+            UsuarioDaTurma.objects.filter(id_turma=turma).delete()
+
+            for aluno_id in alunos_ids:
+                try:
+                    aluno = Usuario.objects.get(idusuario=aluno_id)
+
+                    if aluno.tipo.lower() in ["aluno", "professor"]:
+                        UsuarioDaTurma.objects.create(
+                            id_usuario=aluno,
+                            id_turma=turma
+                        )
+
+                except Usuario.DoesNotExist:
+                    continue
+
+            return JsonResponse({"status": "ok"})
+
+        except Exception as e:
+            return JsonResponse({"status": "erro", "msg": str(e)})
+
+
+
+
+
+ 
 
 
 def homePage(request):
@@ -1373,7 +1404,7 @@ def editar_usuario(request, idusuario):
         usuario.nome = request.POST.get("nome")
         usuario.sobrenome = request.POST.get("sobrenome")
         usuario.email = request.POST.get("email")
-        usuario.senha = request.POST.get("senha")
+        # usuario.senha = request.POST.get("senha")
         usuario.descricao = request.POST.get("descricao")
         usuario.tipo = request.POST.get("tipoCadastro")
 
@@ -1484,4 +1515,4 @@ def excluir_turma(request, idturma):
 
 def lista_curso(request):
     cursos = Curso.objects.all()
-    return render(request, "Coordenacao/ListaCurso.html", {"cursos": cursos})
+    return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})

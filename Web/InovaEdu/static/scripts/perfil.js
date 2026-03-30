@@ -417,3 +417,26 @@ async function saveCertificado() {
         hideLoading();
     }
 }
+
+let certificadoParaExcluir = null;
+
+function openDeleteModal(id, nome) {
+
+    certificadoParaExcluir = id;
+
+    document.getElementById("certificado-nome-delete").innerText = nome;
+
+    document.getElementById("confirm-delete-modal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+    document.getElementById("confirm-delete-modal").style.display = "none";
+}
+
+function confirmDeleteCertificado() {
+
+    deleteCertificado(certificadoParaExcluir);
+
+    closeDeleteModal();
+}
+

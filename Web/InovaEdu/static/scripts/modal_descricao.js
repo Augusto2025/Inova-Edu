@@ -32,18 +32,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   const input = document.getElementById("pesquisarUsuario");
-  const lista = document.querySelectorAll(".lista-completa ul li");
+  const lista = document.querySelectorAll(".lista-usuario-conteudo ul li");
 
   input.addEventListener("keyup", function () {
     const valor = input.value.toLowerCase();
 
-    lista.forEach((item, index) => {
-      // pula o cabeçalho
-      if (item.classList.contains("cabecalho")) return;
+    lista.forEach((item) => {
+      // ignora cabeçalho
+      if (item.classList.contains("usuario-cabecalho")) return;
 
       const spans = item.querySelectorAll("span");
 
-      // segurança caso algo mude
       if (spans.length < 3) return;
 
       const nome = spans[0].textContent.toLowerCase();
@@ -69,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const inputCurso = document.getElementById("pesquisarCurso");
 
   if (inputCurso) {
-    const listaCursos = document.querySelectorAll(".lista-completa ul li");
+    const listaCursos = document.querySelectorAll(".lista-curso-conteudo ul li");
 
     inputCurso.addEventListener("keyup", function () {
       const valor = inputCurso.value.toLowerCase();
@@ -109,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputTurma = document.getElementById('pesquisarTurma');
 
     if (inputTurma) {
-        const listaTurmas = document.querySelectorAll('.lista-completa ul li');
+        const listaTurmas = document.querySelectorAll('.lista-turma-conteudo ul li');
 
         inputTurma.addEventListener('keyup', function () {
             const valor = inputTurma.value.toLowerCase();
