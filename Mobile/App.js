@@ -8,6 +8,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 // importando telas
 import LoginScreen from './src/screens/Login';
+// import HomeScreen from './src/screens/Home';
+import SplashScreen from './src/screens/SplashScreen';
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -18,7 +20,9 @@ export default function App() {
 
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
+        {/* <Stack.Screen name="Home" component={HomeScreen}/> */}
 
       </Stack.Navigator>
     

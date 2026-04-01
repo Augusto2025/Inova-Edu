@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Image } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 
@@ -25,30 +26,32 @@ export default function LoginScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.containerTotal}>
-            <View style={styles.header}>
-                <Image source={Logo} style={{ width: 130, height: 130 }}/>
-                <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
-            </View>
-            <View style={styles.containerCenter}>
-                <Text style={styles.titulo}>Login</Text>
+        <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
+            <View style={styles.containerTotal}>
+                <View style={styles.header}>
+                    <Image source={Logo} style={{ width: 100, height: 100, marginBottom: 20 }}/>
+                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
+                </View>
+                <View style={styles.containerCenter}>
+                    <Text style={styles.titulo}>Login</Text>
 
-                <CustomInput
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    />
-                <CustomInput
-                    placeholder="Senha"
-                    value={senha}
-                    onChangeText={setSenha}
-                    // esconde o texto digitado, para proteger a senha do usuário
-                    secureTextEntry
-                />
+                    <CustomInput
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                        />
+                    <CustomInput
+                        placeholder="Senha"
+                        value={senha}
+                        onChangeText={setSenha}
+                        // esconde o texto digitado, para proteger a senha do usuário
+                        secureTextEntry
+                        />
 
-                <CustomButton title="Entrar" onPress={handleLogin}/>
+                    <CustomButton title="Entrar" onPress={handleLogin}/>
+                </View>
             </View>
-        </View>
+        </KeyboardAwareScrollView>
     )
 }
 
@@ -56,7 +59,7 @@ const paddingHeader = 90;
 const borderRadius = 40;
 
 const styles = StyleSheet.create({
-    containerTotal: {
+    tela: {
         backgroundColor: '#ffffff',
         height: '100%',
     },
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
     },
     containerCenter: {
         alignItems: 'center',
-        marginTop: '20%',
+        marginTop: '15%',
     },
     titulo: {
         color: '#1459b3',
