@@ -11,6 +11,7 @@ import LoginScreen from './src/screens/Login';
 // import HomeScreen from './src/screens/Home';
 import SplashScreen from './src/screens/SplashScreen';
 import CalendarScreen from './src/screens/Calendario';
+import forumScreen from './src/screens/forumScreen';
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ export default function App() {
         <Stack.Screen name="Calendar" component={CalendarScreen}/>
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
+        <Stack.Screen name="Forum" component={forumScreen}/>
         {/* <Stack.Screen name="Home" component={HomeScreen}/> */}
 
       </Stack.Navigator>
