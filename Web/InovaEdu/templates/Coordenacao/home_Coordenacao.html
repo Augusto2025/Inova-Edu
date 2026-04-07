@@ -128,6 +128,16 @@
                     </div>
                 </div>
 
+                
+                <div class="cardDashboard">
+                    <p class="titulocima">Total de Cursos</p>
+                    <div class="icone">👩‍🏫</div>
+                    <div>
+                        <p class="titulo">Cursos</p>
+                        <h2>{{ total_cursos }}</h2>
+                    </div>
+                </div>
+                
                 <div class="cardDashboard">
                     <p class="titulocima">Total de Turmas</p>
                     <div class="icone">🎓</div>
@@ -137,14 +147,7 @@
                     </div>
                 </div>
 
-                <div class="cardDashboard">
-                    <p class="titulocima">Total de Cursos</p>
-                    <div class="icone">👩‍🏫</div>
-                    <div>
-                        <p class="titulo">Cursos</p>
-                        <h2>{{ total_cursos }}</h2>
-                    </div>
-                </div>
+               
 
             </div>
 
@@ -193,7 +196,7 @@
                             <span>Sobrenome</span>
                             <span>Email</span>
                             <span>Descrição</span>
-                            <span>Imagem</span>
+                            {% comment %} <span>Imagem</span> {% endcomment %}
                             <span>Tipo</span>
                             <span class="usuario-acoes">Ações</span>
                         </li>
@@ -206,18 +209,18 @@
 
                             <i class="fa-solid fa-align-center icon-descricao" title="Ver descrição"
                             data-descricao="{{ usuario.descricao|escapejs }}"></i>
-
+{% comment %} 
                             <span>
                                 {% if usuario.imagem %}
                                 <img src="{{ usuario.imagem.url }}" alt="Foto">
                                 {% else %}
                                 <img src="{% static 'img/default_user.png' %}" alt="Sem foto">
                                 {% endif %}
-                            </span>
+                            </span> {% endcomment %}
 
                             <span>{{ usuario.tipo }}</span>
 
-                            <span class="acoes-geral">
+                            <span class="acoes-geral_usuario">
                                 <button type="button" class="btn-editar" title="Editar">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
@@ -248,7 +251,7 @@
             <div id="modalCadastro" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModal">&times;</span>
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_usuario">
                         <p>Cadastro Usuário</p>
                     </div>
                     <form action="{% url 'home_Coordenacao' %}" method="POST" enctype="multipart/form-data">
@@ -271,8 +274,8 @@
                         <label>Descrição</label>
                         <textarea name="descricao"></textarea>
 
-                        <label>Imagem</label>
-                        <input type="file" name="imagem">
+                        {% comment %} <label>Imagem</label>
+                        <input type="file" name="imagem"> {% endcomment %}
 
                         <label>Tipo</label>
                         <select name="tipoCadastro" required>
@@ -294,7 +297,7 @@
             <div id="modalEditar" class="modal">
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditar">&times;</span>
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_editar">
                         <p>Editar Usuário</p>
                     </div>
                     <form id="formEditarUsuario" method="POST" enctype="multipart/form-data">
@@ -311,15 +314,15 @@
                         <label for="EmailEdit">Email:</label>
                         <input type="email" id="EmailEdit" name="email" required placeholder="exemplo@gmail.com">
 
-                        <label for="SenhaEdit">Senha:</label>
-                        <input type="password" id="SenhaEdit" name="senha" required placeholder="***********">
+                        {% comment %} <label for="SenhaEdit">Senha:</label>
+                        <input type="password" id="SenhaEdit" name="senha" required placeholder="***********"> {% endcomment %}
 
                         <label for="descricaoEdit">Descrição:</label>
                         <textarea id="descricaoEdit" name="descricao" rows="4"
                             placeholder="Lorem ipsum dolor sit amet...."></textarea>
 
-                        <label for="imagemEdit">Imagem:</label>
-                        <input type="file" id="imagemEdit" name="imagem" accept="image/*">
+                        {% comment %} <label for="imagemEdit">Imagem:</label>
+                        <input type="file" id="imagemEdit" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label for="tipoCadastroEdit">Escolha sua opção de cadastro:</label>
                         <select id="tipoCadastroEdit" name="tipoCadastro" required>
@@ -365,7 +368,7 @@
                             <span>Nome</span>
                             <span>Início</span>
                             <span>Término</span>
-                            <span>Imagem</span>
+                            {% comment %} <span>Imagem</span> {% endcomment %}
                             <span>Descrição</span>
                             <span class="curso-acoes">Ações</span>
                         </li>
@@ -376,11 +379,11 @@
                             <span>{{ curso.data_inicio }}</span>
                             <span>{{ curso.data_final }}</span>
 
-                            <span>
+                            {% comment %} <span>
                                 {% if curso.imagem %}
                                 <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
-                                {% else %}-{% endif %}
-                            </span>
+                                {% else %}<i class="fa-solid fa-file-image"></i>{% endif %}
+                            </span> {% endcomment %}
 
                             <i class="fa-solid fa-align-center icon-descricao" title="Ver descrição"
                                 data-descricao="{{ curso.descricao|escapejs }}"></i>
@@ -424,7 +427,7 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModalCurso">&times;</span>
 
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_curso">
                         <p>Cadastro de Curso</p>
                     </div>
 
@@ -440,8 +443,8 @@
                         <label for="data_final">Data de Término:</label>
                         <input type="date" id="data_final" name="data_final">
 
-                        <label for="imagem">Imagem do Curso:</label>
-                        <input type="file" id="imagem" name="imagem" accept="image/*">
+                        {% comment %} <label for="imagem">Imagem do Curso:</label>
+                        <input type="file" id="imagem" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label for="descricao_curso">Descrição:</label>
                         <textarea id="descricao_curso" name="descricao_curso" rows="4"></textarea>
@@ -457,7 +460,7 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharEditarCurso">&times;</span>
 
-                    <div class="titulo_lista">
+                    <div class="titulo_lista_editar_curso">
                         <p>Editar Curso</p>
                     </div>
 
@@ -475,8 +478,8 @@
                         <label>Data de Término:</label>
                         <input type="date" id="edit_data_final" name="data_final">
 
-                        <label>Imagem do Curso:</label>
-                        <input type="file" id="edit_imagem" name="imagem" accept="image/*">
+                        {% comment %} <label>Imagem do Curso:</label>
+                        <input type="file" id="edit_imagem" name="imagem" accept="image/*"> {% endcomment %}
 
                         <label>Descrição:</label>
                         <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
@@ -523,12 +526,12 @@
                             <span class="turma-usuarios">
                                 <button type="button" class="btn-ver-usuarios" title="Ver usuários da turma"
                                     data-turma="{{ turma.idturma }}" data-usuarios='{{ turma.usuarios_json|escapejs }}'>
-                                    <i class="fa-solid fa-users"></i>
+                                    <i class="fa-solid fa-user-plus"></i>
                                 </button>
                             </span>
 
 
-                            <span class="acoes-geral">
+                            <span class="acoes-geral_turma">
                                 <!-- EDITAR -->
                                 <button type="button" class="btn-editar-turma" title="Editar turma"
                                     data-id="{{ turma.idturma }}" data-codigo="{{ turma.codigo_turma }}"
@@ -558,22 +561,40 @@
                 </section>
             </section>
 
-            <div id="modalUsuariosTurma" class="modal" style="display:none;">
-                <div class="modal-conteudo">
-                    <span class="fechar" id="fecharUsuariosTurma">&times;</span>
+           <div id="modalUsuariosTurma" class="modal-usuarios">
+                <div class="modal-usuarios-box">
 
-                    <h3>Usuários da Turma</h3>
+                    <div class="modal-usuarios-topo">
+                        <h3>Adicionar alunos</h3>
+                        <span class="modal-usuarios-fechar" id="fecharUsuariosTurma">&times;</span>
+                    </div>
 
-                    <ul id="listaUsuariosTurma" class="lista-usuarios-modal">
-                        <!-- preenchido via JS -->
-                    </ul>
+                    <!-- PESQUISA -->
+                    <div class="modal-usuarios-busca">
+                        <input type="text" id="buscarAlunoModal" placeholder="Digite o nome do aluno...">
+                    </div>
+
+                    <!-- LISTA DO BANCO -->
+                    <div class="modal-usuarios-lista">
+                        <ul id="listaAlunosBanco"></ul>
+                    </div>
+
+                    <!-- ALUNOS SELECIONADOS -->
+                    <div class="modal-usuarios-selecionados ">
+                        <h3>Alunos adicionados</h3>
+                        <ul id="listaSelecionados"></ul>
+                    </div>
+
+                    <div class="modal-usuarios-footer">
+                        <button type="button" id="btnSalvar" class="btn-salvar-alunos">Salvar alunos</button>
+                    </div>
+
+                    <p id="mensagemSucesso" style="display:none; color:green;">salvo com sucesso</p>
+
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                 </div>
+
             </div>
-
-
-
-
-
 
 
 
@@ -581,7 +602,9 @@
                 <div class="modal-conteudo">
                     <span class="fechar" id="fecharModalTurma">&times;</span>
 
-                    <h3>Cadastro de Turma</h3>
+                    <div class="titulo_lista_turma">
+                        <p>Cadastro Turma</p>
+                    </div>
 
                     <form action="{% url 'criar_turma' %}" method="POST">
                         {% csrf_token %}
@@ -615,7 +638,9 @@
                 <div class="modal-conteudo">
                     <span id="fecharEditarTurma" class="fechar">&times;</span>
 
-                    <h3>Editar Turma</h3>
+                    <div class="titulo_lista_editar_turma">
+                        <p>Editar Turma</p>
+                    </div>
 
                     <form method="POST" action="{% url 'editar_turma' %}">
                         {% csrf_token %}

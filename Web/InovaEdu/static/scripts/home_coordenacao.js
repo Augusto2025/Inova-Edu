@@ -209,38 +209,161 @@ document.addEventListener("DOMContentLoaded", function () {
 // ===== MODAL USUÁRIOS DA TURMA =====
 document.addEventListener("DOMContentLoaded", function () {
 
-  const modal = document.getElementById("modalUsuariosTurma");
-  const fechar = document.getElementById("fecharUsuariosTurma");
-  const lista = document.getElementById("listaUsuariosTurma");
+    const modal = document.getElementById("modalUsuariosTurma")
+    const fechar = document.getElementById("fecharUsuariosTurma")
 
-  document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
-    btn.addEventListener("click", function () {
+    const listaBanco = document.getElementById("listaAlunosBanco")
+    const listaSelecionados = document.getElementById("listaSelecionados")
+    const busca = document.getElementById("buscarAlunoModal")
+    const btnSalvar = document.getElementById("btnSalvar")
+    const mensagem = document.getElementById("mensagemSucesso")
 
-      const usuarios = JSON.parse(this.dataset.usuarios || "[]");
+    let alunosSelecionados = []
+    let alunosBanco = []
+    let turmaAtual = null
 
-      lista.innerHTML = "";
+    // 🔹 ABRIR MODAL
+    document.querySelectorAll(".btn-ver-usuarios").forEach(botao => {
+        botao.addEventListener("click", function () {
 
-      if (usuarios.length === 0) {
-        lista.innerHTML = "<li>Nenhum usuário vinculado.</li>";
-      } else {
-        usuarios.forEach(user => {
-          const li = document.createElement("li");
-          li.textContent = `${user.nome} ${user.sobrenome}`;
-          lista.appendChild(li);
-        });
-      }
+            turmaAtual = this.dataset.turma
 
-      modal.style.display = "flex";
-    });
-  });
+            alunosSelecionados = []
+            listaSelecionados.innerHTML = ""
 
-  fechar.onclick = () => modal.style.display = "none";
+            modal.style.display = "flex"
 
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.style.display = "none";
-  });
+            carregarAlunos()
+        })
+    })
 
-});
+    // 🔹 FECHAR MODAL
+    fechar.addEventListener("click", () => {
+        modal.style.display = "none"
+    })
+
+    // 🔹 CARREGAR ALUNOS
+    function carregarAlunos() {
+        fetch("/listar-alunos/")
+            .then(res => res.json())
+            .then(data => {
+                alunosBanco = data
+                renderListaBanco(data)
+            })
+    }
+
+    // 🔹 LISTA DO BANCO
+    function renderListaBanco(alunos) {
+        listaBanco.innerHTML = ""
+
+        alunos.forEach(aluno => {
+
+            const li = document.createElement("li")
+
+            li.innerHTML = `
+                ${aluno.nome} ${aluno.sobrenome}
+                <button class="btn-add"><i class="fa-solid fa-plus"></i></button>
+            `
+
+            li.querySelector(".btn-add").addEventListener("click", () => {
+                adicionarAluno(aluno.id)
+            })
+
+            listaBanco.appendChild(li)
+        })
+    }
+
+    // 🔹 ADICIONAR
+    function adicionarAluno(id) {
+        if (!alunosSelecionados.includes(id)) {
+            alunosSelecionados.push(id)
+            renderSelecionados()
+        }
+    }
+
+    // 🔹 REMOVER
+    function removerAluno(id) {
+        alunosSelecionados = alunosSelecionados.filter(a => a !== id)
+        renderSelecionados()
+    }
+
+    // 🔹 LISTA SELECIONADOS
+    function renderSelecionados() {
+        listaSelecionados.innerHTML = ""
+
+        alunosSelecionados.forEach(id => {
+
+            const aluno = alunosBanco.find(a => a.id === id)
+
+            const li = document.createElement("li")
+
+            li.innerHTML = `
+                ${aluno.nome} ${aluno.sobrenome}
+                <button class="btn-remove"><i class="fa-regular fa-trash-can"></i></button>
+            `
+
+            li.querySelector(".btn-remove").addEventListener("click", () => {
+                removerAluno(id)
+            })
+
+            listaSelecionados.appendChild(li)
+        })
+    }
+
+    // 🔹 BUSCA
+    busca.addEventListener("input", function () {
+
+        const valor = this.value.toLowerCase()
+
+        const filtrados = alunosBanco.filter(a =>
+            (a.nome + " " + a.sobrenome).toLowerCase().includes(valor)
+        )
+
+        renderListaBanco(filtrados)
+    })
+
+    // 🔹 SALVAR
+    btnSalvar.addEventListener("click", function () {
+
+        console.log("IDs enviados:", alunosSelecionados)
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+
+        fetch("/salvar-alunos-turma/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: JSON.stringify({
+                turma: turmaAtual,
+                alunos: alunosSelecionados
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "ok") {
+
+                // ✅ Mostra mensagem
+                mensagem.style.display = "block"
+
+                // some depois de 3s
+                setTimeout(() => {
+                    mensagem.style.display = "none"
+                }, 3000)
+
+            } else {
+                alert("Erro: " + data.msg)
+            }
+        })
+        .catch(err => {
+            console.error("Erro:", err)
+        })
+    })
+
+})
 
 
 

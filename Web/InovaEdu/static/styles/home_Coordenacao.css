@@ -648,6 +648,31 @@
     color: #333;
   }
 
+  .titulo_lista_usuario {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_usuario p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_usuario p::after {
+    content: "";
+    display: block;
+    width: 306%;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
   /* ======= COLUNA DE CARDS ======= */
   .cards-home {
     display: flex;
@@ -810,14 +835,14 @@
     list-style: none;
     padding: 0;
     margin-top: 10px;
-    max-height: 850px;
+    max-height: 673px;
     overflow-y: auto;
   }
 
   /* ===== CABEÇALHO ===== */
   .usuario-cabecalho {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1.2fr 2fr 1.8fr 1.2fr 1fr;
     gap: 10px;
     padding: 12px;
     background-color: var(--azul-Senac);
@@ -832,7 +857,7 @@
   /* ===== ITEM ===== */
   .usuario-item {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1.2fr 2fr 1.8fr 1.2fr 1fr;
     gap: 10px;
     padding: 12px;
     align-items: center;
@@ -853,13 +878,13 @@
     object-fit: cover;
   }
 
-  /* ===== AÇÕES ===== */
   /* ===== AÇÕES GERAIS ===== */
   .acoes-geral {
     display: flex;
     gap: 8px;
     justify-content: center;
     align-items: center;
+    margin-left: 87px;
   }
 
   /* FORM DENTRO DAS AÇÕES */
@@ -898,6 +923,102 @@
   }
 
   .acoes-geral .btn-excluir:hover {
+    background-color: #da190b;
+  }
+  /* ===== AÇÕES GERAL USUARIO ===== */
+
+  .acoes-geral_usuario {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-left: -15px;
+  }
+
+  /* FORM DENTRO DAS AÇÕES */
+  .acoes-geral_usuario form {
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* BOTÕES GERAIS */
+  .acoes-geral_usuario button {
+    padding: 6px 10px;
+    min-width: 36px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* EDITAR */
+  .acoes-geral_usuario .btn-editar {
+    background-color: var(--azul-Senac);
+  }
+
+  .acoes-geral_usuario .btn-editar:hover {
+    background-color: var(--azul_Claro-Senac);
+  }
+
+  /* EXCLUIR */
+  .acoes-geral_usuario .btn-excluir {
+    background-color: #f44336;
+  }
+
+  .acoes-geral_usuario .btn-excluir:hover {
+    background-color: #da190b;
+  }
+
+  /* ===== AÇÕES GERAL TURMA ===== */
+  .acoes-geral_turma {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 80px;
+  }
+
+  /* FORM DENTRO DAS AÇÕES */
+  .acoes-geral_turma form {
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* BOTÕES GERAIS */
+  .acoes-geral_turma button {
+    padding: 6px 10px;
+    min-width: 36px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  /* EDITAR */
+  .acoes-geral_turma .btn-editar {
+    background-color: var(--azul-Senac);
+  }
+
+  .acoes-geral_turma .btn-editar:hover {
+    background-color: var(--azul_Claro-Senac);
+  }
+
+  /* EXCLUIR */
+  .acoes-geral_turma .btn-excluir {
+    background-color: #f44336;
+  }
+
+  .acoes-geral_turma .btn-excluir:hover {
     background-color: #da190b;
   }
 
@@ -981,6 +1102,31 @@
     width: 550px;
     position: relative;
     animation: aparecer 0.3s ease;
+  }
+
+  .titulo_lista_editar {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar p::after {
+    content: "";
+    display: block;
+    width: 400px;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
   }
 
   @keyframes aparecer {
@@ -1141,7 +1287,7 @@
     list-style: none;
     padding: 0;
     margin-top: 10px;
-    max-height: 850px;
+    max-height: 673px;
     overflow-y: auto;
   }
 
@@ -1164,7 +1310,7 @@
   .turma-item {
     display: grid;
     grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 1fr 1fr;
-    gap: 7%;
+    gap: 10px;
     padding: 12px;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
@@ -1227,7 +1373,7 @@
     border: none;
     cursor: pointer;
     color: var(--azul-Senac);
-    font-size: 16px;
+    font-size: 27px;
   }
 
   .btn-ver-usuarios:hover {
@@ -1237,6 +1383,224 @@
   .lista-usuarios-modal {
     margin-top: 15px;
     padding-left: 20px;
+  }
+
+  .modal-usuarios {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .modal-usuarios-box {
+    width: 600px;
+    max-height: 80vh;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-usuarios-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .modal-usuarios-topo h3 {
+    position: relative;
+    padding-bottom: 8px;
+  }
+
+  .modal-usuarios-topo h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--laranja-Senac); /* pode trocar pela sua variável */
+  }
+
+  /* Linha de baixo no add aluno */
+  .modal-usuarios-selecionados h3 {
+    position: relative;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .modal-usuarios-selecionados h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 32%;
+    height: 3px;
+    background-color: var(--laranja-Senac);
+  }
+  /* fim Linha de baixo no add aluno */
+
+  .modal-usuarios-fechar {
+    font-size: 26px;
+    cursor: pointer;
+  }
+
+  .modal-usuarios-busca input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  .modal-usuarios-lista {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    margin-bottom: 15px;
+  }
+
+  .modal-usuarios-lista ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .modal-usuarios-lista li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .btn-add {
+    background: #1e73ff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .modal-usuarios-selecionados {
+    margin-top: 10px;
+  }
+
+  .modal-usuarios-selecionados ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .modal-usuarios-selecionados li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #f5f7ff;
+    margin-bottom: 5px;
+    border-radius: 5px;
+  }
+
+  .btn-remover {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .modal-usuarios-footer {
+    margin-top: 10px;
+    text-align: right;
+  }
+
+  .btn-salvar-alunos {
+    background: #1e73ff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* Título da lista de cursos */
+  .titulo_lista_curso {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_curso p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_curso p::after {
+    content: "";
+    display: block;
+    width: 285%;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+  .btn-remove {
+    background-color: #ff4d4d; /* vermelho */
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-left: 10px;
+  }
+
+  .btn-remove i {
+    pointer-events: none; /* evita bug no clique no ícone */
+  }
+
+  .btn-remove:hover {
+    background-color: #e60000;
+    transform: scale(1.05);
+  }
+
+  .titulo_lista_editar_curso {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar_curso p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar_curso p::after {
+    content: "";
+    display: block;
+    width: 420%;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
   }
 
   /* ====================CURSO=============================================================*/
@@ -1255,14 +1619,14 @@
     list-style: none;
     padding: 0;
     margin-top: 10px;
-    max-height: 850px;
+    max-height: 673px;
     overflow-y: auto;
   }
 
   /* ===== CABEÇALHO ===== */
   .curso-cabecalho {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     padding: 12px;
     background-color: var(--azul-Senac);
@@ -1277,8 +1641,8 @@
   /* ===== ITEM ===== */
   .curso-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-    gap: 105px;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
     padding: 12px;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
@@ -1333,6 +1697,56 @@
     background-color: #da190b;
   }
 
+  .titulo_lista_turma {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_turma p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_turma p::after {
+    content: "";
+    display: block;
+    width: 335%;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
+  .titulo_lista_editar_turma {
+    margin-bottom: 15px;
+  }
+
+  .titulo_lista_editar_turma p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--azul-Senac);
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Linha laranja embaixo */
+  .titulo_lista_editar_turma p::after {
+    content: "";
+    display: block;
+    width: 418%;
+    height: 3px;
+    background-color: var(
+      --laranja-Senac
+    ); /* ou var(--laranja-Senac) se tiver */
+    margin-top: 5px;
+    border-radius: 2px;
+  }
+
   /* ===== VAZIO ===== */
   .curso-vazio {
     padding: 20px;
@@ -1354,7 +1768,7 @@
 /* TABLET e NOTE MUITO PEQUENO */
 @media (max-width: 1024px) {
   .headerperfil {
-    width: 100%;
+    width: 95%;
     height: 60px;
     background-color: #0d47a1;
     display: flex;
@@ -1408,6 +1822,10 @@
     max-width: 300px;
   }
 
+  .modal-excluir-bg {
+    display: none;
+  }
+
   /* ========card========== */
 
   /* menu vira rodapé fixo */
@@ -1416,49 +1834,51 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #0d47a1;
-    padding: 10px 0;
+    background: #fff;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    padding: 8px 0;
   }
 
-  /* cards em linha */
   .cards-home {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    gap: 0;
   }
 
   .card {
-    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: auto;
     padding: 5px;
-    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 
-  /* texto menor */
+  .card img {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 4px;
+  }
+
   .card h3 {
-    font-size: 12px;
-    margin: 4px 0;
+    font-size: 11px;
+    margin: 0;
   }
 
   .card p {
-    display: none;
-    /* esconde descrição */
+    display: none; /* esconde descrição no mobile */
   }
 
   .botao-card {
-    display: none;
-    /* remove botão */
+    font-size: 10px;
+    text-decoration: none;
+    margin-top: 2px;
   }
-
-  /* ícone centralizado */
-  .card img {
-    width: 26px;
-    margin: 0 auto;
-    display: block;
-    filter: invert(1);
-    /* deixa branco */
+  .maincontainer {
+    padding-bottom: 80px;
   }
 
   /* evita conteúdo ficar escondido atrás do menu */
