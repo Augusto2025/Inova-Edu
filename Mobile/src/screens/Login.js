@@ -60,22 +60,24 @@ const borderRadius = 40;
 
 const styles = StyleSheet.create({
     tela: {
-        backgroundColor: '#ffffff',
-        height: '100%',
+        backgroundColor: '#1459b3',
     },
     header:{
-        backgroundColor: '#1459b3',
         width: '100%',
         paddingBottom: paddingHeader,
         paddingTop: paddingHeader,
         justifyContent: 'center',
         alignItems: 'center',
-        borderBottomRightRadius: borderRadius,
-        borderBottomLeftRadius: borderRadius,
     },
     containerCenter: {
-        alignItems: 'center',
-        marginTop: '15%',
+        borderTopRightRadius: borderRadius,
+        borderTopLeftRadius: borderRadius,
+        backgroundColor: '#ffffff',
+        height: '100%',
+        width: '100%',
+        alignItems: 'flex-start',
+        paddingTop: '25%',
+        paddingLeft: '10%',
     },
     titulo: {
         color: '#1459b3',
