@@ -22,12 +22,15 @@ export default function ForumScreen() {
     "Meu terceiro tópico",
     "Meu terceiro tópico",
     "Meu terceiro tópico",
-    
-    
+
+
   ]);
 
   const [novoTopico, setNovoTopico] = useState("");
   const [isExemplo, setIsExemplo] = useState(true);
+  const [modalEditarVisible, setModalEditarVisible] = useState(false)
+  const [topicoEditando, setTopicoEditando] = useState("");
+  const [indexEditando, setIndexEditando] = useState(null);
 
   return (
     <View style={styles.container}>
@@ -53,7 +56,7 @@ export default function ForumScreen() {
       </View>
 
       {/* Lista de tópicos */}
-      
+
       {isExemplo ? (
         <View>
           {topicos.map((item, index) => (
@@ -72,8 +75,14 @@ export default function ForumScreen() {
               <Text style={styles.nomeTopico}>{item}</Text>
 
               <View style={styles.acoes}>
-                <TouchableOpacity>
-                  <Ionicons name="create-outline" size={20} color="#1e4f8a" />
+                <TouchableOpacity
+                  onPress={() => {
+                    setTopicoEditando(item);
+                    setIndexEditando(index);
+                    setModalEditarVisible(true);
+                  }}
+                >
+                  <Ionicons name="create-outline" size={20} color="#1e8a3e" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -141,6 +150,53 @@ export default function ForumScreen() {
           </View>
         </View>
       </Modal>
+
+      // MODAL EDITAR
+
+      <Modal visible={modalEditarVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.modalTitle}>Editar Tópico</Text>
+              <View style={styles.linhaModal} />
+            </View>
+
+            <TextInput
+              value={topicoEditando}
+              onChangeText={setTopicoEditando}
+              style={styles.modalInput}
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity onPress={() => setModalEditarVisible(false)}>
+                <Text style={styles.bottomCancelar}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (topicoEditando.trim() !== "") {
+                    const novos = [...topicos];
+                    novos[indexEditando] = topicoEditando;
+                    setTopicos(novos);
+
+                    setModalEditarVisible(false);
+                    setTopicoEditando("");
+                  }
+                }}
+              >
+                <Text style={styles.bottomCriar}>Salvar</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+
+
+
+
+
 
 
 
