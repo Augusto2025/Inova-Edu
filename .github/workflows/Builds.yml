@@ -1,7 +1,7 @@
 name: Build Mobile Apps (APK & iOS)
 on:
   push:
-    branches: [ Deploys ]
+    branches: [ main ]
 
 jobs:
   build:
