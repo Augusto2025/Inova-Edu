@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "inova-edu",
+=======
+  "name": "InovaEdu",
+>>>>>>> MobileTelaForum
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

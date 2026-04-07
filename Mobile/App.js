@@ -4,7 +4,7 @@
 // instalação de dependências: npm install react-native-screens react-native-safe-area-context
 // instalação via Expo: npx expo install react-native-screens react-native-safe-area-context
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, Header } from '@react-navigation/stack';
 
 // importando telas
 import LoginScreen from './src/screens/Login';
@@ -12,6 +12,8 @@ import LoginScreen from './src/screens/Login';
 import SplashScreen from './src/screens/SplashScreen';
 import CalendarScreen from './src/screens/Calendario';
 import forumScreen from './src/screens/forumScreen';
+import HeaderForum from './src/components/HeaderForum';
+import FooterForum from './src/components/FooterForum';
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -22,7 +24,10 @@ export default function App() {
 
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        
         <Stack.Screen name="Calendar" component={CalendarScreen}/>
+        <Stack.Screen name="footerforum" component={FooterForum}/>  
+        <Stack.Screen name="headerforum" component={HeaderForum}/>
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Forum" component={forumScreen}/>

@@ -1,6 +1,10 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "Inova Edu",
+=======
+    "name": "InovaEdu",
+>>>>>>> MobileTelaForum
     "slug": "InovaEdu",
     "version": "1.0.0",
     "orientation": "portrait",
