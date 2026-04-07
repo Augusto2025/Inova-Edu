@@ -24,7 +24,7 @@ export default function HeaderForum({ onBack }) {
         </View>
 
         {/* Lado direito */}
-        <View style={styles.right}>
+        {/* <View style={styles.right}>
           <TouchableOpacity style={styles.icon}>
             <Ionicons name="search" size={22} color="#fff" />
           </TouchableOpacity>
@@ -36,7 +36,7 @@ export default function HeaderForum({ onBack }) {
           <TouchableOpacity style={styles.icon}>
             <Ionicons name="ellipsis-vertical" size={22} color="#fff" />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
       </View>
     </View>
