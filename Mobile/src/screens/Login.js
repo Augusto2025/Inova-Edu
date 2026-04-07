@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     containerCenter: {
         borderTopRightRadius: borderRadius,
         borderTopLeftRadius: borderRadius,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fafafa',
         height: '100%',
         width: '100%',
         alignItems: 'flex-start',
