@@ -1,77 +1,95 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderForum from "../components/HeaderForum";
 
-
-
 export default function ForumScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+
   const [topicos, setTopicos] = useState([
     "Meu primeiro tópico",
     "Meu segundo tópico",
     "Meu terceiro tópico",
+    "Meu terceiro tópico",
+    "Meu terceiro tópico",
+    "Meu terceiro tópico",
+    "Meu terceiro tópico",
   ]);
+
   const [novoTopico, setNovoTopico] = useState("");
-  const [isExemplo, setIsExemplo] = useState(true); // para mostrar exemplo de tópico criado
+  const [isExemplo, setIsExemplo] = useState(true);
 
   return (
     <View style={styles.container}>
-
-      <HeaderForum onBack={() => console.log("Voltar")} /> // COLOCANDO O HEADER AQUI PARA FICAR FIXO NA TELA, SEM PRECISAR NAVEGAR PARA OUTRA TELA APENAS PARA MOSTRAR O HEADER
+      <HeaderForum onBack={() => console.log("Voltar")} />
 
       {/* Busca */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="#1e4f8a" />
-
           <TextInput
-            placeholder="Pesquisar Tópicos... "
+            placeholder="Pesquisar Tópicos..."
+            placeholderTextColor="#999"
             style={styles.input}
           />
         </View>
       </View>
 
-
-      {/* Mostra na tela os topicos criados */}
-
-
+      {/* Título */}
       <View style={styles.containerTopicos}>
         <Text style={styles.textoTopicos}>Tópicos Criados</Text>
         <View style={styles.linha} />
       </View>
 
-      {/* card de tópico criado */}
-
+      {/* Lista de tópicos */}
       <View>
         {topicos.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Text style={styles.nomeTopico}>{item}</Text>
+            <Text
+              style={[
+                styles.nomeTopico,
+                isExemplo && styles.nomeExemplo,
+              ]}
+            >
+              {item}
+            </Text>
 
             <View style={styles.acoes}>
-              <TouchableOpacity>
-                <Ionicons name="create-outline" size={20} color="#1e4f8a" />
+              <TouchableOpacity disabled={isExemplo}>
+                <Ionicons
+                  name="create-outline"
+                  size={20}
+                  color={isExemplo ? "#ccc" : "#1e4f8a"}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={{ marginLeft: 15 }}
+                disabled={isExemplo}
                 onPress={() => {
                   const novos = topicos.filter((_, i) => i !== index);
                   setTopicos(novos);
                 }}
               >
-                <Ionicons name="trash-outline" size={20} color="#ff0000" />
+                <Ionicons
+                  name="trash-outline"
+                  size={20}
+                  color={isExemplo ? "#ccc" : "#ff0000"}
+                />
               </TouchableOpacity>
             </View>
           </View>
         ))}
-
-
-
       </View>
 
-
-      {/* BOTÃO FLUTUANTE PARA CRIAR NOVO TÓPICO */}
+      {/* Botão flutuante */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setModalVisible(true)}
@@ -79,10 +97,10 @@ export default function ForumScreen() {
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
 
+      {/* Modal */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-
             <View style={{ alignItems: "center" }}>
               <Text style={styles.modalTitle}>Criar Tópico</Text>
               <View style={styles.linhaModal} />
@@ -103,13 +121,10 @@ export default function ForumScreen() {
               <TouchableOpacity
                 onPress={() => {
                   if (novoTopico.trim() !== "") {
-
                     if (isExemplo) {
-                      // remove exemplos e adiciona o primeiro real
                       setTopicos([novoTopico]);
                       setIsExemplo(false);
                     } else {
-                      // adiciona normalmente
                       setTopicos([...topicos, novoTopico]);
                     }
 
@@ -118,25 +133,12 @@ export default function ForumScreen() {
                   }
                 }}
               >
-                <Text style={styles.bottomCriar}> Criar </Text>
+                <Text style={styles.bottomCriar}>Criar</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
-
-
-
-
-
-
-
-
-
-
-
-
     </View>
   );
 }
@@ -193,6 +195,11 @@ const styles = StyleSheet.create({
   },
 
   //CARDS TOPICOS CRIADOS
+  nomeExemplo: {
+    color: "#ccc",
+    fontStyle: "italic",
+    opacity: 0.6,
+  },
   card: {
     flexDirection: "row",
     justifyContent: "space-between",
