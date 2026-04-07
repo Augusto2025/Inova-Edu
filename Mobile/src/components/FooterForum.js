@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
     height: 70,
-    backgroundColor: "blue",
+    backgroundColor: "#1e4f8a", //cor do rodapé
     marginBottom: 50,
     // marginTop: 20,
     flexDirection: "row",

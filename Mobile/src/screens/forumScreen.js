@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderForum from "../components/HeaderForum";
@@ -21,7 +22,8 @@ export default function ForumScreen() {
     "Meu terceiro tópico",
     "Meu terceiro tópico",
     "Meu terceiro tópico",
-    "Meu terceiro tópico",
+    
+    
   ]);
 
   const [novoTopico, setNovoTopico] = useState("");
@@ -30,7 +32,7 @@ export default function ForumScreen() {
   return (
     <View style={styles.container}>
       <HeaderForum onBack={() => console.log("Voltar")} />
-      
+
 
       {/* Busca */}
       <View style={styles.searchWrapper}>
@@ -51,45 +53,43 @@ export default function ForumScreen() {
       </View>
 
       {/* Lista de tópicos */}
-      <View>
-        {topicos.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <Text
-              style={[
-                styles.nomeTopico,
-                isExemplo && styles.nomeExemplo,
-              ]}
-            >
-              {item}
-            </Text>
-
-            <View style={styles.acoes}>
-              <TouchableOpacity disabled={isExemplo}>
-                <Ionicons
-                  name="create-outline"
-                  size={20}
-                  color={isExemplo ? "#ccc" : "#1e4f8a"}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={{ marginLeft: 15 }}
-                disabled={isExemplo}
-                onPress={() => {
-                  const novos = topicos.filter((_, i) => i !== index);
-                  setTopicos(novos);
-                }}
-              >
-                <Ionicons
-                  name="trash-outline"
-                  size={20}
-                  color={isExemplo ? "#ccc" : "#ff0000"}
-                />
-              </TouchableOpacity>
+      
+      {isExemplo ? (
+        <View>
+          {topicos.map((item, index) => (
+            <View key={index} style={styles.card}>
+              <Text style={[styles.nomeTopico, styles.nomeExemplo]}>
+                {item}
+              </Text>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      ) : (
+        // 🔥 TÓPICOS REAIS (COM SCROLL + LIMITE)
+        <ScrollView style={{ maxHeight: 440, marginBottom: 100 }}>
+          {topicos.map((item, index) => (
+            <View key={index} style={styles.card}>
+              <Text style={styles.nomeTopico}>{item}</Text>
+
+              <View style={styles.acoes}>
+                <TouchableOpacity>
+                  <Ionicons name="create-outline" size={20} color="#1e4f8a" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ marginLeft: 15 }}
+                  onPress={() => {
+                    const novos = topicos.filter((_, i) => i !== index);
+                    setTopicos(novos);
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={20} color="#ff0000" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      )}
 
       {/* Botão flutuante */}
       <TouchableOpacity
@@ -129,7 +129,7 @@ export default function ForumScreen() {
                     } else {
                       setTopicos([...topicos, novoTopico]);
                     }
-                    
+
                     setModalVisible(false);
                     setNovoTopico("");
                   }
@@ -145,8 +145,8 @@ export default function ForumScreen() {
 
 
 
-      <FooterForum />   
-    
+      <FooterForum />
+
     </View>
   );
 }
@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
   //BOTÃO FLUTUANTE
   fab: {
     position: "absolute",
-    bottom: 100,
-    right: 20,
+    bottom: 130,
+    right: 13,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -277,10 +277,8 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
-
     paddingVertical: 8,
     paddingHorizontal: 20,
-
     borderRadius: 8,
   },
 
