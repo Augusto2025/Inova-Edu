@@ -1,17 +1,13 @@
 {
   "expo": {
-    "name": "default@sdk-54",
-    "slug": "default@sdk-54",
+    "name": "Inova Edu",
+    "slug": "InovaEdu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true
     },
@@ -22,8 +18,22 @@
       },
       "edgeToEdgeEnabled": true
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableMinifyInReleaseBuilds": true
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e1e554f5-dd1b-4f88-af86-c52f5e9ea79d"
+      }
+    },
+    "owner": "augusto25"
   }
 }
