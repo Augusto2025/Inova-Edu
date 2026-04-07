@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 
-export default function Footer() {
+export default function FooterForum() {
   return (
     <View style={styles.footer}>
       

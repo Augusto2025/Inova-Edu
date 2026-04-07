@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderForum from "../components/HeaderForum";
+import FooterForum from "../components/FooterForum";
 
 export default function ForumScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,6 +30,7 @@ export default function ForumScreen() {
   return (
     <View style={styles.container}>
       <HeaderForum onBack={() => console.log("Voltar")} />
+      
 
       {/* Busca */}
       <View style={styles.searchWrapper}>
@@ -127,7 +129,7 @@ export default function ForumScreen() {
                     } else {
                       setTopicos([...topicos, novoTopico]);
                     }
-
+                    
                     setModalVisible(false);
                     setNovoTopico("");
                   }
@@ -139,6 +141,12 @@ export default function ForumScreen() {
           </View>
         </View>
       </Modal>
+
+
+
+
+      <FooterForum />   
+    
     </View>
   );
 }
