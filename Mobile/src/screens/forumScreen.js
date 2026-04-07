@@ -1,28 +1,24 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import HeaderForum from "../components/HeaderForum";
 
 
 
 export default function ForumScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [topicos, setTopicos] = useState([
+    "Meu primeiro tópico",
+    "Meu segundo tópico",
+    "Meu terceiro tópico",
+  ]);
   const [novoTopico, setNovoTopico] = useState("");
+  const [isExemplo, setIsExemplo] = useState(true); // para mostrar exemplo de tópico criado
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" top={20} size={24} color="#fff" />
-        </TouchableOpacity>
 
-        <Text style={styles.title}>Forum</Text>
-
-        <Image
-          source={{ uri: "https://i.pravatar.cc/100" }}
-          style={styles.avatar}
-        />
-      </View>
+      <HeaderForum onBack={() => console.log("Voltar")} /> // COLOCANDO O HEADER AQUI PARA FICAR FIXO NA TELA, SEM PRECISAR NAVEGAR PARA OUTRA TELA APENAS PARA MOSTRAR O HEADER
 
       {/* Busca */}
       <View style={styles.searchWrapper}>
@@ -37,14 +33,6 @@ export default function ForumScreen() {
       </View>
 
 
-      {/* Botões de criar tópico e meus tópicos */}
-      {/* <View style={styles.buttonsCriar}>
-        <TouchableOpacity style={styles.buttonCriar}>
-          <Text style={styles.texto}>Criar tópico</Text>
-        </TouchableOpacity>
-      </View> */}
-
-
       {/* Mostra na tela os topicos criados */}
 
 
@@ -56,50 +44,30 @@ export default function ForumScreen() {
       {/* card de tópico criado */}
 
       <View>
-        {/* Card 1 */}
-        <View style={styles.card}>
-          <Text style={styles.nomeTopico}>Meu primeiro tópico</Text>
+        {topicos.map((item, index) => (
+          <View key={index} style={styles.card}>
+            <Text style={styles.nomeTopico}>{item}</Text>
 
-          <View style={styles.acoes}>
-            <TouchableOpacity>
-              <Ionicons name="create-outline" size={20} color="#1e4f8a" />
-            </TouchableOpacity>
+            <View style={styles.acoes}>
+              <TouchableOpacity>
+                <Ionicons name="create-outline" size={20} color="#1e4f8a" />
+              </TouchableOpacity>
 
-            <TouchableOpacity style={{ marginLeft: 15 }}>
-              <Ionicons name="trash-outline" size={20} color="#ff0000" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={{ marginLeft: 15 }}
+                onPress={() => {
+                  const novos = topicos.filter((_, i) => i !== index);
+                  setTopicos(novos);
+                }}
+              >
+                <Ionicons name="trash-outline" size={20} color="#ff0000" />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        ))}
 
-        {/* Card 2 */}
-        <View style={styles.card}>
-          <Text style={styles.nomeTopico}>Meu segundo tópico</Text>
 
-          <View style={styles.acoes}>
-            <TouchableOpacity>
-              <Ionicons name="create-outline" size={20} color="#1e4f8a" />
-            </TouchableOpacity>
 
-            <TouchableOpacity style={{ marginLeft: 15 }}>
-              <Ionicons name="trash-outline" size={20} color="#ff0000" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Card 3 */}
-        <View style={styles.card}>
-          <Text style={styles.nomeTopico}>Meu terceiro tópico</Text>
-
-          <View style={styles.acoes}>
-            <TouchableOpacity>
-              <Ionicons name="create-outline" size={20} color="#1e4f8a" />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ marginLeft: 15 }}>
-              <Ionicons name="trash-outline" size={20} color="#ff0000" />
-            </TouchableOpacity>
-          </View>
-        </View>
       </View>
 
 
@@ -134,9 +102,20 @@ export default function ForumScreen() {
 
               <TouchableOpacity
                 onPress={() => {
-                  console.log(novoTopico);
-                  setModalVisible(false);
-                  setNovoTopico("");
+                  if (novoTopico.trim() !== "") {
+
+                    if (isExemplo) {
+                      // remove exemplos e adiciona o primeiro real
+                      setTopicos([novoTopico]);
+                      setIsExemplo(false);
+                    } else {
+                      // adiciona normalmente
+                      setTopicos([...topicos, novoTopico]);
+                    }
+
+                    setModalVisible(false);
+                    setNovoTopico("");
+                  }
                 }}
               >
                 <Text style={styles.bottomCriar}> Criar </Text>
@@ -168,89 +147,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2", // cor de fundo clara para destacar os elementos
   },
 
-  header: {
-    backgroundColor: "#1e4f8a",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 50,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-
-  },
-
-  title: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-    top: 20,
-  },
-
-  avatar: {
-    width: 35,
-    height: 35,
-    borderRadius: 20,
-    top: 20,
-  },
-
   // busca
   searchWrapper: {
-    marginHorizontal: 20,
-
-    marginTop: 30,
-    // height: 10,
-
-    borderBottomWidth: 2,
-    borderBottomColor: "#ff8c00",
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-
-    overflow: "hidden", // 🔥 ESSENCIAL
+    paddingHorizontal: 20,
+    marginTop: 15,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
 
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
-    // height: 40,
+    backgroundColor: "#fff",
+    borderRadius: 25, // bem arredondado (WhatsApp)
     paddingHorizontal: 12,
-    paddingVertical: 6,
-
-    borderBottomLeftRadius: 15, // mantém alinhado com o wrapper
-    borderBottomRightRadius: 15, // mantém alinhado com o wrapper
+    height: 40,
   },
 
   input: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 8,
     fontSize: 14,
-    height: 40,
+    color: "#000",
   },
 
-
-
-  //  Botões de criar tópico 
-  // buttonsCriar: {
-  //   flexDirection: "row-reverse",
-  //   marginTop: 20, // Deixar o botao mais próximo do campo de busca
-  //   marginHorizontal: 20,
-
-  // },
-
-  // buttonCriar: {
-  //   flex: 1,
-  //   backgroundColor: "#1e4f8a",
-  //   padding: 12,
-  //   margin: 5,
-  //   borderRadius: 10,
-  //   alignItems: "center",
-  // },
-
-  // texto: {
-  //   fontSize: 16,
-  //   color: "#fff",
-  //   fontWeight: "bold",
-  // },
 
   // Tópicos criados
   containerTopicos: {
@@ -338,7 +258,7 @@ const styles = StyleSheet.create({
   },
 
   bottomCriar: {
-   backgroundColor: "#ff8c00",
+    backgroundColor: "#ff8c00",
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
@@ -361,7 +281,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
- 
+
 
   modalInput: {
     borderWidth: 1,
