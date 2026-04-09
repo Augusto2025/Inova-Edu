@@ -9,11 +9,12 @@ import { createStackNavigator, Header } from '@react-navigation/stack';
 // importando telas
 import LoginScreen from './src/screens/Login';
 import SplashScreen from './src/screens/SplashScreen';
-import CalendarScreen from './src/screens/Calendario';
+import CalendarScreen from './src/screens/Eventos';
 import forumScreen from './src/screens/forumScreen';
 import HeaderForum from './src/components/HeaderForum';
 import FooterForum from './src/components/FooterForum';
 import ProfilePage from './src/screens/Perfil';
+import CursosScreen from './src/screens/Cursos';
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ export default function App() {
 
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Profile" component={ProfilePage}/>
         <Stack.Screen name="Calendar" component={CalendarScreen}/>
         <Stack.Screen name="footerforum" component={FooterForum}/>  
@@ -31,7 +33,6 @@ export default function App() {
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Forum" component={forumScreen}/>
-
       </Stack.Navigator>
     
     </NavigationContainer>
