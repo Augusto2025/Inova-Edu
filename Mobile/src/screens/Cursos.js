@@ -13,7 +13,7 @@ import {
 
 const { width } = Dimensions.get('window');
 
-const CursosScreen = () => {
+export default function CursosScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -196,5 +196,3 @@ const styles = StyleSheet.create({
   },
   btnAplicarTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
-
-export default CursosScreen;
