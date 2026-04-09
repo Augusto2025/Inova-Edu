@@ -16,6 +16,7 @@ import FooterForum from './src/components/FooterForum';
 import ProfilePage from './src/screens/Perfil';
 import CursosScreen from './src/screens/Cursos';
 import TurmasScreen from './src/screens/Turmas';
+import ProjetosScreen from './src/screens/Projetos';
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -26,6 +27,7 @@ export default function App() {
 
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Projetos" component={ProjetosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Profile" component={ProfilePage}/>
