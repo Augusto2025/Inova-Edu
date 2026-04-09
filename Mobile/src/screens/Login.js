@@ -5,6 +5,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 
+// npm install react-native-keyboard-aware-scroll-view
+
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
