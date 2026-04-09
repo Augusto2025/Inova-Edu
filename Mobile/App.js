@@ -14,6 +14,7 @@ import CalendarScreen from './src/screens/Calendario';
 import forumScreen from './src/screens/forumScreen';
 import HeaderForum from './src/components/HeaderForum';
 import FooterForum from './src/components/FooterForum';
+import ConversaScreen from "./src/screens/ConversaScreen";
 
 // criando o stack de navegação (pilha de telas)
 const Stack = createStackNavigator();
@@ -24,7 +25,8 @@ export default function App() {
 
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        
+        <Stack.Screen name="Conversa" component={ConversaScreen} />
+
         <Stack.Screen name="Calendar" component={CalendarScreen}/>
         <Stack.Screen name="footerforum" component={FooterForum}/>  
         <Stack.Screen name="headerforum" component={HeaderForum}/>
