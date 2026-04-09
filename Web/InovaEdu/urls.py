@@ -9,9 +9,8 @@ urlpatterns = [
     path('', views.homePage),
     path('homePage/', views.homePage, name='homePage'),
     path('login/', views.login, name='login'),
-    path('redefinir_senha', views.redefinir_senha, name='redefinir_senha'),
+    path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),
-    path("verificar-codigo/", views.verificar_codigo, name="verificar_codigo"),
     # Aluno e Professor
     path('home/', views.home, name='home'),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
