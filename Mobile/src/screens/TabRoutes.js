@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 // telas
 import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/Calendario';
-import ForumScreen from '../screens/ForumScreen';
+import ForumScreen from '../screens/forumScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RepositorioScreen from '../screens/RepositorioScreen';
 
@@ -71,7 +71,7 @@ export default function TabRoutes() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Calendario" component={CalendarScreen} />
-      <Tab.Screen name="Forum" component={ForumScreen} />
+      <Tab.Screen name="forum" component={forumScreen} />
       <Tab.Screen name="Repositorio" component={RepositorioScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
     </Tab.Navigator>
