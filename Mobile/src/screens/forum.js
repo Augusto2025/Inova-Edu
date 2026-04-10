@@ -14,26 +14,55 @@ import FooterForum from "../components/FooterForum";
 
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalEditarVisible, setModalEditarVisible] = useState(false);
 
   const [topicos, setTopicos] = useState([
     "Meu primeiro tópico",
     "Meu segundo tópico",
     "Meu terceiro tópico",
-    "Meu Quarto tópico",
-    "Meu quinto tópico",
-    "Meu sexto tópico",
-
-
   ]);
 
   const [novoTopico, setNovoTopico] = useState("");
-  const [isExemplo, setIsExemplo] = useState(true);
-  const [modalEditarVisible, setModalEditarVisible] = useState(false)
   const [topicoEditando, setTopicoEditando] = useState("");
   const [indexEditando, setIndexEditando] = useState(null);
 
+  const abrirTopico = (topico) => {
+    navigation.navigate("Conversa", { topico });
+  };
+
+  const criarTopico = () => {
+    if (novoTopico.trim() === "") return;
+
+    setTopicos([...topicos, novoTopico]);
+    setNovoTopico("");
+    setModalVisible(false);
+  };
+
+  const abrirEditar = (item, index) => {
+    setTopicoEditando(item);
+    setIndexEditando(index);
+    setModalEditarVisible(true);
+  };
+
+  const salvarEdicao = () => {
+    if (topicoEditando.trim() === "") return;
+
+    const novos = [...topicos];
+    novos[indexEditando] = topicoEditando;
+
+    setTopicos(novos);
+    setModalEditarVisible(false);
+    setTopicoEditando("");
+  };
+
+  const excluirTopico = (index) => {
+    const novos = topicos.filter((_, i) => i !== index);
+    setTopicos(novos);
+  };
+
   return (
     <View style={styles.container}>
+      
       <HeaderForum
         onBack={() =>
           navigation.canGoBack()
@@ -42,71 +71,50 @@ export default function ForumScreen({ navigation }) {
         }
       />
 
-
-      {/* Busca */}
+      {/* BUSCA */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="#1e4f8a" />
           <TextInput
             placeholder="Pesquisar Tópicos..."
-            placeholderTextColor="#999"
             style={styles.input}
           />
         </View>
       </View>
 
-      {/* Título */}
+      {/* TÍTULO */}
       <View style={styles.containerTopicos}>
         <Text style={styles.textoTopicos}>Tópicos Criados</Text>
         <View style={styles.linha} />
       </View>
 
-      {/* Lista de tópicos */}
+      {/* LISTA */}
+      <ScrollView style={{ marginBottom: 100 }}>
+        {topicos.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.card}
+            onPress={() => abrirTopico(item)}
+          >
+            <Text style={styles.nomeTopico}>{item}</Text>
 
-      {isExemplo ? (
-        <View>
-          {topicos.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <Text style={[styles.nomeTopico, styles.nomeExemplo]}>
-                {item}
-              </Text>
+            <View style={styles.acoes}>
+              <TouchableOpacity onPress={() => abrirEditar(item, index)}>
+                <Ionicons name="create-outline" size={20} color="#1e8a3e" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{ marginLeft: 15 }}
+                onPress={() => excluirTopico(index)}
+              >
+                <Ionicons name="trash-outline" size={20} color="#ff0000" />
+              </TouchableOpacity>
             </View>
-          ))}
-        </View>
-      ) : (
-        // 🔥 TÓPICOS REAIS (COM SCROLL + LIMITE)
-        <ScrollView style={{ maxHeight: 440, marginBottom: 100 }}>
-          {topicos.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <Text style={styles.nomeTopico}>{item}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
-              <View style={styles.acoes}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setTopicoEditando(item);
-                    setIndexEditando(index);
-                    setModalEditarVisible(true);
-                  }}
-                >
-                  <Ionicons name="create-outline" size={20} color="#1e8a3e" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{ marginLeft: 15 }}
-                  onPress={() => {
-                    const novos = topicos.filter((_, i) => i !== index);
-                    setTopicos(novos);
-                  }}
-                >
-                  <Ionicons name="trash-outline" size={20} color="#ff0000" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-      )}
-
-      {/* Botão flutuante */}
+      {/* BOTÃO */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setModalVisible(true)}
@@ -114,14 +122,11 @@ export default function ForumScreen({ navigation }) {
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
 
-      {/* Modal */}
+      {/* MODAL CRIAR */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.modalTitle}>Criar Tópico</Text>
-              <View style={styles.linhaModal} />
-            </View>
+            <Text style={styles.modalTitle}>Criar Tópico</Text>
 
             <TextInput
               placeholder="Digite o título..."
@@ -135,21 +140,7 @@ export default function ForumScreen({ navigation }) {
                 <Text style={styles.bottomCancelar}>Cancelar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => {
-                  if (novoTopico.trim() !== "") {
-                    if (isExemplo) {
-                      setTopicos([novoTopico]);
-                      setIsExemplo(false);
-                    } else {
-                      setTopicos([...topicos, novoTopico]);
-                    }
-
-                    setModalVisible(false);
-                    setNovoTopico("");
-                  }
-                }}
-              >
+              <TouchableOpacity onPress={criarTopico}>
                 <Text style={styles.bottomCriar}>Criar</Text>
               </TouchableOpacity>
             </View>
@@ -157,16 +148,11 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
-      // MODAL EDITAR
-
+      {/* MODAL EDITAR */}
       <Modal visible={modalEditarVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.modalTitle}>Editar Tópico</Text>
-              <View style={styles.linhaModal} />
-            </View>
+            <Text style={styles.modalTitle}>Editar Tópico</Text>
 
             <TextInput
               value={topicoEditando}
@@ -179,49 +165,23 @@ export default function ForumScreen({ navigation }) {
                 <Text style={styles.bottomCancelar}>Cancelar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => {
-                  if (topicoEditando.trim() !== "") {
-                    const novos = [...topicos];
-                    novos[indexEditando] = topicoEditando;
-                    setTopicos(novos);
-
-                    setModalEditarVisible(false);
-                    setTopicoEditando("");
-                  }
-                }}
-              >
+              <TouchableOpacity onPress={salvarEdicao}>
                 <Text style={styles.bottomCriar}>Salvar</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
 
-
-
-
-
-
-
-
-
       <FooterForum />
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f2f2f2", // cor de fundo clara para destacar os elementos
-  },
+  container: { flex: 1, backgroundColor: "#f2f2f2" },
 
-  // busca
   searchWrapper: {
-    paddingHorizontal: 20,
     marginTop: 15,
     paddingHorizontal: 10,
     paddingBottom: 10,
@@ -231,7 +191,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 25, // bem arredondado (WhatsApp)
+    borderRadius: 25,
     paddingHorizontal: 12,
     height: 40,
   },
@@ -239,12 +199,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginLeft: 8,
-    fontSize: 14,
-    color: "#000",
   },
 
-
-  // Tópicos criados
   containerTopicos: {
     alignItems: "center",
     marginTop: 10,
@@ -257,45 +213,33 @@ const styles = StyleSheet.create({
   },
 
   linha: {
-    width: 150, // 🔥 controla o tamanho da linha
+    width: 150,
     height: 3,
     backgroundColor: "#ff8c00",
     marginTop: 5,
-    borderRadius: 2,
   },
 
-  //CARDS TOPICOS CRIADOS
-  nomeExemplo: {
-    color: "#ccc",
-    fontStyle: "italic",
-    opacity: 0.6,
-  },
   card: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-
     backgroundColor: "#fff",
     padding: 12,
     marginHorizontal: 20,
     marginTop: 10,
-
     borderRadius: 10,
-    elevation: 2, // sombra Android
+    elevation: 2,
   },
 
   nomeTopico: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
   },
 
   acoes: {
     flexDirection: "row",
-    alignItems: "center",
   },
 
-  //BOTÃO FLUTUANTE
   fab: {
     position: "absolute",
     bottom: 130,
@@ -306,7 +250,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff8c00",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
   },
 
   modalOverlay: {
@@ -328,35 +271,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#1e4f8a",
     textAlign: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "#ff8c00",
-    paddingBottom: 6,
     marginBottom: 15,
   },
-
-  bottomCriar: {
-    backgroundColor: "#ff8c00",
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-  },
-
-  bottomCancelar: {
-    color: "#999",
-    fontWeight: "bold",
-    textAlign: "center",
-
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-
 
   modalInput: {
     borderWidth: 1,
@@ -371,24 +287,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
+  bottomCriar: {
+    backgroundColor: "#ff8c00",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 8,
+  },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  bottomCancelar: {
+    color: "#999",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+  },
 });

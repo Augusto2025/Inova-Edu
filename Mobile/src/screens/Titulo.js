@@ -137,7 +137,6 @@ export default function TopicosScreen({ navigation }) {
             placeholder="Pesquisar Titulos..."
             placeholderTextColor="#999"
             style={styles.searchInput}
-            
           />
         </View>
       </View>
