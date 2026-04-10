@@ -569,7 +569,7 @@ header > div {
 
 .form-group input,
 .form-group textarea {
-    width: 100%;
+    width: 95%;
     padding: 8px;  /* Reduzido de 10px */
     border: 1px solid #ddd;
     border-radius: 8px;  /* Reduzido de 10px */
@@ -584,7 +584,8 @@ header > div {
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;  /* Reduzido de 15px */
+    gap: 26px;  /* Reduzido de 15px */
+    width: 97%;
 }
 
 .modal-footer {
@@ -793,6 +794,7 @@ header > div {
     color: white;
     cursor: pointer;
     transition: 0.2s;
+    margin-left: 34%;
     
 }
 

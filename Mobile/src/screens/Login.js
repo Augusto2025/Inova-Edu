@@ -5,6 +5,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 
+// npm install react-native-keyboard-aware-scroll-view
+
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -22,7 +24,7 @@ export default function LoginScreen({ navigation }) {
         }
 
         // o replace é usado para substituir a tela atual, impedindo que o usuário volte para a tela de login usando o botão de voltar do dispositivo
-        navigation.replace('Home');
+        navigation.replace('HomeScreen');
     };
 
     return (
@@ -60,22 +62,24 @@ const borderRadius = 40;
 
 const styles = StyleSheet.create({
     tela: {
-        backgroundColor: '#ffffff',
-        height: '100%',
+        backgroundColor: '#1459b3',
     },
     header:{
-        backgroundColor: '#1459b3',
         width: '100%',
         paddingBottom: paddingHeader,
         paddingTop: paddingHeader,
         justifyContent: 'center',
         alignItems: 'center',
-        borderBottomRightRadius: borderRadius,
-        borderBottomLeftRadius: borderRadius,
     },
     containerCenter: {
-        alignItems: 'center',
-        marginTop: '15%',
+        borderTopRightRadius: borderRadius,
+        borderTopLeftRadius: borderRadius,
+        backgroundColor: '#fafafa',
+        height: '100%',
+        width: '100%',
+        alignItems: 'flex-start',
+        paddingTop: '25%',
+        paddingLeft: '10%',
     },
     titulo: {
         color: '#1459b3',
