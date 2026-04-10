@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+import resend
 from .models import *
 import os
 from datetime import datetime, timedelta
@@ -18,7 +19,6 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-from .models import Projeto, UsuarioDaTurma
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
@@ -58,55 +58,61 @@ from .tokens import token_generator
 
 # redefinir senha 
 def pedir_email(request):
+    api_key = os.environ.get("RESEND_API_KEY")
     if request.method == "POST":
         nome = request.POST.get("nome")
         sobrenome = request.POST.get("sobrenome")
-
         usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
 
-        if usuario:
-            if usuario.email:
-                # MUDANÇA AQUI: usando o seu novo token_generator
-                token = token_generator.make_token(usuario) 
-                uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
-                
-                dominio = request.get_host()
-                link = f"http://{dominio}/redefinir-senha/{uid}/{token}/"
+        if usuario and usuario.email:
+            # Gera o token manual
+            token = token_generator.make_token(usuario)
+            uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
+            
+            link = f"https://inova-edu.onrender.com/redefinir-senha/{uid}/{token}/"
 
-                send_mail(
-                    subject="Redefinição de Senha - Inova Edu",
-                    message=f"Olá {usuario.nome}, clique no link para criar uma nova senha: {link}",
-                    from_email="mneto8141@gmail.com",
-                    recipient_list=[usuario.email],
-                )
-                
-                return render(request, "pedir_email.html", {"sucesso": True, "email": usuario.email})
-            else:
-                return render(request, "pedir_email.html", {"erro": "Usuário sem e-mail cadastrado."})
-        else:
-            return render(request, "pedir_email.html", {"erro": "Nome ou sobrenome não encontrados."})
-
+            # Envio via Resend (mantenha sua configuração)
+            resend.api_key = api_key
+            resend.Emails.send({
+                "from": "Inova Edu <onboarding@resend.dev>",
+                "to": usuario.email,
+                "subject": "Redefinição de Senha",
+                "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
+            })
+            return render(request, "pedir_email.html", {"sucesso": True})
+            
     return render(request, "pedir_email.html")
 
 def redefinir_senha(request, uidb64, token):
     try:
-        id_usuario = force_str(urlsafe_base64_decode(uidb64))
-        usuario = Usuario.objects.get(pk=id_usuario)
-    except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        usuario = Usuario.objects.get(idusuario=uid)
+        print(f"Usuário encontrado: {usuario.nome}") # Debug
+    except Exception as e:
+        print(f"Erro ao buscar usuário: {e}") # Debug
         usuario = None
 
-    # MUDANÇA AQUI: usando o token_generator.check_token
-    if usuario is not None and token_generator.check_token(usuario, token):
+    valido = token_generator.check_token(usuario, token)
+    print(f"Token é válido? {valido}") # Debug
+
+    # O check_token agora é a nossa função manual do arquivo tokens.py
+    if usuario and token_generator.check_token(usuario, token):
         if request.method == 'POST':
-            # ... resto da sua lógica de salvar a senha
-            nova_senha = request.POST.get('nova_senha')
-            usuario.senha = nova_senha
-            usuario.save()
-            return render(request, 'redefinir_sucesso.html')
-        
+            nova = request.POST.get('nova_senha')
+            confirma = request.POST.get('confirmar_senha')
+
+            if nova == confirma:
+                usuario.senha = nova
+                usuario.save()
+                # Importante: após o save, o token antigo deixará de funcionar 
+                # porque a senha mudou!
+                return render(request, 'redefinir_sucesso.html')
+            else:
+                return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
+
         return render(request, 'redefinir_senha.html')
     else:
-        return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou expirado.'})
+        return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
 
 
 # --------------- Telas aluno e professor ---------------

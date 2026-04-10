@@ -1,9 +1,13 @@
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+import hashlib
 
-class TokenGenerator(PasswordResetTokenGenerator):
-    def _make_hash_value(self, user, timestamp):
-        # Usamos apenas o ID e a senha atual para gerar o hash.
-        # Se a senha mudar, o token antigo invalida automaticamente.
-        return str(user.idusuario) + str(timestamp) + str(user.senha)
+class GeradorTokenManual:
+    def make_token(self, usuario):
+        # Cria um hash único usando o ID e a Senha atual do usuário
+        valor = f"{usuario.idusuario}{usuario.senha}"
+        return hashlib.sha256(valor.encode()).hexdigest()
 
-token_generator = TokenGenerator()
+    def check_token(self, usuario, token):
+        # Verifica se o hash gerado agora é igual ao que veio no link
+        return self.make_token(usuario) == token
+
+token_generator = GeradorTokenManual()
