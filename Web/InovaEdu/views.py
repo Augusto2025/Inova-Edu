@@ -24,6 +24,10 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -106,7 +110,7 @@ def redefinir_senha(request, uidb64, token):
                 usuario.save()
                 # Importante: após o save, o token antigo deixará de funcionar 
                 # porque a senha mudou!
-                return render(request, 'redefinir_sucesso.html')
+                return redirect('login')
             else:
                 return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
 
