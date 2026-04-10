@@ -62,7 +62,6 @@ from .tokens import token_generator
 
 # redefinir senha 
 def pedir_email(request):
-    api_key = os.environ.get("RESEND_API_KEY")
     if request.method == "POST":
         nome = request.POST.get("nome")
         sobrenome = request.POST.get("sobrenome")
@@ -76,7 +75,7 @@ def pedir_email(request):
             link = f"https://inova-edu.onrender.com/redefinir-senha/{uid}/{token}/"
 
             # Envio via Resend (mantenha sua configuração)
-            resend.api_key = api_key
+            resend.api_key = "re_Dn9Qt4mm_6cxkqsovJ3uhe3rWSX79rY9w"
             resend.Emails.send({
                 "from": "Inova Edu <onboarding@resend.dev>",
                 "to": usuario.email,
