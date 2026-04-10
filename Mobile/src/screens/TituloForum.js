@@ -6,6 +6,10 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -27,15 +31,26 @@ export default function TopicosScreen({ navigation }) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [novoTitulo, setNovoTitulo] = useState("");
+  const [editandoId, setEditandoId] = useState(null);
 
   const abrirTopico = (topico) => {
-    navigation.navigate("Conversa", {
+    navigation.navigate("Forum", {
       topico: topico.titulo,
     });
   };
 
-  const criarTopico = () => {
-    if (novoTitulo.trim() !== "") {
+  const criarOuEditarTopico = () => {
+    if (novoTitulo.trim() === "") return;
+
+    if (editandoId) {
+      // EDITAR
+      setTopicos((prev) =>
+        prev.map((item) =>
+          item.id === editandoId ? { ...item, titulo: novoTitulo } : item,
+        ),
+      );
+    } else {
+      // CRIAR
       const novo = {
         id: Date.now().toString(),
         titulo: novoTitulo,
@@ -44,16 +59,26 @@ export default function TopicosScreen({ navigation }) {
       };
 
       setTopicos((prev) => [novo, ...prev]);
-      setNovoTitulo("");
-      setModalVisible(false);
     }
+
+    setNovoTitulo("");
+    setEditandoId(null);
+    setModalVisible(false);
+    Keyboard.dismiss();
+  };
+
+  const editarTopico = (item) => {
+    setNovoTitulo(item.titulo);
+    setEditandoId(item.id);
+    setModalVisible(true);
+  };
+
+  const excluirTopico = (id) => {
+    setTopicos((prev) => prev.filter((item) => item.id !== id));
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => abrirTopico(item)}
-    >
+    <TouchableOpacity style={styles.card} onPress={() => abrirTopico(item)}>
       <View style={styles.iconLeft}>
         <Ionicons name="chatbubble-ellipses" size={24} color="#1e4f8a" />
       </View>
@@ -65,14 +90,24 @@ export default function TopicosScreen({ navigation }) {
         </Text>
       </View>
 
-      <Ionicons name="chevron-forward" size={20} color="#999" />
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={() => editarTopico(item)}>
+          <Ionicons name="create-outline" size={20} color="#187cf6" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => excluirTopico(item.id)}
+          style={{ marginLeft: 10 }}
+        >
+          <Ionicons name="trash-outline" size={20} color="red" />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      
-      {/* 🔝 HEADER */}
+      {/* HEADER */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -93,7 +128,21 @@ export default function TopicosScreen({ navigation }) {
         </View>
       </View>
 
-      {/* 💬 LISTA */}
+      {/* Busca */}
+      <View style={styles.searchWrapper}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="#1e4f8a" />
+
+          <TextInput
+            placeholder="Pesquisar Titulos..."
+            placeholderTextColor="#999"
+            style={styles.searchInput}
+            
+          />
+        </View>
+      </View>
+
+      {/* LISTA */}
       <FlatList
         data={topicos}
         keyExtractor={(item) => item.id}
@@ -101,38 +150,53 @@ export default function TopicosScreen({ navigation }) {
         contentContainerStyle={{ padding: 15 }}
       />
 
-      {/* ➕ BOTÃO FLUTUANTE */}
+      {/* BOTÃO FLUTUANTE */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          setEditandoId(null);
+          setNovoTitulo("");
+          setModalVisible(true);
+        }}
       >
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
 
-      {/* 📝 MODAL SIMPLES */}
+      {/* MODAL */}
       {modalVisible && (
-        <View style={styles.modal}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Novo Tópico</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView
+            style={styles.modal}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+            <View style={styles.modalBox}>
+              <Text style={styles.modalTitle}>
+                {editandoId ? "Editar Tópico" : "Novo Tópico"}
+              </Text>
 
-            <TextInput
-              placeholder="Digite o título..."
-              value={novoTitulo}
-              onChangeText={setNovoTitulo}
-              style={styles.input}
-            />
+              <TextInput
+                placeholder="Digite o título..."
+                value={novoTitulo}
+                onChangeText={setNovoTitulo}
+                style={styles.input}
+                autoFocus
+                returnKeyType="done"
+              />
 
-            <View style={styles.botoes}>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelar}>Cancelar</Text>
-              </TouchableOpacity>
+              <View style={styles.botoes}>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Text style={styles.cancelar}>Cancelar</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={criarTopico}>
-                <Text style={styles.salvar}>Salvar</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={criarOuEditarTopico}>
+                  <Text style={styles.salvar}>
+                    {editandoId ? "Atualizar" : "Salvar"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
       )}
     </View>
   );
@@ -144,7 +208,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeef3",
   },
 
-  /* HEADER */
   header: {
     paddingTop: 35,
     height: 90,
@@ -170,7 +233,31 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
-  /* LISTA */
+  // busca
+  searchWrapper: {
+    marginTop: 15,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+  },
+
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 25,
+    paddingHorizontal: 12,
+    height: 40,
+    elevation: 2,
+  },
+
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#000",
+  },
+
+  // card
   card: {
     backgroundColor: "#fff",
     padding: 15,
@@ -199,10 +286,14 @@ const styles = StyleSheet.create({
     color: "#777",
   },
 
-  /* FAB */
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
   fab: {
     position: "absolute",
-    bottom: 25,
+    bottom: 70,
     right: 20,
     backgroundColor: "#187cf6",
     width: 60,
@@ -213,7 +304,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  /* MODAL */
   modal: {
     position: "absolute",
     top: 0,
@@ -233,9 +323,14 @@ const styles = StyleSheet.create({
   },
 
   modalTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#1e4f8a",
+    textAlign: "center",
+    borderBottomWidth: 2,
+    borderBottomColor: "#ff8c00",
+    paddingBottom: 6,
+    marginBottom: 15,
   },
 
   input: {

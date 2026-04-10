@@ -12,16 +12,16 @@ import { Ionicons } from "@expo/vector-icons";
 import HeaderForum from "../components/HeaderForum";
 import FooterForum from "../components/FooterForum";
 
-export default function ForumScreen() {
+export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [topicos, setTopicos] = useState([
     "Meu primeiro tópico",
     "Meu segundo tópico",
     "Meu terceiro tópico",
-    "Meu terceiro tópico",
-    "Meu terceiro tópico",
-    "Meu terceiro tópico",
+    "Meu Quarto tópico",
+    "Meu quinto tópico",
+    "Meu sexto tópico",
 
 
   ]);
@@ -34,7 +34,13 @@ export default function ForumScreen() {
 
   return (
     <View style={styles.container}>
-      <HeaderForum onBack={() => console.log("Voltar")} />
+      <HeaderForum
+        onBack={() =>
+          navigation.canGoBack()
+            ? navigation.goBack()
+            : navigation.navigate("Topicos")
+        }
+      />
 
 
       {/* Busca */}

@@ -27,10 +27,10 @@ export default function App() {
       {/* stack navigator, usando screenOptions para ocultar o cabeçalho */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Titulo" component={TituloScreen} />
-
         <Stack.Screen name="Forum" component={forumScreen}/>
-
         <Stack.Screen name="Conversa" component={ConversaScreen} />
+
+
         <Stack.Screen name="Calendar" component={CalendarScreen}/>
         {/* <Stack.Screen name="footerforum" component={FooterForum}/>   */}
         {/* <Stack.Screen name="headerforum" component={HeaderForum}/> */}
