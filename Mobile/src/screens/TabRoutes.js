@@ -23,7 +23,7 @@ export default function TabRoutes() {
 
             if (route.name === 'Home') iconName = 'home';
             else if (route.name === 'Calendario') iconName = 'calendar';
-            else if (route.name === 'Forum') iconName = 'chatbubble';
+            else if (route.name === 'forum') iconName = 'chatbubble';
             else if (route.name === 'Repositorio') iconName = 'folder';
             else if (route.name === 'Config') iconName = 'settings';
 
