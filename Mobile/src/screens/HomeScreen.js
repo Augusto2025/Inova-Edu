@@ -31,10 +31,7 @@ export default function HomeScreen() {
 
                     <TouchableOpacity onPress={escolherImagem}>
                         {foto ? (
-                            
-                        <Image source={{uri:foto }} style={styles.avatar} />
-
-
+                            <Image source={{ uri: foto }} style={styles.avatar} />
                         ) : (
                             <View style={styles.avatarFallback}>
                                 <Text style={styles.letra}>A</Text>
