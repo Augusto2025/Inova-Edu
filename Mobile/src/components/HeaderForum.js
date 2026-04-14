@@ -19,7 +19,7 @@ export default function HeaderForum({ onBack }) {
 
           <View>
             <Text style={styles.name}>Fórum</Text>
-            <Text style={styles.status}>Topicos ativos</Text>
+            <Text style={styles.status}>Topicos Criados</Text>
           </View>
         </View>
 
