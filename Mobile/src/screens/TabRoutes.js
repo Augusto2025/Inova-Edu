@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 // telas
 // import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/Eventos';
-import ForumScreen from '../screens/Forum';
+import ForumScreen from './Forum';
 import SettingsScreen from '../screens/SettingsScreen';
 import RepositorioScreen from '../screens/RepositorioScreen';
 

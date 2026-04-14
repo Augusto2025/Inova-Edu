@@ -25,12 +25,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
         <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
+
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>

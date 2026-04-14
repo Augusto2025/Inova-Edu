@@ -56,7 +56,7 @@ const PROJETOS_ESTATICOS = [
   }
 ];
 
-export default function ProjetosScreen() {
+export default function ProjetosScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -84,6 +84,10 @@ export default function ProjetosScreen() {
       </View>
     );
   }
+
+  const irParaRepositorio = (repositorio) => {
+    navigation.navigate("Repositorio", { url: repositorio });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,7 +133,7 @@ export default function ProjetosScreen() {
               </Text>
 
               <View style={styles.cardActions}>
-                <TouchableOpacity style={styles.btnRepo}>
+                <TouchableOpacity style={styles.btnRepo} onPress={() => irParaRepositorio(projeto.repo)}>
                   <Text style={styles.btnRepoText}>Repositório</Text>
                   <Feather name="external-link" size={14} color="white" />
                 </TouchableOpacity>
