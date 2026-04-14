@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './src/screens/Login';
 import SplashScreen from './src/screens/SplashScreen';
 
+
+
 import ForumScreen from './src/screens/Forum'; 
 import ConversaScreen from "./src/screens/Conversa";
 import TituloScreen from "./src/screens/Titulo";
@@ -25,6 +27,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>

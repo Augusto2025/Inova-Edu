@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
@@ -28,13 +29,16 @@ export default function Header({ foto, escolherImagem }) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#1459b3',
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+ header: {
+  backgroundColor: "#1459b3",
+  paddingTop: 40, // 👈 AQUI
+  padding: 20,
+  borderBottomLeftRadius: 25,
+  borderBottomRightRadius: 25,
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+},
 
   logo: {
     width: 60,

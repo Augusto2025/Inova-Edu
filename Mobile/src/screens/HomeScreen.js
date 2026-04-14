@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from "expo-image-picker";
 
 import {
@@ -37,7 +38,7 @@ export default function HomeScreen() {
     <ScrollView style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Image source={logo} style={styles.logo} />
+        <Text style={styles.boasVindas}>👋 Olá, Alcides</Text>
 
         <View style={styles.user}>
           <TouchableOpacity onPress={escolherImagem}>
@@ -49,57 +50,27 @@ export default function HomeScreen() {
               </View>
             )}
           </TouchableOpacity>
-
-          <Text style={styles.nome}>Alcides</Text>
         </View>
       </View>
 
       {/* BOAS VINDAS */}
       <View style={styles.topo}>
-        <Text style={styles.boasVindas}>👋 Olá, Alcides</Text>
-        <Text style={styles.sub}>Pronto pra aprender hoje? 🚀</Text>
       </View>
 
-      {/* DESTAQUE */}
-      <View style={styles.cardDestaque}>
-        <Text style={styles.tituloDestaque}>🔥 Desafio do dia</Text>
-        <Text style={styles.textoDestaque}>
-          Crie um app de lista com React Native
-        </Text>
-      </View>
-
-      {/* AÇÕES RÁPIDAS */}
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.btn}>
-          <Text>📚</Text>
-          <Text>Repo</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.btn}>
-          <Text>📅</Text>
-          <Text>Eventos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.btn}>
-          <Text>💬</Text>
-          <Text>Fórum</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* BUSCA */}
+      {/* REPOSITÓRIOS + BUSCA */}
       <View style={styles.card}>
-        <Text style={styles.titulo}>🔎 Buscar</Text>
+        <Text style={styles.titulo}>📚 Repositórios</Text>
 
-        <TextInput
-          placeholder="Buscar repositórios, arquivos..."
-          style={styles.input}
-        />
-      </View>
+        {/* 🔎 BUSCA DENTRO */}
+        <View style={styles.searchBox}>
+          <Text>🔎</Text>
+          <TextInput
+            placeholder="Buscar repositórios..."
+            style={styles.searchInput}
+          />
+        </View>
 
-      {/* REPOSITÓRIOS */}
-      <View style={styles.card}>
-        <Text style={styles.titulo}>📚 Repositórios recentes</Text>
-
+        {/* LISTA */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity style={styles.tag}>
             <Text>React Native</Text>
@@ -131,25 +102,22 @@ export default function HomeScreen() {
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f7fb",
   },
 
-  header: {
-    backgroundColor: "#1459b3",
-    padding: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+ header: {
+  backgroundColor: "#1459b3",
+  paddingTop: 40, // 👈 AQUI
+  padding: 4, // 👈 AQUI
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+},
 
-  logo: {
-    width: 60,
-    height: 60,
-    tintColor: "white",
-  },
 
   user: {
     alignItems: "center",
@@ -164,6 +132,8 @@ const styles = StyleSheet.create({
   },
 
   avatarFallback: {
+    
+    top: -5,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -183,12 +153,17 @@ const styles = StyleSheet.create({
   },
 
   topo: {
-    padding: 20,
+    padding: 10,
   },
 
   boasVindas: {
+    paddingTop: 20,
+    paddingBottom: 30,
     fontSize: 22,
+    color: "#fff",
     fontWeight: "bold",
+    
+
   },
 
   sub: {
@@ -198,8 +173,9 @@ const styles = StyleSheet.create({
   cardDestaque: {
     backgroundColor: "#1459b3",
     margin: 15,
+    marginTop: -20,
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 20,
   },
 
   tituloDestaque: {
@@ -220,10 +196,11 @@ const styles = StyleSheet.create({
 
   btn: {
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
+    padding: 18,
+    borderRadius: 15,
     alignItems: "center",
-    elevation: 3,
+    width: 90,
+    elevation: 4,
   },
 
   card: {
@@ -231,7 +208,7 @@ const styles = StyleSheet.create({
     margin: 15,
     padding: 15,
     borderRadius: 15,
-    elevation: 3,
+    elevation: 4,
   },
 
   titulo: {
@@ -239,10 +216,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  input: {
+  // 🔥 BUSCA BONITA
+  searchBox: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#f0f0f0",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 10,
+    marginBottom: 10,
+  },
+
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
   },
 
   tag: {
