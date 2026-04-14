@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
+import Header from "../components/Header"; 
 
 import {
   View,
@@ -35,24 +36,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <Image source={logo} style={styles.logo} />
-
-        <View style={styles.user}>
-          <TouchableOpacity onPress={escolherImagem}>
-            {foto ? (
-              <Image source={{ uri: foto }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Text style={styles.letra}>A</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-
-          <Text style={styles.nome}>Alcides</Text>
-        </View>
-      </View>
+      <Header foto={foto} escolherImagem={escolherImagem} />
 
       {/* BOAS VINDAS */}
       <View style={styles.topo}>

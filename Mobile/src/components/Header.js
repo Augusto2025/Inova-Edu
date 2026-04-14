@@ -1,5 +1,4 @@
 import React from 'react';
-import Header from '../components/Header';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export default function Header({ foto, escolherImagem }) {
@@ -7,7 +6,6 @@ export default function Header({ foto, escolherImagem }) {
 
   return (
     <View style={styles.header}>
-      <Header foto={foto} escolherImagem={escolherImagem} />
       <Image source={logo} style={styles.logo} />
 
       <View style={styles.user}>
@@ -30,10 +28,12 @@ export default function Header({ foto, escolherImagem }) {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#1459b3',
+    paddingTop: 50,
     padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    
   },
 
   logo: {
