@@ -15,6 +15,8 @@ import TurmasScreen from './src/screens/Turmas';
 import ProjetosScreen from './src/screens/Projetos';
 import RepositorioScreen from './src/screens/Repositorio';
 import CalendarScreen from './src/screens/Eventos';
+import HomeScreen from './src/screens/HomeScreen';
+
 
 // STACK
 const Stack = createStackNavigator();

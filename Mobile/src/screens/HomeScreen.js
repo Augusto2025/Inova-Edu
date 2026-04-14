@@ -1,221 +1,259 @@
-import React, { useState } from 'react';
-import logo from '../../assets/LOGOBRANCO.png';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 
-import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 
 export default function HomeScreen() {
+  const [foto, setFoto] = useState(null);
+  const logo = require("../../assets/LOGOBRANCO.png");
 
-    const [foto, setFoto] = useState(null);
+  async function escolherImagem() {
+    const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    async function escolherImagem() {
-        const resultado = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            quality: 1,
-        });
-
-        if (!resultado.canceled) {
-            setFoto(resultado.assets[0].uri);
-        }
+    if (!permissao.granted) {
+      alert("Permissão negada!");
+      return;
     }
 
-    return (
-        <ScrollView style={styles.container}>
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
 
-            {/* HEADER */}
-            <View style={styles.header}>
-                <Image source={logo} style={styles.image} />
-                <Text style={styles.nome1}>InovaEdu</Text>
+    if (!resultado.canceled) {
+      setFoto(resultado.assets[0].uri);
+    }
+  }
 
-                <View style={styles.user}>
+  return (
+    <ScrollView style={styles.container}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Image source={logo} style={styles.logo} />
 
-                    <TouchableOpacity onPress={escolherImagem}>
-                        {foto ? (
-                            
-                        <Image source={{uri:foto }} style={styles.avatar} />
+        <View style={styles.user}>
+          <TouchableOpacity onPress={escolherImagem}>
+            {foto ? (
+              <Image source={{ uri: foto }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarFallback}>
+                <Text style={styles.letra}>A</Text>
+              </View>
+            )}
+          </TouchableOpacity>
 
+          <Text style={styles.nome}>Alcides</Text>
+        </View>
+      </View>
 
-                        ) : (
-                            <View style={styles.avatarFallback}>
-                                <Text style={styles.letra}>A</Text>
-                            </View>
-                        )}
-                    </TouchableOpacity>
+      {/* BOAS VINDAS */}
+      <View style={styles.topo}>
+        <Text style={styles.boasVindas}>👋 Olá, Alcides</Text>
+        <Text style={styles.sub}>Pronto pra aprender hoje? 🚀</Text>
+      </View>
 
-                    <Text style={styles.nome}>Alcides</Text>
-                </View>
-            </View>
+      {/* DESTAQUE */}
+      <View style={styles.cardDestaque}>
+        <Text style={styles.tituloDestaque}>🔥 Desafio do dia</Text>
+        <Text style={styles.textoDestaque}>
+          Crie um app de lista com React Native
+        </Text>
+      </View>
 
-            {/* CARD REPOSITORIOS */}
-            <View style={styles.card1}>
-                <Text style={styles.titulo}>Repositórios recente</Text>
+      {/* AÇÕES RÁPIDAS */}
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.btn}>
+          <Text>📚</Text>
+          <Text>Repo</Text>
+        </TouchableOpacity>
 
-                <TextInput
-                    placeholder="Buscar repositórios, arquivos"
-                    style={styles.input}
-                />
+        <TouchableOpacity style={styles.btn}>
+          <Text>📅</Text>
+          <Text>Eventos</Text>
+        </TouchableOpacity>
 
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <TouchableOpacity style={styles.tag}>
-                        <Text>Inova Edu</Text>
-                    </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
+          <Text>💬</Text>
+          <Text>Fórum</Text>
+        </TouchableOpacity>
+      </View>
 
-                    <TouchableOpacity style={styles.tag}>
-                        <Text>Python</Text>
-                    </TouchableOpacity>
+      {/* BUSCA */}
+      <View style={styles.card}>
+        <Text style={styles.titulo}>🔎 Buscar</Text>
 
-                    <TouchableOpacity style={styles.tag}>
-                        <Text>React</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-            </View>
+        <TextInput
+          placeholder="Buscar repositórios, arquivos..."
+          style={styles.input}
+        />
+      </View>
 
-            {/* CARD FORUM */}
-            <View style={styles.card}>
-                <Text style={styles.titulo}>💬 Destaque do fórum</Text>
-                <Text style={styles.texto}>3 novas respostas no tópico.</Text>
-                <Text style={styles.sub}>#Cores css</Text>
-            </View>
+      {/* REPOSITÓRIOS */}
+      <View style={styles.card}>
+        <Text style={styles.titulo}>📚 Repositórios recentes</Text>
 
-            {/* CARD EVENTOS */}
-            <View style={styles.card}>
-                <Text style={styles.titulo}>📅 Eventos próximos</Text>
-                <Text style={styles.texto}>Semana S</Text>
-                <Text style={styles.sub}>Amanhã, 10h</Text>
-            </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity style={styles.tag}>
+            <Text>React Native</Text>
+          </TouchableOpacity>
 
-            {/* AJUDA */}
-            <TouchableOpacity style={styles.card}>
-                <Text style={styles.titulo}>🤖 Precisa de ajuda?</Text>
-            </TouchableOpacity>
+          <TouchableOpacity style={styles.tag}>
+            <Text>Python</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity style={styles.tag}>
+            <Text>JavaScript</Text>
+          </TouchableOpacity>
         </ScrollView>
+      </View>
 
+      {/* EVENTOS */}
+      <View style={styles.card}>
+        <Text style={styles.titulo}>📅 Próximos eventos</Text>
+        <Text>Semana Tech</Text>
+        <Text style={styles.subText}>Amanhã às 10h</Text>
+      </View>
 
-    );
+      {/* FORUM */}
+      <View style={styles.card}>
+        <Text style={styles.titulo}>💬 Fórum ativo</Text>
+        <Text>3 novas respostas</Text>
+        <Text style={styles.subText}>#ReactNative</Text>
+      </View>
+    </ScrollView>
+  );
 }
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#cfe0e8',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f7fb",
+  },
 
-    header: {
-        backgroundColor: '#1459b3',
-        padding: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
+  header: {
+    backgroundColor: "#1459b3",
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 
-    user: {
-        alignItems: 'center',
-    },
+  logo: {
+    width: 60,
+    height: 60,
+    tintColor: "white",
+  },
 
-    avatar: {
-        width: 50,
-        height: 50,
-        top: 40,
-        borderRadius: 25,
-        borderWidth: 1,
-        borderColor: 'white',
-    },
+  user: {
+    alignItems: "center",
+  },
 
-    nome: {
-        color: 'white',
-        marginTop: 45,
-    },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
 
-    card: {
-        backgroundColor: '#e6e6e6',
-        margin: 15,
-        padding: 15,
-        borderRadius: 15,
+  avatarFallback: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#6c63ff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-        // Android
-        elevation: 6,
+  letra: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 
-        // iOS
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-    },
+  nome: {
+    color: "#fff",
+    marginTop: 5,
+  },
 
-    titulo: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
+  topo: {
+    padding: 20,
+  },
 
-    texto: {
-        fontSize: 14,
-    },
+  boasVindas: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
 
-    sub: {
-        fontSize: 12,
-        color: 'gray',
-    },
+  sub: {
+    color: "gray",
+  },
 
-    input: {
-        backgroundColor: 'white',
-        borderRadius: 20,
-        paddingHorizontal: 15,
-        marginBottom: 10,
-        height: 45,
-    },
+  cardDestaque: {
+    backgroundColor: "#1459b3",
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+  },
 
-    tag: {
-        backgroundColor: '#d9d9d9',
-        padding: 15,
-        borderRadius: 10,
-        marginRight: 10,
-    },
+  tituloDestaque: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
 
-    card1: {
-        backgroundColor: '#e6e6e6',
-        margin: 15,
-        padding: 20,
-        borderRadius: 15,
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
+  textoDestaque: {
+    color: "#fff",
+  },
 
+  actions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 10,
+  },
 
-    },
+  btn: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 12,
+    alignItems: "center",
+    elevation: 3,
+  },
 
-    image: {
-        width: 60,
-        height: 80,
-        resizeMode: 'contain',
-        tintColor: 'white',
-        top: 13,
-    },
+  card: {
+    backgroundColor: "#fff",
+    margin: 15,
+    padding: 15,
+    borderRadius: 15,
+    elevation: 3,
+  },
 
-    nome1: {
-        color: 'white',
-        marginTop: 25,
-        marginRight: 190,
-        fontSize: 17,
-    },
+  titulo: {
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
 
-    // 🔥 NOVOS (avatar fallback)
-    avatarFallback: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#6c63ff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        top: 40,
-    },
+  input: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    padding: 10,
+  },
 
-    letra: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+  tag: {
+    backgroundColor: "#e0e0e0",
+    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+
+  subText: {
+    color: "gray",
+    fontSize: 12,
+  },
 });
