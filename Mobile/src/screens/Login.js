@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
         <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
             <View style={styles.containerTotal}>
                 <View style={styles.header}>
-                    <Image source={Logo} style={{ width: 100, height: 100, marginBottom: 20 }}/>
+                    <Image source={Logo} />
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
                 </View>
                 <View style={styles.containerCenter}>
