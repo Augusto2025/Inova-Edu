@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 // telas
-import HomeScreen from '../screens/HomeScreen';
-import CalendarScreen from '../screens/Calendario';
-import ForumScreen from '../screens/ForumScreen';
+// import HomeScreen from '../screens/HomeScreen';
+import CalendarScreen from '../screens/Eventos';
+import ForumScreen from '../screens/Forum';
 import SettingsScreen from '../screens/SettingsScreen';
 import RepositorioScreen from '../screens/RepositorioScreen';
 
@@ -23,7 +23,7 @@ export default function TabRoutes() {
 
             if (route.name === 'Home') iconName = 'home';
             else if (route.name === 'Calendario') iconName = 'calendar';
-            else if (route.name === 'forum') iconName = 'chatbubble';
+            else if (route.name === 'Forum') iconName = 'chatbubble';
             else if (route.name === 'Repositorio') iconName = 'folder';
             else if (route.name === 'Config') iconName = 'settings';
 
@@ -69,7 +69,7 @@ export default function TabRoutes() {
         
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      {/* <Tab.Screen name="Home" component={HomeScreen} /> */}
       <Tab.Screen name="Calendario" component={CalendarScreen} />
       <Tab.Screen name="Forum" component={ForumScreen} />
       <Tab.Screen name="Repositorio" component={RepositorioScreen} />
