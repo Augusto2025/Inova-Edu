@@ -26,6 +26,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    logo: {
+        width: 150,
+        height: 150,
+        marginBottom: 20,
+    },
     text: {
         color: '#ffffff',
         fontSize: 24,
