@@ -27,7 +27,8 @@
                 }
             </style>
         {% endif %}
-        <p class="senha">Esqueceu a senha? <br><a href="{% url "pedir_email" %}">Clique aqui</a></p>
+        <p class="senha">Esqueceu a senha? <br><a style="cursor: not-allowed; text-decoration: none;" href="#">Clique aqui</a></p>
+        {% comment %} <p class="senha">Esqueceu a senha? <br><a href="{% url "pedir_email" %}">Clique aqui</a></p> {% endcomment %}
     </form>
 </body>
 </html>

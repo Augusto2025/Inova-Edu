@@ -1,5 +1,5 @@
 {
-  "name": "InovaEdu",
+  "name": "inova-edu",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,12 +7,15 @@
     "android": "expo start --android"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.3",
+    "@react-navigation/bottom-tabs": "^7.15.9",
     "@react-navigation/native": "^7.2.2",
     "@react-navigation/native-stack": "^7.14.10",
     "@react-navigation/stack": "^7.8.9",
     "expo": "~54.0.0",
     "expo-build-properties": "~1.0.10",
     "expo-file-system": "~19.0.21",
+    "expo-image-picker": "^55.0.18",
     "expo-print": "~15.0.8",
     "expo-sharing": "~14.0.8",
     "expo-status-bar": "~3.0.9",

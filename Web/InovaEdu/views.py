@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+import resend
 from .models import *
 import os
 from datetime import datetime, timedelta
@@ -18,7 +19,14 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
-from .models import Projeto, UsuarioDaTurma
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def login(request):
@@ -50,70 +58,64 @@ def login(request):
         )
 
 
-def reSenha(request):
-    if request.method == "POST":
-        senha1 = request.POST.get("senha1")
-        senha2 = request.POST.get("senha")
+from .tokens import token_generator
 
-        if senha1 == senha2:
-            request.user.set_password(senha1)
-            request.user.save()
-
-    return render(request, "reSenha.html")
-
-
+# redefinir senha 
 def pedir_email(request):
     if request.method == "POST":
-        email = request.POST.get("email")
+        nome = request.POST.get("nome")
+        sobrenome = request.POST.get("sobrenome")
+        usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
 
-        # Gerar código de 6 dígitos
-        codigo = random.randint(100000, 999999)
+        if usuario and usuario.email:
+            # Gera o token manual
+            token = token_generator.make_token(usuario)
+            uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
+            
+            link = f"https://inova-edu.onrender.com/redefinir-senha/{uid}/{token}/"
 
-        # Salvar na session
-        request.session["rec_email"] = email
-        request.session["rec_codigo"] = str(codigo)
-
-        # Enviar email
-        send_mail(
-            subject="Código de verificação",
-            message=f"Seu código é: {codigo}",
-            from_email="mneto8141@gmail.com",
-            recipient_list=[email],
-        )
-
-        return redirect("verificar_codigo")
-
+            # Envio via Resend (mantenha sua configuração)
+            resend.api_key = "re_Dn9Qt4mm_6cxkqsovJ3uhe3rWSX79rY9w"
+            resend.Emails.send({
+                "from": "Inova Edu <onboarding@resend.dev>",
+                "to": usuario.email,
+                "subject": "Redefinição de Senha",
+                "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
+            })
+            return render(request, "pedir_email.html", {"sucesso": True})
+            
     return render(request, "pedir_email.html")
 
+def redefinir_senha(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        usuario = Usuario.objects.get(idusuario=uid)
+        print(f"Usuário encontrado: {usuario.nome}") # Debug
+    except Exception as e:
+        print(f"Erro ao buscar usuário: {e}") # Debug
+        usuario = None
 
-def verificar_codigo(request):
-    if request.method == "POST":
-        codigo_digitado = request.POST.get("codigo")
-        codigo_real = request.session.get("rec_codigo")
+    valido = token_generator.check_token(usuario, token)
+    print(f"Token é válido? {valido}") # Debug
 
-        if codigo_digitado == codigo_real:
-            return redirect("redefinir_senha")
+    # O check_token agora é a nossa função manual do arquivo tokens.py
+    if usuario and token_generator.check_token(usuario, token):
+        if request.method == 'POST':
+            nova = request.POST.get('nova_senha')
+            confirma = request.POST.get('confirmar_senha')
 
-        return render(request, "verificar_codigo.html", {"erro": "Código incorreto"})
+            if nova == confirma:
+                usuario.senha = nova
+                usuario.save()
+                # Importante: após o save, o token antigo deixará de funcionar 
+                # porque a senha mudou!
+                return redirect('login')
+            else:
+                return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
 
-    return render(request, "verificar_codigo.html")
-
-
-def redefinir_senha(request):
-    if request.method == "POST":
-        senha1 = request.POST.get("senha1")
-        senha2 = request.POST.get("senha2")
-
-        if senha1 != senha2:
-            return render(
-                request,
-                "redefinir_senha.html",
-                {"mensagem": "As senhas não coincidem!"},
-            )
-
-        return redirect("login")
-
-    return render(request, "redefinir_senha.html")
+        return render(request, 'redefinir_senha.html')
+    else:
+        return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
 
 
 # --------------- Telas aluno e professor ---------------

@@ -13,7 +13,7 @@ export default function SplashScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image source={Logo} style={{ width: 150, height: 150 }}/>
+            <Image source={Logo} style={styles.logo} />
             <Text style={styles.text}>Carregando...</Text>
         </View>
     );
@@ -25,6 +25,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#1459b3',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    logo: {
+        width: 150,
+        height: 150,
+        marginBottom: 20,
     },
     text: {
         color: '#ffffff',

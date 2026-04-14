@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="chat-option" data-index="2">Como usar o Fórum?</button>
             <button class="chat-option" data-index="3">Onde eu vejo o meu repositório?</button>
             <button class="chat-option" data-index="4">Como ver os outros PI’s?</button>
-            <button class="chat-option" data-index="5">Como ver os eventos?</button>
-            <button class="chat-option" data-index="6">Como achar os meus certificados?</button>
+            <button class="chat-option" data-index="5">Onde Posso ver os eventos desse mês?</button>
+            <button class="chat-option" data-index="6">Como achar as minhas informações de usuário?</button>
         `;
         localStorage.removeItem('chatHistory');
     }
@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
         msg = msg.toLowerCase();
         let resposta = "Desculpe, não entendi.";
 
-        if (msg.includes("pi")) resposta = "Seus PIs estão na seção Repositórios.";
-        else if (msg.includes("fórum") || msg.includes("forum")) resposta = "O Fórum fica no menu superior.";
-        else if (msg.includes("repositório")) resposta = "Seu repositório fica na tela inicial.";
-        else if (msg.includes("evento")) resposta = "Os eventos estão na aba Eventos.";
-        else if (msg.includes("certificado")) resposta = "Seus certificados estão no seu perfil.";
+        if (msg.includes("pi")) resposta = "Caminho para seus PI’s: Seu Cursos > Sua Turmas > Seu Projeto Integrador.\nAqui você pode acessar os detalhes, enviar arquivos e acompanhar o progresso do seu projeto.";
+        else if (msg.includes("fórum") || msg.includes("forum")) resposta = "Primeiro, acesse a aba Fórum. Lá, você pode escolher entre os diferentes fóruns disponíveis para cada curso ou turma. Para participar, basta clicar no fórum desejado, ler as regras de participação e começar a interagir com os outros alunos e instrutores. Você pode criar novos tópicos, responder a perguntas existentes e compartilhar recursos relacionados ao curso.";
+        else if (msg.includes("repositório")) resposta = "Assim como para acessar seus PI’s, vá para Seu Cursos > Sua Turmas > Seu Projeto Integrador. Dentro do seu projeto, você encontrará uma seção dedicada ao repositório, onde pode acessar os PIs dos outros alunos.";
+        else if (msg.includes("evento")) resposta = "Para ver os eventos do mês, vá para a aba Eventos. Lá, você encontrará uma lista de eventos programados, como webinars, workshops e sessões de Q&A. Você pode clicar em cada evento para obter mais detalhes, como data, hora e descrição. Se estiver interessado em participar, basta ir a coordenação para se inscrever ou obter o link de acesso.";
+        else if (msg.includes("certificado")) resposta = "As suas informações de usuário, incluindo certificados, estão na aba Perfil. Lá, você pode acessar seus certificados de conclusão, histórico de cursos e outras informações pessoais relacionadas à sua conta.";
 
         setTimeout(() => addMessage(resposta, 'bot'), 700);
     }

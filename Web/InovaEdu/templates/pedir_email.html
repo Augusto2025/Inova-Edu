@@ -1,26 +1,25 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'styles/codigoEmail.css' %}">
-    <title>Inova Edu</title>
+    <title>Inova Edu - Recuperação</title>
 </head>
-
 <body>
     <form class="card_login" method="POST">
         {% csrf_token %}
-        <h1>Insira seu email</h1>
+        <h1>Recuperar Senha</h1>
+        <p>Informe seus dados para localizarmos sua conta.</p>
 
-        <input type="email" placeholder="Email" name="email" required>
+        <input type="text" placeholder="Seu Nome" name="nome" required>
+        <input type="text" placeholder="Seu Sobrenome" name="sobrenome" required style="margin-top: 10px;">
 
         {% if erro %}
             <p style="color:red; margin-top:10px;">{{ erro }}</p>
         {% endif %}
 
-        <button type="submit">Confirmar</button>
+        <button type="submit" style="margin-top: 15px;">Enviar Link por E-mail</button>
     </form>
 </body>
 </html>

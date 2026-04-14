@@ -13,7 +13,7 @@ import {
 
 const { width } = Dimensions.get('window');
 
-export default function CursosScreen() {
+export default function CursosScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -22,6 +22,10 @@ export default function CursosScreen() {
     { id: 2, nome_curso: 'Excel Avançado' },
     { id: 3, nome_curso: 'Desenvolvimento Web Full Stack' },
   ];
+
+  const irParaTurmas = (curso) => {
+    navigation.navigate("Turmas", { cursoId: curso.id, nomeCurso: curso.nome_curso });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,7 +56,7 @@ export default function CursosScreen() {
               <View style={styles.cardContent}>
                 <Text style={styles.nomeCurso}>{curso.nome_curso}</Text>
                 <View style={styles.borda} />
-                <TouchableOpacity style={styles.botaoEntrar}>
+                <TouchableOpacity style={styles.botaoEntrar} onPress={() => irParaTurmas(curso)}>
                   <Text style={styles.botaoTexto}>Entrar</Text>
                 </TouchableOpacity>
               </View>
