@@ -1,9 +1,5 @@
 import React from 'react';
-<<<<<<< HEAD
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Header from '../components/Header';
-=======
->>>>>>> Deploys
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -11,59 +7,36 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
   const logo = require('../../assets/LOGOBRANCO.png');
 
   return (
-    <View style={styles.header}>
+    <View style={styles.heade}>
       <TouchableOpacity style={styles.backButton}>
         <Feather name="chevron-left" size={24} color="white" />
       </TouchableOpacity>
 
       <View style={styles.nomeTela}>
-        <Text style={styles.Titulo}>{nomeTela}teste</Text>
+        <Text style={styles.Titulo}>{nomeTela}</Text>
       </View>
 
-      <View style={styles.user}>
-        <TouchableOpacity onPress={escolherImagem}>
-          {foto ? (
-            <Image source={{ uri: foto }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarFallback}>
-              <Text style={styles.letra}>A</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-
+      
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
- header: {
+ heade: {
   backgroundColor: "#1459b3",
-  paddingTop: 40, // 👈 AQUI
+  height: 90,
+  paddingTop: 30, // 👈 AQUI
   padding: 20,
-  borderBottomLeftRadius: 25,
-  borderBottomRightRadius: 25,
+  paddingBottom: 15,
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
+  borderBottomLeftRadius: 30,
+  borderBottomRightRadius: 30,
 },
-=======
-  header: {
-    backgroundColor: '#1459b3',
-    paddingTop: 35,
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
->>>>>>> Deploys
 
-  Titulo: {
-    color: '#fff',
-    fontSize: 25,
-    fontWeight: 'bold',
-  },
+  Titulo: 
+   { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
 
   user: {
     alignItems: 'center',
@@ -95,4 +68,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 5,
   },
+
+  container: {
+  flex: 1,
+  backgroundColor: "#eef1f5", // 🔥 mais suave
+},
 });
+

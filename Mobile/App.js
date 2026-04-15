@@ -18,6 +18,7 @@ import ProjetosScreen from './src/screens/Projetos';
 import RepositorioScreen from './src/screens/Repositorio';
 import CalendarScreen from './src/screens/Eventos';
 import HomeScreen from './src/screens/HomeScreen';
+import TabRoutes from './src/components/TabRoutes';
 
 
 // STACK
@@ -27,7 +28,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Main" component={TabRoutes} />
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>

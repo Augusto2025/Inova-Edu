@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
-import Header from "../components/Header"; 
-import TabRoutes from "./TabRoutes";
+import Header from "../components/Header";
 
 import {
   View,
@@ -16,7 +15,6 @@ import {
 
 export default function HomeScreen() {
   const [foto, setFoto] = useState(null);
-  const logo = require("../../assets/LOGOBRANCO.png");
 
   async function escolherImagem() {
     const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,201 +35,112 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-<<<<<<< HEAD
+    <View style={styles.safe}>
+      
       {/* HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.boasVindas}>👋 Olá, Alcides</Text>
+      <Header
+        foto={foto}
+        escolherImagem={escolherImagem}
+        nomeTela="Home"
+      />
 
-        <View style={styles.user}>
-          <TouchableOpacity onPress={escolherImagem}>
-            {foto ? (
-              <Image source={{ uri: foto }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Text style={styles.letra}>A</Text>
-              </View>
-            )}
-          </TouchableOpacity>
+      {/* CONTEÚDO */}
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+      >
+
+        {/* REPOSITÓRIOS */}
+        <View style={[styles.card, styles.cardTop]}>
+          <Text style={styles.titulo}>📚 Repositórios</Text>
+
+          <View style={styles.searchBox}>
+            <Text>🔎</Text>
+            <TextInput
+              placeholder="Buscar repositórios..."
+              style={styles.searchInput}
+            />
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity style={styles.tag}>
+              <Text>React Native</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.tag}>
+              <Text>Python</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.tag}>
+              <Text>JavaScript</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </View>
-=======
-      <Header foto={foto} escolherImagem={escolherImagem} />
->>>>>>> Deploys
 
-      {/* BOAS VINDAS */}
-      <View style={styles.topo}>
-      </View>
-
-      {/* REPOSITÓRIOS + BUSCA */}
-      <View style={styles.card}>
-        <Text style={styles.titulo}>📚 Repositórios</Text>
-
-        {/* 🔎 BUSCA DENTRO */}
-        <View style={styles.searchBox}>
-          <Text>🔎</Text>
-          <TextInput
-            placeholder="Buscar repositórios..."
-            style={styles.searchInput}
-          />
+        {/* EVENTOS */}
+        <View style={styles.card}>
+          <Text style={styles.titulo}>📅 Próximos eventos</Text>
+          <Text>Semana Tech</Text>
+          <Text style={styles.subText}>Amanhã às 10h</Text>
         </View>
 
-        {/* LISTA */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <TouchableOpacity style={styles.tag}>
-            <Text>React Native</Text>
-          </TouchableOpacity>
+        {/* FÓRUM */}
+        <View style={styles.card}>
+          <Text style={styles.titulo}>💬 Fórum ativo</Text>
+          <Text>3 novas respostas</Text>
+          <Text style={styles.subText}>#ReactNative</Text>
+        </View>
 
-          <TouchableOpacity style={styles.tag}>
-            <Text>Python</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.tag}>
-            <Text>JavaScript</Text>
-          </TouchableOpacity>
-        </ScrollView>
+      </ScrollView>
       </View>
-
-      {/* EVENTOS */}
-      <View style={styles.card}>
-        <Text style={styles.titulo}>📅 Próximos eventos</Text>
-        <Text>Semana Tech</Text>
-        <Text style={styles.subText}>Amanhã às 10h</Text>
-      </View>
-
-      {/* FORUM */}
-      <View style={styles.card}>
-        <Text style={styles.titulo}>💬 Fórum ativo</Text>
-        <Text>3 novas respostas</Text>
-        <Text style={styles.subText}>#ReactNative</Text>
-      </View>
-
-      <TabRoutes />
-    </ScrollView>
+    
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#f5f7fb",
   },
 
- header: {
-  backgroundColor: "#1459b3",
-  paddingTop: 40, // 👈 AQUI
-  padding: 4, // 👈 AQUI
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-},
-
-
-  user: {
-    alignItems: "center",
-  },
-
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-
-  avatarFallback: {
-    
-    top: -5,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#6c63ff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  letra: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-
-  nome: {
-    color: "#fff",
-    marginTop: 5,
-  },
-
-  topo: {
-    padding: 10,
-  },
-
-  boasVindas: {
-    paddingTop: 20,
-    paddingBottom: 30,
-    fontSize: 22,
-    color: "#fff",
-    fontWeight: "bold",
-    
-
-  },
-
-  sub: {
-    color: "gray",
-  },
-
-  cardDestaque: {
-    backgroundColor: "#1459b3",
-    margin: 15,
-    marginTop: -20,
-    padding: 20,
-    borderRadius: 20,
-  },
-
-  tituloDestaque: {
-    color: "#fff",
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-
-  textoDestaque: {
-    color: "#fff",
-  },
-
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
-  },
-
-  btn: {
-    backgroundColor: "#fff",
-    padding: 18,
-    borderRadius: 15,
-    alignItems: "center",
-    width: 90,
-    elevation: 4,
+  scrollContent: {
+    paddingBottom: 120, // espaço pro menu
+    paddingTop: 10,
   },
 
   card: {
     backgroundColor: "#fff",
-    margin: 15,
+    marginHorizontal: 15,
+    marginBottom: 15,
     padding: 15,
-    borderRadius: 15,
-    elevation: 4,
+    borderRadius: 20,
+    elevation: 5,
+  },
+
+  // 🔥 só o primeiro card sobe
+  cardTop: {
+    marginTop: 40,
   },
 
   titulo: {
     fontWeight: "bold",
     marginBottom: 10,
+    fontSize: 16,
   },
 
-  // 🔥 BUSCA BONITA
+  // 🔍 busca
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 12,
-    padding: 10,
-    marginBottom: 10,
+    backgroundColor: "#f1f3f6",
+    borderRadius: 15,
+    padding: 12,
+    marginBottom: 12,
   },
 
   searchInput: {
