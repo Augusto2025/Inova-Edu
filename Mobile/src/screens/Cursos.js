@@ -33,15 +33,15 @@ export default function CursosScreen({ navigation }) {
       <View style={styles.header}>
         <View style={{ width: 40 }} />
         <Text style={styles.headerText}>Cursos</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.listaCursos}>
         <TouchableOpacity 
           style={styles.filtroBotaoHeader} 
           onPress={() => setModalVisible(true)}
         >
           <Text style={styles.filtroIconeTexto}>≡</Text>
         </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.listaCursos}>
         {cursos.length === 0 ? (
           <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
         ) : (
@@ -121,14 +121,12 @@ const styles = StyleSheet.create({
   
   header: { 
     height: 70, 
-    backgroundColor: '#004A8D', 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    backgroundColor: '#004A8D',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  filtroIconeTexto: { color: '#fff', fontSize: 30 },
+  filtroIconeTexto: { color: '#004A8D', fontSize: 30 },
 
   listaCursos: { padding: 20 },
   card: { 
