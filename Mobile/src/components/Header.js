@@ -33,7 +33,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#1459b3',
+    backgroundColor: '#004A8D',
     paddingTop: 35,
     padding: 15,
     flexDirection: 'row',
