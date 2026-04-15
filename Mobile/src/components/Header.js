@@ -1,12 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
-export default function Header({ foto, escolherImagem }) {
+export default function Header({ foto, escolherImagem, nomeTela }) {
   const logo = require('../../assets/LOGOBRANCO.png');
 
   return (
     <View style={styles.header}>
-      <Image source={logo} style={styles.logo} />
+      <TouchableOpacity style={styles.backButton}>
+        <Feather name="chevron-left" size={24} color="white" />
+      </TouchableOpacity>
+
+      <View style={styles.nomeTela}>
+        <Text style={styles.Titulo}>{nomeTela}teste</Text>
+      </View>
 
       <View style={styles.user}>
         <TouchableOpacity onPress={escolherImagem}>
@@ -18,9 +25,8 @@ export default function Header({ foto, escolherImagem }) {
             </View>
           )}
         </TouchableOpacity>
-
-        <Text style={styles.nome}>Alcides</Text>
       </View>
+
     </View>
   );
 }
@@ -28,18 +34,17 @@ export default function Header({ foto, escolherImagem }) {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#1459b3',
-    paddingTop: 50,
-    padding: 20,
+    paddingTop: 35,
+    padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    
   },
 
-  logo: {
-    width: 60,
-    height: 60,
-    tintColor: 'white',
+  Titulo: {
+    color: '#fff',
+    fontSize: 25,
+    fontWeight: 'bold',
   },
 
   user: {

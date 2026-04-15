@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Dimensions
 } from 'react-native';
+import Header from '../components/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -30,12 +31,10 @@ export default function CursosScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
-      <View style={styles.header}>
-        <View style={{ width: 40 }} />
-        <Text style={styles.headerText}>Cursos</Text>
-      </View>
 
       <ScrollView contentContainerStyle={styles.listaCursos}>
+        <Header foto={null} escolherImagem={null} />
+        
         <TouchableOpacity 
           style={styles.filtroBotaoHeader} 
           onPress={() => setModalVisible(true)}
@@ -128,7 +127,6 @@ const styles = StyleSheet.create({
   headerText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   filtroIconeTexto: { color: '#004A8D', fontSize: 30 },
 
-  listaCursos: { padding: 20 },
   card: { 
     backgroundColor: '#fff', 
     borderRadius: 15, 
