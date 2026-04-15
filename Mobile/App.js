@@ -33,6 +33,8 @@ export default function App() {
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
         <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
 
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         

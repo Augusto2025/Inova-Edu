@@ -1,15 +1,24 @@
 import React from 'react';
+<<<<<<< HEAD
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
+=======
+>>>>>>> Deploys
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
-export default function Header({ foto, escolherImagem }) {
+export default function Header({ foto, escolherImagem, nomeTela }) {
   const logo = require('../../assets/LOGOBRANCO.png');
 
   return (
     <View style={styles.header}>
-      <Header foto={foto} escolherImagem={escolherImagem} />
-      <Image source={logo} style={styles.logo} />
+      <TouchableOpacity style={styles.backButton}>
+        <Feather name="chevron-left" size={24} color="white" />
+      </TouchableOpacity>
+
+      <View style={styles.nomeTela}>
+        <Text style={styles.Titulo}>{nomeTela}teste</Text>
+      </View>
 
       <View style={styles.user}>
         <TouchableOpacity onPress={escolherImagem}>
@@ -21,14 +30,14 @@ export default function Header({ foto, escolherImagem }) {
             </View>
           )}
         </TouchableOpacity>
-
-        <Text style={styles.nome}>Alcides</Text>
       </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
  header: {
   backgroundColor: "#1459b3",
   paddingTop: 40, // 👈 AQUI
@@ -39,11 +48,21 @@ const styles = StyleSheet.create({
   justifyContent: "space-between",
   alignItems: "center",
 },
+=======
+  header: {
+    backgroundColor: '#1459b3',
+    paddingTop: 35,
+    padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+>>>>>>> Deploys
 
-  logo: {
-    width: 60,
-    height: 60,
-    tintColor: 'white',
+  Titulo: {
+    color: '#fff',
+    fontSize: 25,
+    fontWeight: 'bold',
   },
 
   user: {

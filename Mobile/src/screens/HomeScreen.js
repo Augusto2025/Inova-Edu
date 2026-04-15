@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from "expo-image-picker";
+import Header from "../components/Header"; 
+import TabRoutes from "./TabRoutes";
 
 import {
   View,
@@ -36,6 +38,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container}>
+<<<<<<< HEAD
       {/* HEADER */}
       <View style={styles.header}>
         <Text style={styles.boasVindas}>👋 Olá, Alcides</Text>
@@ -52,6 +55,9 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
+=======
+      <Header foto={foto} escolherImagem={escolherImagem} />
+>>>>>>> Deploys
 
       {/* BOAS VINDAS */}
       <View style={styles.topo}>
@@ -99,6 +105,8 @@ export default function HomeScreen() {
         <Text>3 novas respostas</Text>
         <Text style={styles.subText}>#ReactNative</Text>
       </View>
+
+      <TabRoutes />
     </ScrollView>
   );
 }
