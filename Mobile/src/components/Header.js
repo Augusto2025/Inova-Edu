@@ -24,7 +24,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
 const styles = StyleSheet.create({
  heade: {
   backgroundColor: "#1459b3",
-  height: 90,
+  height: 120,
   paddingTop: 30, // 👈 AQUI
   padding: 20,
   paddingBottom: 15,

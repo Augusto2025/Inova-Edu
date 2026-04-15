@@ -8,9 +8,9 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import HeaderForum from "../components/HeaderForum";
-import FooterForum from "../components/FooterForum";
+import Header from "../components/Header";
 
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,14 +61,11 @@ export default function ForumScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       
-      <HeaderForum
-        onBack={() =>
-          navigation.canGoBack()
-            ? navigation.goBack()
-            : navigation.navigate("Topicos")
-        }
+        <Header
+        navigation={navigation}
+        nomeTela="Fórum"
       />
 
       {/* BUSCA */}
@@ -76,7 +73,7 @@ export default function ForumScreen({ navigation }) {
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color="#1e4f8a" />
           <TextInput
-            placeholder="Pesquisar Tópicos..."
+            placeholder="Pesquisar tópicos..."
             style={styles.input}
           />
         </View>
@@ -84,12 +81,12 @@ export default function ForumScreen({ navigation }) {
 
       {/* TÍTULO */}
       <View style={styles.containerTopicos}>
-        <Text style={styles.textoTopicos}>Tópicos Criados</Text>
+        <Text style={styles.textoTopicos}>Tópicos</Text>
         <View style={styles.linha} />
       </View>
 
       {/* LISTA */}
-      <ScrollView style={{ marginBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {topicos.map((item, index) => (
           <TouchableOpacity
             key={index}
@@ -114,7 +111,7 @@ export default function ForumScreen({ navigation }) {
         ))}
       </ScrollView>
 
-      {/* BOTÃO */}
+      {/* BOTÃO FLUTUANTE */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setModalVisible(true)}
@@ -173,27 +170,26 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
-      <FooterForum />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f2f2f2" },
+  container: { flex: 1, backgroundColor: "#f5f7fb" },
 
   searchWrapper: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
+    marginTop: 10,
+    paddingHorizontal: 15,
   },
 
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 25,
+    borderRadius: 20,
     paddingHorizontal: 12,
-    height: 40,
+    height: 45,
+    elevation: 2,
   },
 
   input: {
@@ -203,17 +199,17 @@ const styles = StyleSheet.create({
 
   containerTopicos: {
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 15,
   },
 
   textoTopicos: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1e4f8a",
+    color: "#1459b3",
   },
 
   linha: {
-    width: 150,
+    width: 120,
     height: 3,
     backgroundColor: "#ff8c00",
     marginTop: 5,
@@ -224,11 +220,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 12,
-    marginHorizontal: 20,
+    padding: 15,
+    marginHorizontal: 15,
     marginTop: 10,
-    borderRadius: 10,
-    elevation: 2,
+    borderRadius: 15,
+    elevation: 3,
   },
 
   nomeTopico: {
@@ -242,14 +238,15 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    bottom: 130,
-    right: 13,
+    bottom: 90, // 🔥 ajustado pro menu
+    right: 20,
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: "#ff8c00",
     justifyContent: "center",
     alignItems: "center",
+    elevation: 6,
   },
 
   modalOverlay: {
@@ -269,7 +266,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1e4f8a",
+    color: "#1459b3",
     textAlign: "center",
     marginBottom: 15,
   },

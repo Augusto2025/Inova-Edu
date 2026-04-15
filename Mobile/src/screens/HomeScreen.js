@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     paddingBottom: 120, // espaço pro menu
-    paddingTop: 10,
+    paddingTop: 80,
   },
 
   card: {
