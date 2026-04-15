@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
@@ -6,7 +7,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
   const logo = require('../../assets/LOGOBRANCO.png');
 
   return (
-    <View style={styles.header}>
+    <View style={styles.heade}>
       <TouchableOpacity style={styles.backButton}>
         <Feather name="chevron-left" size={24} color="white" />
       </TouchableOpacity>
@@ -27,6 +28,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
         </TouchableOpacity>
       </View>
 
+      
     </View>
   );
 }
@@ -41,11 +43,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  Titulo: {
-    color: '#fff',
-    fontSize: 25,
-    fontWeight: 'bold',
-  },
+  Titulo: 
+   { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
 
   user: {
     alignItems: 'center',
@@ -77,4 +76,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 5,
   },
+
+  container: {
+  flex: 1,
+  backgroundColor: "#eef1f5", // 🔥 mais suave
+},
 });
+

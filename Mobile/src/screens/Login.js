@@ -24,7 +24,7 @@ export default function LoginScreen({ navigation }) {
         }
 
         // o replace é usado para substituir a tela atual, impedindo que o usuário volte para a tela de login usando o botão de voltar do dispositivo
-        navigation.replace('HomeScreen');
+        navigation.replace('Main');
     };
 
     return (
