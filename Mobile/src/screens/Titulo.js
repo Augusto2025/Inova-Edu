@@ -108,7 +108,7 @@ export default function TopicosScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} />
+      <Header navigation={navigation} nomeTela={"Fórum Títulos"} />
 
 
       {/* Busca */}

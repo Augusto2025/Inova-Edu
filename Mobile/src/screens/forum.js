@@ -9,8 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import HeaderForum from "../components/HeaderForum";
-import FooterForum from "../components/FooterForum";
+import Header from "../components/Header";
 
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -62,14 +61,8 @@ export default function ForumScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      
-      <HeaderForum
-        onBack={() =>
-          navigation.canGoBack()
-            ? navigation.goBack()
-            : navigation.navigate("Topicos")
-        }
-      />
+      <Header navigation={navigation} nomeTela={"Topicos"} />
+  
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
@@ -80,12 +73,6 @@ export default function ForumScreen({ navigation }) {
             style={styles.input}
           />
         </View>
-      </View>
-
-      {/* TÍTULO */}
-      <View style={styles.containerTopicos}>
-        <Text style={styles.textoTopicos}>Tópicos Criados</Text>
-        <View style={styles.linha} />
       </View>
 
       {/* LISTA */}
@@ -173,7 +160,7 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
-      <FooterForum />
+   
     </View>
   );
 }
@@ -201,23 +188,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  containerTopicos: {
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  textoTopicos: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1e4f8a",
-  },
-
-  linha: {
-    width: 150,
-    height: 3,
-    backgroundColor: "#ff8c00",
-    marginTop: 5,
-  },
 
   card: {
     flexDirection: "row",

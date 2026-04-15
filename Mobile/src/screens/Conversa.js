@@ -11,8 +11,8 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import HeaderForum from "../components/HeaderForum";
-import FooterForum from "../components/FooterForum";
+import Header from '../components/Header';
+
 
 export default function ConversaScreen({ route }) {
   const topico = route?.params?.topico || "";
@@ -183,7 +183,7 @@ export default function ConversaScreen({ route }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      <HeaderForum titulo={topico} />
+      <Header navigation={null} nomeTela={topico} />
 
 
       <FlatList
