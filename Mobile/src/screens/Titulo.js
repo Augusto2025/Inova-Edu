@@ -14,6 +14,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 
+
 export default function TopicosScreen({ navigation }) {
   const [topicos, setTopicos] = useState([
     {
@@ -180,6 +181,7 @@ export default function TopicosScreen({ navigation }) {
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       )}
+      
     </View>
   );
 }

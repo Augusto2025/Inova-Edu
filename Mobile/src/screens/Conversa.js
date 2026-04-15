@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from '../components/Header';
 
 
+
 export default function ConversaScreen({ route }) {
   const topico = route?.params?.topico || "";
   const usuarioAtual = "Você";
@@ -257,7 +258,7 @@ export default function ConversaScreen({ route }) {
         </TouchableOpacity>
       </View>
 
-      {/* <FooterForum /> */}
+      
     </KeyboardAvoidingView>
   );
 }

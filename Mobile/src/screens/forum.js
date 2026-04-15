@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 
+
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEditarVisible, setModalEditarVisible] = useState(false);
@@ -160,7 +161,7 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
-   
+     
     </View>
   );
 }
