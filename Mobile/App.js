@@ -28,8 +28,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-<<<<<<< HEAD
-        
+
         <Stack.Screen name="Titulo" component={TituloScreen} />
         <Stack.Screen name="Forum" component={ForumScreen}/>
         <Stack.Screen name="Conversa" component={ConversaScreen} />
@@ -37,9 +36,8 @@ export default function App() {
 
 
 
-=======
+
         <Stack.Screen name="Main" component={TabRoutes} />
->>>>>>> Deploys
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
