@@ -174,9 +174,7 @@ class tela_login(ctk.CTkFrame):
                     self.home_aluno_screen = Home(self.master)
                     self.home_aluno_screen.pack(expand=True, fill="both")
                 elif tipo == "Coordenador":
-                    from views.Coordenacao.HomeCoordenador import HomeCoordenador
-                    self.home_coordenador_screen = HomeCoordenador(self.master)
-                    self.home_coordenador_screen.pack(expand=True, fill="both")
+                    pass
             else:
                 self._mostrar_erro(result[0] if isinstance(result, tuple) else str(result))
         except Exception as e:
