@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Dimensions
 } from 'react-native';
+import Header from '../components/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -30,18 +31,16 @@ export default function CursosScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
-      <View style={styles.header}>
-        <View style={{ width: 40 }} />
-        <Text style={styles.headerText}>Cursos</Text>
+
+      <ScrollView contentContainerStyle={styles.listaCursos}>
+        <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+        
         <TouchableOpacity 
           style={styles.filtroBotaoHeader} 
           onPress={() => setModalVisible(true)}
         >
           <Text style={styles.filtroIconeTexto}>≡</Text>
         </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.listaCursos}>
         {cursos.length === 0 ? (
           <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
         ) : (
@@ -121,16 +120,13 @@ const styles = StyleSheet.create({
   
   header: { 
     height: 70, 
-    backgroundColor: '#004A8D', 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    backgroundColor: '#004A8D',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  filtroIconeTexto: { color: '#fff', fontSize: 30 },
+  filtroIconeTexto: { color: '#004A8D', fontSize: 30 },
 
-  listaCursos: { padding: 20 },
   card: { 
     backgroundColor: '#fff', 
     borderRadius: 15, 
