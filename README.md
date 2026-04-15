@@ -17,7 +17,7 @@ Plataforma educacional desenvolvida com Django, focada em inovação, aprendizad
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas Do Sistema Web
 
 - **Python**
 - **Django**
@@ -29,6 +29,21 @@ Plataforma educacional desenvolvida com Django, focada em inovação, aprendizad
 
 ---
 
+## 🖥️ Tecnologias Utilizadas Do Sistema Desktop
+
+- **Python**
+- **CustomTkinter**
+- **Pillow (Processamento de imagem)**
+- **Requests (Integração com API)**
+
+## 📱 Tecnologias Utilizadas Do Sistema Mobile
+- **JavaScript**
+- **React**
+- **Lucide React (Ícones)**
+- **Axios (Integração com API)**
+
+---
+
 ## 📂 Estrutura do Projeto
 
-O projeto segue a estrutura padrão do Django, com separação entre templates, arquivos estáticos e configurações.
+O projeto segue a estrutura padrão do Django para o sistema web, integrando-se via API com o sistema desktop em CustomTkinter e a aplicação mobile em React, garantindo sincronização total entre as plataformas.

@@ -36,7 +36,7 @@ const DATA_MOCK = {
   ]
 };
 
-export default function TurmasScreen() {
+export default function TurmasScreen({ navigation }) {
   const [expandedYear, setExpandedYear] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,6 +58,10 @@ export default function TurmasScreen() {
       </View>
     );
   }
+
+  const irParaProjetos = (turma) => {
+    navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
+  };
 
   return (
     <View style={styles.safeArea}>
@@ -118,7 +122,7 @@ export default function TurmasScreen() {
 
                     <TouchableOpacity 
                       style={styles.actionButton}
-                      onPress={() => alert(`Entrando na turma ${turma.codigo_turma}`)}
+                      onPress={() => irParaProjetos(turma)}
                     >
                       <Text style={styles.actionButtonText}>Abrir</Text>
                       <Feather name="external-link" size={12} color="white" />
