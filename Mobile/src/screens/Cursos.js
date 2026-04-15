@@ -33,7 +33,7 @@ export default function CursosScreen({ navigation }) {
       {/* HEADER */}
 
       <ScrollView contentContainerStyle={styles.listaCursos}>
-        <Header foto={null} escolherImagem={null} />
+        <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
         
         <TouchableOpacity 
           style={styles.filtroBotaoHeader} 

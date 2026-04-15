@@ -12,7 +12,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
       </TouchableOpacity>
 
       <View style={styles.nomeTela}>
-        <Text style={styles.Titulo}>{nomeTela}teste</Text>
+        <Text style={styles.Titulo}>{nomeTela}</Text>
       </View>
 
       <View style={styles.user}>
