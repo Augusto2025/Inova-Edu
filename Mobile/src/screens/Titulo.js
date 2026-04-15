@@ -12,6 +12,7 @@ import {
   Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Header from "../components/Header";
 
 export default function TopicosScreen({ navigation }) {
   const [topicos, setTopicos] = useState([
@@ -107,26 +108,8 @@ export default function TopicosScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
+      <Header navigation={navigation} />
 
-          <Ionicons
-            name="chatbubbles"
-            size={26}
-            color="#fff"
-            style={{ marginHorizontal: 8 }}
-          />
-
-          <View>
-            <Text style={styles.headerTitle}>Fórum</Text>
-            <Text style={styles.headerSubtitle}>Títulos</Text>
-          </View>
-        </View>
-      </View>
 
       {/* Busca */}
       <View style={styles.searchWrapper}>
@@ -207,30 +190,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeef3",
   },
 
-  header: {
-    paddingTop: 35,
-    height: 90,
-    backgroundColor: "#1e4f8a",
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    elevation: 4,
-  },
-
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  headerTitle: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  headerSubtitle: {
-    color: "#ddd",
-    fontSize: 12,
-  },
 
   // busca
   searchWrapper: {

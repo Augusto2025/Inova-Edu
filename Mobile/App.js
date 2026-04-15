@@ -25,6 +25,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        
+        <Stack.Screen name="Titulo" component={TituloScreen} />
+        <Stack.Screen name="Forum" component={ForumScreen}/>
+        <Stack.Screen name="Conversa" component={ConversaScreen} />
+
+
+
+
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
@@ -33,9 +41,7 @@ export default function App() {
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         
-        <Stack.Screen name="Titulo" component={TituloScreen} />
-        <Stack.Screen name="Forum" component={ForumScreen}/>
-        <Stack.Screen name="Conversa" component={ConversaScreen} />
+
 
 
         <Stack.Screen name="Eventos" component={CalendarScreen}/>
