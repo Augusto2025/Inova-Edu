@@ -9,8 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-// import HeaderForum from "../components/HeaderForum";
-// import FooterForum from "../components/FooterForum";
+import Header from "../components/Header";
 
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -63,13 +62,7 @@ export default function ForumScreen({ navigation }) {
   return (
     <View style={styles.container}>
       
-      <HeaderForum
-        onBack={() =>
-          navigation.canGoBack()
-            ? navigation.goBack()
-            : navigation.navigate("Topicos")
-        }
-      />
+      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
@@ -173,7 +166,7 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
-      <FooterForum />
+      
     </View>
   );
 }
