@@ -7,7 +7,7 @@ import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/Eventos';
 import ForumScreen from '../screens/Forum';
 import SettingsScreen from '../screens/SettingsScreen';
-import RepositorioScreen from '../screens/Repositorio';
+import CursosScreen from '../screens/Cursos';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,7 +55,7 @@ export default function TabRoutes() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Calendario" component={CalendarScreen} />
       <Tab.Screen name="Forum" component={ForumScreen} />
-      <Tab.Screen name="Repositorio" component={RepositorioScreen} />
+      <Tab.Screen name="Cursos" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
     </Tab.Navigator>
   );
