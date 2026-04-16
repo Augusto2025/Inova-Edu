@@ -55,7 +55,7 @@ export default function TabRoutes() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Calendario" component={CalendarScreen} />
       <Tab.Screen name="Forum" component={ForumScreen} />
-      <Tab.Screen name="Cursos" component={CursosScreen} />
+      <Tab.Screen name="Repositorio" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
     </Tab.Navigator>
   );
