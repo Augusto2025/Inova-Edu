@@ -122,7 +122,7 @@ class Sidebar(ctk.CTkFrame):
             "home": {"modulo": "views.Aluno_e_Professor.home_view", "classe": "Home"},
             "eventos": {"modulo": "views.Aluno_e_Professor.eventos_view", "classe": "CalendarioDesktopApp"},
             "forum": {"modulo": "views.Aluno_e_Professor.forum_view", "classe": "Forum"},
-            "perfil": {"modulo": "views.Aluno_e_Professor.perfil_view", "classe": "UserProfileSystem"}
+            "perfil": {"modulo": "views.Aluno_e_Professor.profile_view", "classe": "UserProfileSystem"}
         }
         
         if nome_tela not in mapa_telas:

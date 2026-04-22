@@ -16,12 +16,25 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
         <Text style={styles.Titulo}>{nomeTela}</Text>
       </View>
 
+      <View style={styles.user}>
+        <TouchableOpacity onPress={escolherImagem}>
+          {foto ? (
+            <Image source={{ uri: foto }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarFallback}>
+              <Text style={styles.letra}>A</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+
       
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
  heade: {
   backgroundColor: "#1459b3",
   height: 120,
@@ -34,6 +47,16 @@ const styles = StyleSheet.create({
   borderBottomLeftRadius: 30,
   borderBottomRightRadius: 30,
 },
+=======
+  header: {
+    backgroundColor: '#004A8D',
+    paddingTop: 35,
+    padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+>>>>>>> Deploys
 
   Titulo: 
    { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
