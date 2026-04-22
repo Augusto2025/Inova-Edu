@@ -11,9 +11,14 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+<<<<<<< HEAD
 import Header from '../components/Header';
 
 
+=======
+// import HeaderForum from "../components/HeaderForum";
+// import FooterForum from "../components/FooterForum";
+>>>>>>> Deploys
 
 export default function ConversaScreen({ route }) {
   const topico = route?.params?.topico || "";

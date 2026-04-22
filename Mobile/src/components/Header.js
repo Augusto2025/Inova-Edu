@@ -7,7 +7,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
   const logo = require('../../assets/LOGOBRANCO.png');
 
   return (
-    <View style={styles.heade}>
+    <View style={styles.header}>
       <TouchableOpacity style={styles.backButton}>
         <Feather name="chevron-left" size={24} color="white" />
       </TouchableOpacity>

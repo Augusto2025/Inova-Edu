@@ -11,7 +11,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 
-
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEditarVisible, setModalEditarVisible] = useState(false);
@@ -62,8 +61,13 @@ export default function ForumScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+<<<<<<< HEAD
       <Header navigation={navigation} nomeTela={"Topicos"} />
   
+=======
+      
+      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+>>>>>>> Deploys
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
@@ -161,7 +165,11 @@ export default function ForumScreen({ navigation }) {
         </View>
       </Modal>
 
+<<<<<<< HEAD
      
+=======
+      
+>>>>>>> Deploys
     </View>
   );
 }
