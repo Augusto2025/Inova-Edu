@@ -1,3 +1,5 @@
+from tkinter import messagebox
+
 import customtkinter as ctk
 import sys
 import os
@@ -98,7 +100,7 @@ class UserProfileSystem(ctk.CTkFrame):
         # --- SEÇÕES DE CONTEÚDO ---
         self.create_section_title("🎓 Meus Certificados", show_add=True)
         self.cert_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
-        self.cert_container.pack(fill="x", pady=10)
+        self.cert_container.pack(fill="x", pady=10) 
 
         self.create_section_title("📊 Projetos Ativos", show_add=False)
         self.proj_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
@@ -143,9 +145,64 @@ class UserProfileSystem(ctk.CTkFrame):
         ctk.CTkLabel(frame, text=text, font=("Roboto", 18, "bold"), text_color=AZUL_SENAC).pack(side="left")
         
         if show_add:
-            ctk.CTkButton(frame, text="+ Novo", fg_color="#22C55E", hover_color="#16A34A",
-                          width=70, height=28, corner_radius=15,
-                          command=lambda: self.controller.operacao_certificado('CRIAR')).pack(side="right")
+            ctk.CTkButton(
+                frame, text="+ Novo", fg_color="#22C55E", hover_color="#16A34A",
+                width=70, height=28, corner_radius=15,
+                # AGORA CHAMA O MÉTODO LOCAL
+                command=self.abrir_modal_cadastro 
+            ).pack(side="right")
+
+    def abrir_modal_cadastro(self):
+        # 1. Pegar o ID do usuário (precisamos dele para o INSERT)
+        dados = self.controller.model.obter_dados_perfil(self.email)
+        if not dados:
+            messagebox.showerror("Erro", "Não foi possível recuperar dados do usuário.")
+            return
+        
+        usuario = dados['usuario']
+        id_usuario = usuario.get('idusuario') or usuario.get('idUsuario')
+
+        # 2. Criar a Janela Modal
+        modal = ctk.CTkToplevel(self)
+        modal.title("Novo Certificado")
+        modal.geometry("400x500")
+        modal.attributes("-topmost", True)
+        modal.grab_set()
+
+        ctk.CTkLabel(modal, text="📜 Cadastrar Certificado", font=("Roboto", 16, "bold")).pack(pady=20)
+
+        # Campos
+        ctk.CTkLabel(modal, text="Nome:").pack()
+        ent_nome = ctk.CTkEntry(modal, width=250)
+        ent_nome.pack(pady=5)
+
+        ctk.CTkLabel(modal, text="Descrição:").pack()
+        ent_desc = ctk.CTkEntry(modal, width=250)
+        ent_desc.pack(pady=5)
+
+        ctk.CTkLabel(modal, text="Início (AAAA-MM-DD):").pack()
+        ent_ini = ctk.CTkEntry(modal, width=250, placeholder_text="2024-01-01")
+        ent_ini.pack(pady=5)
+
+        ctk.CTkLabel(modal, text="Fim (AAAA-MM-DD):").pack()
+        ent_fim = ctk.CTkEntry(modal, width=250, placeholder_text="2024-12-31")
+        ent_fim.pack(pady=5)
+
+        def salvar():
+            # Chamamos o model através do controller que já está instanciado
+            sucesso = self.controller.model.salvar_certificado(
+                ent_nome.get(), ent_desc.get(), 
+                ent_ini.get(), ent_fim.get(), id_usuario
+            )
+            
+            if sucesso:
+                messagebox.showinfo("Sucesso", "Certificado Salvo!")
+                modal.destroy()
+                self.controller.inicializar_perfil() # Recarrega a tela
+            else:
+                messagebox.showerror("Erro", "Verifique os dados (especialmente a data).")
+
+        ctk.CTkButton(modal, text="Confirmar", fg_color="#22C55E", command=salvar).pack(pady=20)
 
 if __name__ == "__main__":
     app = ctk.CTk()

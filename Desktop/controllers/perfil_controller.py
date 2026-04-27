@@ -69,6 +69,7 @@ class ProfileController:
             messagebox.showerror("Erro", f"Falha ao salvar: {e}")
 
     def operacao_certificado(self, operacao, cert_id=None, dados_cert=None):
+        print(f"DEBUG: Botão clicado! Operação: {operacao}")
         """Gerencia o CRUD de certificados."""
         try:
             # Precisamos do ID interno do usuário para qualquer operação de certificado
@@ -82,8 +83,8 @@ class ProfileController:
                     self.model.excluir_certificado(cert_id, id_usuario)
             
             elif operacao == 'CRIAR':
-                # Lógica para abrir janela de novo certificado...
-                pass
+                print("DEBUG: Tentando abrir o modal...") # <-- ADICIONE ISSO
+                self.abrir_modal_cadastro()
 
             self.inicializar_perfil() # Refresh na lista
             
