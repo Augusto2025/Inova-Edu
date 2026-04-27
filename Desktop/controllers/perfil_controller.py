@@ -8,16 +8,18 @@ class ProfileController:
         self.view = view
         self.model = PerfilModel()
         
-        # Lógica de Sessão: Se não vier por parâmetro, pega da caixa global
+        # Se não veio e-mail por "mão em mão", pegamos da "caixa global"
         if session_email:
             self.email = session_email
         else:
-            instancia_sessao = UsuarioSessao()
-            self.email = instancia_sessao.email
+            self.email = UsuarioSessao().email
+            
+        print(f"CONTROLLER RECUPEROU DA SESSÃO: {self.email}")
         
     def inicializar_perfil(self):
-        """Busca dados no Postgres e atualiza a interface."""
         if not self.email:
+            # Se cair aqui, é porque o Passo 2 falhou ou não foi executado
+            print("ERRO CRÍTICO: E-mail da sessão está VAZIO!")
             return self.notificar_erro_sessao()
 
         try:
