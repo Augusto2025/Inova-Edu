@@ -65,3 +65,32 @@ class PerfilModel:
         finally:
             cursor.close()
             conexao.close()
+
+    def salvar_certificado(self, nome, descricao, data_inicio, data_final, usuario_id):
+        conexao = None
+        cursor = None
+        try:
+            conexao = conectar() # Sua função de conexão que já funciona
+            cursor = conexao.cursor()
+            
+            # Query usando os nomes das colunas que vimos na sua foto anterior
+            query = """
+                INSERT INTO certificado (nome, descricao, data_inicio, data_final, usuario_id)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            
+            # Executa a inserção
+            cursor.execute(query, (nome, descricao, data_inicio, data_final, usuario_id))
+            
+            # IMPORTANTE: No Postgres, você precisa dar COMMIT para salvar de fato
+            conexao.commit()
+            return True
+            
+        except Exception as e:
+            print(f"Erro ao inserir no banco: {e}")
+            if conexao:
+                conexao.rollback() # Cancela se der erro
+            return False
+        finally:
+            if cursor: cursor.close()
+            if conexao: conexao.close()
