@@ -2,6 +2,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 import sys
 import os
+from views.Aluno_e_Professor.editar_view import EditarPerfilView
 from models.sessao import UsuarioSessao
 from controllers.perfil_controller import ProfileController
 
@@ -51,15 +52,43 @@ class UserProfileSystem(ctk.CTkFrame):
         self.header.pack_propagate(False)
 
         ctk.CTkLabel(
-            self.header, text="👤 Perfil Acadêmico", 
+            self.header, text="Perfil Acadêmico", 
             font=("Roboto", 22, "bold"), text_color=BRANCO
         ).pack(side="left", padx=30)
 
+        # SUBSTITUÍDO: Botão Atualizar -> Botão Editar Perfil
         ctk.CTkButton(
-            self.header, text="🔄 Atualizar", width=100, height=30,
-            fg_color=LARANJA_SENAC, hover_color="#E68510",
-            command=self.controller.inicializar_perfil 
+            self.header, 
+            text="✏️ Editar Perfil", # Texto alterado
+            width=140, 
+            height=35,
+            fg_color=AZUL_SENAC, 
+            hover_color="#107FE7",
+            border_width=1,
+            border_color=BRANCO,
+            font=("Roboto", 13, "bold"),
+            command=self.ir_para_edicao # Comando alterado para a nova função
         ).pack(side="right", padx=30)
+
+    def ir_para_edicao(self):
+        """Esconde o perfil atual e abre a tela de edição."""
+        # Obtemos os dados atuais do usuário através do model/controller
+        dados_completos = self.controller.model.obter_dados_perfil(self.email)
+        
+        # Formatamos um dicionário simples para a tela de edição
+        usuario = dados_completos.get('usuario', {})
+        dados_formatados = {
+            "nome": usuario.get('nome') or usuario.get('Nome') or "",
+            "sobrenome": usuario.get('sobrenome') or usuario.get('Sobrenome') or "",
+            "email": self.email,
+            "descricao": usuario.get('descricao') or usuario.get('Descricao') or ""
+        }
+
+        self.pack_forget() # Esconde a tela de perfil
+        
+        # Instancia a EditarPerfilView (aquela que fizemos baseada no seu Django)
+        # Ela será renderizada dentro do mesmo master (self.janela)
+        EditarPerfilView(self.janela, dados_formatados, self.controller)
 
     def render_visual_profile(self):
         profile_card = ctk.CTkFrame(self.main_content_frame, fg_color=BRANCO, corner_radius=20)
