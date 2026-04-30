@@ -55,7 +55,6 @@ class UserProfileSystem(ctk.CTkFrame):
             font=("Roboto", 22, "bold"), text_color=BRANCO
         ).pack(side="left", padx=30)
 
-        # Trocar esse botão para editar perfil depois, por enquanto só recarrega os dados
         ctk.CTkButton(
             self.header, text="🔄 Atualizar", width=100, height=30,
             fg_color=LARANJA_SENAC, hover_color="#E68510",
@@ -88,7 +87,6 @@ class UserProfileSystem(ctk.CTkFrame):
     def render_visual_sections(self):
         self.create_section_title("🎓 Meus Certificados", is_accordion=True)
         
-        # Frame do Formulário (Inicia oculto)
         self.form_frame = ctk.CTkFrame(self.main_content_frame, fg_color="#E2E8F0", corner_radius=15)
         
         self.cert_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
@@ -97,6 +95,73 @@ class UserProfileSystem(ctk.CTkFrame):
         self.create_section_title("📊 Projetos Ativos", is_accordion=False)
         self.proj_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
         self.proj_container.pack(fill="x", pady=10)
+
+    # --- NOVOS MÉTODOS DE RENDERIZAÇÃO DE PROJETOS ---
+
+    def renderizar_projetos(self, projetos):
+        """Renderiza os cards de repositórios/projetos no container."""
+        for widget in self.proj_container.winfo_children():
+            widget.destroy()
+        
+        if not projetos:
+            ctk.CTkLabel(
+                self.proj_container, 
+                text="Você ainda não participa de nenhum projeto.", 
+                text_color="#94A3B8", 
+                font=("Roboto", 13, "italic")
+            ).pack(pady=20)
+            return
+
+        grid_projetos = ctk.CTkFrame(self.proj_container, fg_color="transparent")
+        grid_projetos.pack(fill="x", padx=5)
+        grid_projetos.columnconfigure((0, 1, 2), weight=1)
+
+        for i, proj in enumerate(projetos):
+            nome_projeto = proj.get('nome') or "Projeto Sem Nome"
+            id_projeto = proj.get('id')
+
+            card = ctk.CTkFrame(
+                grid_projetos, 
+                fg_color=BRANCO, 
+                height=130, 
+                corner_radius=12, 
+                border_width=1, 
+                border_color="#CBD5E1"
+            )
+            card.grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="nsew")
+            card.pack_propagate(False)
+
+            lbl_nome = ctk.CTkLabel(
+                card, 
+                text=nome_projeto, 
+                font=("Roboto", 15, "bold"), 
+                text_color=AZUL_SENAC,
+                wraplength=180
+            )
+            lbl_nome.pack(expand=True, pady=(10, 0))
+
+            btn_entrar = ctk.CTkButton(
+                card, 
+                text="Entrar no Repositório", 
+                height=32, 
+                fg_color=AZUL_SENAC, 
+                hover_color="#003566",
+                font=("Roboto", 12, "bold"),
+                command=lambda p=id_projeto, n=nome_projeto: self.abrir_repositorio(p, n)
+            )
+            btn_entrar.pack(side="bottom", fill="x", padx=15, pady=15)
+
+    def abrir_repositorio(self, id_projeto, nome_projeto):
+        """Navega para a tela do repositório selecionado."""
+        from views.Aluno_e_Professor.repositorio_view import RepositorioDashboard
+        
+        # Esconde o frame de perfil para mostrar o repositório
+        self.pack_forget()
+        
+        # Instancia a nova tela no mesmo master
+        RepositorioDashboard(self.janela, turma_id=id_projeto, nome_projeto=nome_projeto)
+
+    # --- FIM DOS NOVOS MÉTODOS ---
 
     def toggle_formulario(self):
         if not self.form_aberto:
@@ -154,7 +219,6 @@ class UserProfileSystem(ctk.CTkFrame):
             messagebox.showerror("Erro", "Falha ao salvar. Verifique o formato da data.")
 
     def renderizar_certificados(self, certificados):
-        """Renderiza os certificados com o design de Diploma Premium em Grid"""
         for widget in self.cert_container.winfo_children(): widget.destroy()
         
         if not certificados:
@@ -173,37 +237,29 @@ class UserProfileSystem(ctk.CTkFrame):
             fim = cert.get('data_final') or "--"
             id_c = cert.get('idcertificado') or cert.get('idCertificado')
             
-            # Card Principal
             card = ctk.CTkFrame(grid, fg_color=BRANCO, corner_radius=15, border_width=1, border_color="#E2E8F0")
             card.grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="nsew")
 
-            # Barra de Destaque Lateral Laranja
             accent_bar = ctk.CTkFrame(card, fg_color=LARANJA_SENAC, width=4)
             accent_bar.pack(side="left", fill="y")
             
-            # Conteúdo Interno
             inner_content = ctk.CTkFrame(card, fg_color="transparent")
             inner_content.pack(side="left", fill="both", expand=True, padx=15, pady=15)
             
-            # Label de Tipo
             ctk.CTkLabel(inner_content, text="CERTIFICADO", font=("Roboto", 10, "bold"), 
                          text_color=LARANJA_SENAC).pack(anchor="w")
             
-            # Nome do Curso
             ctk.CTkLabel(inner_content, text=nome, font=("Roboto", 15, "bold"), 
                          text_color=AZUL_SENAC, wraplength=200, justify="left").pack(anchor="w", pady=(2, 0))
             
-            # Descrição
             ctk.CTkLabel(inner_content, text=desc, font=("Roboto", 12), 
                          text_color="#64748B", wraplength=200, justify="left").pack(anchor="w", pady=5)
             
-            # Rodapé com Datas (Aquele estilo cinza que você gostou)
             footer = ctk.CTkFrame(inner_content, fg_color="#F8FAFC", corner_radius=5)
             footer.pack(fill="x", pady=5)
             ctk.CTkLabel(footer, text=f"📅 {inicio} • {fim}", font=("Roboto", 11), 
                          text_color="#475569").pack(padx=5, pady=2)
             
-            # Botão Excluir mais discreto
             ctk.CTkButton(inner_content, text="Remover", fg_color="transparent", text_color="#EF4444", 
                           hover_color="#FEE2E2", height=20, width=60, font=("Roboto", 11, "bold"),
                           command=lambda c=id_c: self.controller.operacao_certificado('EXCLUIR', cert_id=c)).pack(anchor="e", pady=(5,0))

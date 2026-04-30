@@ -94,3 +94,38 @@ class PerfilModel:
         finally:
             if cursor: cursor.close()
             if conexao: conexao.close()
+
+    def listar_projetos_do_usuario(self, id_usuario):
+        conexao = None
+        cursor = None
+        try:
+            conexao = conectar()
+            cursor = conexao.cursor(cursor_factory=extras.RealDictCursor)
+            
+            # Ajustando para "Data_criacao" (seguindo a lógica do Nome_projeto)
+            query = """
+                SELECT 
+                    p."idProjeto" as idprojeto, 
+                    p."Nome_projeto" as nome_projeto, 
+                    p."data_de_criacao" as data
+                FROM projeto p
+                JOIN usuario_da_turma ut ON p."ID_Turma" = ut."ID_Turma"
+                WHERE ut."ID_Usuario" = %s
+            """
+            cursor.execute(query, (id_usuario,))
+            projetos = cursor.fetchall()
+            
+            for p in projetos:
+                if p.get('data'):
+                    p['data'] = p['data'].strftime('%d/%m/%Y')
+                else:
+                    p['data'] = "Sem data"
+                    
+            return projetos
+        except Exception as e:
+            # Se der erro de novo, o print abaixo vai te mostrar os nomes reais das colunas
+            print(f"[BANCO ERRO] Falha ao listar projetos: {e}")
+            return []
+        finally:
+            if cursor: cursor.close()
+            if conexao: conexao.close()
