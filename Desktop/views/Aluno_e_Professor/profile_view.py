@@ -117,8 +117,10 @@ class UserProfileSystem(ctk.CTkFrame):
         grid_projetos.columnconfigure((0, 1, 2), weight=1)
 
         for i, proj in enumerate(projetos):
-            nome_projeto = proj.get('nome') or "Projeto Sem Nome"
-            id_projeto = proj.get('id')
+            # LÓGICA DE CAPTURA SEGURA:
+            # Tenta pegar 'nome_projeto' (alias da query), 'Nome_projeto' (banco) ou 'nome' (fallback)
+            nome_exibir = proj.get('nome_projeto') or proj.get('Nome_projeto') or proj.get('nome') or "Projeto Sem Nome"
+            id_projeto = proj.get('idprojeto') or proj.get('idProjeto') or proj.get('id')
 
             card = ctk.CTkFrame(
                 grid_projetos, 
@@ -131,9 +133,10 @@ class UserProfileSystem(ctk.CTkFrame):
             card.grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="nsew")
             card.pack_propagate(False)
 
+            # Rótulo do Nome do Projeto
             lbl_nome = ctk.CTkLabel(
                 card, 
-                text=nome_projeto, 
+                text=nome_exibir, # Variável tratada acima
                 font=("Roboto", 15, "bold"), 
                 text_color=AZUL_SENAC,
                 wraplength=180
@@ -147,7 +150,7 @@ class UserProfileSystem(ctk.CTkFrame):
                 fg_color=AZUL_SENAC, 
                 hover_color="#003566",
                 font=("Roboto", 12, "bold"),
-                command=lambda p=id_projeto, n=nome_projeto: self.abrir_repositorio(p, n)
+                command=lambda p=id_projeto, n=nome_exibir: self.abrir_repositorio(p, n)
             )
             btn_entrar.pack(side="bottom", fill="x", padx=15, pady=15)
 
