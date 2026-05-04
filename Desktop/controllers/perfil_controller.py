@@ -60,20 +60,25 @@ class ProfileController:
         except Exception as e:
             messagebox.showerror("Erro de Carregamento", f"Erro ao processar dados do perfil: {e}")
 
-    def salvar_alteracoes_perfil(self, nome, sobrenome, bio):
+    # No arquivo ProfileController.py
+    def salvar_alteracoes_perfil(self, nome, sobrenome, bio, senha):
         if not nome or not sobrenome:
-            messagebox.showwarning("Campos Obrigatórios", "Nome e Sobrenome não podem estar vazios.")
+            messagebox.showwarning("Campos Obrigatórios", "Nome e Sobrenome são necessários.")
             return
 
         try:
-            sucesso = self.model.salvar_usuario(self.email, nome, sobrenome, bio)
+            # Aqui ele chama o Model que você postou
+            sucesso = self.model.salvar_usuario(self.email, nome, sobrenome, bio, senha)
+            
             if sucesso:
-                messagebox.showinfo("Sucesso", "Perfil atualizado!")
-                self.inicializar_perfil()
+                messagebox.showinfo("Sucesso", "Perfil atualizado com sucesso!")
+                # Atualiza a tela de perfil original se necessário
+                if hasattr(self, 'inicializar_perfil'):
+                    self.inicializar_perfil()
             else:
-                messagebox.showerror("Erro", "O banco de dados recusou a alteração.")
+                messagebox.showerror("Erro", "Falha ao salvar no banco de dados.")
         except Exception as e:
-            messagebox.showerror("Erro", f"Falha ao salvar: {e}")
+            messagebox.showerror("Erro", f"Erro no Controller: {e}")
 
     def operacao_certificado(self, operacao, cert_id=None):
         try:

@@ -88,7 +88,7 @@ class UserProfileSystem(ctk.CTkFrame):
         
         # Instancia a EditarPerfilView (aquela que fizemos baseada no seu Django)
         # Ela será renderizada dentro do mesmo master (self.janela)
-        EditarPerfilView(self.janela, dados_formatados, self.controller)
+        EditarPerfilView(self.janela, self.controller)
 
     def render_visual_profile(self):
         profile_card = ctk.CTkFrame(self.main_content_frame, fg_color=BRANCO, corner_radius=20)

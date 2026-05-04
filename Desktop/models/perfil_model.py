@@ -46,17 +46,25 @@ class PerfilModel:
             if cursor: cursor.close()
             if conexao: conexao.close()
 
-    def salvar_usuario(self, email, nome, sobrenome, bio):
+    def salvar_usuario(self, email, nome, sobrenome, bio, senha):
         conexao = conectar()
         cursor = conexao.cursor()
         try:
-            # Se as colunas no banco forem "Nome", "Sobrenome", etc., use aspas duplas aqui também!
-            query = """
-                UPDATE usuario 
-                SET nome = %s, sobrenome = %s, descricao = %s 
-                WHERE "Email" = %s
-            """
-            cursor.execute(query, (nome, sobrenome, bio, email))
+            if senha and senha.strip() != "":
+                sql = """
+                    UPDATE usuario 
+                    SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s, "Senha" = %s
+                    WHERE "Email" = %s
+                """
+                params = (nome, sobrenome, bio, senha, email)
+            else:
+                sql = """
+                    UPDATE usuario 
+                    SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s
+                    WHERE "Email" = %s
+                """
+                params = (nome, sobrenome, bio, email)
+            cursor.execute(sql, params)
             conexao.commit()
             return True
         except Exception as e:
