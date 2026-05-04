@@ -1,119 +1,97 @@
 import os
-from tkinter import messagebox, filedialog
-# Certifique-se de que o caminho de importação está correto para sua estrutura
+from tkinter import messagebox
 from models.perfil_model import PerfilModel 
+from models.sessao import UsuarioSessao 
+import customtkinter as ctk
 
 class ProfileController:
-    def __init__(self, view, session_email):
+    def __init__(self, view, session_email=None):
         self.view = view
-        self.email = session_email
         self.model = PerfilModel()
         
+        # Recuperação do email da sessão
+        if session_email:
+            self.email = session_email
+        else:
+            self.email = UsuarioSessao().email
+            
+        print(f"CONTROLLER RECUPEROU DA SESSÃO: {self.email}")
+        
     def inicializar_perfil(self):
-        """
-        Lógica unificada para carregar tudo o que o perfil precisa.
-        Substitui o def perfil(request) do Django.
-        """
         if not self.email:
+            print("ERRO CRÍTICO: E-mail da sessão está VAZIO!")
             return self.notificar_erro_sessao()
 
         try:
-            # 1. Busca os dados completos no banco (Model)
+            # 1. Busca os dados no banco
             dados = self.model.obter_dados_perfil(self.email)
             
             if not dados:
-                messagebox.showwarning("Atenção", "Usuário não encontrado.")
+                messagebox.showwarning("Atenção", "Usuário não encontrado no banco de dados.")
                 return
 
-            usuario = dados['usuario']
-            turma_nome = dados['turma']
-            certificados = dados['certificados']
-
-            # 2. Atualiza os textos básicos da View
+            u = dados['usuario']
+            
+            # 2. Atualiza os dados de texto na View
             self.view.atualizar_dados_principais(
-                nome=usuario['Nome'],
-                sobrenome=usuario['Sobrenome'],
-                descricao=usuario['Descricao'],
-                turma_nome=turma_nome
+                nome=u.get('nome') or u.get('Nome'),
+                sobrenome=u.get('sobrenome') or u.get('Sobrenome'),
+                descricao=u.get('descricao') or u.get('Descricao'),
+                turma_nome=dados.get('turma', 'Sem Turma')
             )
 
-            # 3. Renderiza a lista de certificados dinamicamente
-            self.view.renderizar_certificados(certificados)
-            
-            # 4. Projetos (Pode ser expandido conforme seu model de projetos)
-            # id_turma = self.model.obter_id_turma_usuario(usuario['idUsuario'])
-            # projetos = self.model.listar_projetos_por_turma(id_turma) if id_turma else []
-            # self.view.renderizar_projetos(projetos)
+            # 3. Renderiza os certificados na View
+            self.view.renderizar_certificados(dados.get('certificados', []))
 
+            # 4. Busca projetos DIRETO DO BANCO usando o ID do usuário
+            u = dados['usuario']
+            id_usuario = u.get('idusuario') or u.get('idUsuario')
+            
+            # Chama a função que criamos/ajustamos no Model
+            projetos_usuario = self.model.listar_projetos_do_usuario(id_usuario)
+            
+            # Envia para a View renderizar os cards
+            self.view.renderizar_projetos(projetos_usuario)
+            
+            print(f"DEBUG: {len(projetos_usuario)} projetos encontrados para o usuário.")
+            
             print(f"DEBUG: Perfil de {self.email} carregado com sucesso.")
             
         except Exception as e:
-            messagebox.showerror("Erro de Carregamento", f"Não foi possível carregar os dados: {e}")
+            messagebox.showerror("Erro de Carregamento", f"Erro ao processar dados do perfil: {e}")
 
-    def salvar_alteracoes_perfil(self, nome, sobrenome, bio):
-        """
-        Persiste as mudanças no banco.
-        """
+    # No arquivo ProfileController.py
+    def salvar_alteracoes_perfil(self, nome, sobrenome, bio, senha):
         if not nome or not sobrenome:
-            messagebox.showwarning("Campos Obrigatórios", "Por favor, preencha Nome e Sobrenome.")
+            messagebox.showwarning("Campos Obrigatórios", "Nome e Sobrenome são necessários.")
             return
 
         try:
-            # Chama o Model para fazer o UPDATE
-            sucesso = self.model.salvar_usuario(self.email, nome, sobrenome, bio)
+            # Aqui ele chama o Model que você postou
+            sucesso = self.model.salvar_usuario(self.email, nome, sobrenome, bio, senha)
             
             if sucesso:
-                messagebox.showinfo("Sucesso", "As alterações foram salvas!")
-                self.inicializar_perfil() # Refresh automático na tela
+                messagebox.showinfo("Sucesso", "Perfil atualizado com sucesso!")
+                # Atualiza a tela de perfil original se necessário
+                if hasattr(self, 'inicializar_perfil'):
+                    self.inicializar_perfil()
             else:
-                messagebox.showerror("Erro", "Não foi possível salvar no banco de dados.")
-                
+                messagebox.showerror("Erro", "Falha ao salvar no banco de dados.")
         except Exception as e:
-            messagebox.showerror("Erro", f"Falha ao salvar: {e}")
+            messagebox.showerror("Erro", f"Erro no Controller: {e}")
 
-    def gerenciar_foto_perfil(self):
-        """
-        Abre o seletor de arquivos e salva a referência da imagem.
-        """
-        caminho_local = filedialog.askopenfilename(
-            title="Selecione uma imagem",
-            filetypes=[("Imagens", "*.png *.jpg *.jpeg")]
-        )
-        
-        if caminho_local:
-            try:
-                # Aqui você chamaria o model para salvar o caminho ou fazer upload
-                # self.model.atualizar_foto_usuario(self.email, caminho_local)
-                
-                print(f"DEBUG: Nova foto selecionada: {caminho_local}")
-                # Se tiver lógica de exibição de imagem na View, chame aqui:
-                # self.view.atualizar_foto_exibicao(caminho_local)
-                
-            except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao processar imagem: {e}")
-
-    def operacao_certificado(self, operacao, cert_id=None, dados_cert=None):
-        """
-        Centraliza CRUD de certificados.
-        """
+    def operacao_certificado(self, operacao, cert_id=None):
         try:
-            # Pega o ID do usuário para garantir que ele só mexa no dele
             perfil = self.model.obter_dados_perfil(self.email)
-            id_usuario = perfil['usuario']['idUsuario']
+            id_usuario = perfil['usuario'].get('idusuario') or perfil['usuario'].get('idUsuario')
 
             if operacao == 'EXCLUIR':
-                if messagebox.askyesno("Confirmar Exclusão", "Deseja remover este certificado?"):
+                if messagebox.askyesno("Confirmar", "Deseja mesmo excluir este certificado?"):
                     self.model.excluir_certificado(cert_id, id_usuario)
             
-            elif operacao == 'CRIAR':
-                # Aqui você abriria um modal para pegar dados_cert
-                # self.model.salvar_certificado(dados_cert['nome'], ..., id_usuario)
-                pass
-
-            self.inicializar_perfil() # Atualiza a lista na tela
-            
+            self.inicializar_perfil() 
         except Exception as e:
-            messagebox.showerror("Erro no Certificado", f"Erro: {e}")
+            messagebox.showerror("Erro", f"Erro na operação: {e}")
 
     def notificar_erro_sessao(self):
-        messagebox.showerror("Sessão Inválida", "Usuário não autenticado.")
+        messagebox.showerror("Sessão Inválida", "Não foi possível identificar o usuário logado.")

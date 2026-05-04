@@ -1,6 +1,7 @@
 import sys
 from tkinter import messagebox
 import customtkinter as ctk
+from models.sessao import UsuarioSessao
 from controllers.login_controller import autenticar
 import threading
 from PIL import Image, ImageOps
@@ -168,7 +169,14 @@ class tela_login(ctk.CTkFrame):
             self.botao_entrar.configure(state="normal", text="Acessar Sistema")
             if isinstance(result, tuple) and len(result) >= 2 and result[1]:
                 tipo = result[0]
+                
+                # --- PASSO IMPORTANTE: SALVAR NA SESSÃO ANTES DE DESTRUIR ---
+                sessao = UsuarioSessao()
+                sessao.email = usuario  # Use "usuario" aqui, que é o que vem do parâmetro
+                print(f"SESSÃO INICIADA PARA: {sessao.email}")
+                
                 self.destroy()
+
                 if tipo in ["Aluno", "Professor"]:
                     from views.Aluno_e_Professor.home_view import Home
                     self.home_aluno_screen = Home(self.master)
