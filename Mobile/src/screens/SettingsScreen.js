@@ -260,6 +260,23 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
+        {/* Versão */}
+
+        <Text style={styles.titulo}>
+          Versão
+        </Text>
+
+        <View style={styles.card}>
+          <Text style={{ color: "#777" }}>
+            Versão Brasileira: Herbert Richers 1.0.0
+          </Text>
+
+        </View>
+
+
+
+
+
         <TouchableOpacity
           style={styles.logout}
         >
