@@ -36,6 +36,8 @@ Plataforma educacional desenvolvida com Django, focada em inovação, aprendizad
 - **Pillow (Processamento de imagem)**
 - **Requests (Integração com API)**
 
+---
+
 ## 📱 Tecnologias Utilizadas Do Sistema Mobile
 - **JavaScript**
 - **React**
