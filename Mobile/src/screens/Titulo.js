@@ -34,7 +34,7 @@ export default function TopicosScreen({ navigation }) {
   const [editandoId, setEditandoId] = useState(null);
 
   const abrirTopico = (topico) => {
-    navigation.navigate("Forum", {
+    navigation.navigate("Conversa", {
       topico: topico.titulo,
     });
   };

@@ -62,7 +62,7 @@ export default function ForumScreen({ navigation }) {
   return (
     <View style={styles.container}>
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Forum"} />
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 130,
     right: 13,
+    top: 600,
     width: 60,
     height: 60,
     borderRadius: 30,
