@@ -2,13 +2,14 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-// TELAS
+// telas
 import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/Eventos';
 import ForumScreen from '../screens/Forum';
 import SettingsScreen from '../screens/SettingsScreen';
 import CursosScreen from '../screens/Cursos';
 import TurmasScreen from '../screens/Turmas';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -53,42 +54,33 @@ export default function TabRoutes() {
         },
       })}
     >
-      {/* TELAS VISÍVEIS */}
+      {/* Visíveis */}
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Calendario" component={CalendarScreen} />
+      <Tab.Screen name="Forum" component={ForumScreen} />
+      <Tab.Screen name="Repositorio" component={CursosScreen} />
+      <Tab.Screen name="Config" component={SettingsScreen} />
+
+      {/* Ocultas */}
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Turmas"
+        component={TurmasScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
       />
 
       <Tab.Screen
-        name="Calendario"
-        component={CalendarScreen}
-      />
-
-      <Tab.Screen
-        name="Forum"
-        component={ForumScreen}
-      />
-
-      <Tab.Screen
-        name="Repositorio"
-        component={CursosScreen}
-      />
-
-      <Tab.Screen
-        name="Config"
+        name="SettingsScreen"
         component={SettingsScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
       />
-
-      {/* TELA OCULTA MAS COM TABBAR */}
-      <Tab.Screen
-      name="Turmas"
-      component={TurmasScreen}
-      options={{
-        tabBarItemStyle: {
-          display: 'none',
-        },
-      }}
-    />
     </Tab.Navigator>
   );
 }
