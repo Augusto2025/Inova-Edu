@@ -11,6 +11,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import Header from '../components/Header';
+import SplashScreen from '../screens/SplashScreen';
 
 import { Feather } from '@expo/vector-icons';
 
@@ -41,24 +42,10 @@ export default function TurmasScreen({ navigation }) {
   const [expandedYear, setExpandedYear] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
   const toggleYear = (year) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedYear(expandedYear === year ? null : year);
   };
-
-  if (isLoading) {
-    return (
-      <View style={[styles.safeArea, styles.center]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Carregando Turmas...</Text>
-      </View>
-    );
-  }
 
   const irParaProjetos = (turma) => {
     navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
@@ -132,6 +119,7 @@ export default function TurmasScreen({ navigation }) {
           </View>
         ))}
       </ScrollView>
+      <SplashScreen />
     </View>
   );
 }
