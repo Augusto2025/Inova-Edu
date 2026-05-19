@@ -109,10 +109,10 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         <View style={styles.perfil}>
 
-          {/* <Image
-            source={require("../../assets/verdeerosa.jpg")}
+          <Image
+            source={require("../../assets/pascal.jpg")}
             style={styles.avatar}
-          /> */}
+          />
 
           <Text style={styles.nome}>
             Piaba Frita
