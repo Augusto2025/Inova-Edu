@@ -11,8 +11,8 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import HeaderForum from "../components/HeaderForum";
-import FooterForum from "../components/FooterForum";
+// import HeaderForum from "../components/HeaderForum";
+// import FooterForum from "../components/FooterForum";
 
 export default function ConversaScreen({ route }) {
   const topico = route?.params?.topico || "";
