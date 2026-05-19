@@ -10,6 +10,7 @@ import {
   StatusBar,
   ActivityIndicator
 } from 'react-native';
+import Header from '../components/Header';
 
 import { Feather } from '@expo/vector-icons';
 
@@ -68,10 +69,7 @@ export default function TurmasScreen({ navigation }) {
       {/* StatusBar Branca para contrastar com Header Azul */}
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      {/* Header Centralizado e Azul */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Turmas</Text>
-      </View>
+      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {Object.entries(DATA_MOCK).map(([ano, turmas]) => (

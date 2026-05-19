@@ -12,14 +12,15 @@ import {
   TextInput,
   SafeAreaView
 } from 'react-native';
+import Header from '../components/Header';
 
 import { Feather } from '@expo/vector-icons';
 
 // Definição de Cores Padrão (Mantendo seu modelo)
 const COLORS = {
-  primary: '#005eb8',    // Azul Senac
-  darkBlue: '#003d7a',   // Azul Header
-  accent: '#f7941d',     // Laranja Senac
+  primary: '#005eb8',
+  darkBlue: '#003d7a',
+  accent: '#f7941d',
   danger: '#EF4444',
   success: '#10B981',
   background: '#EBF2F7',
@@ -54,17 +55,6 @@ export default function RepositorioScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  const confirmarExclusao = (item) => {
-    Alert.alert(
-      "🗑️ Confirmar Exclusão",
-      `Tem certeza que deseja excluir "${item}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Excluir", style: "destructive" }
-      ]
-    );
-  };
-
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -77,16 +67,7 @@ export default function RepositorioScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      {/* HEADER FIXO */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
-          <Feather name="chevron-left" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Repositório</Text>
-        <TouchableOpacity style={styles.downloadHeader}>
-          <Feather name="download" size={20} color="white" />
-        </TouchableOpacity>
-      </View>
+      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
@@ -98,18 +79,14 @@ export default function RepositorioScreen() {
           </View>
           <TouchableOpacity 
             style={[styles.btnActionMain, { backgroundColor: COLORS.accent }]}
-            onPress={() => setModalPastaVisible(true)}
           >
-            <Feather name="folder-plus" size={20} color="white" />
+            <Feather name="download" size={20} color="white" />
           </TouchableOpacity>
         </View>
 
         {/* SEÇÃO DE PASTAS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Pastas</Text>
-          <TouchableOpacity onPress={() => setSelecaoAtiva(!selecaoAtiva)}>
-            <Text style={styles.btnToggleText}>{selecaoAtiva ? "Cancelar" : "Selecionar"}</Text>
-          </TouchableOpacity>
         </View>
 
         {REPOSITORIO_MOCK.pastas.map((pasta) => (
@@ -122,23 +99,12 @@ export default function RepositorioScreen() {
                 <Text style={styles.itemSub}>{pasta.itens} itens</Text>
               </View>
             </View>
-            {!selecaoAtiva && (
-              <View style={styles.itemActions}>
-                <TouchableOpacity onPress={() => confirmarExclusao(pasta.nome)}>
-                  <Feather name="trash-2" size={18} color={COLORS.danger} />
-                </TouchableOpacity>
-              </View>
-            )}
           </TouchableOpacity>
         ))}
 
         {/* SEÇÃO DE ARQUIVOS */}
         <View style={[styles.sectionHeader, { marginTop: 20 }]}>
           <Text style={styles.sectionTitle}>Arquivos</Text>
-          <TouchableOpacity style={styles.btnUploadSmall}>
-            <Feather name="file-plus" size={16} color={COLORS.primary} />
-            <Text style={styles.btnUploadSmallText}>Upload</Text>
-          </TouchableOpacity>
         </View>
 
         {REPOSITORIO_MOCK.arquivos.map((arquivo) => (
@@ -150,58 +116,9 @@ export default function RepositorioScreen() {
                 <Text style={styles.itemSub}>{arquivo.tamanho}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => confirmarExclusao(arquivo.nome)}>
-              <Feather name="trash-2" size={18} color={COLORS.danger} />
-            </TouchableOpacity>
           </View>
         ))}
-
-        {/* BOTÕES DE EXCLUSÃO EM MASSA (APARECEM NA SELEÇÃO) */}
-        {selecaoAtiva && (
-          <View style={styles.massActions}>
-            <TouchableOpacity style={styles.btnMassDelete}>
-              <Text style={styles.btnMassDeleteText}>Excluir Selecionados</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </ScrollView>
-
-      {/* MODAL CRIAR PASTA */}
-      <Modal animationType="fade" transparent={true} visible={modalPastaVisible}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Criar Nova Pasta</Text>
-              <TouchableOpacity onPress={() => setModalPastaVisible(false)}>
-                <Feather name="x" size={24} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Nome da Pasta</Text>
-            <TextInput 
-              style={styles.input} 
-              placeholder="Ex: Documentação" 
-              placeholderTextColor="#94A3B8" 
-            />
-
-            <View style={styles.modalFooter}>
-              <TouchableOpacity 
-                style={styles.btnCancel} 
-                onPress={() => setModalPastaVisible(false)}
-              >
-                <Text style={styles.btnCancelText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.btnSave} 
-                onPress={() => setModalPastaVisible(false)}
-              >
-                <Text style={styles.btnSaveText}>Criar Pasta</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
     </SafeAreaView>
   );
 }
@@ -234,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     borderLeftWidth: 5,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: COLORS.accent,
   },
   breadcrumbPath: { fontSize: 11, color: COLORS.textSecondary },
   projetoBadge: { fontSize: 15, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },

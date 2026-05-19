@@ -14,6 +14,7 @@ import {
   TextInput,
   SafeAreaView
 } from 'react-native';
+import Header from '../components/Header';
 
 import { Feather } from '@expo/vector-icons';
 
@@ -93,10 +94,7 @@ export default function ProjetosScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      {/* HEADER FIXO */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Repositórios</Text>
-      </View>
+      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
@@ -105,12 +103,6 @@ export default function ProjetosScreen({ navigation }) {
           <View style={styles.breadcrumbInfo}>
             <Text style={styles.turmaBadge}>Turma: ADS-2026-1A</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.btnAdd}
-            onPress={() => setModalVisible(true)}
-          >
-            <Feather name="plus" size={20} color="white" />
-          </TouchableOpacity>
         </View>
 
         {/* LISTAGEM DE PROJETOS */}
@@ -138,7 +130,7 @@ export default function ProjetosScreen({ navigation }) {
                   <Feather name="external-link" size={14} color="white" />
                 </TouchableOpacity>
 
-                <View style={styles.adminTools}>
+                {/* <View style={styles.adminTools}>
                   <TouchableOpacity style={styles.iconBtn} onPress={() => Alert.alert("Permissões", "Abrir lista de alunos...")}>
                     <Feather name="users" size={18} color={COLORS.primary} />
                   </TouchableOpacity>
@@ -153,7 +145,7 @@ export default function ProjetosScreen({ navigation }) {
                   >
                     <Feather name="trash-2" size={18} color={COLORS.danger} />
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             </View>
           </View>
@@ -246,8 +238,7 @@ const styles = StyleSheet.create({
   projetoDesc: { fontSize: 14, color: COLORS.textSecondary, marginTop: 5, lineHeight: 20 },
   
   cardActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'right',
     alignItems: 'center',
     marginTop: 15,
     paddingTop: 12,
@@ -258,12 +249,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 50,
     borderRadius: 8,
     gap: 8,
   },
-  btnRepoText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
+  btnRepoText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
   
   adminTools: { flexDirection: 'row', gap: 8 },
   iconBtn: {

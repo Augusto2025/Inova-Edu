@@ -41,27 +41,29 @@ export default function CursosScreen({ navigation }) {
         >
           <Text style={styles.filtroIconeTexto}>≡</Text>
         </TouchableOpacity>
-        {cursos.length === 0 ? (
-          <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
-        ) : (
-          cursos.map((curso) => (
-            <View key={curso.id} style={styles.card}>
-              
-              {/* ESPAÇO DA IMAGEM (SEM IMAGEM DEFINIDA) */}
-              <View style={styles.containerImagemPlaceholder}>
-                <Text style={styles.textoSemImagem}>Sem Imagem</Text>
-              </View>
+        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+          {cursos.length === 0 ? (
+            <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
+          ) : (
+            cursos.map((curso) => (
+              <View key={curso.id} style={styles.card}>
+                
+                {/* ESPAÇO DA IMAGEM (SEM IMAGEM DEFINIDA) */}
+                <View style={styles.containerImagemPlaceholder}>
+                  <Text style={styles.textoSemImagem}>Sem Imagem</Text>
+                </View>
 
-              <View style={styles.cardContent}>
-                <Text style={styles.nomeCurso}>{curso.nome_curso}</Text>
-                <View style={styles.borda} />
-                <TouchableOpacity style={styles.botaoEntrar} onPress={() => irParaTurmas(curso)}>
-                  <Text style={styles.botaoTexto}>Entrar</Text>
-                </TouchableOpacity>
+                <View style={styles.cardContent}>
+                  <Text style={styles.nomeCurso}>{curso.nome_curso}</Text>
+                  <View style={styles.borda} />
+                  <TouchableOpacity style={styles.botaoEntrar} onPress={() => irParaTurmas(curso)}>
+                    <Text style={styles.botaoTexto}>Entrar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))
-        )}
+            ))
+          )}
+        </View>
       </ScrollView>
 
       {/* MODAL SIDEBAR (DIREITA) */}
@@ -118,20 +120,22 @@ export default function CursosScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
   
-  header: { 
+  header: {
     height: 70, 
     backgroundColor: '#004A8D',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  filtroIconeTexto: { color: '#004A8D', fontSize: 30 },
+  filtroIconeTexto: { color: '#004A8D', fontSize: 45, width: '100%', textAlign: 'right', paddingRight: 20 },
 
   card: { 
     backgroundColor: '#fff', 
     borderRadius: 15, 
     marginBottom: 20, 
-    overflow: 'hidden', // Importante para a imagem não vazar a borda arredondada
+    overflow: 'hidden',
+    width: '90%',
+    justifyContent: 'center',
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
