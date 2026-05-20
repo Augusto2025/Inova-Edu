@@ -93,7 +93,7 @@ export default function ForumScreen({ navigation }) {
 
             <View style={styles.acoes}>
               <TouchableOpacity onPress={() => abrirEditar(item, index)}>
-                <Ionicons name="create-outline" size={20} color="#1e8a3e" />
+                <Ionicons name="create-outline" size={20} color="#1e4f8a" />
               </TouchableOpacity>
 
               <TouchableOpacity
