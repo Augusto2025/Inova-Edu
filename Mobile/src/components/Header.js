@@ -1,16 +1,34 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useNavigation, TabActions } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 
-export default function Header({ foto, escolherImagem, nomeTela }) {
+export default function Header({ foto, escolherImagem, nomeTela, temGoBack, telaDestino }) {
   const logo = require('../../assets/LOGOBRANCO.png');
+  const navigation = useNavigation(); // 2. Inicializa o controle de navegação
+
+  // Função que decide para onde vai ao clicar no botão de voltar
+  const lidarComVoltar = () => {
+    if (telaDestino) {
+      // Se você definiu uma tela específica, ele vai para ela
+      navigation.dispatch(TabActions.jumpTo(telaDestino));
+    } else {
+      // Se não definiu, ele só volta para a tela imediatamente anterior
+      navigation.goBack();
+    }
+  };
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity style={styles.backButton}>
-        <Feather name="chevron-left" size={24} color="white" />
-      </TouchableOpacity>
+      {temGoBack ? (
+        <TouchableOpacity style={styles.backButton} onPress={lidarComVoltar}>
+          <Feather name="chevron-left" size={24} color="white" />
+        </TouchableOpacity>
+      ) : (
+        // Esse View vazio com largura 24 serve para o título não desalinhar do centro
+        <View style={{ width: 24 }} /> 
+      )}
 
       <View style={styles.nomeTela}>
         <Text style={styles.Titulo}>{nomeTela}</Text>

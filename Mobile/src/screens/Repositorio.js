@@ -55,7 +55,7 @@ export default function RepositorioScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         

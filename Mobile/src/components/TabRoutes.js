@@ -18,6 +18,7 @@ const Tab = createBottomTabNavigator();
 export default function TabRoutes() {
   return (
     <Tab.Navigator
+      backBehavior="history"
       screenOptions={({ route }) => ({
         headerShown: false,
 

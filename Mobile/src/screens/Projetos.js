@@ -81,7 +81,7 @@ export default function ProjetosScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Projetos"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Projetos"} temGoBack={true} telaDestino={"Turmas"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         

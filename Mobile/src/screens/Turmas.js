@@ -11,6 +11,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import Header from '../components/Header';
+import CursosScreen from './Cursos';
 import SplashScreen from '../screens/SplashScreen';
 
 import { Feather } from '@expo/vector-icons';
@@ -56,7 +57,11 @@ export default function TurmasScreen({ navigation }) {
       {/* StatusBar Branca para contrastar com Header Azul */}
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} />
+      {/* 
+      chamada da header (foto=não tem; escolherImagem=não tem; nome da tela; temGoBack= se sim vai voltar; telaDestino=nome da tela no tabroutes) 
+      se temGoBack=true, o botão de voltar aparece e ao clicar ele volta para a tela definida em telaDestino. Se temGoBack=false, o botão de voltar não aparece
+      */}
+      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} temGoBack={true} telaDestino={"Repositório"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {Object.entries(DATA_MOCK).map(([ano, turmas]) => (
