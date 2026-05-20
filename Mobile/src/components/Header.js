@@ -35,7 +35,7 @@ export default function Header({ foto, escolherImagem, nomeTela }) {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#004A8D',
+    backgroundColor: '#1459b3',
     paddingTop: 35,
     padding: 15,
     flexDirection: 'row',
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
 
   Titulo: 
-   { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
+  { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
 
   user: {
     alignItems: 'center',
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
 
   container: {
   flex: 1,
-  backgroundColor: "#eef1f5", // 🔥 mais suave
+  backgroundColor: "#eef1f5",
 },
 });
-

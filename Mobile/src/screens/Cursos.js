@@ -35,12 +35,15 @@ export default function CursosScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.listaCursos}>
         <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
         
-        <TouchableOpacity 
-          style={styles.filtroBotaoHeader} 
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.filtroIconeTexto}>≡</Text>
-        </TouchableOpacity>
+        <View style={styles.filtroContainer}>
+          <TouchableOpacity 
+            style={styles.filtroBotaoHeader} 
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.filtroIconeTexto}>≡</Text>
+          </TouchableOpacity>
+        </View>
+        
         <View style={{ alignItems: 'center', marginBottom: 20 }}>
           {cursos.length === 0 ? (
             <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
@@ -120,14 +123,9 @@ export default function CursosScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
   
-  header: {
-    height: 70, 
-    backgroundColor: '#004A8D',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  filtroIconeTexto: { color: '#004A8D', fontSize: 45, width: '100%', textAlign: 'right', paddingRight: 20 },
+  filtroContainer: { width: '100%', paddingRight: 20, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' },
+  filtroBotaoHeader: { width: 50,},
+  filtroIconeTexto: { color: '#004A8D', fontSize: 45, textAlign: 'right' },
 
   card: { 
     backgroundColor: '#fff', 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
+import Header from '../components/Header';
 
 export default function CalendarScreen() {
   const [selected, setSelected] = useState('');
@@ -37,9 +38,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>CALENDÁRIO</Text>
-      </View>
+      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View style={styles.calendarContainer}>
@@ -143,16 +142,7 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#cfe0e8' },
-  header: {
-    backgroundColor: '#1459b3',
-    height: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-  },
-  headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   calendarContainer: { backgroundColor: '#FFF', margin: 15, borderRadius: 20, padding: 10, elevation: 4 },
   eventSection: { paddingHorizontal: 20 },
   eventSectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },

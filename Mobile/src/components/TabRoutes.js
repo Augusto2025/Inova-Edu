@@ -45,9 +45,6 @@ export default function TabRoutes() {
         tabBarStyle: {
           backgroundColor: '#1459b3',
           height: 85,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          elevation: 10,
         },
 
         tabBarLabelStyle: {

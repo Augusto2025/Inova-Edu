@@ -13,6 +13,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import Header from '../components/Header';
+import SplashScreen from '../screens/SplashScreen';
 
 import { Feather } from '@expo/vector-icons';
 
@@ -50,24 +51,11 @@ export default function RepositorioScreen() {
   const [modalPastaVisible, setModalPastaVisible] = useState(false);
   const [selecaoAtiva, setSelecaoAtiva] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
@@ -119,6 +107,7 @@ export default function RepositorioScreen() {
           </View>
         ))}
       </ScrollView>
+      <SplashScreen />
     </SafeAreaView>
   );
 }
