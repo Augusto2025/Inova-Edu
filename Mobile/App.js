@@ -39,11 +39,11 @@ export default function App() {
         <Stack.Screen name="Splash" component={SplashScreen}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         
-        <Stack.Screen name="Titulo" component={TituloScreen} />
         <Stack.Screen name="Forum" component={ForumScreen}/>
+        <Stack.Screen name="Titulo" component={TituloScreen} />
         <Stack.Screen name="Conversa" component={ConversaScreen} />
 
-
+ 
         <Stack.Screen name="Eventos" component={CalendarScreen}/>
 
         <Stack.Screen name="Profile" component={ProfilePage}/>

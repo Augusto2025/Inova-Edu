@@ -26,7 +26,7 @@ export default function ForumScreen({ navigation }) {
   const [indexEditando, setIndexEditando] = useState(null);
 
   const abrirTopico = (topico) => {
-    navigation.navigate("Conversa", { topico });
+    navigation.navigate("Titulo", { topico }); // TROCAR "TITULO" VAI PARA A TELA DE TITULO E PASSA O TÓPICO SELECIONADO COMO PARÂMETRO
   };
 
   const criarTopico = () => {
@@ -62,7 +62,7 @@ export default function ForumScreen({ navigation }) {
   return (
     <View style={styles.container}>
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Forum"} />
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
@@ -93,7 +93,7 @@ export default function ForumScreen({ navigation }) {
 
             <View style={styles.acoes}>
               <TouchableOpacity onPress={() => abrirEditar(item, index)}>
-                <Ionicons name="create-outline" size={20} color="#1e8a3e" />
+                <Ionicons name="create-outline" size={20} color="#1e4f8a" />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 130,
     right: 13,
+    top: 600,
     width: 60,
     height: 60,
     borderRadius: 30,
