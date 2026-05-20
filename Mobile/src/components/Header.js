@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
 
   Titulo: 
-  { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
+  { color: '#FFF', fontSize: 18, fontWeight: 'bold',},
 
   user: {
     alignItems: 'center',
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
 
   nome: {
     color: '#fff',
-    marginTop: 5,
   },
 
   container: {
