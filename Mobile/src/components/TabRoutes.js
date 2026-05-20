@@ -9,6 +9,8 @@ import ForumScreen from '../screens/Forum';
 import SettingsScreen from '../screens/SettingsScreen';
 import CursosScreen from '../screens/Cursos';
 import TurmasScreen from '../screens/Turmas';
+import TituloScreen from '../screens/Titulo';
+import ConversaScreen from '../screens/Conversa';
 
 
 const Tab = createBottomTabNavigator();
@@ -81,6 +83,30 @@ export default function TabRoutes() {
           },
         }}
       />
+
+      <Tab.Screen
+        name="Titulo"
+        component={TituloScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+      <Tab.Screen
+        name="Conversa"
+        component={ConversaScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+
+
+
     </Tab.Navigator>
   );
 }

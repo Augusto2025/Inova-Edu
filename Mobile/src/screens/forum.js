@@ -26,7 +26,7 @@ export default function ForumScreen({ navigation }) {
   const [indexEditando, setIndexEditando] = useState(null);
 
   const abrirTopico = (topico) => {
-    navigation.navigate("Conversa", { topico });
+    navigation.navigate("Titulo", { topico }); // TROCAR "TITULO" VAI PARA A TELA DE TITULO E PASSA O TÓPICO SELECIONADO COMO PARÂMETRO
   };
 
   const criarTopico = () => {

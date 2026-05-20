@@ -11,6 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Header from "../components/Header";
 
 
 export default function ConversaScreen({ route }) {
@@ -182,7 +183,7 @@ export default function ConversaScreen({ route }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      {/* <HeaderForum titulo={topico} /> */}
+      <Header foto={null} escolherImagem={null} nomeTela={"Conversa"} />     
 
 
       <FlatList
