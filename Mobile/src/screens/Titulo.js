@@ -10,6 +10,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Modal,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -52,10 +53,8 @@ export default function TopicosScreen({ navigation }) {
     if (editandoId) {
       setTopicos((prev) =>
         prev.map((item) =>
-          item.id === editandoId
-            ? { ...item, titulo: novoTitulo }
-            : item
-        )
+          item.id === editandoId ? { ...item, titulo: novoTitulo } : item,
+        ),
       );
     } else {
       const novo = {
@@ -83,29 +82,18 @@ export default function TopicosScreen({ navigation }) {
 
   // excluir
   const excluirTopico = (id) => {
-    setTopicos((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
+    setTopicos((prev) => prev.filter((item) => item.id !== id));
   };
 
   // renderização dos cards
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => abrirTopico(item)}
-    >
+    <TouchableOpacity style={styles.card} onPress={() => abrirTopico(item)}>
       <View style={styles.iconLeft}>
-        <Ionicons
-          name="chatbubble-ellipses"
-          size={24}
-          color="#1e4f8a"
-        />
+        <Ionicons name="chatbubble-ellipses" size={24} color="#1e4f8a" />
       </View>
 
       <View style={styles.center}>
-        <Text style={styles.titulo}>
-          {item.titulo}
-        </Text>
+        <Text style={styles.titulo}>{item.titulo}</Text>
 
         <Text style={styles.info}>
           {item.autor} • {item.mensagens} mensagens
@@ -113,25 +101,15 @@ export default function TopicosScreen({ navigation }) {
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity
-          onPress={() => editarTopico(item)}
-        >
-          <Ionicons
-            name="create-outline"
-            size={20}
-            color="#187cf6"
-          />
+        <TouchableOpacity onPress={() => editarTopico(item)}>
+          <Ionicons name="create-outline" size={20} color="#187cf6" />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => excluirTopico(item.id)}
           style={{ marginLeft: 10 }}
         >
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color="red"
-          />
+          <Ionicons name="trash-outline" size={20} color="red" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -139,20 +117,12 @@ export default function TopicosScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header
-        foto={null}
-        escolherImagem={null}
-        nomeTela={"Titulo"}
-      />
+      <Header foto={null} escolherImagem={null} nomeTela={" Título "} />
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
-          <Ionicons
-            name="search"
-            size={20}
-            color="#1e4f8a"
-          />
+          <Ionicons name="search" size={20} color="#1e4f8a" />
 
           <TextInput
             placeholder="Pesquisar Títulos..."
@@ -169,11 +139,8 @@ export default function TopicosScreen({ navigation }) {
             size={22}
             color="#0D6EFD"
         /> */}
-        <Text style={styles.text}>
-            Nome do subtitulo
-        </Text>
+        <Text style={styles.text}>Nome do subtitulo</Text>
       </TouchableOpacity>
-     
 
       {/* LISTA */}
       <FlatList
@@ -189,17 +156,49 @@ export default function TopicosScreen({ navigation }) {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => {
+          console.log("clicou");
           setEditandoId(null);
           setNovoTitulo("");
           setModalVisible(true);
         }}
       >
-        <Ionicons
-          name="add"
-          size={28}
-          color="#fff"
-        />
+        <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
+
+      <Modal transparent visible={modalVisible} animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.title}>Criar  Título</Text>
+
+            <TextInput
+              placeholder="Digite o título..."
+              value={novoTitulo}
+              onChangeText={setNovoTitulo}
+              style={styles.input}
+            />
+
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.cancelText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={() => {
+                  console.log("Criar tópico:", novoTitulo);
+
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={styles.createText}>Criar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -209,6 +208,75 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#eaeef3",
   },
+
+  // Modal 
+   overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#1E4D8C",
+    marginBottom: 20,
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    height: 50,
+    marginBottom: 20,
+  },
+
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: "#999",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+
+  createButton: {
+    backgroundColor: "#ff9800",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+  },
+
+  cancelText: {
+    color: "#777",
+    fontWeight: "600",
+  },
+
+  createText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+
+
+
+
+
+  // subtitulo
 
   subtitulo: {
     flexDirection: "row",
@@ -231,32 +299,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0D6EFD",
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   searchWrapper: {
     marginTop: 15,
@@ -314,14 +356,14 @@ const styles = StyleSheet.create({
 
   fab: {
     position: "absolute",
-    bottom: 70,
-    right: 20,
-    backgroundColor: "#187cf6",
+    bottom: 130,
+    right: 13,
+    top: 720,
     width: 60,
     height: 60,
-    borderRadius: 50,
+    borderRadius: 30,
+    backgroundColor: "#ff8c00",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
   },
 });
