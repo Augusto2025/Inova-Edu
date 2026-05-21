@@ -162,32 +162,18 @@ export default function TopicosScreen({ navigation }) {
         </View>
       </View>
 
-      {/* IDENTIFICAÇÃO DO TÓPICO */}
-      {topicoSelecionado && (
-        <View style={styles.identificacao}>
-          <View style={styles.linhaLaranja} />
-
-          <View style={styles.identificacaoContent}>
-            <View style={styles.identificacaoLeft}>
-              <Ionicons
-                name="calendar-outline"
-                size={22}
-                color="#F7941D"
-              />
-
-              <Text style={styles.identificacaoTexto}>
-                {topicoSelecionado.titulo}
-              </Text>
-            </View>
-
-            <Ionicons
-              name="chevron-up"
-              size={20}
-              color="#F7941D"
-            />
-          </View>
-        </View>
-      )}
+      {/* TÍTULO Subtitulo */}
+      <TouchableOpacity style={styles.subtitulo}>
+        {/* <Ionicons
+            name="calendar-outline"
+            size={22}
+            color="#0D6EFD"
+        /> */}
+        <Text style={styles.text}>
+            Nome do subtitulo
+        </Text>
+      </TouchableOpacity>
+     
 
       {/* LISTA */}
       <FlatList
@@ -224,6 +210,54 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeef3",
   },
 
+  subtitulo: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F2F2F2",
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 12,
+
+    borderLeftWidth: 5,
+    borderLeftColor: "#0D6EFD",
+
+    marginHorizontal: 15,
+    marginTop: 10,
+  },
+
+  text: {
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#0D6EFD",
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   searchWrapper: {
     marginTop: 15,
     paddingHorizontal: 10,
@@ -243,43 +277,6 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 8,
-  },
-
-  identificacao: {
-    backgroundColor: "#EDEDED",
-    marginHorizontal: 15,
-    marginBottom: 10,
-    borderRadius: 12,
-    overflow: "hidden",
-    elevation: 3,
-  },
-
-  linhaLaranja: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 5,
-    backgroundColor: "#F7941D",
-  },
-
-  identificacaoContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 18,
-  },
-
-  identificacaoLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  identificacaoTexto: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#2F3A4B",
   },
 
   card: {
