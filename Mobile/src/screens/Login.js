@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
         <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
             <View style={styles.containerTotal}>
                 <View style={styles.header}>
-                    <Image source={Logo} />
+                    <Image source={Logo} style={styles.Logo} />
                     <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
                 </View>
                 <View style={styles.containerCenter}>
@@ -61,6 +61,10 @@ const paddingHeader = 90;
 const borderRadius = 40;
 
 const styles = StyleSheet.create({
+    Logo: {
+        width: 150,
+        height: 150,
+    },
     tela: {
         backgroundColor: '#1459b3',
     },

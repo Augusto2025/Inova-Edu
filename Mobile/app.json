@@ -13,7 +13,6 @@
     "android": {
       "package": "com.guts26.simuladorfinanceiro",
       "jsEngine": "hermes"
-
     },
     "plugins": [
       [
@@ -24,7 +23,9 @@
             "enableMinifyInReleaseBuilds": true
           }
         }
-      ]
+      ],
+      "expo-sharing",
+      "expo-status-bar"
     ],
     "extra": {
       "eas": {
