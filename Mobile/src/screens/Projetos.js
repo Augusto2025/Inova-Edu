@@ -88,6 +88,7 @@ export default function ProjetosScreen({ navigation }) {
         {/* ROTA / BREADCRUMB */}
         <View style={styles.breadcrumbCard}>
           <View style={styles.breadcrumbInfo}>
+            <Text style={styles.itemSub}>Nome da Turma:</Text>
             <Text style={styles.turmaBadge}>Turma: ADS-2026-1A</Text>
           </View>
         </View>
@@ -193,19 +194,20 @@ const styles = StyleSheet.create({
 
   // Breadcrumb
   breadcrumbCard: {
-    backgroundColor: COLORS.card,
     borderRadius: 12,
     padding: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: 20,
     borderLeftWidth: 5,
+    backgroundColor: COLORS.card,
     borderLeftColor: COLORS.accent,
   },
   breadcrumbPath: { fontSize: 12, color: COLORS.textSecondary },
   turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },
   btnAdd: { backgroundColor: COLORS.primary, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+
+  itemSub: { fontSize: 11, color: COLORS.textSecondary },
 
   // Cards de Projeto
   card: {

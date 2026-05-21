@@ -63,6 +63,14 @@ export default function TurmasScreen({ navigation }) {
       */}
       <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} temGoBack={true} telaDestino={"Repositório"} />
 
+      {/* ROTA / BREADCRUMB */}
+      <View style={styles.breadcrumbCard}>
+        <View style={styles.breadcrumbInfo}>
+          <Text style={styles.itemSub}>Nome do Curso:</Text>
+          <Text style={styles.turmaBadge}>Curso: Técnico em Desenvolvimento de Sistemas</Text>
+        </View>
+      </View>
+      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {Object.entries(DATA_MOCK).map(([ano, turmas]) => (
           <View key={ano} style={styles.yearSection}>
@@ -163,6 +171,24 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+
+  breadcrumbCard: {
+    borderRadius: 12,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 15,
+    marginBottom: 0,
+    borderLeftWidth: 5,
+    backgroundColor: COLORS.card,
+    borderLeftColor: COLORS.accent,
+  },
+
+  breadcrumbPath: { fontSize: 12, color: COLORS.textSecondary },
+  turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },
+
+  itemSub: { fontSize: 11, color: COLORS.textSecondary },
+
   scrollContent: {
     padding: 16,
     paddingTop: 24,
