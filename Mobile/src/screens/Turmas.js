@@ -67,7 +67,7 @@ export default function TurmasScreen({ navigation }) {
       <View style={styles.breadcrumbCard}>
         <View style={styles.breadcrumbInfo}>
           <Text style={styles.itemSub}>Nome do Curso:</Text>
-          <Text style={styles.turmaBadge}>Curso: Técnico em Desenvolvimento de Sistemas</Text>
+          <Text style={styles.turmaBadge}>Curso: Programador de Sistemas</Text>
         </View>
       </View>
       
