@@ -6,14 +6,17 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   Modal,
+  Image,
+  Keyboard,
 } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
+
 import Header from "../components/Header";
 
 export default function TopicosScreen({ navigation }) {
@@ -21,47 +24,57 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "1",
       titulo: "React Native é difícil?",
-      autor: "Ana",
+      mensagem:
+        "useEffect está me confundindo, alguém pode me ajudar?",
+      horario: "12:30",
       mensagens: 12,
-    },
+    
+
     {
       id: "2",
       titulo: "Como usar useState?",
-      autor: "Carlos",
+      mensagem:
+        "Não estou entendendo como atualizar o estado corretamente.",
+      horario: "Ontem",
       mensagens: 8,
     },
   ]);
 
-  const [topicoSelecionado, setTopicoSelecionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [novoTitulo, setNovoTitulo] = useState("");
   const [editandoId, setEditandoId] = useState(null);
 
-  // selecionar tópico
+  // ABRIR CONVERSA
   const abrirTopico = (topico) => {
-    setTopicoSelecionado(topico);
-
     navigation.navigate("Conversa", {
       topico: topico.titulo,
     });
   };
 
-  // criar ou editar
+  // CRIAR OU EDITAR
   const criarOuEditarTopico = () => {
     if (novoTitulo.trim() === "") return;
 
     if (editandoId) {
       setTopicos((prev) =>
         prev.map((item) =>
-          item.id === editandoId ? { ...item, titulo: novoTitulo } : item,
-        ),
+          item.id === editandoId
+            ? { ...item, titulo: novoTitulo }
+            : item
+        )
       );
     } else {
       const novo = {
         id: Date.now().toString(),
         titulo: novoTitulo,
         autor: "Você",
+        status: "Agora",
+        mensagem: "Nova conversa criada.",
+        horario: "Agora",
         mensagens: 0,
+        avatar:
+          "https://cdn-icons-png.flaticon.com/512/9131/9131529.png",
+        cor: "#F97316",
       };
 
       setTopicos((prev) => [novo, ...prev]);
@@ -70,59 +83,168 @@ export default function TopicosScreen({ navigation }) {
     setNovoTitulo("");
     setEditandoId(null);
     setModalVisible(false);
+
     Keyboard.dismiss();
   };
 
-  // editar
+  // EDITAR
   const editarTopico = (item) => {
     setNovoTitulo(item.titulo);
     setEditandoId(item.id);
     setModalVisible(true);
   };
 
-  // excluir
+  // EXCLUIR
   const excluirTopico = (id) => {
-    setTopicos((prev) => prev.filter((item) => item.id !== id));
+    setTopicos((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
   };
 
-  // renderização dos cards
+  // CARD
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => abrirTopico(item)}>
-      <View style={styles.iconLeft}>
-        <Ionicons name="chatbubble-ellipses" size={24} color="#1e4f8a" />
-      </View>
-
-      <View style={styles.center}>
-        <Text style={styles.titulo}>{item.titulo}</Text>
-
-        <Text style={styles.info}>
-          {item.autor} • {item.mensagens} mensagens
-        </Text>
-      </View>
-
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={() => editarTopico(item)}>
-          <Ionicons name="create-outline" size={20} color="#187cf6" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => excluirTopico(item.id)}
-          style={{ marginLeft: 10 }}
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => abrirTopico(item)}
+      activeOpacity={0.9}
+    >
+      {/* TOPO */}
+      <View style={styles.topContent}>
+        {/* AVATAR */}
+        <View
+          style={[
+            styles.avatarContainer,
+            { backgroundColor: item.cor },
+          ]}
         >
-          <Ionicons name="trash-outline" size={20} color="red" />
-        </TouchableOpacity>
+          <Image
+            source={{ uri: item.avatar }}
+            style={styles.avatar}
+          />
+
+          <View style={styles.onlineDot} />
+        </View>
+
+        {/* CONTEÚDO */}
+        <View style={styles.infoContainer}>
+          {/* TITULO */}
+          <View style={styles.rowBetween}>
+            <Text
+              style={styles.title}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.titulo}
+            </Text>
+
+            <Text style={styles.time}>
+              {item.horario}
+            </Text>
+          </View>
+
+          {/* AUTOR */}
+          <View style={styles.authorRow}>
+            <Text style={styles.author}>
+              {item.autor}
+            </Text>
+
+            <Text style={styles.dot}>•</Text>
+
+            <Text style={styles.onlineText}>
+              {item.status}
+            </Text>
+          </View>
+
+          {/* MENSAGEM */}
+          <Text
+            style={styles.message}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {item.mensagem}
+          </Text>
+        </View>
+
+        {/* BADGE */}
+        <View style={styles.messageBadge}>
+          <Text style={styles.messageBadgeText}>
+            {item.mensagens}
+          </Text>
+        </View>
+      </View>
+
+      {/* FOOTER */}
+      <View style={styles.footer}>
+        <View style={styles.footerItem}>
+          <Ionicons
+            name="chatbubble-outline"
+            size={16}
+            color="#6B7280"
+          />
+
+          <Text style={styles.footerText}>
+            {item.mensagens} mensagens
+          </Text>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.footerItem}>
+          <Feather
+            name="tag"
+            size={15}
+            color="#6B7280"
+          />
+
+          <Text style={styles.footerText}>
+            React Native
+          </Text>
+        </View>
+
+        {/* BOTÕES */}
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => editarTopico(item)}
+          >
+            <Feather
+              name="edit-2"
+              size={16}
+              color="#2563EB"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => excluirTopico(item.id)}
+          >
+            <MaterialIcons
+              name="delete-outline"
+              size={18}
+              color="#EF4444"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Header foto={null} escolherImagem={null} nomeTela={" Título "} />
+      <Header
+        foto={null}
+        escolherImagem={null}
+        nomeTela={" Título "}
+      />
 
       {/* BUSCA */}
       <View style={styles.searchWrapper}>
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#1e4f8a" />
+          <Ionicons
+            name="search"
+            size={20}
+            color="#1e4f8a"
+          />
 
           <TextInput
             placeholder="Pesquisar Títulos..."
@@ -132,15 +254,22 @@ export default function TopicosScreen({ navigation }) {
         </View>
       </View>
 
-      {/* TÍTULO Subtitulo */}
-      <TouchableOpacity style={styles.subtitulo}>
-        {/* <Ionicons
-            name="calendar-outline"
-            size={22}
-            color="#0D6EFD"
-        /> */}
-        <Text style={styles.text}>Nome do subtitulo</Text>
-      </TouchableOpacity>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={styles.line} />
+
+          <Text style={styles.headerTitle}>
+            Meus títulos
+          </Text>
+
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {topicos.length} conversas
+            </Text>
+          </View>
+        </View>
+      </View>
 
       {/* LISTA */}
       <FlatList
@@ -148,27 +277,43 @@ export default function TopicosScreen({ navigation }) {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{
-          padding: 15,
+          paddingHorizontal: 14,
+          paddingBottom: 120,
         }}
+        showsVerticalScrollIndicator={false}
       />
 
-      {/* BOTÃO FLUTUANTE */}
+      {/* FAB */}
       <TouchableOpacity
+        activeOpacity={0.8}
         style={styles.fab}
         onPress={() => {
-          console.log("clicou");
           setEditandoId(null);
           setNovoTitulo("");
           setModalVisible(true);
         }}
       >
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons
+          name="add"
+          size={32}
+          color="#fff"
+        />
       </TouchableOpacity>
 
-      <Modal transparent visible={modalVisible} animationType="fade">
+      {/* MODAL */}
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="fade"
+      >
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.title}>Criar Título</Text>
+            <Text style={styles.modalTitle}>
+              {editandoId
+                ? "Editar Título"
+                : "Criar Título"}
+            </Text>
+
             <View style={styles.titleUnderline} />
 
             <TextInput
@@ -176,25 +321,30 @@ export default function TopicosScreen({ navigation }) {
               value={novoTitulo}
               onChangeText={setNovoTitulo}
               style={styles.input}
+              placeholderTextColor="#999"
             />
 
             <View style={styles.buttons}>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={() => setModalVisible(false)}
+                onPress={() =>
+                  setModalVisible(false)
+                }
               >
-                <Text style={styles.cancelText}>Cancelar</Text>
+                <Text style={styles.cancelText}>
+                  Cancelar
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.createButton}
-                onPress={() => {
-                  console.log("Criar tópico:", novoTitulo);
-
-                  setModalVisible(false);
-                }}
+                onPress={criarOuEditarTopico}
               >
-                <Text style={styles.createText}>Criar</Text>
+                <Text style={styles.createText}>
+                  {editandoId
+                    ? "Salvar"
+                    : "Criar"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -207,18 +357,261 @@ export default function TopicosScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#eaeef3",
+    backgroundColor: "#F4F6FB",
   },
 
-  // Modal
-  titleUnderline:{
-    width: 150,
-    height: 3,
+  // BUSCA
+
+  searchWrapper: {
+    marginTop: 15,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
+  },
+
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    borderRadius: 25,
+    paddingHorizontal: 14,
+    height: 48,
+
+    elevation: 2,
+  },
+
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
+  },
+
+  // HEADER
+
+  header: {
+    paddingHorizontal: 14,
+    marginBottom: 20,
+  },
+
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  line: {
+    width: 4,
+    height: 24,
+    borderRadius: 10,
+    backgroundColor: "#2563EB",
+    marginRight: 12,
+  },
+
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#111827",
+  },
+
+  badge: {
+    backgroundColor: "#E0E7FF",
+    marginLeft: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+
+  badgeText: {
+    color: "#4338CA",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  // CARD
+
+  card: {
+    backgroundColor: "#FFF",
+    borderRadius: 22,
+    padding: 16,
+    marginBottom: 18,
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+
+    elevation: 4,
+  },
+
+  topContent: {
+    flexDirection: "row",
+  },
+
+
+
+ 
+  onlineDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 999,
+    backgroundColor: "#22C55E",
+    borderWidth: 2,
+    borderColor: "#FFF",
+    position: "absolute",
+    bottom: 2,
+    right: 2,
+  },
+
+  infoContainer: {
+    flex: 1,
+    paddingRight: 10,
+  },
+
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  title: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111827",
+    marginRight: 10,
+  },
+
+  time: {
+    fontSize: 13,
+    color: "#6B7280",
+  },
+
+  authorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+
+  author: {
+    fontWeight: "600",
+    color: "#111827",
+  },
+
+  dot: {
+    marginHorizontal: 6,
+    color: "#9CA3AF",
+  },
+
+  onlineText: {
+    color: "#22C55E",
+    fontSize: 13,
+    fontWeight: "500",
+  },
+
+  message: {
+    marginTop: 6,
+    fontSize: 14,
+    color: "#6B7280",
+    lineHeight: 20,
+  },
+
+  messageBadge: {
+    backgroundColor: "#2563EB",
+    minWidth: 34,
+    height: 28,
+    borderRadius: 999,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "flex-start",
+  },
+
+  messageBadgeText: {
+    color: "#FFF",
+    fontWeight: "700",
+  },
+
+  // FOOTER
+
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 18,
+  },
+
+  footerItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  footerText: {
+    marginLeft: 6,
+    color: "#6B7280",
+    fontSize: 13,
+  },
+
+  separator: {
+    width: 1,
+    height: 14,
+    backgroundColor: "#E5E7EB",
+    marginHorizontal: 16,
+  },
+
+  actions: {
+    flexDirection: "row",
+    marginLeft: "auto",
+  },
+
+  editButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#EEF2FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+
+  deleteButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#FEE2E2",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // FAB
+
+  fab: {
+    position: "absolute",
+
+    bottom: 25,
+    right: 20,
+
+    width: 65,
+    height: 65,
+    borderRadius: 999,
+
     backgroundColor: "#ff8c00",
-    marginTop: 5,
+
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#ff8c00",
+
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+
+    elevation: 8,
   },
 
-
+  // MODAL
 
   overlay: {
     flex: 1,
@@ -229,25 +622,34 @@ const styles = StyleSheet.create({
 
   modalContainer: {
     width: "85%",
-    backgroundColor: "#fff",
+    backgroundColor: "#FFF",
     borderRadius: 20,
     padding: 20,
   },
 
-  title: {
+  modalTitle: {
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
     color: "#1E4D8C",
+    marginBottom: 10,
+  },
+
+  titleUnderline: {
+    width: 120,
+    height: 3,
+    backgroundColor: "#ff8c00",
+    alignSelf: "center",
     marginBottom: 20,
+    borderRadius: 10,
   },
 
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
     paddingHorizontal: 15,
-    height: 50,
+    height: 52,
     marginBottom: 20,
   },
 
@@ -258,15 +660,15 @@ const styles = StyleSheet.create({
 
   cancelButton: {
     borderWidth: 1,
-    borderColor: "#999",
-    borderRadius: 10,
+    borderColor: "#D1D5DB",
+    borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 20,
   },
 
   createButton: {
     backgroundColor: "#ff9800",
-    borderRadius: 10,
+    borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 25,
   },
@@ -277,98 +679,7 @@ const styles = StyleSheet.create({
   },
 
   createText: {
-    color: "#fff",
+    color: "#FFF",
     fontWeight: "bold",
-  },
-
-  // subtitulo
-
-  subtitulo: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F2F2F2",
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    borderRadius: 12,
-
-    borderLeftWidth: 5,
-    borderLeftColor: "#0D6EFD",
-
-    marginHorizontal: 15,
-    marginTop: 10,
-  },
-
-  text: {
-    marginLeft: 10,
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0D6EFD",
-  },
-
-  searchWrapper: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
-
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingHorizontal: 12,
-    height: 40,
-    elevation: 2,
-  },
-
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-  },
-
-  card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    elevation: 2,
-  },
-
-  iconLeft: {
-    marginRight: 10,
-  },
-
-  center: {
-    flex: 1,
-  },
-
-  titulo: {
-    fontSize: 15,
-    fontWeight: "bold",
-  },
-
-  info: {
-    fontSize: 12,
-    color: "#777",
-  },
-
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  fab: {
-    position: "absolute",
-    bottom: 130,
-    right: 13,
-    top: 720,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#ff8c00",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
