@@ -257,7 +257,7 @@ export default function ConversaScreen({ route }) {
         </TouchableOpacity>
       </View>
 
-      {/* <FooterForum /> */}
+      
     </KeyboardAvoidingView>
   );
 }
@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "#ddd",
     bottom: 50,
+    top: 0, // Deixar o input fixo na parte inferior da tela
   },
 
   input: {

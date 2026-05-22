@@ -168,7 +168,8 @@ export default function TopicosScreen({ navigation }) {
       <Modal transparent visible={modalVisible} animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.title}>Criar  Título</Text>
+            <Text style={styles.title}>Criar Título</Text>
+            <View style={styles.titleUnderline} />
 
             <TextInput
               placeholder="Digite o título..."
@@ -209,8 +210,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeef3",
   },
 
-  // Modal 
-   overlay: {
+  // Modal
+  titleUnderline:{
+    width: 150,
+    height: 3,
+    backgroundColor: "#ff8c00",
+    marginTop: 5,
+  },
+
+
+
+  overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
@@ -270,11 +280,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-
-
-
-
-
 
   // subtitulo
 

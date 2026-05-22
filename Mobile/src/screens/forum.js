@@ -77,7 +77,7 @@ export default function ForumScreen({ navigation }) {
 
       {/* TÍTULO */}
       <View style={styles.containerTopicos}>
-        <Text style={styles.textoTopicos}>Tópicos Criados</Text>
+        <Text style={styles.textoTopicos}>Tópicos</Text>
         <View style={styles.linha} />
       </View>
 
@@ -120,6 +120,7 @@ export default function ForumScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Criar Tópico</Text>
+            <View style={styles.linha} />
 
             <TextInput
               placeholder="Digite o título..."
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
   },
 
   linha: {
-    width: 150,
+    width: 60,
     height: 3,
     backgroundColor: "#ff8c00",
     marginTop: 5,
