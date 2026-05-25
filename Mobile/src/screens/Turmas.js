@@ -8,24 +8,18 @@ import {
   LayoutAnimation,
   Platform,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import Header from '../components/Header';
 import CursosScreen from './Cursos';
 import SplashScreen from '../screens/SplashScreen';
-
+import BreadcrumbCard from '../components/BreadcrumbCard';
 import { Feather } from '@expo/vector-icons';
+import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
+import styles from '../styles/Turma';
 
-const COLORS = {
-  primary: '#005eb8',   // Azul Senac
-  darkBlue: '#003d7a',  // Azul mais escuro para o Header
-  accent: '#f7941d',    // Laranja Senac
-  background: '#EBF2F7', // Fundo levemente azulado
-  card: '#FFFFFF',
-  textMain: '#1E293B',
-  textSecondary: '#64748B',
-  border: '#CBD5E1'
-};
+const { width } = Dimensions.get('window');
 
 const DATA_MOCK = {
   "2024": [
@@ -63,13 +57,7 @@ export default function TurmasScreen({ navigation }) {
       */}
       <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} temGoBack={true} telaDestino={"Repositório"} />
 
-      {/* ROTA / BREADCRUMB */}
-      <View style={styles.breadcrumbCard}>
-        <View style={styles.breadcrumbInfo}>
-          <Text style={styles.itemSub}>Nome do Curso Selecionado:</Text>
-          <Text style={styles.turmaBadge}>Curso: Programador de Sistemas</Text>
-        </View>
-      </View>
+      <BreadcrumbCard titulo="Nome do Curso Selecionado:" itemSub="Curso: Programador de Sistemas" />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {Object.entries(DATA_MOCK).map(([ano, turmas]) => (
@@ -134,150 +122,4 @@ export default function TurmasScreen({ navigation }) {
       </ScrollView>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 15,
-    color: COLORS.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  header: {
-    paddingTop: Platform.OS === 'ios' ? 55 : 20,
-    paddingBottom: 20,
-    backgroundColor: COLORS.darkBlue,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 10,
-    shadowColor: '#black',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-
-  breadcrumbCard: {
-    borderRadius: 12,
-    padding: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 15,
-    marginBottom: 0,
-    borderLeftWidth: 5,
-    backgroundColor: COLORS.card,
-    borderLeftColor: COLORS.accent,
-  },
-
-  breadcrumbPath: { fontSize: 12, color: COLORS.textSecondary },
-  turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },
-
-  itemSub: { fontSize: 11, color: COLORS.textSecondary },
-
-  scrollContent: {
-    padding: 16,
-    paddingTop: 24,
-  },
-  yearSection: {
-    marginBottom: 14,
-  },
-  yearHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    padding: 18,
-    borderRadius: 12,
-    borderLeftWidth: 5,
-    borderLeftColor: COLORS.primary, // Indicador azul lateral
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  activeYearHeader: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderLeftColor: COLORS.accent, // Muda para laranja quando aberto
-  },
-  yearRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  yearLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
-  activeYearLabel: {
-    color: COLORS.textMain,
-  },
-  cardsContainer: {
-    backgroundColor: '#D1DEE9', // Fundo azulado interno
-    padding: 10,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-  },
-  turmaCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#E0EEFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  codigoText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.darkBlue,
-  },
-  turnoText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-  },
-  actionButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionButtonText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginRight: 5,
-  },
-});
+};
