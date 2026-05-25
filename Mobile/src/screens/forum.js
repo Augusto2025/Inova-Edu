@@ -338,19 +338,19 @@ const styles = StyleSheet.create({
 
   // CARD
   card: {
-  backgroundColor: "#fff",
-  marginHorizontal: 12,
-  marginBottom: 10,
-  borderRadius: 16,
-  padding: 12,
-  flexDirection: "row",
-  elevation: 2,
+    backgroundColor: "#fff",
+    marginHorizontal: 12,
+    marginBottom: 14,
+    borderRadius: 22,
+    padding: 16,
+    flexDirection: "row",
+    elevation: 2,
   },
 
   iconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 19  ,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 14,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
 
   title: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "700",
     color: "#222",
     marginRight: 10,
@@ -406,10 +406,10 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#555",
     marginTop: 8,
-    lineHeight: 16,
+    lineHeight: 20,
   },
 
   footer: {
@@ -441,8 +441,8 @@ const styles = StyleSheet.create({
   },
 
   editButton: {
-    width: 32,
-    height: 32,
+    width: 38,
+    height: 38,
     borderRadius: 12,
     backgroundColor: "#EEF0FF",
     justifyContent: "center",
@@ -451,8 +451,8 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    width: 32,
-    height: 32,
+    width: 38,
+    height: 38,
     borderRadius: 12,
     backgroundColor: "#FFF0F0",
     justifyContent: "center",
