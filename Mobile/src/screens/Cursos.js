@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Dimensions
 } from 'react-native';
+import Card from '../components/Card';
 import Header from '../components/Header';
 
 const { width } = Dimensions.get('window');
@@ -44,26 +45,18 @@ export default function CursosScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         
-        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+        <View style={{ width: '90%', margin: 20, marginBottom: 0, marginTop: 0 }}>
           {cursos.length === 0 ? (
             <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
           ) : (
             cursos.map((curso) => (
-              <View key={curso.id} style={styles.card}>
-                
-                {/* ESPAÇO DA IMAGEM (SEM IMAGEM DEFINIDA) */}
-                <View style={styles.containerImagemPlaceholder}>
-                  <Text style={styles.textoSemImagem}>Sem Imagem</Text>
-                </View>
-
-                <View style={styles.cardContent}>
-                  <Text style={styles.nomeCurso}>{curso.nome_curso}</Text>
-                  <View style={styles.borda} />
-                  <TouchableOpacity style={styles.botaoEntrar} onPress={() => irParaTurmas(curso)}>
-                    <Text style={styles.botaoTexto}>Entrar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <Card 
+                key={curso.id}
+                titulo={curso.nome_curso}
+                textoBotao="Entrar"
+                iconeBotao="arrow-right"
+                aoPressionar={() => irParaTurmas(curso)}
+              />
             ))
           )}
         </View>
@@ -126,47 +119,6 @@ const styles = StyleSheet.create({
   filtroContainer: { width: '100%', paddingRight: 20, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' },
   filtroBotaoHeader: { width: 50,},
   filtroIconeTexto: { color: '#004A8D', fontSize: 45, textAlign: 'right' },
-
-  card: { 
-    backgroundColor: '#fff', 
-    borderRadius: 15, 
-    marginBottom: 20, 
-    overflow: 'hidden',
-    width: '90%',
-    justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-  },
-  
-  // ESTILO DO CAMPO "SEM IMAGEM"
-  containerImagemPlaceholder: {
-    width: '100%',
-    height: 150,
-    backgroundColor: '#E9ECEF', // Cinza claro
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#DEE2E6'
-  },
-  textoSemImagem: {
-    color: '#ADB5BD',
-    fontSize: 14,
-    fontWeight: '600',
-    textTransform: 'uppercase'
-  },
-
-  cardContent: { padding: 16 },
-  nomeCurso: { fontSize: 18, fontWeight: '700', color: '#004A8D', marginBottom: 8 },
-  borda: { height: 1, backgroundColor: '#F1F1F1', marginVertical: 12 },
-  botaoEntrar: { 
-    backgroundColor: '#004A8D', 
-    paddingVertical: 12, 
-    borderRadius: 8, 
-    alignItems: 'center' 
-  },
-  botaoTexto: { color: '#fff', fontWeight: 'bold' },
 
   // SIDEBAR
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', flexDirection: 'row' },

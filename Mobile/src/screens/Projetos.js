@@ -18,6 +18,7 @@ import Header from '../components/Header';
 import SplashScreen from '../screens/SplashScreen';
 
 import { Feather } from '@expo/vector-icons';
+import Card from '../components/Card';
 
 // Definição de Cores Padrão
 const COLORS = {
@@ -95,48 +96,15 @@ export default function ProjetosScreen({ navigation }) {
 
         {/* LISTAGEM DE PROJETOS */}
         {PROJETOS_ESTATICOS.map((projeto) => (
-          <View key={projeto.id} style={styles.card}>
-            
-            {/* Imagem do Projeto */}
-            {projeto.imagem ? (
-              <Image source={{ uri: projeto.imagem }} style={styles.cardImage} />
-            ) : (
-              <View style={[styles.cardImage, styles.noImage]}>
-                <Feather name="code" size={30} color={COLORS.textSecondary} />
-              </View>
-            )}
-
-            <View style={styles.cardBody}>
-              <Text style={styles.projetoNome}>{projeto.nome}</Text>
-              <Text style={styles.projetoDesc} numberOfLines={2}>
-                {projeto.descricao}
-              </Text>
-
-              <View style={styles.cardActions}>
-                <TouchableOpacity style={styles.btnRepo} onPress={() => irParaRepositorio(projeto.repo)}>
-                  <Text style={styles.btnRepoText}>Repositório</Text>
-                  <Feather name="external-link" size={14} color="white" />
-                </TouchableOpacity>
-
-                {/* <View style={styles.adminTools}>
-                  <TouchableOpacity style={styles.iconBtn} onPress={() => Alert.alert("Permissões", "Abrir lista de alunos...")}>
-                    <Feather name="users" size={18} color={COLORS.primary} />
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity style={styles.iconBtn}>
-                    <Feather name="edit-3" size={18} color={COLORS.textMain} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity 
-                    style={[styles.iconBtn, { backgroundColor: '#FEE2E2' }]} 
-                    onPress={() => confirmarExclusao(projeto.nome)}
-                  >
-                    <Feather name="trash-2" size={18} color={COLORS.danger} />
-                  </TouchableOpacity>
-                </View> */}
-              </View>
-            </View>
-          </View>
+          <Card 
+            key={projeto.id}
+            titulo={projeto.nome}
+            descricao={projeto.descricao}
+            imagem={projeto.imagem}
+            textoBotao="Repositório"
+            iconeBotao="external-link"
+            aoPressionar={() => irParaRepositorio(projeto.repo)}
+          />
         ))}
       </ScrollView>
 
@@ -244,16 +212,6 @@ const styles = StyleSheet.create({
   },
   btnRepoText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
   
-  adminTools: { flexDirection: 'row', gap: 8 },
-  iconBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    backgroundColor: '#F1F5F9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   modalContent: { 
