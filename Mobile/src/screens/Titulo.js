@@ -30,7 +30,7 @@ export default function TopicosScreen({ navigation }) {
       mensagens: 12,
     
 
-    {
+    
       id: "2",
       titulo: "Como usar useState?",
       mensagem:
