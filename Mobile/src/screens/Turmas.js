@@ -66,7 +66,7 @@ export default function TurmasScreen({ navigation }) {
       {/* ROTA / BREADCRUMB */}
       <View style={styles.breadcrumbCard}>
         <View style={styles.breadcrumbInfo}>
-          <Text style={styles.itemSub}>Nome do Curso:</Text>
+          <Text style={styles.itemSub}>Nome do Curso Selecionado:</Text>
           <Text style={styles.turmaBadge}>Curso: Programador de Sistemas</Text>
         </View>
       </View>

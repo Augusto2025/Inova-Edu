@@ -88,7 +88,7 @@ export default function ProjetosScreen({ navigation }) {
         {/* ROTA / BREADCRUMB */}
         <View style={styles.breadcrumbCard}>
           <View style={styles.breadcrumbInfo}>
-            <Text style={styles.itemSub}>Nome da Turma:</Text>
+            <Text style={styles.itemSub}>Nome da Turma Selecionada:</Text>
             <Text style={styles.turmaBadge}>Turma: ADS-2026-1A</Text>
           </View>
         </View>
