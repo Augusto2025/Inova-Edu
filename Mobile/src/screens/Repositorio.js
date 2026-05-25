@@ -107,7 +107,6 @@ export default function RepositorioScreen() {
           </View>
         ))}
       </ScrollView>
-      <SplashScreen />
     </SafeAreaView>
   );
 }

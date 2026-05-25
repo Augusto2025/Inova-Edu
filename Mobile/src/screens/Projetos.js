@@ -169,7 +169,6 @@ export default function ProjetosScreen({ navigation }) {
           </View>
         </View>
       </Modal>
-    <SplashScreen />
     </SafeAreaView>
   );
 }
