@@ -38,7 +38,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+      <Header nomeTela={"Calendário"} />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View style={styles.calendarContainer}>
@@ -46,8 +46,8 @@ export default function CalendarScreen() {
             onDayPress={day => handleOpenEvent(day.dateString)}
             markedDates={{
               [selected]: { selected: true, selectedColor: '#1459b3' },
-              '2026-04-10': { marked: true, dotColor: '#4CAF50' },
-              '2026-04-01': { marked: true, dotColor: '#FFD700' },
+              '2026-05-10': { marked: true, dotColor: '#4CAF50' },
+              '2026-05-01': { marked: true, dotColor: '#FFD700' },
             }}
             theme={{
               // Círculo azul no dia de hoje
@@ -142,7 +142,7 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1 },
   calendarContainer: { backgroundColor: '#FFF', margin: 15, borderRadius: 20, padding: 10, elevation: 4 },
   eventSection: { paddingHorizontal: 20 },
   eventSectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },

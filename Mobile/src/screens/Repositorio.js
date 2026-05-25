@@ -62,7 +62,7 @@ export default function RepositorioScreen() {
         {/* ROTA / BREADCRUMB */}
         <View style={styles.breadcrumbCard}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.itemSub}>Nome do Projeto:</Text>
+            <Text style={styles.itemSub}>Nome do Projeto Selecionado:</Text>
             <Text style={styles.projetoBadge}>{REPOSITORIO_MOCK.projeto_nome}</Text>
           </View>
           <TouchableOpacity 
@@ -107,7 +107,6 @@ export default function RepositorioScreen() {
           </View>
         ))}
       </ScrollView>
-      <SplashScreen />
     </SafeAreaView>
   );
 }
