@@ -1,101 +1,185 @@
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useNavigation, TabActions } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
-export default function Header({ foto, escolherImagem, nomeTela, temGoBack, telaDestino }) {
-  const logo = require('../../assets/LOGOBRANCO.png');
-  const navigation = useNavigation(); // 2. Inicializa o controle de navegação
+import { Feather, Ionicons } from "@expo/vector-icons";
 
-  // Função que decide para onde vai ao clicar no botão de voltar
+import { useNavigation, TabActions } from "@react-navigation/native";
+
+export default function Header({
+  nomeTela,
+  subtitulo,
+  temGoBack,
+  telaDestino,
+}) {
+
+  const navigation = useNavigation();
+
   const lidarComVoltar = () => {
     if (telaDestino) {
-      // Se você definiu uma tela específica, ele vai para ela
       navigation.dispatch(TabActions.jumpTo(telaDestino));
     } else {
-      // Se não definiu, ele só volta para a tela imediatamente anterior
       navigation.goBack();
     }
   };
 
   return (
-    <View style={styles.header}>
-      {temGoBack ? (
-        <TouchableOpacity style={styles.backButton} onPress={lidarComVoltar}>
-          <Feather name="chevron-left" size={24} color="white" />
-        </TouchableOpacity>
-      ) : (
-        // Esse View vazio com largura 24 serve para o título não desalinhar do centro
-        <View style={{ width: 24 }} /> 
-      )}
+    <View style={styles.wrapper}>
 
-      <View style={styles.nomeTela}>
-        <Text style={styles.Titulo}>{nomeTela}</Text>
+      {/* HEADER */}
+      <View style={styles.header}>
+
+        {/* ESQUERDA */}
+        <View style={styles.left}>
+
+          {temGoBack ? (
+            <TouchableOpacity
+              onPress={lidarComVoltar}
+              style={styles.backButton}
+            >
+              <Feather
+                name="chevron-left"
+                size={24}
+                color="#fff"
+              />
+            </TouchableOpacity>
+          ) : null}
+
+          <View>
+            <Text style={styles.title}>
+              {nomeTela}
+            </Text>
+
+            {subtitulo ? (
+              <View style={styles.subtitleRow}>
+                <Ionicons
+                  name="location-sharp"
+                  size={14}
+                  color="#dfe6ff"
+                />
+
+                <Text style={styles.subtitle}>
+                  {subtitulo}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+
+        {/* NOTIFICAÇÃO */}
+        <TouchableOpacity
+        style={styles.notification}
+          onPress={() => navigation.navigate("Notifications")}>
+          <Feather
+            name="bell"
+            size={24}
+            color="#fff"
+          />
+
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              3
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.user}>
-        <TouchableOpacity onPress={escolherImagem}>
-          {foto ? (
-            <Image source={{ uri: foto }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarFallback}>
-              <Text style={styles.letra}>A</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      
+      {/* CURVA */}
+      <View style={styles.curve} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: "#2155f3",
+  },
+
   header: {
-    backgroundColor: '#1459b3',
-    paddingTop: 35,
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingTop: 60,
+    paddingBottom: 45,
+    paddingHorizontal: 22,
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+    backgroundColor: "#1459b3",
   },
 
-  Titulo: 
-  { color: '#FFF', fontSize: 18, fontWeight: 'bold',},
-
-  user: {
-    alignItems: 'center',
+  left: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: '#fff',
+  backButton: {
+    marginRight: 12,
   },
 
-  avatarFallback: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#6c63ff',
-    justifyContent: 'center',
-    alignItems: 'center',
+  title: {
+    color: "#fff",
+    fontSize: 25,
+    fontWeight: "bold",
   },
 
-  letra: {
-    color: '#fff',
-    fontWeight: 'bold',
+  subtitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
   },
 
-  nome: {
-    color: '#fff',
+  subtitle: {
+    color: "#dfe6ff",
+    marginLeft: 4,
+    fontSize: 14,
   },
 
-  container: {
-  flex: 1,
-  backgroundColor: "#eef1f5",
-},
+  notification: {
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
+
+    justifyContent: "center",
+    alignItems: "center",
+
+    backgroundColor: "rgba(255,255,255,0.15)",
+  },
+
+  badge: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+
+    backgroundColor: "#ff4d67",
+
+    width: 18,
+    height: 18,
+
+    borderRadius: 9,
+
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+
+  curve: {
+    height: 35,
+
+    backgroundColor: "#f5f7fb",
+
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+
+    marginTop: -15,
+  },
 });
