@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
+import React from "react";
 
 import Header from "../components/Header";
 
@@ -14,30 +13,6 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
-
-  const [foto, setFoto] = useState(null);
-
-  async function escolherImagem() {
-
-    const permissao =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissao.granted) {
-      alert("Permissão negada!");
-      return;
-    }
-
-    const resultado =
-      await ImagePicker.launchImageLibraryAsync({
-        mediaTypes:
-          ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-      });
-
-    if (!resultado.canceled) {
-      setFoto(resultado.assets[0].uri);
-    }
-  }
 
   return (
     <View style={styles.safe}>
@@ -55,8 +30,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
 
-        {/* CARD PERFIL */}
-        <TouchableOpacity style={styles.profileCard}>
+        {/* PERFIL */}
+        <TouchableOpacity
+          style={styles.profileCard}
+          activeOpacity={0.8}
+        >
 
           <Image
             source={{
@@ -76,7 +54,7 @@ export default function HomeScreen() {
           <View style={styles.line} />
 
           <Text style={styles.profileSkill}>
-            tec. desenvolvimento de sistema
+            Tec. Desenvolvimento de Sistemas
           </Text>
 
         </TouchableOpacity>
@@ -90,10 +68,15 @@ export default function HomeScreen() {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.repoContainer}
+          decelerationRate="fast"
+          snapToAlignment="start"
         >
 
           {/* CARD */}
-          <TouchableOpacity style={styles.repoCard}>
+          <TouchableOpacity
+            style={styles.repoCard}
+            activeOpacity={0.8}
+          >
 
             <Image
               source={{
@@ -114,7 +97,10 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           {/* CARD */}
-          <TouchableOpacity style={styles.repoCard}>
+          <TouchableOpacity
+            style={styles.repoCard}
+            activeOpacity={0.8}
+          >
 
             <Image
               source={{
@@ -135,7 +121,10 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           {/* CARD */}
-          <TouchableOpacity style={styles.repoCard}>
+          <TouchableOpacity
+            style={styles.repoCard}
+            activeOpacity={0.8}
+          >
 
             <Image
               source={{
@@ -166,29 +155,53 @@ export default function HomeScreen() {
 
           {/* BUSCA */}
           <View style={styles.searchBox}>
+
             <TextInput
-              placeholder="buscar repositórios..."
+              placeholder="Buscar repositórios..."
+              placeholderTextColor="#888"
               style={styles.searchInput}
             />
+
           </View>
 
           {/* TAGS */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.tagsContainer}
+            contentContainerStyle={styles.tagsContainer}
           >
 
-            <TouchableOpacity style={styles.tag}>
-              <Text>React Native</Text>
+            <TouchableOpacity
+              style={styles.tag}
+              activeOpacity={0.8}
+            >
+
+              <Text style={styles.tagText}>
+                React Native
+              </Text>
+
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.tag}>
-              <Text>Python</Text>
+            <TouchableOpacity
+              style={styles.tag}
+              activeOpacity={0.8}
+            >
+
+              <Text style={styles.tagText}>
+                Python
+              </Text>
+
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.tag}>
-              <Text>JavaScript</Text>
+            <TouchableOpacity
+              style={styles.tag}
+              activeOpacity={0.8}
+            >
+
+              <Text style={styles.tagText}>
+                JavaScript
+              </Text>
+
             </TouchableOpacity>
 
           </ScrollView>
@@ -200,7 +213,10 @@ export default function HomeScreen() {
           Próximos eventos
         </Text>
 
-        <TouchableOpacity style={styles.eventCard}>
+        <TouchableOpacity
+          style={styles.eventCard}
+          activeOpacity={0.8}
+        >
 
           <View style={styles.eventBar} />
 
@@ -218,7 +234,10 @@ export default function HomeScreen() {
 
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.eventCard}>
+        <TouchableOpacity
+          style={styles.eventCard}
+          activeOpacity={0.8}
+        >
 
           <View style={styles.eventBar} />
 
@@ -247,7 +266,10 @@ export default function HomeScreen() {
             3 novas respostas
           </Text>
 
-          <View style={styles.forumTopic}>
+          <TouchableOpacity
+            style={styles.forumTopic}
+            activeOpacity={0.8}
+          >
 
             <Text style={styles.forumText}>
               Python optimization tips
@@ -257,7 +279,7 @@ export default function HomeScreen() {
               #Python
             </Text>
 
-          </View>
+          </TouchableOpacity>
 
         </View>
 
@@ -268,6 +290,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+
+  /* CONTAINER */
 
   safe: {
     flex: 1,
@@ -288,24 +312,43 @@ const styles = StyleSheet.create({
 
   profileCard: {
     backgroundColor: "#fff",
+
     marginTop: 15,
-    borderRadius: 28,
-    padding: 22,
-    alignItems: "center",
-    elevation: 5,
     marginBottom: 25,
+
+    borderRadius: 28,
+
+    padding: 22,
+
+    alignItems: "center",
+
+    elevation: 5,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.1,
+
+    shadowRadius: 4,
   },
 
   profileImage: {
     width: 95,
     height: 95,
+
     borderRadius: 50,
+
     marginBottom: 12,
   },
 
   profileTitle: {
     fontSize: 30,
     fontWeight: "bold",
+    color: "#111",
   },
 
   profileSubtitle: {
@@ -316,24 +359,29 @@ const styles = StyleSheet.create({
   line: {
     width: "100%",
     height: 1,
+
     backgroundColor: "#ddd",
+
     marginBottom: 12,
   },
 
   profileSkill: {
     fontSize: 16,
+    color: "#444",
   },
 
   /* TITULOS */
 
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+
     marginBottom: 15,
+
     color: "#111",
   },
 
-  /* REPO */
+  /* REPOSITÓRIOS */
 
   repoContainer: {
     marginBottom: 22,
@@ -341,30 +389,53 @@ const styles = StyleSheet.create({
 
   repoCard: {
     width: 180,
+
     backgroundColor: "#fff",
+
     borderRadius: 20,
+
     overflow: "hidden",
+
     marginRight: 15,
-    elevation: 1,
+
+    elevation: 2,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.08,
+
+    shadowRadius: 4,
   },
 
   repoImage: {
     width: "100%",
     height: 100,
+
     resizeMode: "cover",
   },
 
   repoTitle: {
     fontWeight: "bold",
+
     paddingHorizontal: 12,
     paddingTop: 12,
+
     fontSize: 16,
+
+    color: "#111",
   },
 
   repoInfo: {
     paddingHorizontal: 12,
     paddingBottom: 15,
+
     color: "#666",
+
     fontSize: 12,
   },
 
@@ -372,66 +443,117 @@ const styles = StyleSheet.create({
 
   searchContainer: {
     backgroundColor: "#fff",
+
     borderRadius: 24,
+
     padding: 18,
+
     marginBottom: 25,
+
     elevation: 4,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.08,
+
+    shadowRadius: 4,
   },
 
   searchTitle: {
     fontWeight: "bold",
+
     fontSize: 22,
+
     marginBottom: 15,
+
+    color: "#111",
   },
 
   searchBox: {
     backgroundColor: "#f1f1f1",
+
     borderRadius: 18,
+
     paddingHorizontal: 15,
   },
 
   searchInput: {
     height: 50,
     fontSize: 15,
+    color: "#111",
   },
 
   /* TAGS */
 
   tagsContainer: {
-    marginTop: 15,
+    paddingTop: 15,
   },
 
   tag: {
     backgroundColor: "#ececec",
+
     paddingHorizontal: 16,
     paddingVertical: 10,
+
     borderRadius: 14,
+
     marginRight: 10,
+  },
+
+  tagText: {
+    color: "#333",
+    fontWeight: "500",
   },
 
   /* EVENTOS */
 
   eventCard: {
     backgroundColor: "#fff",
+
     borderRadius: 22,
+
     padding: 16,
+
     marginBottom: 14,
+
     flexDirection: "row",
     alignItems: "center",
+
     elevation: 3,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.08,
+
+    shadowRadius: 4,
   },
 
   eventBar: {
     width: 5,
     height: "100%",
+
     backgroundColor: "#2155f3",
+
     borderRadius: 10,
+
     marginRight: 15,
   },
 
   eventTitle: {
     fontWeight: "bold",
     fontSize: 18,
+
+    color: "#111",
   },
 
   eventDate: {
@@ -453,16 +575,33 @@ const styles = StyleSheet.create({
 
   forumTopic: {
     backgroundColor: "#fff",
+
     padding: 18,
+
     borderRadius: 20,
+
     flexDirection: "row",
     justifyContent: "space-between",
+
     elevation: 3,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.08,
+
+    shadowRadius: 4,
   },
 
   forumText: {
     fontWeight: "bold",
     fontSize: 15,
+
+    color: "#111",
   },
 
   hash: {

@@ -41,16 +41,16 @@ export default function NotificationScreen() {
       novo: true,
     },
 
-    {
-      id: 3,
-      tipo: "Repos",
-      titulo: "Repositório atualizado",
-      descricao: "2 novos commits",
-      tempo: "Ontem",
-      icon: "flash",
-      cor: "#0EA5E9",
-      novo: false,
-    },
+    // {
+    // //   id: 3,
+    // //   // tipo: "Repos",
+    // //   titulo: "Repositório atualizado",
+    // //   descricao: "2 novos commits",
+    // //   tempo: "Ontem",
+    // //   icon: "flash",
+    // //   cor: "#0EA5E9",
+    // //   novo: false,
+    // // },
 
     {
       id: 4,
@@ -81,61 +81,67 @@ export default function NotificationScreen() {
       />
 
       {/* FILTROS */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterContainer}
-      >
+      <View style={styles.filterWrapper}>
 
-        {[
-          "Todas",
-          "Forum",
-          "Eventos",
-          "Repos",
-          "Sistema",
-        ].map((item) => (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterContainer}
+        >
 
-          <TouchableOpacity
-            key={item}
-            style={[
-              styles.filterButton,
+          {[
+            "Todas",
+            "Forum",
+            "Eventos",
+            // "Repos",
+            "Sistema",
+          ].map((item) => (
 
-              filtroAtivo === item &&
-                styles.filterButtonActive,
-            ]}
-            onPress={() => setFiltroAtivo(item)}
-            activeOpacity={0.8}
-          >
-
-            <Text
+            <TouchableOpacity
+              key={item}
               style={[
-                styles.filterText,
+                styles.filterButton,
 
                 filtroAtivo === item &&
-                  styles.filterTextActive,
+                  styles.filterButtonActive,
               ]}
+              onPress={() =>
+                setFiltroAtivo(item)
+              }
+              activeOpacity={0.8}
             >
-              {item}
-            </Text>
 
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.filterText,
 
-        ))}
+                  filtroAtivo === item &&
+                    styles.filterTextActive,
+                ]}
+              >
+                {item}
+              </Text>
 
-      </ScrollView>
+            </TouchableOpacity>
+
+          ))}
+
+        </ScrollView>
+
+      </View>
 
       {/* LISTA */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 120,
-        }}
+        contentContainerStyle={styles.scrollContent}
       >
 
+        {/* TITULO */}
         <Text style={styles.sectionTitle}>
           Hoje
         </Text>
 
+        {/* CARDS */}
         {notificacoesFiltradas.map((item) => (
 
           <TouchableOpacity
@@ -162,7 +168,7 @@ export default function NotificationScreen() {
 
             </View>
 
-            {/* TEXTO */}
+            {/* CONTEÚDO */}
             <View style={styles.content}>
 
               <View style={styles.topRow}>
@@ -207,17 +213,25 @@ export default function NotificationScreen() {
 
 const styles = StyleSheet.create({
 
+  /* CONTAINER */
+
   container: {
     flex: 1,
     backgroundColor: "#f5f7fb",
   },
 
+  scrollContent: {
+    paddingBottom: 120,
+  },
+
   /* FILTROS */
+
+  filterWrapper: {
+    maxHeight: 60,
+  },
 
   filterContainer: {
     paddingHorizontal: 18,
-    paddingTop: 15,
-    paddingBottom: 15,
   },
 
   filterButton: {
@@ -257,8 +271,8 @@ const styles = StyleSheet.create({
 
     color: "#111",
 
-    marginTop: 5,
     marginBottom: 15,
+    marginTop: 15,
 
     paddingHorizontal: 18,
   },
@@ -280,6 +294,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
+  /* ICON */
+
   iconContainer: {
     width: 58,
     height: 58,
@@ -291,6 +307,8 @@ const styles = StyleSheet.create({
 
     marginRight: 15,
   },
+
+  /* CONTENT */
 
   content: {
     flex: 1,
