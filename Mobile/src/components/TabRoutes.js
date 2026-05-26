@@ -13,6 +13,7 @@ import ProjetosScreen from '../screens/Projetos';
 import RepositorioScreen from '../screens/Repositorio';
 import TituloScreen from '../screens/Titulo';
 import ConversaScreen from '../screens/Conversa';
+import NotificationScreen from "../screens/NotificationScreen";
 
 
 const Tab = createBottomTabNavigator();
@@ -62,6 +63,7 @@ export default function TabRoutes() {
       <Tab.Screen name="Fórum" component={ForumScreen} />
       <Tab.Screen name="Repositório" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
+      
 
       {/* Ocultas */}
       <Tab.Screen
@@ -74,6 +76,17 @@ export default function TabRoutes() {
         }}
       />
       
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+
       <Tab.Screen
         name="Projetos"
         component={ProjetosScreen}
