@@ -172,7 +172,10 @@ export default function ForumScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f2f2f2" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#f2f2f2" 
+  },
 
   searchWrapper: {
     marginTop: 15,

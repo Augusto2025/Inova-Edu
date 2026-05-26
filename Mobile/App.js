@@ -10,7 +10,6 @@ import SplashScreen from './src/screens/SplashScreen';
 import ForumScreen from './src/screens/Forum'; 
 import ConversaScreen from "./src/screens/Conversa";
 import TituloScreen from "./src/screens/Titulo";
-
 import ProfilePage from './src/screens/Perfil';
 import CursosScreen from './src/screens/Cursos';
 import TurmasScreen from './src/screens/Turmas';
@@ -33,7 +32,6 @@ export default function App() {
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
         <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
-
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
         <Stack.Screen name="Splash" component={SplashScreen}/>
