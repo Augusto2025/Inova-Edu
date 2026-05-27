@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
+import BarraPesquisa from "../components/BarraPesquisa";
 
 export default function ForumScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -103,17 +104,7 @@ export default function ForumScreen({ navigation }) {
       <Header foto={null} escolherImagem={null} nomeTela={"Forum"} />
 
       {/* BUSCA */}
-      <View style={styles.searchWrapper}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#1e4f8a" />
-
-          <TextInput
-            placeholder="Pesquisar Tópicos..."
-            style={styles.input}
-            placeholderTextColor="#999"
-          />
-        </View>
-      </View>
+      <BarraPesquisa />
 
       {/* LISTA DE TÓPICOS */}
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -314,27 +305,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6fb",
   },
 
-  // BUSCA
-  searchWrapper: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
-
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    height: 50,
-  },
-
-  input: {
-    flex: 1,
-    marginLeft: 8,
-    color: "#333",
-  },
 
   // CARD
   card: {

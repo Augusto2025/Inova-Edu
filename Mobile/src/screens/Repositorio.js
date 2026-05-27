@@ -67,7 +67,7 @@ export default function RepositorioScreen() {
       
       <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
-      <BreadcrumbCard titulo="Nome do Curso Selecionado:" itemSub="Curso: Programador de Sistemas" botaoAcao={true} aoPressionar={() => {}} iconeBotao="download" />
+      <BreadcrumbCard titulo="Repositório:" itemSub="Projeto: Sistema de Gestão Hospitalar" botaoAcao={true} aoPressionar={() => {}} iconeBotao="download" />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         

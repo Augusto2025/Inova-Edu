@@ -74,7 +74,7 @@ export default function ProjetosScreen({ navigation }) {
       
       <Header foto={null} escolherImagem={null} nomeTela={"Projetos"} temGoBack={true} telaDestino={"Turmas"} />
 
-      <BreadcrumbCard titulo="Nome do Curso Selecionado:" itemSub="Curso: Programador de Sistemas" />
+      <BreadcrumbCard titulo="Projetos:" itemSub="Turma: ADS-2024-1A" />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* LISTAGEM DE PROJETOS */}

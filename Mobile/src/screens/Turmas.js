@@ -57,7 +57,7 @@ export default function TurmasScreen({ navigation }) {
       */}
       <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} temGoBack={true} telaDestino={"Repositório"} />
 
-      <BreadcrumbCard titulo="Nome do Curso Selecionado:" itemSub="Curso: Programador de Sistemas" />
+      <BreadcrumbCard titulo="Turmas:" itemSub="Curso: Programador de Sistemas" />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {Object.entries(DATA_MOCK).map(([ano, turmas]) => (
