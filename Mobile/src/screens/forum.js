@@ -264,6 +264,7 @@ export default function ForumScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Editar Tópico</Text>
+            <View style={styles.titleUnderline} />
 
             <TextInput
               value={topicoEditando}
@@ -295,6 +296,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f6f6fb",
+  },
+  
+  titleUnderline: {
+    width: 120,
+    height: 3,
+    backgroundColor: "#ff8c00",
+    alignSelf: "center",
+    marginBottom: 20,
+    borderRadius: 10,
   },
 
 

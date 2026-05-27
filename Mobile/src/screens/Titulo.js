@@ -304,8 +304,8 @@ export default function TopicosScreen({
 
       {/* MODAL */}
       <Modal
-        transparent
         visible={modalVisible}
+        transparent
         animationType="fade"
       >
         <View style={styles.overlay}>
