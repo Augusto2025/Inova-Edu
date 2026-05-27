@@ -14,6 +14,7 @@ import {
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 
 import Header from "../components/Header";
+import BarraPesquisa from "../components/BarraPesquisa";
 
 export default function TopicosScreen({ navigation }) {
   const [topicos, setTopicos] = useState([
@@ -216,17 +217,7 @@ export default function TopicosScreen({ navigation }) {
       <Header foto={null} escolherImagem={null} nomeTela={"Título"} />
 
       {/* BUSCA */}
-      <View style={styles.searchWrapper}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#1e4f8a" />
-
-          <TextInput
-            placeholder="Pesquisar títulos..."
-            placeholderTextColor="#999"
-            style={styles.searchInput}
-          />
-        </View>
-      </View>
+      <BarraPesquisa />
 
       {/* IDENTIFICAÇÃO */}
       <View style={styles.pathContainer}>
