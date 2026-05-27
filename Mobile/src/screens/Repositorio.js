@@ -9,16 +9,19 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  TextInput,
-  SafeAreaView
+  TextInput
 } from 'react-native';
+
+// CORREÇÃO AQUI: Importando o SafeAreaView da biblioteca correta para sumir o aviso
+import { SafeAreaView } from 'react-native-safe-area-context'; 
+
 import Header from '../components/Header';
 import SplashScreen from '../screens/SplashScreen';
 
 import { Feather } from '@expo/vector-icons';
-import BreadcrumbCard from '../components/BreadcrumbCard'; // Importando o BreadcrumbCard para mostrar a rota atual
-import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
-import styles from '../styles/Repositorio'; // Importando os estilos específicos para o repositório
+import BreadcrumbCard from '../components/BreadcrumbCard'; 
+import { COLORS } from "../components/Cores"; 
+import styles from '../styles/Repositorio'; 
 
 // DADOS MOCK (PASTAS E ARQUIVOS)
 const REPOSITORIO_MOCK = {
@@ -39,6 +42,24 @@ export default function RepositorioScreen() {
   const [loading, setLoading] = useState(true);
   const [modalPastaVisible, setModalPastaVisible] = useState(false);
   const [selecaoAtiva, setSelecaoAtiva] = useState(false);
+
+  // CORREÇÃO AQUI: Simulando o fim do carregamento para não travar a tela
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // esconde o loading após 1 segundo
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Se ainda estiver carregando, mostra o indicador visual
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.darkBlue }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

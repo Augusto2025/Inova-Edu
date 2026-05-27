@@ -4,19 +4,17 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
-import { Feather, Ionicons } from "@expo/vector-icons";
-
+import { Feather } from "@expo/vector-icons";
 import { useNavigation, TabActions } from "@react-navigation/native";
 
 export default function Header({
   nomeTela,
-  subtitulo,
   temGoBack,
   telaDestino,
 }) {
-
   const navigation = useNavigation();
 
   const lidarComVoltar = () => {
@@ -33,57 +31,45 @@ export default function Header({
       {/* HEADER */}
       <View style={styles.header}>
 
-        {/* ESQUERDA */}
+        {/* ESQUERDA - Perfil com o novo Logo acima */}
         <View style={styles.left}>
-
-          {temGoBack ? (
+          {temGoBack && (
             <TouchableOpacity
               onPress={lidarComVoltar}
               style={styles.backButton}
             >
-              <Feather
-                name="chevron-left"
-                size={24}
-                color="#fff"
-              />
+              <Feather name="chevron-left" size={24} color="#fff" />
             </TouchableOpacity>
-          ) : null}
+          )}
 
-          <View>
-            <Text style={styles.title}>
-              {nomeTela}
-            </Text>
-
-            {subtitulo ? (
-              <View style={styles.subtitleRow}>
-                <Ionicons
-                  name="location-sharp"
-                  size={14}
-                  color="#dfe6ff"
-                />
-
-                <Text style={styles.subtitle}>
-                  {subtitulo}
+          <View style={styles.profileArea}>
+            {/* Nome do app/logo em cima da foto */}
+            <Text style={styles.logoText}>Inova-Edu</Text>
+            
+            <View style={styles.profileContainer}>
+              <Image
+                source={{ uri: "https://i.pravatar.cc/300" }}
+                style={styles.profileImage}
+              />
+              <View>
+                <Text style={styles.title}>{nomeTela}</Text>
+                {/* Apenas o nome do curso aqui embaixo */}
+                <Text style={styles.courseSubtitle}>
+                  Tec. Desenvolvimento de Sistemas
                 </Text>
               </View>
-            ) : null}
+            </View>
           </View>
         </View>
 
         {/* NOTIFICAÇÃO */}
         <TouchableOpacity
-        style={styles.notification}
-          onPress={() => navigation.navigate("Notifications")}>
-          <Feather
-            name="bell"
-            size={24}
-            color="#fff"
-          />
-
+          style={styles.notification}
+          onPress={() => navigation.navigate("Notifications")}
+        >
+          <Feather name="bell" size={24} color="#fff" />
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              3
-            </Text>
+            <Text style={styles.badgeText}>3</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -98,88 +84,86 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: "#2155f3",
   },
-
   header: {
-    paddingTop: 60,
-    paddingBottom: 45,
+    paddingTop: 50,
+    paddingBottom: 40,
     paddingHorizontal: 22,
-
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-
+    alignItems: "flex-end", // Alinha melhor com o crescimento vertical do lado esquerdo
     backgroundColor: "#1459b3",
   },
-
   left: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
-
   backButton: {
     marginRight: 12,
+    marginBottom: 10,
   },
-
-  title: {
+  profileArea: {
+    flexDirection: "column",
+  },
+  logoText: {
     color: "#fff",
-    fontSize: 25,
-    fontWeight: "bold",
+    fontSize: 20,
+    marginBottom: 8,
+    
+    
   },
-
-  subtitleRow: {
+  profileContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
   },
-
-  subtitle: {
+  profileImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    marginRight: 12,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  courseSubtitle: {
     color: "#dfe6ff",
-    marginLeft: 4,
-    fontSize: 14,
+    fontSize: 13,
+    marginTop: 2,
+    fontWeight: "500",
   },
-
   notification: {
     width: 48,
     height: 48,
-
     borderRadius: 24,
-
     justifyContent: "center",
     alignItems: "center",
-
     backgroundColor: "rgba(255,255,255,0.15)",
+    marginBottom: 2, // Ajuste fino de alinhamento
   },
-
   badge: {
     position: "absolute",
     top: 5,
     right: 5,
-
     backgroundColor: "#ff4d67",
-
     width: 18,
     height: 18,
-
     borderRadius: 9,
-
     justifyContent: "center",
     alignItems: "center",
   },
-
   badgeText: {
     color: "#fff",
     fontSize: 10,
     fontWeight: "bold",
   },
-
   curve: {
     height: 35,
-
     backgroundColor: "#f5f7fb",
-
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
-
     marginTop: -15,
   },
 });
