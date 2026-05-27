@@ -11,17 +11,24 @@ import {
   Keyboard,
 } from "react-native";
 
-import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
 import Header from "../components/Header";
 import BarraPesquisa from "../components/BarraPesquisa";
 
-export default function TopicosScreen({ navigation }) {
+export default function TopicosScreen({
+  navigation,
+}) {
   const [topicos, setTopicos] = useState([
     {
       id: "1",
       titulo: "React Native é difícil?",
-      mensagem: "Consegui resolver usando useEffect e useState juntos!",
+      mensagem:
+        "Consegui resolver usando useEffect e useState juntos!",
       horario: "12:30",
       mensagens: 12,
     },
@@ -29,7 +36,8 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "2",
       titulo: "Como usar useState?",
-      mensagem: "Você pode usar assim: const [estado, setEstado]...",
+      mensagem:
+        "Você pode usar assim: const [estado, setEstado]...",
       horario: "Ontem",
       mensagens: 8,
     },
@@ -37,17 +45,21 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "3",
       titulo: "Dúvida sobre FlatList",
-      mensagem: "Alguém sabe como otimizar a performance...",
+      mensagem:
+        "Alguém sabe como otimizar a performance...",
       horario: "Ontem",
       mensagens: 6,
     },
   ]);
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] =
+    useState(false);
 
-  const [novoTitulo, setNovoTitulo] = useState("");
+  const [novoTitulo, setNovoTitulo] =
+    useState("");
 
-  const [editandoId, setEditandoId] = useState(null);
+  const [editandoId, setEditandoId] =
+    useState(null);
 
   // ABRIR CONVERSA
   const abrirTopico = (topico) => {
@@ -78,7 +90,7 @@ export default function TopicosScreen({ navigation }) {
 
         titulo: novoTitulo,
 
-        mensagem: "Novo tópico criado.",
+        mensagem: "Novo tópico criado...",
 
         horario: "Agora",
 
@@ -104,7 +116,9 @@ export default function TopicosScreen({ navigation }) {
 
   // EXCLUIR
   const excluirTopico = (id) => {
-    setTopicos((prev) => prev.filter((item) => item.id !== id));
+    setTopicos((prev) =>
+      prev.filter((item) => item.id !== id),
+    );
   };
 
   // CARD
@@ -114,94 +128,123 @@ export default function TopicosScreen({ navigation }) {
       onPress={() => abrirTopico(item)}
       activeOpacity={0.9}
     >
-      {/* LINHA AZUL */}
-      <View style={styles.leftBorder} />
+      {/* ÍCONE */}
+      <View style={styles.iconBox}>
+        <Ionicons
+          name="chatbubble-ellipses"
+          size={22}
+          color="#fff"
+        />
+      </View>
 
-      <View style={styles.topContent}>
-        {/* ÍCONE */}
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />
+      {/* CONTEÚDO */}
+      <View style={styles.content}>
+        {/* TOPO */}
+        <View style={styles.topRow}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.titulo}
+          </Text>
+
+          <View style={styles.rightInfo}>
+            <Text style={styles.time}>
+              {item.horario}
+            </Text>
           </View>
-
         </View>
 
-        {/* CONTEÚDO */}
-        <View style={styles.infoContainer}>
-          {/* TOPO */}
-          <View style={styles.rowBetween}>
-            <View>
-              <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
-                {item.titulo}
+        {/* DATA */}
+        <Text style={styles.date}>
+          Publicado em 10/05/2024
+        </Text>
+
+        {/* DESCRIÇÃO */}
+        <Text
+          style={styles.description}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {item.mensagem}
+        </Text>
+
+        {/* FOOTER */}
+        <View style={styles.footer}>
+          <View style={styles.footerLeft}>
+            <View style={styles.info}>
+              <Ionicons
+                name="chatbubble-outline"
+                size={14}
+                color="#777"
+              />
+
+              <Text style={styles.infoText}>
+                {item.mensagens} mensagens
               </Text>
             </View>
 
-            {/* HORÁRIO + BADGE */}
-            <View style={styles.rightInfo}>
-              <Text style={styles.time}>{item.horario}</Text>
+            <View style={styles.info}>
+              <Feather
+                name="tag"
+                size={14}
+                color="#777"
+              />
 
-              <View style={styles.messageBadge}>
-                
-              </View>
+              <Text style={styles.infoText}>
+                React Native
+              </Text>
             </View>
           </View>
 
-          {/* MENSAGEM */}
-          <Text style={styles.message} numberOfLines={1} ellipsizeMode="tail">
-            {item.mensagem}
-          </Text>
+          {/* BOTÕES */}
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => editarTopico(item)}
+            >
+              <Feather
+                name="edit-2"
+                size={18}
+                color="#5B5EF7"
+              />
+            </TouchableOpacity>
 
-          {/* FOOTER */}
-          <View style={styles.footer}>
-            <View style={styles.footerItem}>
-              <Ionicons name="chatbubble-outline" size={14} color="#6B7280" />
-
-              <Text style={styles.footerText}>{item.mensagens} mensagens</Text>
-            </View>
-
-            <View style={styles.footerItem}>
-              <Feather name="tag" size={13} color="#6B7280" />
-
-              <Text style={styles.footerText}>React Native</Text>
-            </View>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() =>
+                excluirTopico(item.id)
+              }
+            >
+              <MaterialIcons
+                name="delete-outline"
+                size={20}
+                color="#FF6B6B"
+              />
+            </TouchableOpacity>
           </View>
         </View>
-
-        {/* SETA */}
-        <TouchableOpacity style={styles.arrowButton}>
-          <Ionicons name="chevron-forward" size={20} color="#777" />
-        </TouchableOpacity>
-      </View>
-
-      {/* BOTÕES */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => editarTopico(item)}
-        >
-          <Feather name="edit-2" size={16} color="#2563EB" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => excluirTopico(item.id)}
-        >
-          <MaterialIcons name="delete-outline" size={18} color="#EF4444" />
-        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Header foto={null} escolherImagem={null} nomeTela={"Título"} />
+      <Header
+        foto={null}
+        escolherImagem={null}
+        nomeTela={"Título"}
+      />
 
       {/* BUSCA */}
       <BarraPesquisa />
 
       {/* IDENTIFICAÇÃO */}
       <View style={styles.pathContainer}>
-        <Text style={styles.pathLabel}>Fórum</Text>
+        <Text style={styles.pathLabel}>
+          Fórum
+        </Text>
 
         <Ionicons
           name="chevron-forward"
@@ -210,7 +253,11 @@ export default function TopicosScreen({ navigation }) {
           style={styles.iconArrow}
         />
 
-        <Text style={styles.pathTitulo} numberOfLines={1} ellipsizeMode="tail">
+        <Text
+          style={styles.pathTitulo}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           Título
         </Text>
 
@@ -221,7 +268,9 @@ export default function TopicosScreen({ navigation }) {
           style={styles.iconArrow}
         />
 
-        <Text style={styles.pathActive}>Conversa</Text>
+        <Text style={styles.pathActive}>
+          Conversa
+        </Text>
       </View>
 
       {/* LISTA */}
@@ -246,15 +295,25 @@ export default function TopicosScreen({ navigation }) {
           setModalVisible(true);
         }}
       >
-        <Ionicons name="add" size={32} color="#fff" />
+        <Ionicons
+          name="add"
+          size={32}
+          color="#fff"
+        />
       </TouchableOpacity>
 
       {/* MODAL */}
-      <Modal transparent visible={modalVisible} animationType="fade">
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="fade"
+      >
         <View style={styles.overlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>
-              {editandoId ? "Editar Título" : "Criar Título"}
+              {editandoId
+                ? "Editar Título"
+                : "Criar Título"}
             </Text>
 
             <View style={styles.titleUnderline} />
@@ -270,17 +329,25 @@ export default function TopicosScreen({ navigation }) {
             <View style={styles.buttons}>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={() => setModalVisible(false)}
+                onPress={() =>
+                  setModalVisible(false)
+                }
               >
-                <Text style={styles.cancelText}>Cancelar</Text>
+                <Text style={styles.cancelText}>
+                  Cancelar
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.createButton}
-                onPress={criarOuEditarTopico}
+                onPress={
+                  criarOuEditarTopico
+                }
               >
                 <Text style={styles.createText}>
-                  {editandoId ? "Salvar" : "Criar"}
+                  {editandoId
+                    ? "Salvar"
+                    : "Criar"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -297,28 +364,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4F6FB",
   },
 
-  // BUSCA
-  searchWrapper: {
-    marginTop: 15,
-    paddingHorizontal: 14,
-    paddingBottom: 10,
-  },
-
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-    borderRadius: 25,
-    paddingHorizontal: 14,
-    height: 48,
-    elevation: 2,
-  },
-
-  searchInput: {
-    flex: 1,
-    marginLeft: 10,
-  },
-
   // CAMINHO
   pathContainer: {
     flexDirection: "row",
@@ -327,9 +372,15 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
 
-  pathText: {
+  pathLabel: {
     color: "#777",
     fontSize: 13,
+  },
+
+  pathTitulo: {
+    color: "#777",
+    fontSize: 13,
+    maxWidth: 80,
   },
 
   pathActive: {
@@ -338,13 +389,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
+  iconArrow: {
+    marginHorizontal: 4,
+  },
+
   // CARD
   card: {
     backgroundColor: "#fff",
-    borderRadius: 20,
     marginBottom: 14,
-    padding: 15,
-    position: "relative",
+    borderRadius: 22,
+    padding: 16,
+    flexDirection: "row",
 
     shadowColor: "#000",
 
@@ -359,119 +414,91 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  leftBorder: {
-    position: "absolute",
-    left: 0,
-    top: 15,
-    bottom: 15,
-    width: 4,
-    backgroundColor: "#b7d4f7",
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-
-  topContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  avatarContainer: {
-    position: "relative",
-  },
-
-  avatar: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-
-    backgroundColor: "#0e68d6",
-
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 14,
+    backgroundColor: "#0e68d6",
   },
 
-
-  infoContainer: {
+  content: {
     flex: 1,
-    marginLeft: 12,
   },
 
-  rowBetween: {
+  topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
 
   title: {
-    fontSize: 17,
+    flex: 1,
+    fontSize: 16,
     fontWeight: "700",
-    color: "#111827",
-    maxWidth: 190,
+    color: "#222",
+    marginRight: 10,
   },
 
-
-
-
-
-
   rightInfo: {
-    alignItems: "center",
+    alignItems: "flex-end",
   },
 
   time: {
     fontSize: 12,
-    color: "#6B7280",
-    marginBottom: 8,
+    color: "#888",
+    marginBottom: 6,
   },
 
-  message: {
-    fontSize: 13,
-    color: "#6B7280",
+  date: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+  },
+
+  description: {
+    fontSize: 14,
+    color: "#555",
     marginTop: 8,
-    lineHeight: 18,
-    maxWidth: "95%",
+    lineHeight: 20,
   },
-
-
-
 
   footer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 16,
   },
 
-  footerItem: {
+  footerLeft: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+
+  info: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 18,
+    marginRight: 16,
   },
 
-  footerText: {
-    marginLeft: 5,
+  infoText: {
+    marginLeft: 4,
+    color: "#777",
     fontSize: 12,
-    color: "#6B7280",
   },
 
-  arrowButton: {
-    marginLeft: 8,
-  },
-
-  // ACTIONS
   actions: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 14,
   },
 
   editButton: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "#EEF2FF",
-
+    backgroundColor: "#EEF0FF",
     justifyContent: "center",
     alignItems: "center",
-
     marginRight: 10,
   },
 
@@ -479,8 +506,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "#FEF2F2",
-
+    backgroundColor: "#FFF0F0",
     justifyContent: "center",
     alignItems: "center",
   },
