@@ -21,8 +21,6 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "1",
       titulo: "React Native é difícil?",
-      autor: "Ana",
-      status: "Online",
       mensagem: "Consegui resolver usando useEffect e useState juntos!",
       horario: "12:30",
       mensagens: 12,
@@ -31,8 +29,6 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "2",
       titulo: "Como usar useState?",
-      autor: "Carlos",
-      status: "Há 1h",
       mensagem: "Você pode usar assim: const [estado, setEstado]...",
       horario: "Ontem",
       mensagens: 8,
@@ -41,8 +37,6 @@ export default function TopicosScreen({ navigation }) {
     {
       id: "3",
       titulo: "Dúvida sobre FlatList",
-      autor: "Mariana",
-      status: "Há 3h",
       mensagem: "Alguém sabe como otimizar a performance...",
       horario: "Ontem",
       mensagens: 6,
@@ -83,10 +77,6 @@ export default function TopicosScreen({ navigation }) {
         id: Date.now().toString(),
 
         titulo: novoTitulo,
-
-        autor: "Você",
-
-        status: "Agora",
 
         mensagem: "Novo tópico criado.",
 
@@ -134,7 +124,6 @@ export default function TopicosScreen({ navigation }) {
             <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />
           </View>
 
-          <View style={styles.onlineDot} />
         </View>
 
         {/* CONTEÚDO */}
@@ -145,15 +134,6 @@ export default function TopicosScreen({ navigation }) {
               <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
                 {item.titulo}
               </Text>
-
-              {/* AUTOR */}
-              <View style={styles.authorRow}>
-                <Text style={styles.author}>{item.autor}</Text>
-
-                <Text style={styles.dot}>•</Text>
-
-                <Text style={styles.onlineText}>{item.status}</Text>
-              </View>
             </View>
 
             {/* HORÁRIO + BADGE */}
@@ -161,7 +141,7 @@ export default function TopicosScreen({ navigation }) {
               <Text style={styles.time}>{item.horario}</Text>
 
               <View style={styles.messageBadge}>
-                <Text style={styles.messageBadgeText}>{item.mensagens}</Text>
+                
               </View>
             </View>
           </View>
@@ -385,7 +365,7 @@ const styles = StyleSheet.create({
     top: 15,
     bottom: 15,
     width: 4,
-    backgroundColor: "#4B5EFF",
+    backgroundColor: "#b7d4f7",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
@@ -404,23 +384,12 @@ const styles = StyleSheet.create({
     height: 58,
     borderRadius: 29,
 
-    backgroundColor: "#4B5EFF",
+    backgroundColor: "#0e68d6",
 
     justifyContent: "center",
     alignItems: "center",
   },
 
-  onlineDot: {
-    position: "absolute",
-    bottom: 2,
-    right: 2,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: "#22C55E",
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
 
   infoContainer: {
     flex: 1,
@@ -439,28 +408,10 @@ const styles = StyleSheet.create({
     maxWidth: 190,
   },
 
-  authorRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 3,
-  },
 
-  author: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#374151",
-  },
 
-  dot: {
-    marginHorizontal: 6,
-    color: "#9CA3AF",
-  },
 
-  onlineText: {
-    fontSize: 12,
-    color: "#22C55E",
-    fontWeight: "500",
-  },
+
 
   rightInfo: {
     alignItems: "center",
@@ -480,21 +431,8 @@ const styles = StyleSheet.create({
     maxWidth: "95%",
   },
 
-  messageBadge: {
-    backgroundColor: "#4B5EFF",
-    minWidth: 26,
-    height: 26,
-    borderRadius: 13,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 6,
-  },
 
-  messageBadgeText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 12,
-  },
+
 
   footer: {
     flexDirection: "row",

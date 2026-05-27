@@ -9,7 +9,7 @@ export default function BarraPesquisa() {
                 <Ionicons name="search" size={20} color="#1e4f8a" />
 
                 <TextInput
-                placeholder="Pesquisar Tópicos..."
+                placeholder="Pesquisar"
                 style={styles.input}
                 placeholderTextColor="#999"
                 />
@@ -20,7 +20,7 @@ export default function BarraPesquisa() {
 
 const styles = StyleSheet.create({
   searchWrapper: {
-    marginTop: 15,
+    marginTop: -20,
     paddingHorizontal: 10,
     paddingBottom: 10,
   },

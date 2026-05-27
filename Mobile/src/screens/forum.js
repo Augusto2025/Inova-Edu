@@ -24,8 +24,7 @@ export default function ForumScreen({ navigation }) {
       categoria: "React Native",
       mensagens: 12,
       tempo: "há 2 min",
-      badge: 3,
-      cor: "#5B5EF7",
+      cor: "#0e68d6",
     },
     {
       titulo: "Meu segundo tópico",
@@ -34,8 +33,7 @@ export default function ForumScreen({ navigation }) {
       categoria: "JavaScript",
       mensagens: 8,
       tempo: "Ontem",
-      badge: 8,
-      cor: "#16C79A",
+      cor: "#0e68d6",
     },
     {
       titulo: "Meu terceiro tópico",
@@ -43,8 +41,7 @@ export default function ForumScreen({ navigation }) {
       categoria: "React Native",
       mensagens: 5,
       tempo: "2 dias atrás",
-      badge: 5,
-      cor: "#FF8A34",
+      cor: "#0e68d6",
     },
   ]);
 
@@ -65,8 +62,7 @@ export default function ForumScreen({ navigation }) {
       categoria: "React Native",
       mensagens: 0,
       tempo: "Agora",
-      badge: 1,
-      cor: "#5B5EF7",
+      cor: "#0e68d6",
     };
 
     setTopicos([...topicos, novo]);
@@ -143,11 +139,7 @@ export default function ForumScreen({ navigation }) {
                 <View style={styles.rightInfo}>
                   <Text style={styles.time}>{item.tempo}</Text>
 
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {item.badge}
-                    </Text>
-                  </View>
+                 
                 </View>
               </View>
 
@@ -353,21 +345,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
-  badge: {
-    backgroundColor: "#5B5EF7",
-    minWidth: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 6,
-  },
-
-  badgeText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 12,
-  },
+  
 
   date: {
     fontSize: 12,
