@@ -128,7 +128,7 @@ export default function ConfiguracoesScreen({ navigation }) {
 
           <TouchableOpacity style={styles.perfilBtn} onPress={irParaPerfil}>
             <Text style={styles.perfilBtnText}>
-              Editar Perfil
+              Visualizar Perfil
             </Text>
           </TouchableOpacity>
 
