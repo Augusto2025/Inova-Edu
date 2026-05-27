@@ -302,7 +302,7 @@ export default function TopicosScreen({
         />
       </TouchableOpacity>
 
-      {/* MODAL */}
+      {/* MODAL EDITAR */}
       <Modal
         visible={modalVisible}
         transparent
@@ -571,6 +571,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  // botoes modal editar
   buttons: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -578,7 +579,7 @@ const styles = StyleSheet.create({
 
   cancelButton: {
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#d3dbd1",
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 20,
