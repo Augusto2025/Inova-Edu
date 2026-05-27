@@ -44,7 +44,7 @@ export default function RepositorioScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
+      <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
       <BreadcrumbCard titulo="Repositório:" itemSub="Projeto: Sistema de Gestão Hospitalar" botaoAcao={true} aoPressionar={() => {}} iconeBotao="download" />
 

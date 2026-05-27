@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from "../components/Cores";
 
 // telas
 import HomeScreen from '../screens/HomeScreen';
@@ -14,6 +15,7 @@ import RepositorioScreen from '../screens/Repositorio';
 import TituloScreen from '../screens/Titulo';
 import ConversaScreen from '../screens/Conversa';
 import NotificationScreen from "../screens/NotificationScreen";
+import ProfileScreen from '../screens/Perfil';
 
 
 const Tab = createBottomTabNavigator();
@@ -47,13 +49,13 @@ export default function TabRoutes() {
         tabBarInactiveTintColor: '#dcdcdc',
 
         tabBarStyle: {
-          backgroundColor: '#1459b3',
-          height: 85,
+          backgroundColor: COLORS.primary,
+          height: 95,
         },
 
         tabBarLabelStyle: {
-          fontSize: 13,
-          marginBottom: 8,
+          fontSize: 12,
+          marginTop: 5,
         },
       })}
     >
@@ -63,9 +65,17 @@ export default function TabRoutes() {
       <Tab.Screen name="Fórum" component={ForumScreen} />
       <Tab.Screen name="Repositório" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
-      
 
       {/* Ocultas */}
+      <Tab.Screen 
+        name="Perfil" 
+        component={ProfileScreen}
+        options={{
+            tabBarItemStyle: {
+              display: 'none',
+            },
+          }}
+      />
       <Tab.Screen
         name="Turmas"
         component={TurmasScreen}
@@ -126,10 +136,6 @@ export default function TabRoutes() {
           },
         }}
       />
-
-
-
-
     </Tab.Navigator>
   );
 }

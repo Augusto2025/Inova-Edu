@@ -28,6 +28,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabRoutes}/>
+        <Stack.Screen name="Profile" component={ProfilePage}/>
         <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
@@ -44,7 +45,6 @@ export default function App() {
  
         <Stack.Screen name="Eventos" component={CalendarScreen}/>
 
-        <Stack.Screen name="Profile" component={ProfilePage}/>
 
         {/* <Stack.Screen name="footerforum" component={FooterForum}/>  
         <Stack.Screen name="headerforum" component={HeaderForum}/> */}

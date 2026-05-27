@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 import { Feather, Ionicons } from "@expo/vector-icons";
-
+import { COLORS } from "./Cores"; // Importando as cores para manter a consistência visual
 import { useNavigation, TabActions } from "@react-navigation/native";
 
 export default function Header({
@@ -96,7 +96,7 @@ export default function Header({
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#2155f3",
+    backgroundColor: COLORS.primary,
   },
 
   header: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
 
-    backgroundColor: "#1459b3",
+    backgroundColor: COLORS.primary,
   },
 
   left: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   curve: {
     height: 35,
 
-    backgroundColor: "#f5f7fb",
+    backgroundColor: COLORS.background,
 
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
