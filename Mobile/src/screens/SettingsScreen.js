@@ -134,30 +134,6 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-        {/* Geral */}
-
-        <Text style={styles.titulo}>
-          Geral
-        </Text>
-
-        <View style={styles.card}>
-
-          <ItemSwitch
-            icon="volume-high"
-            titulo="Som do aplicativo"
-            valor={som}
-            funcao={setSom}
-          />
-
-          <ItemSwitch
-            icon="phone-portrait"
-            titulo="Vibração"
-            valor={vibracao}
-            funcao={setVibracao}
-          />
-
-        </View>
-
         {/* Repositório */}
 
         <Text style={styles.titulo}>
@@ -221,32 +197,10 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-        {/* Segurança */}
-
-        <Text style={styles.titulo}>
-          Segurança
-        </Text>
-
-        <View style={styles.card}>
-
-          <ItemSwitch
-            icon="shield-checkmark"
-            titulo="Verificação em 2 etapas"
-            valor={duasEtapas}
-            funcao={setDuasEtapas}
-          />
-
-          <ItemBotao
-            icon="lock-closed"
-            titulo="Alterar senha"
-          />
-
-        </View>
-
         {/* Aparência */}
 
         <Text style={styles.titulo}>
-          Aparência
+          Aparência e Acessibilidade
         </Text>
 
         <View style={styles.card}>
@@ -259,13 +213,13 @@ export default function ConfiguracoesScreen({ navigation }) {
           />
 
           <ItemBotao
-            icon="color-palette"
-            titulo="Tema"
+            icon="text"
+            titulo="Tamanho da fonte"
           />
 
           <ItemBotao
-            icon="text"
-            titulo="Tamanho da fonte"
+            icon="volume-high"
+            titulo="Texto em voz alta"
           />
 
         </View>
@@ -283,10 +237,6 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-
-
-
-
         <TouchableOpacity
           style={styles.logout}
         >
@@ -298,7 +248,7 @@ export default function ConfiguracoesScreen({ navigation }) {
           />
 
           <Text style={styles.logoutText}>
-            Sair da conta
+            Sair do app
           </Text>
 
         </TouchableOpacity>
