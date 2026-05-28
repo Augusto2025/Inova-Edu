@@ -15,11 +15,12 @@ import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 export default function HomeScreen() {
   const primaryColor = "#2155f3";
   const alertColor = "#ff4d67";
+  const Logo = require('../../assets/Logo_azul_icone.png');
 
   return (
     <View style={styles.safe}>
       {/* HEADER */}
-      <Header nomeTela="Olá, Alcides 👋" />
+      <Header nomeTela="Olá, Alcides 👋" subtitulo="Tec. Desenvolvimento de Sistemas" />
 
       {/* CONTEÚDO COM A NOVA ORDEM */}
       <ScrollView
@@ -27,6 +28,13 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* <View style={{ alignItems: "center", marginBottom: 10 }}>
+          <Image
+            source={Logo}
+            style={{ width: 120, height: 120, resizeMode: "contain"}}
+          />
+        </View> */}
+
         {/* 1. PRÓXIMOS EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
 
@@ -245,11 +253,9 @@ const styles = StyleSheet.create({
   /* CONTAINER */
   safe: {
     flex: 1,
-    backgroundColor: "#2155f3",
   },
   container: {
     flex: 1,
-    backgroundColor: "#f5f7fb",
   },
   scrollContent: {
     paddingHorizontal: 18,

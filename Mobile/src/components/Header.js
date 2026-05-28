@@ -15,6 +15,7 @@ export default function Header({
   nomeTela,
   temGoBack,
   telaDestino,
+  subtitulo,
 }) {
   const navigation = useNavigation();
 
@@ -34,47 +35,49 @@ export default function Header({
 
         {/* ESQUERDA - Perfil com o novo Logo acima */}
         <View style={styles.left}>
-          {temGoBack && (
-            <TouchableOpacity
-              onPress={lidarComVoltar}
-              style={styles.backButton}
-            >
-              <Feather name="chevron-left" size={24} color="#fff" />
-            </TouchableOpacity>
-          )}
 
           <View style={styles.profileArea}>
-            {/* Nome do app/logo em cima da foto */}
-            <Text style={styles.logoText}>Inova-Edu</Text>
             
             <View style={styles.profileContainer}>
-              <Image
-                source={{ uri: "https://i.pravatar.cc/300" }}
-                style={styles.profileImage}
-              />
-              <View>
-                <Text style={styles.title}>{nomeTela}</Text>
-                {/* Apenas o nome do curso aqui embaixo */}
-                <Text style={styles.courseSubtitle}>
-                  Tec. Desenvolvimento de Sistemas
-                </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {temGoBack && (
+                  <TouchableOpacity
+                    onPress={lidarComVoltar}
+                    style={styles.backButton}
+                  >
+                    <Feather name="chevron-left" size={24} color="#fff" />
+                  </TouchableOpacity>
+                )}
+
+                <Image
+                  source={{ uri: "https://i.pravatar.cc/300" }}
+                  style={styles.profileImage}
+                />
+
+                <View>
+                  <Text style={styles.title}>{nomeTela}</Text>
+                  {subtitulo && (
+                    <Text style={styles.courseSubtitle}>{subtitulo}</Text>
+                  )}
+                </View>
+
               </View>
+
+              {/* NOTIFICAÇÃO */}
+              <TouchableOpacity
+                style={styles.notification}
+                onPress={() => navigation.navigate("Notifications")}
+              >
+                <Feather name="bell" size={24} color="#fff" />
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </TouchableOpacity>
+
             </View>
           </View>
         </View>
-
-        {/* NOTIFICAÇÃO */}
-        <TouchableOpacity
-          style={styles.notification}
-          onPress={() => navigation.navigate("Notifications")}
-        >
-          <Feather name="bell" size={24} color="#fff" />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>3</Text>
-          </View>
-        </TouchableOpacity>
       </View>
-
       {/* CURVA */}
       <View style={styles.curve} />
     </View>
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   header: {
-    paddingTop: 50,
+    paddingTop: 70,
     paddingBottom: 40,
     paddingHorizontal: 22,
     flexDirection: "row",
@@ -96,25 +99,25 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   left: {
-    flexDirection: "row",
-    alignItems: "flex-end",
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
   backButton: {
-    marginRight: 12,
-    marginBottom: 10,
+    marginRight: 5,
   },
   profileArea: {
     flexDirection: "column",
   },
   logoText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 25,
     marginBottom: 8,
-    
-    
+    alignItems: "center",
   },
   profileContainer: {
+    width: "100%",
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   profileImage: {
