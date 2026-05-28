@@ -14,12 +14,12 @@
     "@react-navigation/stack": "^7.8.9",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "expo": "^56.0.3",
-    "expo-build-properties": "~56.0.13",
+    "expo": "~56.0.5",
+    "expo-build-properties": "~56.0.15",
     "expo-file-system": "~56.0.7",
-    "expo-image-picker": "~56.0.12",
+    "expo-image-picker": "~56.0.14",
     "expo-print": "~56.0.3",
-    "expo-sharing": "~56.0.12",
+    "expo-sharing": "~56.0.14",
     "expo-status-bar": "~56.0.4",
     "express": "^5.2.1",
     "lucide-react": "^1.7.0",
@@ -29,7 +29,7 @@
     "react-native-calendars": "^1.1314.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.1"
+    "react-native-screens": "4.25.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"
