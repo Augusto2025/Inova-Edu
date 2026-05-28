@@ -232,9 +232,9 @@ export default function TopicosScreen({
   return (
     <View style={styles.container}>
       <Header
-        foto={null}
-        escolherImagem={null}
         nomeTela={"Título"}
+        temGoBack={true} 
+        telaDestino={"Fórum"}
       />
 
       {/* BUSCA */}

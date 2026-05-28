@@ -139,9 +139,9 @@ export default function ConversaScreen({
   return (
     <View style={styles.container}>
       <Header
-        foto={null}
-        escolherImagem={null}
         nomeTela={"Conversa"}
+        temGoBack={true}
+        telaDestino={"Titulo"}
       />
 
       {/* CAMINHO */}
@@ -407,7 +407,6 @@ export default function ConversaScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F6FB",
   },
 
   // CAMINHO
