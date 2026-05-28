@@ -52,18 +52,10 @@ export default function RepositorioScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Se ainda estiver carregando, mostra o indicador visual
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.darkBlue }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
+  
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
+    <ScrollView style={styles.container}>
       
       <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
@@ -106,6 +98,6 @@ export default function RepositorioScreen() {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </ScrollView>
   );
 }

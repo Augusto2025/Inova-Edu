@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     padding: 18,
     borderRadius: 12,
     borderLeftWidth: 5,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 12,
   },
   turmaCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderRadius: 10,
     padding: 15,
     marginBottom: 8,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   codigoText: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.darkBlue,
+    color: COLORS.dark,
   },
   turnoText: {
     fontSize: 12,

@@ -31,7 +31,7 @@ export default function TabRoutes() {
           let iconName = 'home';
 
           if (route.name === 'Home') iconName = 'home';
-          else if (route.name === 'Calendário') iconName = 'calendar';
+          else if (route.name === 'Eventos') iconName = 'calendar';
           else if (route.name === 'Fórum') iconName = 'chatbubble';
           else if (route.name === 'Repositório') iconName = 'folder';
           else if (route.name === 'Config') iconName = 'settings';
@@ -60,9 +60,9 @@ export default function TabRoutes() {
       })}
     >
       {/* Visíveis */}
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Calendário" component={CalendarScreen} />
+      <Tab.Screen name="Eventos" component={CalendarScreen} />
       <Tab.Screen name="Fórum" component={ForumScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Repositório" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
 

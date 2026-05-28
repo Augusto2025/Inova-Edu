@@ -9,18 +9,18 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-
+import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
-  const primaryColor = "#2155f3";
-  const alertColor = "#ff4d67";
+  const primaryColor = COLORS.primary;
+  const alertColor = COLORS.alert;
   const Logo = require('../../assets/Logo_azul_icone.png');
 
   return (
     <View style={styles.safe}>
       {/* HEADER */}
-      <Header nomeTela="Olá, Alcides 👋" subtitulo="Tec. Desenvolvimento de Sistemas" />
+      <Header nomeTela="Olá, Alcides" subtitulo="Tec. Desenvolvimento de Sistemas" />
 
       {/* CONTEÚDO COM A NOVA ORDEM */}
       <ScrollView

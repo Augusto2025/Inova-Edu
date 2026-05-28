@@ -23,7 +23,7 @@ export default function ConversaScreen({
   route,
 }) {
   // IDENTIFICAÇÃO
-  const forum = route.params?.forum || "Forum";
+  const forum = route.params?.forum || "React Native modulos e pacotes";
 
   const titulo =
     route.params?.topico ||

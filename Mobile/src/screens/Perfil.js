@@ -6,6 +6,7 @@ import {
 // Usando o pacote de ícones padrão do Expo
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import Header from "../components/Header";
+import ModalSave from '../components/ModalSave'; // Importando o componente ModalSave para reutilização
 import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
 
 export default function ProfileScreen() {
@@ -22,6 +23,10 @@ export default function ProfileScreen() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputsExtras, setInputsExtras] = useState([]);
+  const lidarComSalvar = () => {    
+    setIsModalOpen(false); // Fecha o modal após salvar
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,30 +106,20 @@ export default function ProfileScreen() {
       </ScrollView>
 
       {/* MODAL DE EDIÇÃO */}
-      <Modal visible={isModalOpen} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Editar Perfil</Text>
-              <TouchableOpacity onPress={() => setIsModalOpen(false)}>
-                <Ionicons name="close-circle" size={28} color="white" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.modalBody}>
-              <TextInput style={styles.input} placeholder="Nome" defaultValue={user.nome} />
-              <TextInput 
-                style={[styles.input, { height: 50 }]} 
-                placeholder="Bio" 
-                multiline 
-                defaultValue={user.descricao} 
-              />
-              <TouchableOpacity style={styles.saveBtn} onPress={() => setIsModalOpen(false)}>
-                <Text style={styles.saveBtnText}>Salvar Alterações</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ModalSave
+        modalEditarVisible={isModalOpen}        
+        setModalEditarVisible={setIsModalOpen}  
+        salvarEdicao={lidarComSalvar}           
+        tituloModal="Preencher Cadastro"
+        
+        adicionarMaisInputs={true}
+        
+        // 🚀 Aqui você define os nomes personalizados que quiser e quantos quiser!
+        labelsInputs={["Nome Completo", "E-mail Corporativo", "Telefone de Contato"]}
+        
+        inputsExtras={inputsExtras}
+        setInputsExtras={setInputsExtras}
+      />
 
     </SafeAreaView>
   );

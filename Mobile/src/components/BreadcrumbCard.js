@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     margin: 15,
     marginBottom: 0,
     borderLeftWidth: 5,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderLeftColor: COLORS.accent,
   },
   breadcrumbInfo: { // Adicionado para evitar quebra caso use propriedades dele
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   textPrimary: { 
     fontSize: 14, 
     fontWeight: 'bold', 
-    color: COLORS.darkBlue, 
+    color: COLORS.dark, 
     marginTop: 2 
   },
   itemSub: { 

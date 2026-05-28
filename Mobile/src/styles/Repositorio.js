@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   
   header: {
     height: 60,
-    backgroundColor: COLORS.darkBlue,
+    backgroundColor: COLORS.dark,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 
   // Breadcrumb
   breadcrumbCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderRadius: 12,
     padding: 15,
     flexDirection: 'row',
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.accent,
   },
   breadcrumbPath: { fontSize: 11, color: COLORS.textSecondary },
-  projetoBadge: { fontSize: 15, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },
+  projetoBadge: { fontSize: 15, fontWeight: 'bold', color: COLORS.dark, marginTop: 2 },
   btnActionMain: { width: 45, height: 45, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
 
   // Listagem
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   btnUploadSmallText: { color: COLORS.primary, fontSize: 12, fontWeight: 'bold', marginLeft: 5 },
 
   itemCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderRadius: 12,
     padding: 12,
     flexDirection: 'row',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: 20 },
   modalContent: { backgroundColor: 'white', borderRadius: 20, padding: 20 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.darkBlue },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.dark },
   label: { fontSize: 14, color: COLORS.textMain, marginBottom: 8, fontWeight: '500' },
   input: {
     backgroundColor: '#F8FAFC',

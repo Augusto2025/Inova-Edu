@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   },
 
   email: {
-    color: COLORS.darkBlue,
+    color: COLORS.dark,
   },
   
   perfilBtn: {

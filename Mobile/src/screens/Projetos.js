@@ -70,7 +70,7 @@ export default function ProjetosScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
       <Header foto={null} escolherImagem={null} nomeTela={"Projetos"} temGoBack={true} telaDestino={"Turmas"} />
 
