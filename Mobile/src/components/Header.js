@@ -14,12 +14,18 @@ export default function Header({
   nomeTela,
   temGoBack,
   telaDestino,
+  exibirPerfil = false, 
+  exibirCurva = true, 
 }) {
   const navigation = useNavigation();
 
   const lidarComVoltar = () => {
     if (telaDestino) {
-      navigation.dispatch(TabActions.jumpTo(telaDestino));
+      try {
+        navigation.dispatch(TabActions.jumpTo(telaDestino));
+      } catch (e) {
+        navigation.navigate(telaDestino);
+      }
     } else {
       navigation.goBack();
     }
@@ -28,41 +34,50 @@ export default function Header({
   return (
     <View style={styles.wrapper}>
 
-      {/* HEADER */}
+      {/* HEADER: Agora com padding fixo e igual para todas as telas */}
       <View style={styles.header}>
 
-        {/* ESQUERDA - Perfil com o novo Logo acima */}
+        {/* ESQUERDA */}
         <View style={styles.left}>
-          {temGoBack && (
-            <TouchableOpacity
-              onPress={lidarComVoltar}
-              style={styles.backButton}
-            >
-              <Feather name="chevron-left" size={24} color="#fff" />
-            </TouchableOpacity>
-          )}
-
-          <View style={styles.profileArea}>
-            {/* Nome do app/logo em cima da foto */}
-            <Text style={styles.logoText}>Inova-Edu</Text>
-            
+          
+          {/* CASO 1: SE FOR A HOME (exibirPerfil === true) */}
+          {exibirPerfil ? (
             <View style={styles.profileContainer}>
               <Image
                 source={{ uri: "https://i.pravatar.cc/300" }}
                 style={styles.profileImage}
               />
-              <View>
-                <Text style={styles.title}>{nomeTela}</Text>
-                {/* Apenas o nome do curso aqui embaixo */}
-                <Text style={styles.courseSubtitle}>
+              <View style={styles.rightHeaderText}>
+                <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
+                <Text style={styles.courseSubtitle} numberOfLines={1}>
                   Tec. Desenvolvimento de Sistemas
                 </Text>
               </View>
             </View>
-          </View>
+          ) : (
+            
+            /* CASO 2: SE FOR OUTRA TELA (Sem perfil, com botão de voltar embaixo do tema) */
+            <View style={styles.noProfileContainer}>
+              {/* O Tema/Título fica em cima, no mesmo nível de altura da foto da Home */}
+              <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
+              
+              {/* O botão de voltar fica embaixo, alinhado onde ficaria o subtítulo da Home */}
+              {temGoBack && (
+                <TouchableOpacity
+                  onPress={lidarComVoltar}
+                  style={styles.backButtonUnder}
+                  activeOpacity={0.7}
+                >
+                  <Feather name="arrow-left" size={16} color="#dfe6ff" />
+                  <Text style={styles.backButtonText}>Voltar</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
         </View>
 
-        {/* NOTIFICAÇÃO */}
+        {/* NOTIFICAÇÃO (Fica travada no topo à direita em todas as telas) */}
         <TouchableOpacity
           style={styles.notification}
           onPress={() => navigation.navigate("Notifications")}
@@ -75,42 +90,32 @@ export default function Header({
       </View>
 
       {/* CURVA */}
-      <View style={styles.curve} />
+      {exibirCurva && (
+        <View style={styles.curveContainer}>
+          <View style={styles.curve} />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#2155f3",
+    backgroundColor: "#1459b3",
   },
   header: {
-    paddingTop: 50,
-    paddingBottom: 40,
+    paddingTop: 80,
+    paddingBottom: 16, // Travado igual para todos!
     paddingHorizontal: 22,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end", // Alinha melhor com o crescimento vertical do lado esquerdo
-    backgroundColor: "#1459b3",
+    alignItems: "flex-start", // Alinha pelo topo para a notificação não dançar
   },
   left: {
-    flexDirection: "row",
-    alignItems: "flex-end",
+    flex: 1,
+    marginRight: 10,
   },
-  backButton: {
-    marginRight: 12,
-    marginBottom: 10,
-  },
-  profileArea: {
-    flexDirection: "column",
-  },
-  logoText: {
-    color: "#fff",
-    fontSize: 20,
-    marginBottom: 8,
-    
-    
-  },
+  // Estrutura da Home
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -123,6 +128,29 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
   },
+  rightHeaderText: {
+    flex: 1,
+  },
+  
+  // Estrutura das outras telas (Sem perfil)
+  noProfileContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    height: 52, // Força ter EXATAMENTE a mesma altura que a foto de perfil da Home
+  },
+  backButtonUnder: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  backButtonText: {
+    color: "#dfe6ff",
+    fontSize: 13,
+    fontWeight: "500",
+    marginLeft: 4,
+  },
+
+  // Textos Globais
   title: {
     color: "#fff",
     fontSize: 22,
@@ -130,10 +158,12 @@ const styles = StyleSheet.create({
   },
   courseSubtitle: {
     color: "#dfe6ff",
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 2,
     fontWeight: "500",
   },
+
+  // Botão de Notificação
   notification: {
     width: 48,
     height: 48,
@@ -141,7 +171,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.15)",
-    marginBottom: 2, // Ajuste fino de alinhamento
+    alignSelf: "center", // Mantém centralizado verticalmente com o bloco da esquerda
   },
   badge: {
     position: "absolute",
@@ -159,11 +189,15 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
+
+  // Sistema da Curva
+  curveContainer: {
+    backgroundColor: "#1459b3",
+  },
   curve: {
-    height: 35,
+    height: 45,
     backgroundColor: "#f5f7fb",
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
-    marginTop: -15,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
 });

@@ -6,14 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator,
-  Alert,
-  Modal,
-  TextInput
+  ActivityIndicator
 } from 'react-native';
-
-// CORREÇÃO AQUI: Importando o SafeAreaView da biblioteca correta para sumir o aviso
-import { SafeAreaView } from 'react-native-safe-area-context'; 
 
 import Header from '../components/Header';
 import SplashScreen from '../screens/SplashScreen';
@@ -40,72 +34,82 @@ const REPOSITORIO_MOCK = {
 
 export default function RepositorioScreen() {
   const [loading, setLoading] = useState(true);
-  const [modalPastaVisible, setModalPastaVisible] = useState(false);
   const [selecaoAtiva, setSelecaoAtiva] = useState(false);
 
-  // CORREÇÃO AQUI: Simulando o fim do carregamento para não travar a tela
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // esconde o loading após 1 segundo
+    }, 600); 
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Se ainda estiver carregando, mostra o indicador visual
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.darkBlue }}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1459b3' }}>
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
+    // ALTERADO: Trocado por View normal para alinhar a altura exata do Header com as outras telas
+    <View style={[styles.container, { flex: 1, backgroundColor: '#1459b3' }]}>
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
+      {/* StatusBar configurada exatamente igual às outras telas */}
+      <StatusBar barStyle="light-content" backgroundColor="#1459b3" translucent={false} />
+      
+      {/* Header padrão chamando os parâmetros limpos */}
+      <Header nomeTela="Repositório" temGoBack={true} telaDestino="Home" />
 
-      <BreadcrumbCard titulo="Repositório:" itemSub="Projeto: Sistema de Gestão Hospitalar" botaoAcao={true} aoPressionar={() => {}} iconeBotao="download" />
+      {/* Corpo da tela com o fundo correto */}
+      <View style={{ flex: 1, backgroundColor: '#f5f7fb' }}>
+        <BreadcrumbCard 
+          titulo="Repositório:" 
+          itemSub="Projeto: Sistema de Gestão Hospitalar" 
+          botaoAcao={true} 
+          aoPressionar={() => {}} 
+          iconeBotao="download" 
+        />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        {/* SEÇÃO DE PASTAS */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Pastas</Text>
-        </View>
-
-        {REPOSITORIO_MOCK.pastas.map((pasta) => (
-          <TouchableOpacity key={pasta.id} style={[styles.itemCard, styles.folderBorder]}>
-            <View style={styles.itemInfo}>
-              {selecaoAtiva && <View style={styles.checkboxPlaceholder} />}
-              <Feather name="folder" size={24} color={COLORS.primary} />
-              <View style={{ marginLeft: 12 }}>
-                <Text style={styles.itemName}>{pasta.nome}</Text>
-                <Text style={styles.itemSub}>{pasta.itens} itens</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-
-        {/* SEÇÃO DE ARQUIVOS */}
-        <View style={[styles.sectionHeader, { marginTop: 20 }]}>
-          <Text style={styles.sectionTitle}>Arquivos</Text>
-        </View>
-
-        {REPOSITORIO_MOCK.arquivos.map((arquivo) => (
-          <View key={arquivo.id} style={[styles.itemCard, styles.fileBorder]}>
-            <View style={styles.itemInfo}>
-              <Feather name="file-text" size={24} color={COLORS.textSecondary} />
-              <View style={{ marginLeft: 12 }}>
-                <Text style={styles.itemName}>{arquivo.nome}</Text>
-                <Text style={styles.itemSub}>{arquivo.tamanho}</Text>
-              </View>
-            </View>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          
+          {/* SEÇÃO DE PASTAS */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Pastas</Text>
           </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+
+          {REPOSITORIO_MOCK.pastas.map((pasta) => (
+            <TouchableOpacity key={pasta.id} style={[styles.itemCard, styles.folderBorder]}>
+              <View style={styles.itemInfo}>
+                {selecaoAtiva && <View style={styles.checkboxPlaceholder} />}
+                <Feather name="folder" size={24} color={COLORS.primary} />
+                <View style={{ marginLeft: 12 }}>
+                  <Text style={styles.itemName}>{pasta.nome}</Text>
+                  <Text style={styles.itemSub}>{pasta.itens} itens</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+
+          {/* SEÇÃO DE ARQUIVOS */}
+          <View style={[styles.sectionHeader, { marginTop: 20 }]}>
+            <Text style={styles.sectionTitle}>Arquivos</Text>
+          </View>
+
+          {REPOSITORIO_MOCK.arquivos.map((arquivo) => (
+            <View key={arquivo.id} style={[styles.itemCard, styles.fileBorder]}>
+              <View style={styles.itemInfo}>
+                <Feather name="file-text" size={24} color={COLORS.textSecondary} />
+                <View style={{ marginLeft: 12 }}>
+                  <Text style={styles.itemName}>{arquivo.nome}</Text>
+                  <Text style={styles.itemSub}>{arquivo.tamanho}</Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 }
