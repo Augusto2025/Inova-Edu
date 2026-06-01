@@ -76,8 +76,7 @@ export default function NotificationScreen() {
 
       {/* HEADER */}
       <Header
-        nomeTela="Notificações 🔔"
-        subtitulo="Atualizações recentes"
+        nomeTela="Notificações"
       />
 
       {/* FILTROS */}

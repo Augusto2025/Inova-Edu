@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   
   header: {
     height: 60,
-    backgroundColor: COLORS.darkBlue,
+    backgroundColor: COLORS.dark,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
@@ -29,18 +29,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     borderLeftWidth: 5,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderLeftColor: COLORS.accent,
   },
   breadcrumbPath: { fontSize: 12, color: COLORS.textSecondary },
-  turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.darkBlue, marginTop: 2 },
+  turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.dark, marginTop: 2 },
   btnAdd: { backgroundColor: COLORS.primary, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
 
   itemSub: { fontSize: 11, color: COLORS.textSecondary },
 
   // Cards de Projeto
   card: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderRadius: 15,
     marginBottom: 16,
     overflow: 'hidden',
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     minHeight: 400
   },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.darkBlue },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.dark },
   input: {
     backgroundColor: '#F8FAFC',
     borderWidth: 1,

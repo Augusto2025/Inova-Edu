@@ -44,23 +44,12 @@ export default function RepositorioScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1459b3' }}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
-    );
-  }
+  
 
   return (
-    // ALTERADO: Trocado por View normal para alinhar a altura exata do Header com as outras telas
-    <View style={[styles.container, { flex: 1, backgroundColor: '#1459b3' }]}>
+    <ScrollView style={styles.container}>
       
-      {/* StatusBar configurada exatamente igual às outras telas */}
-      <StatusBar barStyle="light-content" backgroundColor="#1459b3" translucent={false} />
-      
-      {/* Header padrão chamando os parâmetros limpos */}
-      <Header nomeTela="Repositório" temGoBack={true} telaDestino="Home" />
+      <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
       {/* Corpo da tela com o fundo correto */}
       <View style={{ flex: 1, backgroundColor: '#f5f7fb' }}>
@@ -110,6 +99,6 @@ export default function RepositorioScreen() {
           ))}
         </ScrollView>
       </View>
-    </View>
+    </ScrollView>
   );
 }

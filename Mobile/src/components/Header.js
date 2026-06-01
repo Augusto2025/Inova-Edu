@@ -7,7 +7,8 @@ import {
   Image,
 } from "react-native";
 
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { COLORS } from "./Cores"; // Importando as cores para manter a consistência visual
 import { useNavigation, TabActions } from "@react-navigation/native";
 
 export default function Header({
@@ -92,15 +93,21 @@ export default function Header({
             <Text style={styles.badgeText}>3</Text>
           </View>
         </TouchableOpacity>
-      </View>
+              {/* NOTIFICAÇÃO */}
+              <TouchableOpacity
+                style={styles.notification}
+                onPress={() => navigation.navigate("Notifications")}
+              >
+                <Feather name="bell" size={24} color="#fff" />
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>3</Text>
+                </View>
+              </TouchableOpacity>
 
-      {/* CURVA */}
-      {exibirCurva && (
-        <View style={styles.curveContainer}>
-          <View style={styles.curve} />
+            </View>
+          </View>
         </View>
-      )}
-    </View>
+      </View>
   );
 }
 
@@ -134,9 +141,25 @@ const styles = StyleSheet.create({
   left: {
     flex: 1,
     marginRight: 10,
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  backButton: {
+    marginRight: 5,
+  },
+  profileArea: {
+    flexDirection: "column",
+  },
+  logoText: {
+    color: "#fff",
+    fontSize: 25,
+    marginBottom: 8,
+    alignItems: "center",
   },
   profileContainer: {
+    width: "100%",
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   profileImage: {
@@ -190,7 +213,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: "#ff4d67",
+    backgroundColor: COLORS.alert,
     width: 18,
     height: 18,
     borderRadius: 9,
@@ -210,5 +233,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f7fb",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    height: 35,
+    backgroundColor: COLORS.background,
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    marginTop: -15,
   },
 });

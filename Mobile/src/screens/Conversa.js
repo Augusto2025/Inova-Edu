@@ -23,7 +23,7 @@ export default function ConversaScreen({
   route,
 }) {
   // IDENTIFICAÇÃO
-  const forum = route.params?.forum || "Forum";
+  const forum = route.params?.forum || "React Native modulos e pacotes";
 
   const titulo =
     route.params?.topico ||
@@ -139,9 +139,9 @@ export default function ConversaScreen({
   return (
     <View style={styles.container}>
       <Header
-        foto={null}
-        escolherImagem={null}
         nomeTela={"Conversa"}
+        temGoBack={true}
+        telaDestino={"Titulo"}
       />
 
       {/* CAMINHO */}
@@ -407,7 +407,6 @@ export default function ConversaScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F6FB",
   },
 
   // CAMINHO

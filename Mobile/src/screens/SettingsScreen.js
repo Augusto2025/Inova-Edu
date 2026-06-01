@@ -12,20 +12,26 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 import Header from "../components/Header";
+import ProfileScreen from "./Perfil";
+import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
 
 export default function ConfiguracoesScreen({ navigation }) {
 
-  const [som, setSom] = useState(true);
-  const [vibracao, setVibracao] = useState(true);
+  const [som, setSom] = useState(false);
+  const [vibracao, setVibracao] = useState(false);
 
-  const [push, setPush] = useState(true);
-  const [email, setEmail] = useState(true);
-  const [mensagens, setMensagens] = useState(true);
+  const [push, setPush] = useState(false);
+  const [email, setEmail] = useState(false);
+  const [mensagens, setMensagens] = useState(false);
   const [eventos, setEventos] = useState(false);
 
   const [duasEtapas, setDuasEtapas] = useState(false);
 
   const [modoEscuro, setModoEscuro] = useState(false);
+
+  const irParaPerfil = () => {
+    navigation.navigate("Perfil");
+  }
 
   const ItemSwitch = ({
     icon,
@@ -97,8 +103,6 @@ export default function ConfiguracoesScreen({ navigation }) {
     <View style={styles.container}>
 
       <Header
-        foto={null}
-        escolherImagem={null}
         nomeTela={"Configurações"}
       />
 
@@ -122,29 +126,11 @@ export default function ConfiguracoesScreen({ navigation }) {
             piabafrita@email.com
           </Text>
 
-        </View>
-
-        {/* Geral */}
-
-        <Text style={styles.titulo}>
-          Geral
-        </Text>
-
-        <View style={styles.card}>
-
-          <ItemSwitch
-            icon="volume-high"
-            titulo="Som do aplicativo"
-            valor={som}
-            funcao={setSom}
-          />
-
-          <ItemSwitch
-            icon="phone-portrait"
-            titulo="Vibração"
-            valor={vibracao}
-            funcao={setVibracao}
-          />
+          <TouchableOpacity style={styles.perfilBtn} onPress={irParaPerfil}>
+            <Text style={styles.perfilBtnText}>
+              Visualizar Perfil
+            </Text>
+          </TouchableOpacity>
 
         </View>
 
@@ -211,32 +197,10 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-        {/* Segurança */}
-
-        <Text style={styles.titulo}>
-          Segurança
-        </Text>
-
-        <View style={styles.card}>
-
-          <ItemSwitch
-            icon="shield-checkmark"
-            titulo="Verificação em 2 etapas"
-            valor={duasEtapas}
-            funcao={setDuasEtapas}
-          />
-
-          <ItemBotao
-            icon="lock-closed"
-            titulo="Alterar senha"
-          />
-
-        </View>
-
         {/* Aparência */}
 
         <Text style={styles.titulo}>
-          Aparência
+          Aparência e Acessibilidade
         </Text>
 
         <View style={styles.card}>
@@ -249,13 +213,13 @@ export default function ConfiguracoesScreen({ navigation }) {
           />
 
           <ItemBotao
-            icon="color-palette"
-            titulo="Tema"
+            icon="text"
+            titulo="Tamanho da fonte"
           />
 
           <ItemBotao
-            icon="text"
-            titulo="Tamanho da fonte"
+            icon="volume-high"
+            titulo="Texto em voz alta"
           />
 
         </View>
@@ -273,10 +237,6 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-
-
-
-
         <TouchableOpacity
           style={styles.logout}
         >
@@ -288,7 +248,7 @@ export default function ConfiguracoesScreen({ navigation }) {
           />
 
           <Text style={styles.logoutText}>
-            Sair da conta
+            Sair do app
           </Text>
 
         </TouchableOpacity>
@@ -304,13 +264,11 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#F5F7FA",
   },
 
   perfil: {
     alignItems: "center",
-    marginBottom: 30,
-    marginTop: 20,
+    marginBottom: 20,
   },
 
   avatar: {
@@ -324,12 +282,25 @@ const styles = StyleSheet.create({
   nome: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: COLORS.primary,
     marginTop: 10
   },
 
   email: {
-    color: "#666"
+    color: COLORS.dark,
+  },
+  
+  perfilBtn: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 15,
+  },
+
+  perfilBtnText: {
+    color: COLORS.background,
+    fontWeight: 'bold',
   },
 
   titulo: {
@@ -337,7 +308,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 15,
     marginBottom: 10,
-    color: "#2d6cdf"
+    color: COLORS.primary
   },
 
   card: {

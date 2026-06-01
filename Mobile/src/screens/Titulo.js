@@ -232,9 +232,9 @@ export default function TopicosScreen({
   return (
     <View style={styles.container}>
       <Header
-        foto={null}
-        escolherImagem={null}
         nomeTela={"Título"}
+        temGoBack={true} 
+        telaDestino={"Fórum"}
       />
 
       {/* BUSCA */}
@@ -243,7 +243,7 @@ export default function TopicosScreen({
       {/* IDENTIFICAÇÃO */}
       <View style={styles.pathContainer}>
         <Text style={styles.pathLabel}>
-          Fórum
+          React Native modulos e pacotes
         </Text>
 
         <Ionicons
@@ -254,23 +254,13 @@ export default function TopicosScreen({
         />
 
         <Text
-          style={styles.pathTitulo}
+          style={styles.pathActive}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           Título
         </Text>
 
-        <Ionicons
-          name="chevron-forward"
-          size={14}
-          color="#777"
-          style={styles.iconArrow}
-        />
-
-        <Text style={styles.pathActive}>
-          Conversa
-        </Text>
       </View>
 
       {/* LISTA */}

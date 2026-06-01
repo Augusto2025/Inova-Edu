@@ -97,7 +97,7 @@ export default function ForumScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header foto={null} escolherImagem={null} nomeTela={"Forum"} />
+      <Header nomeTela={"Forum"}/>
 
       {/* BUSCA */}
       <BarraPesquisa />
@@ -292,7 +292,7 @@ export default function ForumScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f6f6fb",

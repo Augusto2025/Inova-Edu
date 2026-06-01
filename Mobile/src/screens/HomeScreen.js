@@ -9,12 +9,13 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-
+import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 
-export default function HomeScreen({ navigation }) {
-  const primaryColor = "#2155f3";
-  const alertColor = "#ff4d67";
+export default function HomeScreen() {
+  const primaryColor = COLORS.primary;
+  const alertColor = COLORS.alert;
+  const Logo = require('../../assets/Logo_azul_icone.png');
 
   // INTEGRADO: Seus cursos reais vindos da tela de Cursos com projetos vinculados!
   const categoriasCursos = [
@@ -75,8 +76,8 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.safe}>
-      {/* HEADER (Com a curva ativa integrada por padrão) */}
-      <Header nomeTela="Olá, Alcides 👋" exibirPerfil={true} />
+      {/* HEADER */}
+      <Header nomeTela="Olá, Alcides" subtitulo="Tec. Desenvolvimento de Sistemas" />
 
       {/* CONTEÚDO */}
       <ScrollView
@@ -84,6 +85,13 @@ export default function HomeScreen({ navigation }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* <View style={{ alignItems: "center", marginBottom: 10 }}>
+          <Image
+            source={Logo}
+            style={{ width: 120, height: 120, resizeMode: "contain"}}
+          />
+        </View> */}
+
         {/* 1. PRÓXIMOS EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
 
@@ -234,20 +242,279 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor: "#f5f7fb" },
-  scrollContent: { paddingHorizontal: 18, paddingBottom: 40, paddingTop: 15 },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 15, color: "#111" },
-  eventCard: { backgroundColor: "#fff", borderRadius: 18, padding: 14, marginBottom: 12, flexDirection: "row", alignItems: "center", elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4 },
-  dateBadge: { width: 52, height: 56, borderRadius: 10, borderWidth: 1, overflow: "hidden", alignItems: "center" },
-  dateBadgeTop: { width: "100%", height: 20, justifyContent: "center", alignItems: "center" },
-  monthText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
-  dateBadgeBottom: { flex: 1, width: "100%", backgroundColor: "#fff", justifyContent: "center", alignItems: "center" },
-  dayText: { fontSize: 18, fontWeight: "bold" },
-  eventInfo: { flex: 1, paddingHorizontal: 14 },
-  eventTitle: { fontSize: 16, fontWeight: "bold", color: "#111", marginBottom: 4 },
-  eventTimeInfo: { fontSize: 13, color: "#666", flexDirection: "row", alignItems: "center" },
-  statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
+  /* CONTAINER */
+  safe: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 18,
+    paddingBottom: 40,
+    paddingTop: 15,
+  },
+
+  /* TITULOS */
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#111",
+  },
+
+  /* EVENTOS */
+  eventCard: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+  },
+  dateBadge: {
+    width: 52,
+    height: 56,
+    borderRadius: 10,
+    borderWidth: 1,
+    overflow: "hidden",
+    alignItems: "center",
+  },
+  dateBadgeTop: {
+    width: "100%",
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  monthText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  dateBadgeBottom: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dayText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  eventInfo: {
+    flex: 1,
+    paddingHorizontal: 14,
+  },
+  eventTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#111",
+    marginBottom: 4,
+  },
+  eventTimeInfo: {
+    fontSize: 13,
+    color: "#666",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+
+  /* REPOSITÓRIOS RECENTES - VOLTA DO CARROSSEL HORIZONTAL */
+  horizontalRepoContainer: {
+    paddingRight: 18,
+    paddingBottom: 15, 
+    flexDirection: "row",
+    gap: 14,
+  },
+  repoSquareCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    overflow: "hidden",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    width: 140, 
+  },
+  imageWrapper: {
+    width: "100%",
+    height: 100,
+    backgroundColor: "#ececec",
+  },
+  repoCoverImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  repoContentArea: {
+    padding: 12,
+    justifyContent: "center",
+  },
+  repoMainTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#111",
+    textAlign: "center",
+  },
+
+  /* SEARCH / SEUS REPOSITÓRIOS */
+  searchContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    padding: 18,
+    marginTop: 10,
+    marginBottom: 25,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  searchTitle: {
+    fontWeight: "bold",
+    fontSize: 22,
+    marginBottom: 15,
+    color: "#111",
+  },
+  searchBox: {
+    backgroundColor: "#f1f1f1",
+    borderRadius: 18,
+    paddingHorizontal: 15,
+  },
+  searchInput: {
+    height: 50,
+    fontSize: 15,
+    color: "#111",
+  },
+
+  /* TAGS */
+  tagsContainer: {
+    paddingTop: 15,
+  },
+  tag: {
+    backgroundColor: "#ececec",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 14,
+    marginRight: 10,
+  },
+  tagText: {
+    color: "#333",
+    fontWeight: "500",
+  },
+
+  /* FÓRUM */
+  forumContainerCard: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 25,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  forumHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  forumIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#5360f0",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  forumTitleBlock: {
+    flex: 1,
+  },
+  forumMainTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#111",
+  },
+  forumTimeAgo: {
+    fontSize: 12,
+    color: "#888",
+    position: "absolute",
+    right: 35,
+    top: 2,
+  },
+  forumBadgeCount: {
+    backgroundColor: "#5360f0",
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  forumBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  forumPublishDate: {
+    fontSize: 13,
+    color: "#999",
+    marginLeft: 56,
+    marginTop: -4,
+    marginBottom: 10,
+  },
+  forumBodyText: {
+    fontSize: 14,
+    color: "#555",
+    marginLeft: 56,
+    marginBottom: 15,
+    lineHeight: 20,
+  },
+  forumFooterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: 56,
+  },
+  forumMetaDetails: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  forumMetaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  forumMetaText: {
+    fontSize: 12,
+    color: "#777",
+  },
+  forumActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  actionButtonEdit: {
+    backgroundColor: "#f0f2ff",
+    padding: 8,
+    borderRadius: 12,
+  },
+  actionButtonDelete: {
+    backgroundColor: "#fff0f2",
+    padding: 8,
+    borderRadius: 12,
+  },
   
   cursoSectionContainer: { marginBottom: 10 },
   sectioncategoria: { fontSize: 16, fontWeight: "600", color: "#444", marginBottom: 10 },

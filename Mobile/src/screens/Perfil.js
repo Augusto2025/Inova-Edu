@@ -5,6 +5,9 @@ import {
 } from 'react-native';
 // Usando o pacote de ícones padrão do Expo
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import Header from "../components/Header";
+import ModalSave from '../components/ModalSave'; // Importando o componente ModalSave para reutilização
+import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
 
 export default function ProfileScreen() {
   const [user, setUser] = useState({
@@ -20,18 +23,16 @@ export default function ProfileScreen() {
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputsExtras, setInputsExtras] = useState([]);
+  const lidarComSalvar = () => {    
+    setIsModalOpen(false); // Fecha o modal após salvar
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* HEADER (ESTILO INOVAEDU) */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>InovaEdu</Text>
-        <View style={styles.headerAvatar}>
-          <Text style={styles.avatarText}>JS</Text>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+      <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"}/>
+      
+      <ScrollView contentContainerStyle={{ paddingBottom: 40}}>
         
         {/* CARD DE PERFIL */}
         <View style={styles.profileCard}>
@@ -73,7 +74,7 @@ export default function ProfileScreen() {
             <View key={cert.id} style={styles.certCard}>
               {/* ALTERAÇÃO 2: Substituído o calendário por um ícone de certificado */}
               <View style={styles.certIconBadge}>
-                <FontAwesome5 name="award" size={24} color="#1459b3" />
+                <FontAwesome5 name="award" size={24} color={COLORS.primary} />
               </View>
 
               <View style={styles.certInfo}>
@@ -105,52 +106,27 @@ export default function ProfileScreen() {
       </ScrollView>
 
       {/* MODAL DE EDIÇÃO */}
-      <Modal visible={isModalOpen} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Editar Perfil</Text>
-              <TouchableOpacity onPress={() => setIsModalOpen(false)}>
-                <Ionicons name="close-circle" size={28} color="white" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.modalBody}>
-              <TextInput style={styles.input} placeholder="Nome" defaultValue={user.nome} />
-              <TextInput 
-                style={[styles.input, { height: 80 }]} 
-                placeholder="Bio" 
-                multiline 
-                defaultValue={user.descricao} 
-              />
-              <TouchableOpacity style={styles.saveBtn} onPress={() => setIsModalOpen(false)}>
-                <Text style={styles.saveBtnText}>Salvar Alterações</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ModalSave
+        modalEditarVisible={isModalOpen}        
+        setModalEditarVisible={setIsModalOpen}  
+        salvarEdicao={lidarComSalvar}           
+        tituloModal="Preencher Cadastro"
+        
+        adicionarMaisInputs={true}
+        
+        // 🚀 Aqui você define os nomes personalizados que quiser e quantos quiser!
+        labelsInputs={["Nome Completo", "E-mail Corporativo", "Telefone de Contato"]}
+        
+        inputsExtras={inputsExtras}
+        setInputsExtras={setInputsExtras}
+      />
 
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#cfe0e8' },
-  header: { 
-    backgroundColor: '#1459b3', 
-    height: 100, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    paddingTop: 20
-  },
-  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  headerAvatar: { width: 35, height: 35, backgroundColor: '#F7941D', borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  avatarText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
-
+  container: { flex: 1 },
   // Profile Card
   profileCard: { backgroundColor: 'white', margin: 15, borderRadius: 20, padding: 20, alignItems: 'center', elevation: 3 },
   photoWrapper: { position: 'relative' },
@@ -160,22 +136,22 @@ const styles = StyleSheet.create({
     height: 100, 
     borderRadius: 50, 
     borderWidth: 3, // Borda visível
-    borderColor: '#1459b3', // Cor azul Senac
+    borderColor: COLORS.primary, // Cor azul Senac
     backgroundColor: '#f0f0f0' // Um cinza muito claro interno
   },
-  cameraBtn: { position: 'absolute', bottom: 0, right: 0, backgroundColor: '#1459b3', borderRadius: 20, padding: 8, borderWidth: 2, borderColor: 'white' },
-  userName: { fontSize: 22, fontWeight: 'bold', color: '#1459b3', marginTop: 10 },
-  turmaBadge: { backgroundColor: '#1459b3', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 15, marginTop: 5 },
+  cameraBtn: { position: 'absolute', bottom: 0, right: 0, backgroundColor: COLORS.primary, borderRadius: 20, padding: 8, borderWidth: 2, borderColor: 'white' },
+  userName: { fontSize: 22, fontWeight: 'bold', color: COLORS.primary, marginTop: 10 },
+  turmaBadge: { backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 15, marginTop: 5 },
   turmaText: { color: 'white', fontSize: 11, fontWeight: 'bold' },
   userDesc: { textAlign: 'center', color: '#666', marginTop: 12, fontSize: 14, lineHeight: 20 },
-  editProfileBtn: { flexDirection: 'row', backgroundColor: '#28a745', marginTop: 15, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, alignItems: 'center', gap: 8 },
+  editProfileBtn: { flexDirection: 'row', backgroundColor: COLORS.accent, marginTop: 15, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, alignItems: 'center', gap: 8 },
   editProfileBtnText: { color: 'white', fontWeight: 'bold' },
 
   // Sections
   section: { paddingHorizontal: 20, marginTop: 15 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 5 },
-  plusBtn: { backgroundColor: '#28a745', padding: 5, borderRadius: 8 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.primary, marginBottom: 5 },
+  plusBtn: { backgroundColor: COLORS.accent, padding: 5, borderRadius: 8 },
   
   // Certificados (Novo Estilo com Ícone)
   certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 15, borderRadius: 15, marginBottom: 10, elevation: 1, alignItems: 'center' },
@@ -191,23 +167,23 @@ const styles = StyleSheet.create({
   certTitle: { fontWeight: 'bold', fontSize: 15, color: '#333' },
   certSub: { fontSize: 12, color: '#888' },
   certActions: { flexDirection: 'row', gap: 15, marginTop: 8 },
-  actionEdit: { color: '#1459b3', fontSize: 12, fontWeight: 'bold' },
+  actionEdit: { color: COLORS.primary, fontSize: 12, fontWeight: 'bold' },
   actionDelete: { color: '#F44336', fontSize: 12, fontWeight: 'bold' },
 
   // Projeto
-  projectCard: { backgroundColor: 'white', padding: 15, borderRadius: 15, borderLeftWidth: 5, borderLeftColor: '#1459b3' },
-  projectTitle: { fontWeight: 'bold', color: '#1459b3', fontSize: 16 },
+  projectCard: { backgroundColor: 'white', padding: 15, borderRadius: 15, borderLeftWidth: 5, borderLeftColor: COLORS.primary },
+  projectTitle: { fontWeight: 'bold', color: COLORS.primary, fontSize: 16 },
   projectSub: { fontSize: 12, color: '#666', marginTop: 5 },
-  repoBtn: { backgroundColor: '#1459b3', marginTop: 15, padding: 10, borderRadius: 8, alignItems: 'center' },
+  repoBtn: { backgroundColor: COLORS.primary, marginTop: 15, padding: 10, borderRadius: 8, alignItems: 'center' },
   repoBtnText: { color: 'white', fontWeight: 'bold', fontSize: 13 },
 
   // Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center' },
-  modalContent: { backgroundColor: 'white', borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: 'hidden' },
-  modalHeader: { backgroundColor: '#1459b3', flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.67)', justifyContent: 'center', padding: 15 },
+  modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden' },
+  modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
   modalTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   modalBody: { padding: 20 },
   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 12, marginBottom: 15 },
-  saveBtn: { backgroundColor: '#1459b3', padding: 15, borderRadius: 12, alignItems: 'center' },
+  saveBtn: { backgroundColor: COLORS.primary, padding: 15, borderRadius: 12, alignItems: 'center' },
   saveBtnText: { color: 'white', fontWeight: 'bold' }
 });

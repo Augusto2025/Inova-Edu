@@ -49,7 +49,7 @@ export default function TurmasScreen({ navigation }) {
   return (
     <View style={styles.safeArea}>
       {/* StatusBar Branca para contrastar com Header Azul */}
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.darkBlue} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
       {/* 
       chamada da header (foto=não tem; escolherImagem=não tem; nome da tela; temGoBack= se sim vai voltar; telaDestino=nome da tela no tabroutes) 

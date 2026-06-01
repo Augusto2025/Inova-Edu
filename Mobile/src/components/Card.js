@@ -1,15 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-
-const COLORS = {
-  primary: '#005eb8',    // Azul Senac
-  darkBlue: '#003d7a',   // Azul Header
-  accent: '#f7941d',     // Laranja Senac
-  card: '#FFFFFF',
-  textMain: '#1E293B',
-  textSecondary: '#64748B',
-};
+import { COLORS } from "./Cores"; // Importando as cores para manter a consistência visual
 
 // Passamos propriedades genéricas: titulo, descricao, imagem, textoBotao, iconeBotao e a acaoClique
 export default function Card({ 
@@ -63,7 +55,7 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.backgroundCard,
     borderRadius: 15,
     marginBottom: 16,
     overflow: 'hidden',
@@ -99,7 +91,7 @@ const styles = StyleSheet.create({
   cardTitulo: { 
     fontSize: 18, 
     fontWeight: 'bold', 
-    color: COLORS.darkBlue // Unificando com o azul escuro padrão das duas telas
+    color: COLORS.dark // Unificando com o azul escuro padrão das duas telas
   },
   cardDesc: { 
     fontSize: 14, 
