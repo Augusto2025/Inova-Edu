@@ -35,7 +35,12 @@ export default function Header({
   return (
     <View style={styles.wrapper}>
 
-      {/* HEADER: Agora com padding fixo e igual para todas as telas */}
+      {/* LINHA DA LOGOMARCA: Adicionada no topo do Header */}
+      <View style={styles.logoRow}>
+        <Text style={styles.logoText}>Inova-Edu</Text>
+      </View>
+
+      {/* CONTEÚDO DO HEADER */}
       <View style={styles.header}>
 
         {/* ESQUERDA */}
@@ -59,10 +64,10 @@ export default function Header({
             
             /* CASO 2: SE FOR OUTRA TELA (Sem perfil, com botão de voltar embaixo do tema) */
             <View style={styles.noProfileContainer}>
-              {/* O Tema/Título fica em cima, no mesmo nível de altura da foto da Home */}
+              {/* O Tema/Título fica em cima */}
               <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
               
-              {/* O botão de voltar fica embaixo, alinhado onde ficaria o subtítulo da Home */}
+              {/* O botão de voltar fica embaixo */}
               {temGoBack && (
                 <TouchableOpacity
                   onPress={lidarComVoltar}
@@ -78,34 +83,7 @@ export default function Header({
 
         </View>
 
-          <View style={styles.profileArea}>
-            
-            <View style={styles.profileContainer}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {temGoBack && (
-                  <TouchableOpacity
-                    onPress={lidarComVoltar}
-                    style={styles.backButton}
-                  >
-                    <Feather name="chevron-left" size={24} color="#fff" />
-                  </TouchableOpacity>
-                )}
-
-                <Image
-                  source={{ uri: "https://i.pravatar.cc/300" }}
-                  style={styles.profileImage}
-                />
-
-                <View>
-                  <Text style={styles.title}>{nomeTela}</Text>
-                  {subtitulo && (
-                    <Text style={styles.courseSubtitle}>{subtitulo}</Text>
-                  )}
-                </View>
-
-              </View>
-
-        {/* NOTIFICAÇÃO (Fica travada no topo à direita em todas as telas) */}
+        {/* NOTIFICAÇÃO (Fica alinhada com o conteúdo inferior) */}
         <TouchableOpacity
           style={styles.notification}
           onPress={() => navigation.navigate("Notifications")}
@@ -137,15 +115,28 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: "#1459b3",
   },
+  // Estilização da nova linha da logo
+  logoRow: {
+    paddingTop: 55, // Afasta dos elementos físicos/notch do celular
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1459b3",
+  },
+  logoText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "800", // Bem marcante
+    letterSpacing: 1, // Espaçamento elegante entre as letras
+    opacity: 0.95,
+  },
   header: {
-    paddingTop: 80,
-    paddingBottom: 16, // Travado igual para todos!
-    paddingTop: 70,
-    paddingBottom: 40,
+    paddingTop: 15, // Reduzido o paddingTop aqui porque a logo já ocupa o topo
+    paddingBottom: 19, 
     paddingHorizontal: 22,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start", // Alinha pelo topo para a notificação não dançar
+    alignItems: "flex-start", 
+    backgroundColor: "#1459b3",
   },
   left: {
     flex: 1,
@@ -182,12 +173,10 @@ const styles = StyleSheet.create({
   rightHeaderText: {
     flex: 1,
   },
-  
-  // Estrutura das outras telas (Sem perfil)
   noProfileContainer: {
     flexDirection: "column",
     justifyContent: "center",
-    height: 52, // Força ter EXATAMENTE a mesma altura que a foto de perfil da Home
+    height: 52, 
   },
   backButtonUnder: {
     flexDirection: "row",
@@ -200,8 +189,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginLeft: 4,
   },
-
-  // Textos Globais
   title: {
     color: "#fff",
     fontSize: 22,
@@ -213,8 +200,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: "500",
   },
-
-  // Botão de Notificação
   notification: {
     width: 48,
     height: 48,
@@ -222,7 +207,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.15)",
-    alignSelf: "center", // Mantém centralizado verticalmente com o bloco da esquerda
+    alignSelf: "center", 
   },
   badge: {
     position: "absolute",
@@ -240,13 +225,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
-
-  // Sistema da Curva
   curveContainer: {
     backgroundColor: "#1459b3",
   },
   curve: {
-    height: 45,
+    height: 35,
     backgroundColor: "#f5f7fb",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
