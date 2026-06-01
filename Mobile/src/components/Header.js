@@ -130,13 +130,6 @@ export default function Header({
           </View>
         </View>
       </View>
-      {/* CURVA */}
-      {exibirCurva && (
-        <View style={styles.curveContainer}>
-          <View style={styles.curve} />
-        </View>
-      )}
-    </View>
   );
 }
 
