@@ -10,7 +10,6 @@ import SplashScreen from './src/screens/SplashScreen';
 import ForumScreen from './src/screens/Forum'; 
 import ConversaScreen from "./src/screens/Conversa";
 import TituloScreen from "./src/screens/Titulo";
-
 import ProfilePage from './src/screens/Perfil';
 import CursosScreen from './src/screens/Cursos';
 import TurmasScreen from './src/screens/Turmas';
@@ -28,25 +27,24 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main" component={TabRoutes} />
+        <Stack.Screen name="Main" component={TabRoutes}/>
+        <Stack.Screen name="Profile" component={ProfilePage}/>
+        <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Cursos" component={CursosScreen}/>
         <Stack.Screen name="Turmas" component={TurmasScreen}/>
         <Stack.Screen name="Projetos" component={ProjetosScreen}/>
         <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
-
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
         <Stack.Screen name="Splash" component={SplashScreen}/>
-        <Stack.Screen name="Login" component={LoginScreen}/>
         
-        <Stack.Screen name="Titulo" component={TituloScreen} />
         <Stack.Screen name="Forum" component={ForumScreen}/>
+        <Stack.Screen name="Titulo" component={TituloScreen} />
         <Stack.Screen name="Conversa" component={ConversaScreen} />
 
-
+ 
         <Stack.Screen name="Eventos" component={CalendarScreen}/>
 
-        <Stack.Screen name="Profile" component={ProfilePage}/>
 
         {/* <Stack.Screen name="footerforum" component={FooterForum}/>  
         <Stack.Screen name="headerforum" component={HeaderForum}/> */}

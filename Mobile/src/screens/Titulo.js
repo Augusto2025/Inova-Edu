@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -6,55 +7,93 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
+  Modal,
   Keyboard,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
-export default function TopicosScreen({ navigation }) {
+import {
+  Ionicons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
+
+import Header from "../components/Header";
+import BarraPesquisa from "../components/BarraPesquisa";
+
+export default function TopicosScreen({
+  navigation,
+}) {
   const [topicos, setTopicos] = useState([
     {
       id: "1",
       titulo: "React Native é difícil?",
-      autor: "Ana",
+      mensagem:
+        "Consegui resolver usando useEffect e useState juntos!",
+      horario: "12:30",
       mensagens: 12,
     },
+
     {
       id: "2",
       titulo: "Como usar useState?",
-      autor: "Carlos",
+      mensagem:
+        "Você pode usar assim: const [estado, setEstado]...",
+      horario: "Ontem",
       mensagens: 8,
+    },
+
+    {
+      id: "3",
+      titulo: "Dúvida sobre FlatList",
+      mensagem:
+        "Alguém sabe como otimizar a performance...",
+      horario: "Ontem",
+      mensagens: 6,
     },
   ]);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [novoTitulo, setNovoTitulo] = useState("");
-  const [editandoId, setEditandoId] = useState(null);
+  const [modalVisible, setModalVisible] =
+    useState(false);
 
+  const [novoTitulo, setNovoTitulo] =
+    useState("");
+
+  const [editandoId, setEditandoId] =
+    useState(null);
+
+  // ABRIR CONVERSA
   const abrirTopico = (topico) => {
-    navigation.navigate("Forum", {
+    navigation.navigate("Conversa", {
+      forum: "Forum",
       topico: topico.titulo,
     });
   };
 
+  // CRIAR OU EDITAR
   const criarOuEditarTopico = () => {
     if (novoTitulo.trim() === "") return;
 
     if (editandoId) {
-      // EDITAR
       setTopicos((prev) =>
         prev.map((item) =>
-          item.id === editandoId ? { ...item, titulo: novoTitulo } : item,
+          item.id === editandoId
+            ? {
+                ...item,
+                titulo: novoTitulo,
+              }
+            : item,
         ),
       );
     } else {
-      // CRIAR
       const novo = {
         id: Date.now().toString(),
+
         titulo: novoTitulo,
-        autor: "Você",
+
+        mensagem: "Novo tópico criado...",
+
+        horario: "Agora",
+
         mensagens: 0,
       };
 
@@ -64,81 +103,164 @@ export default function TopicosScreen({ navigation }) {
     setNovoTitulo("");
     setEditandoId(null);
     setModalVisible(false);
+
     Keyboard.dismiss();
   };
 
+  // EDITAR
   const editarTopico = (item) => {
     setNovoTitulo(item.titulo);
     setEditandoId(item.id);
     setModalVisible(true);
   };
 
+  // EXCLUIR
   const excluirTopico = (id) => {
-    setTopicos((prev) => prev.filter((item) => item.id !== id));
+    setTopicos((prev) =>
+      prev.filter((item) => item.id !== id),
+    );
   };
 
+  // CARD
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => abrirTopico(item)}>
-      <View style={styles.iconLeft}>
-        <Ionicons name="chatbubble-ellipses" size={24} color="#1e4f8a" />
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => abrirTopico(item)}
+      activeOpacity={0.9}
+    >
+      {/* ÍCONE */}
+      <View style={styles.iconBox}>
+        <Ionicons
+          name="chatbubble-ellipses"
+          size={22}
+          color="#fff"
+        />
       </View>
 
-      <View style={styles.center}>
-        <Text style={styles.titulo}>{item.titulo}</Text>
-        <Text style={styles.info}>
-          {item.autor} • {item.mensagens} mensagens
+      {/* CONTEÚDO */}
+      <View style={styles.content}>
+        {/* TOPO */}
+        <View style={styles.topRow}>
+          <Text
+            style={styles.title}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.titulo}
+          </Text>
+
+          <View style={styles.rightInfo}>
+            <Text style={styles.time}>
+              {item.horario}
+            </Text>
+          </View>
+        </View>
+
+        {/* DATA */}
+        <Text style={styles.date}>
+          Publicado em 10/05/2024
         </Text>
-      </View>
 
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={() => editarTopico(item)}>
-          <Ionicons name="create-outline" size={20} color="#187cf6" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => excluirTopico(item.id)}
-          style={{ marginLeft: 10 }}
+        {/* DESCRIÇÃO */}
+        <Text
+          style={styles.description}
+          numberOfLines={2}
+          ellipsizeMode="tail"
         >
-          <Ionicons name="trash-outline" size={20} color="red" />
-        </TouchableOpacity>
+          {item.mensagem}
+        </Text>
+
+        {/* FOOTER */}
+        <View style={styles.footer}>
+          <View style={styles.footerLeft}>
+            <View style={styles.info}>
+              <Ionicons
+                name="chatbubble-outline"
+                size={14}
+                color="#777"
+              />
+
+              <Text style={styles.infoText}>
+                {item.mensagens} mensagens
+              </Text>
+            </View>
+
+            <View style={styles.info}>
+              <Feather
+                name="tag"
+                size={14}
+                color="#777"
+              />
+
+              <Text style={styles.infoText}>
+                React Native
+              </Text>
+            </View>
+          </View>
+
+          {/* BOTÕES */}
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => editarTopico(item)}
+            >
+              <Feather
+                name="edit-2"
+                size={18}
+                color="#5B5EF7"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() =>
+                excluirTopico(item.id)
+              }
+            >
+              <MaterialIcons
+                name="delete-outline"
+                size={20}
+                color="#FF6B6B"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
+      <Header
+        nomeTela={"Título"}
+        temGoBack={true} 
+        telaDestino={"Fórum"}
+      />
 
-          <Ionicons
-            name="chatbubbles"
-            size={26}
-            color="#fff"
-            style={{ marginHorizontal: 8 }}
-          />
+      {/* BUSCA */}
+      <BarraPesquisa />
 
-          <View>
-            <Text style={styles.headerTitle}>Fórum</Text>
-            <Text style={styles.headerSubtitle}>Títulos</Text>
-          </View>
-        </View>
-      </View>
+      {/* IDENTIFICAÇÃO */}
+      <View style={styles.pathContainer}>
+        <Text style={styles.pathLabel}>
+          React Native modulos e pacotes
+        </Text>
 
-      {/* Busca */}
-      <View style={styles.searchWrapper}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#1e4f8a" />
+        <Ionicons
+          name="chevron-forward"
+          size={14}
+          color="#777"
+          style={styles.iconArrow}
+        />
 
-          <TextInput
-            placeholder="Pesquisar Titulos..."
-            placeholderTextColor="#999"
-            style={styles.searchInput}
-          />
-        </View>
+        <Text
+          style={styles.pathActive}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          Título
+        </Text>
+
       </View>
 
       {/* LISTA */}
@@ -146,11 +268,16 @@ export default function TopicosScreen({ navigation }) {
         data={topicos}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={{ padding: 15 }}
+        contentContainerStyle={{
+          paddingHorizontal: 14,
+          paddingBottom: 120,
+        }}
+        showsVerticalScrollIndicator={false}
       />
 
-      {/* BOTÃO FLUTUANTE */}
+      {/* FAB */}
       <TouchableOpacity
+        activeOpacity={0.8}
         style={styles.fab}
         onPress={() => {
           setEditandoId(null);
@@ -158,45 +285,65 @@ export default function TopicosScreen({ navigation }) {
           setModalVisible(true);
         }}
       >
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons
+          name="add"
+          size={32}
+          color="#fff"
+        />
       </TouchableOpacity>
 
-      {/* MODAL */}
-      {modalVisible && (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            style={styles.modal}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-          >
-            <View style={styles.modalBox}>
-              <Text style={styles.modalTitle}>
-                {editandoId ? "Editar Tópico" : "Novo Tópico"}
-              </Text>
+      {/* MODAL EDITAR */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.overlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              {editandoId
+                ? "Editar Título"
+                : "Criar Título"}
+            </Text>
 
-              <TextInput
-                placeholder="Digite o título..."
-                value={novoTitulo}
-                onChangeText={setNovoTitulo}
-                style={styles.input}
-                autoFocus
-                returnKeyType="done"
-              />
+            <View style={styles.titleUnderline} />
 
-              <View style={styles.botoes}>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <Text style={styles.cancelar}>Cancelar</Text>
-                </TouchableOpacity>
+            <TextInput
+              placeholder="Digite o título..."
+              value={novoTitulo}
+              onChangeText={setNovoTitulo}
+              style={styles.input}
+              placeholderTextColor="#999"
+            />
 
-                <TouchableOpacity onPress={criarOuEditarTopico}>
-                  <Text style={styles.salvar}>
-                    {editandoId ? "Atualizar" : "Salvar"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() =>
+                  setModalVisible(false)
+                }
+              >
+                <Text style={styles.cancelText}>
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={
+                  criarOuEditarTopico
+                }
+              >
+                <Text style={styles.createText}>
+                  {editandoId
+                    ? "Salvar"
+                    : "Criar"}
+                </Text>
+              </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -204,153 +351,244 @@ export default function TopicosScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#eaeef3",
+    backgroundColor: "#F4F6FB",
   },
 
-  header: {
-    paddingTop: 35,
-    height: 90,
-    backgroundColor: "#1e4f8a",
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    elevation: 4,
-  },
-
-  headerLeft: {
+  // CAMINHO
+  pathContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 14,
   },
 
-  headerTitle: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  pathLabel: {
+    color: "#777",
+    fontSize: 13,
   },
 
-  headerSubtitle: {
-    color: "#ddd",
-    fontSize: 12,
+  pathTitulo: {
+    color: "#777",
+    fontSize: 13,
+    maxWidth: 80,
   },
 
-  // busca
-  searchWrapper: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
+  pathActive: {
+    color: "#2563EB",
+    fontSize: 13,
+    fontWeight: "700",
   },
 
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingHorizontal: 12,
-    height: 40,
-    elevation: 2,
+  iconArrow: {
+    marginHorizontal: 4,
   },
 
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    fontSize: 14,
-    color: "#000",
-  },
-
-  // card
+  // CARD
   card: {
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
+    marginBottom: 14,
+    borderRadius: 22,
+    padding: 16,
     flexDirection: "row",
-    alignItems: "center",
-    elevation: 2,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+
+    elevation: 3,
   },
 
-  iconLeft: {
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 14,
+    backgroundColor: "#0e68d6",
+  },
+
+  content: {
+    flex: 1,
+  },
+
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  title: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#222",
     marginRight: 10,
   },
 
-  center: {
-    flex: 1,
+  rightInfo: {
+    alignItems: "flex-end",
   },
 
-  titulo: {
-    fontSize: 15,
-    fontWeight: "bold",
+  time: {
+    fontSize: 12,
+    color: "#888",
+    marginBottom: 6,
+  },
+
+  date: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+  },
+
+  description: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 8,
+    lineHeight: 20,
+  },
+
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 16,
+  },
+
+  footerLeft: {
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 
   info: {
-    fontSize: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 16,
+  },
+
+  infoText: {
+    marginLeft: 4,
     color: "#777",
+    fontSize: 12,
   },
 
   actions: {
     flexDirection: "row",
+  },
+
+  editButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#EEF0FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+
+  deleteButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#FFF0F0",
+    justifyContent: "center",
     alignItems: "center",
   },
 
+  // FAB
   fab: {
     position: "absolute",
-    bottom: 70,
+
+    bottom: 25,
     right: 20,
-    backgroundColor: "#187cf6",
-    width: 60,
-    height: 60,
-    borderRadius: 50,
+
+    width: 65,
+    height: 65,
+    borderRadius: 999,
+
+    backgroundColor: "#ff8c00",
+
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
+
+    elevation: 8,
   },
 
-  modal: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#00000088",
+  // MODAL
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
 
-  modalBox: {
-    width: "80%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#FFF",
+    borderRadius: 20,
     padding: 20,
   },
 
   modalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#1e4f8a",
     textAlign: "center",
-    borderBottomWidth: 2,
-    borderBottomColor: "#ff8c00",
-    paddingBottom: 6,
-    marginBottom: 15,
+    color: "#1E4D8C",
+    marginBottom: 10,
+  },
+
+  titleUnderline: {
+    width: 120,
+    height: 3,
+    backgroundColor: "#ff8c00",
+    alignSelf: "center",
+    marginBottom: 20,
+    borderRadius: 10,
   },
 
   input: {
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    height: 52,
+    marginBottom: 20,
   },
 
-  botoes: {
+  // botoes modal editar
+  buttons: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
   },
 
-  cancelar: {
-    marginRight: 15,
-    color: "red",
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: "#d3dbd1",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
 
-  salvar: {
-    color: "#187cf6",
+  createButton: {
+    backgroundColor: "#ff9800",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+  },
+
+  cancelText: {
+    color: "#777",
+    fontWeight: "600",
+  },
+
+  createText: {
+    color: "#FFF",
     fontWeight: "bold",
   },
 });

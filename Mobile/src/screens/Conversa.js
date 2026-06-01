@@ -1,356 +1,659 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
+
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  FlatList,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
+  TextInput,
+  ScrollView,
+  Modal,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-// import HeaderForum from "../components/HeaderForum";
-// import FooterForum from "../components/FooterForum";
 
-export default function ConversaScreen({ route }) {
-  const topico = route?.params?.topico || "";
-  const usuarioAtual = "Você";
+import {
+  Ionicons,
+  Feather,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
-  const flatListRef = useRef();
+import Header from "../components/Header";
 
+export default function ConversaScreen({
+  navigation,
+  route,
+}) {
+  // IDENTIFICAÇÃO
+  const forum = route.params?.forum || "React Native modulos e pacotes";
+
+  const titulo =
+    route.params?.topico ||
+    "React Native é difícil?";
+
+  // MENU
+  const [menuVisible, setMenuVisible] =
+    useState(false);
+
+  // MODAL EDITAR
+  const [editarVisible, setEditarVisible] =
+    useState(false);
+
+  // TEXTO EDITANDO
+  const [textoEditando, setTextoEditando] =
+    useState("");
+
+  // MENSAGEM SELECIONADA
+  const [mensagemSelecionada, setMensagemSelecionada] =
+    useState(null);
+
+  // MENSAGENS
   const [mensagens, setMensagens] = useState([
     {
-      id: "1",
-      usuario: "Ana",
-      texto: "Alguém já usou React Native?",
-      hora: new Date(),
+      id: 1,
+      nome: "Ana",
+      hora: "12:30",
+      texto:
+        "Gente, estou começando no React Native e estou achando um pouco desafiador...\n\nAlguém também sentiu isso no início?",
+      
     },
+
     {
-      id: "2",
-      usuario: "Carlos",
-      texto: "Sim! É muito bom 🔥",
-      hora: new Date(),
+      id: 2,
+      nome: "Carlos",
+      hora: "12:32",
+      texto:
+        "Senti sim! No começo parece muita coisa, mas conforme você prática, as coisas começam a fazer sentido.",
+      destaque: true,
     },
+
     {
-      id: "3",
-      usuario: "Você",
-      texto: "Tô aprendendo agora!",
-      hora: new Date(),
+      id: 3,
+      nome: "Mariana",
+      hora: "12:34",
+      texto:
+        "Tenta focar nos conceitos primeiro (estado, props, componentes) e depois partir pra navegação, api, etc.",
+    },
+
+    {
+      id: 4,
+      nome: "João",
+      hora: "12:36",
+      texto:
+        "Concordo! E o melhor é construir projetos pequenos pra fixar o conteúdo.",
     },
   ]);
 
-  const [novaMensagem, setNovaMensagem] = useState("");
-  const [editandoId, setEditandoId] = useState(null);
-
-  // ⏰ Hora
-  const formatarHora = (data) => {
-    return data.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  // 📅 Data estilo WhatsApp
-  const formatarData = (data) => {
-    const hoje = new Date();
-    const ontem = new Date();
-    ontem.setDate(hoje.getDate() - 1);
-
-    const mesmaData = (d1, d2) =>
-      d1.toDateString() === d2.toDateString();
-
-    if (mesmaData(data, hoje)) return "Hoje";
-    if (mesmaData(data, ontem)) return "Ontem";
-
-    return data.toLocaleDateString("pt-BR");
-  };
-
-  const enviarMensagem = () => {
-    if (novaMensagem.trim() !== "") {
-      if (editandoId) {
-        // ✏️ EDITAR
-        setMensagens((prev) =>
-          prev.map((msg) =>
-            msg.id === editandoId
-              ? { ...msg, texto: novaMensagem }
-              : msg
-          )
-        );
-
-        setEditandoId(null);
-        setNovaMensagem("");
-      } else {
-        // 💬 NOVA
-        const nova = {
-          id: Date.now().toString(),
-          usuario: usuarioAtual,
-          texto: novaMensagem,
-          hora: new Date(),
-        };
-
-        setMensagens((prev) => [...prev, nova]);
-        setNovaMensagem("");
-      }
-    }
-  };
-
-  const excluirMensagem = (id) => {
-    setMensagens((prev) => prev.filter((msg) => msg.id !== id));
-  };
-
-  const editarMensagem = (id, textoAtual) => {
-    setNovaMensagem(textoAtual);
-    setEditandoId(id);
-  };
-
+  // ABRIR MENU
   const abrirMenu = (item) => {
-    Alert.alert("Opções", "O que deseja fazer?", [
-      {
-        text: "Editar",
-        onPress: () => editarMensagem(item.id, item.texto),
-      },
-      {
-        text: "Excluir",
-        onPress: () => excluirMensagem(item.id),
-        style: "destructive",
-      },
-      { text: "Cancelar", style: "cancel" },
-    ]);
+    setMensagemSelecionada(item);
+
+    setMenuVisible(true);
   };
 
-  useEffect(() => {
-    flatListRef.current?.scrollToEnd({ animated: true });
-  }, [mensagens]);
+  // EXCLUIR
+  const excluirMensagem = () => {
+    const novasMensagens =
+      mensagens.filter(
+        (item) =>
+          item.id !==
+          mensagemSelecionada.id
+      );
 
-  const renderItem = ({ item }) => {
-    const ehUsuario = item.usuario === usuarioAtual;
+    setMensagens(novasMensagens);
 
-    return (
-      <View
-        style={[
-          styles.mensagemContainer,
-          ehUsuario ? styles.direita : styles.esquerda,
-        ]}
-      >
-        {!ehUsuario && (
-          <Text style={styles.nomeUsuario}>{item.usuario}</Text>
-        )}
+    setMenuVisible(false);
+  };
 
-        <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-          <View
-            style={[
-              styles.bolha,
-              ehUsuario ? styles.bolhaUsuario : styles.bolhaOutros,
-            ]}
-          >
-            <Text
-              style={[
-                styles.texto,
-                ehUsuario && { color: "#fff" },
-              ]}
-            >
-              {item.texto}
-            </Text>
-
-            {/* ⏰ Hora */}
-            <Text
-              style={[
-                styles.hora,
-                ehUsuario && { color: "#ddd" },
-              ]}
-            >
-              {formatarHora(item.hora)}
-            </Text>
-          </View>
-
-          {/* ⋮ MENU */}
-          {ehUsuario && (
-            <TouchableOpacity onPress={() => abrirMenu(item)}>
-              <Ionicons
-                name="ellipsis-vertical"
-                size={18}
-                color="#666666fd"
-                style={{ marginLeft: 5 }}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+  // ABRIR EDITAR
+  const abrirEditar = () => {
+    setTextoEditando(
+      mensagemSelecionada.texto
     );
+
+    setMenuVisible(false);
+
+    setEditarVisible(true);
+  };
+
+  // SALVAR EDIÇÃO
+  const salvarEdicao = () => {
+    const novasMensagens =
+      mensagens.map((item) => {
+        if (
+          item.id ===
+          mensagemSelecionada.id
+        ) {
+          return {
+            ...item,
+            texto: textoEditando,
+          };
+        }
+
+        return item;
+      });
+
+    setMensagens(novasMensagens);
+
+    setEditarVisible(false);
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      <HeaderForum titulo={topico} />
-
-
-      <FlatList
-
-        ref={flatListRef}
-        data={mensagens}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          const anterior = mensagens[index - 1];
-
-          const mostrarData =
-            !anterior ||
-            formatarData(anterior.hora) !==
-              formatarData(item.hora);
-
-          return (
-            <>
-              {/* 📅 DATA */}
-              {mostrarData && (
-                <View style={styles.dataContainer}>
-                  <Text style={styles.dataTexto}>
-                    {formatarData(item.hora)}
-                  </Text>
-                </View>
-              )}
-
-              {/* 💬 MENSAGEM */}
-              {renderItem({ item })}
-            </>
-          );
-        }}
-        contentContainerStyle={{
-          padding: 15,
-          paddingBottom: 120,
-        }}
+    <View style={styles.container}>
+      <Header
+        nomeTela={"Conversa"}
+        temGoBack={true}
+        telaDestino={"Titulo"}
       />
 
-      {/* ✍️ INPUT */}
-      <View style={styles.inputContainer}>
-        {/* ❌ CANCELAR EDIÇÃO */}
-        {editandoId && (
-          <TouchableOpacity
-            onPress={() => {
-              setEditandoId(null);
-              setNovaMensagem("");
-            }}
+      {/* CAMINHO */}
+      <View style={styles.pathContainer}>
+        <Text style={styles.pathText}>
+          {forum}
+        </Text>
+
+        <Ionicons
+          name="chevron-forward"
+          size={14}
+          color="#777"
+        />
+
+        <Text style={styles.pathText}>
+          {titulo}
+        </Text>
+
+        <Ionicons
+          name="chevron-forward"
+          size={14}
+          color="#777"
+        />
+
+        <Text style={styles.pathActive}>
+          Conversa
+        </Text>
+      </View>
+
+      {/* CHAT */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 100,
+        }}
+      >
+        {mensagens.map((item) => (
+          <View
+            key={item.id}
+            style={[
+              styles.messageCard,
+
+              item.destaque &&
+                styles.highlightCard,
+            ]}
           >
-            <Text style={{ color: "red", marginRight: 10 }}>
-              Cancelar
-            </Text>
-          </TouchableOpacity>
-        )}
+            {/* TOPO */}
+            <View style={styles.topRow}>
+              {/* PERFIL */}
+              <View style={styles.avatar}>
+                <Ionicons
+                  name="person"
+                  size={20}
+                  color="#fff"
+                />
+              </View>
+
+              {/* INFO */}
+              <View style={styles.userInfo}>
+                <View style={styles.nameRow}>
+                  <Text style={styles.name}>
+                    {item.nome}
+                  </Text>
+
+                  {item.online && (
+                    <>
+                      <View
+                        style={styles.onlineDot}
+                      />
+
+                      <Text
+                        style={
+                          styles.onlineText
+                        }
+                      >
+                        Online
+                      </Text>
+                    </>
+                  )}
+                </View>
+
+                {/* TEXTO */}
+                <Text style={styles.message}>
+                  {item.texto}
+                </Text>
+              </View>
+
+              {/* HORA */}
+              <Text style={styles.time}>
+                {item.hora}
+              </Text>
+            </View>
+
+            {/* FOOTER */}
+            <View style={styles.footer}>
+              {/* LIKE */}
+              <View style={styles.likeContainer}>
+
+                <Text style={styles.likeText}>
+                  {item.likes}
+                </Text>
+              </View>
+
+              {/* MENU */}
+              <TouchableOpacity
+                onPress={() =>
+                  abrirMenu(item)
+                }
+              >
+                <Feather
+                  name="more-vertical"
+                  size={18}
+                  color="#777"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* INPUT */}
+      <View style={styles.inputContainer}>
+        <TouchableOpacity
+          style={styles.clipButton}
+        >
+          <Feather
+            name="paperclip"
+            size={18}
+            color="#666"
+          />
+        </TouchableOpacity>
 
         <TextInput
-          value={novaMensagem}
-          onChangeText={setNovaMensagem}
-          placeholder={
-            editandoId
-              ? "Editando mensagem..."
-              : "Digite sua mensagem..."
-          }
+          placeholder="Escreva sua mensagem..."
+          placeholderTextColor="#999"
           style={styles.input}
         />
 
-        <TouchableOpacity style={styles.botao} onPress={enviarMensagem}>
+        <TouchableOpacity
+          style={styles.sendButton}
+        >
           <Ionicons
-            name={editandoId ? "checkmark" : "send"}
-            size={20}
+            name="send"
+            size={18}
             color="#fff"
           />
         </TouchableOpacity>
       </View>
 
-      {/* <FooterForum /> */}
-    </KeyboardAvoidingView>
+      {/* MENU */}
+      <Modal
+        visible={menuVisible}
+        transparent
+        animationType="fade"
+      >
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={() =>
+            setMenuVisible(false)
+          }
+        >
+          <View style={styles.menuContainer}>
+            {/* EDITAR */}
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={abrirEditar}
+            >
+              <Feather
+                name="edit-2"
+                size={18}
+                color="#2563EB"
+              />
+
+              <Text style={styles.menuText}>
+                Editar
+              </Text>
+            </TouchableOpacity>
+
+            {/* EXCLUIR */}
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={excluirMensagem}
+            >
+              <MaterialIcons
+                name="delete-outline"
+                size={20}
+                color="#EF4444"
+              />
+
+              <Text
+                style={[
+                  styles.menuText,
+                  {
+                    color: "#EF4444",
+                  },
+                ]}
+              >
+                Excluir
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* MODAL EDITAR */}
+      <Modal
+        visible={editarVisible}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.overlay}>
+          <View style={styles.editModal}>
+            <Text style={styles.editTitle}>
+              Editar mensagem
+            </Text>
+
+            <TextInput
+              value={textoEditando}
+              onChangeText={
+                setTextoEditando
+              }
+              multiline
+              style={styles.editInput}
+            />
+
+            <View style={styles.editButtons}>
+              {/* CANCELAR */}
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() =>
+                  setEditarVisible(false)
+                }
+              >
+                <Text
+                  style={
+                    styles.cancelText
+                  }
+                >
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+
+              {/* SALVAR */}
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={salvarEdicao}
+              >
+                <Text
+                  style={styles.saveText}
+                >
+                  Salvar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#eaeef3", //eaeef3
-    
   },
 
-
-  mensagemContainer: {
-    marginBottom: 12,
-    maxWidth: "80%",
-  },
-
-  esquerda: {
-    alignSelf: "flex-start",
-  },
-
-  direita: {
-    alignSelf: "flex-end",
-  },
-
-  nomeUsuario: {
-    fontSize: 11,
-    color: "#888",
-    marginBottom: 3,
-  },
-
-  bolha: {
-    padding: 12,
-    borderRadius: 15,
-  },
-
-  bolhaUsuario: {
-    backgroundColor: "#1e4f8a",
-    borderBottomRightRadius: 0,
-  },
-
-  bolhaOutros: {
-    backgroundColor: "#fff",
-    borderBottomLeftRadius: 0,
-  },
-
-  texto: {
-    fontSize: 14,
-  },
-
-  hora: {
-    fontSize: 10,
-    color: "#888",
-    marginTop: 5,
-    textAlign: "right",
-  },
-
-  dataContainer: {
-    alignItems: "center",
-    marginVertical: 10,
-  },
-
-  dataTexto: {
-    backgroundColor: "#dfe6ee",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    fontSize: 12,
-    color: "#555",
-  },
-
-  inputContainer: {
+  // CAMINHO
+  pathContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    paddingHorizontal: 15,
+    marginTop: 12,
+    marginBottom: 10,
+  },
+
+  pathText: {
+    color: "#777",
+    fontSize: 13,
+  },
+
+  pathActive: {
+    color: "#2563EB",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+
+  // CARD
+  messageCard: {
     backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#ddd",
-    bottom: 50,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 16,
+    padding: 12,
+  },
+
+  highlightCard: {
+    backgroundColor: "#EEF2FF",
+  },
+
+  topRow: {
+    flexDirection: "row",
+  },
+
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+
+    backgroundColor: "#2563EB",
+
+    justifyContent: "center",
+    alignItems: "center",
+
+    marginRight: 10,
+  },
+
+  userInfo: {
+    flex: 1,
+  },
+
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+
+  name: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#222",
+  },
+
+  onlineDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#22C55E",
+    marginLeft: 8,
+    marginRight: 4,
+  },
+
+  onlineText: {
+    color: "#22C55E",
+    fontSize: 11,
+  },
+
+  message: {
+    fontSize: 13,
+    color: "#333",
+    lineHeight: 20,
+    marginTop: 2,
+  },
+
+  time: {
+    fontSize: 11,
+    color: "#888",
+  },
+
+  // FOOTER
+  footer: {
+    marginTop: 10,
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  likeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  likeText: {
+    marginLeft: 5,
+    color: "#666",
+    fontSize: 13,
+  },
+
+  // INPUT
+  inputContainer: {
+    position: "absolute",
+    bottom: 15,
+    left: 10,
+    right: 10,
+
+    backgroundColor: "#fff",
+
+    borderRadius: 18,
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    paddingHorizontal: 10,
+    height: 55,
+
+    elevation: 3,
+  },
+
+  clipButton: {
+    marginRight: 8,
   },
 
   input: {
     flex: 1,
-    backgroundColor: "#ddd",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    height: 40,
-    marginRight: 10,
+    fontSize: 14,
   },
 
-  botao: {
-    backgroundColor: "#187cf6",
-    padding: 10,
-    borderRadius: 50,
+  sendButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#2563EB",
+
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // MENU
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  menuContainer: {
+    width: 180,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    paddingVertical: 10,
+
+    elevation: 6,
+  },
+
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+
+  menuText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: "#333",
+    fontWeight: "600",
+  },
+
+  // EDITAR
+  editModal: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+  },
+
+  editTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2563EB",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+
+  editInput: {
+    minHeight: 120,
+
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+
+    borderRadius: 14,
+
+    padding: 12,
+
+    textAlignVertical: "top",
+  },
+
+  editButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+    marginTop: 20,
+  },
+
+  cancelButton: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+
+    borderRadius: 12,
+  },
+
+  cancelText: {
+    color: "#777",
+    fontWeight: "600",
+  },
+
+  saveButton: {
+    backgroundColor: "#2563EB",
+
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+
+    borderRadius: 12,
+  },
+
+  saveText: {
+    color: "#fff",
+    fontWeight: "700",
   },
 });

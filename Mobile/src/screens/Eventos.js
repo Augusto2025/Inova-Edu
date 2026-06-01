@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
+import Header from '../components/Header';
+import { COLORS } from '../components/Cores';
+import styles from '../styles/Evento';
 
 export default function CalendarScreen() {
   const [selected, setSelected] = useState('');
@@ -37,9 +40,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>CALENDÁRIO</Text>
-      </View>
+      <Header nomeTela={"Calendário"} />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
         <View style={styles.calendarContainer}>
@@ -47,8 +48,8 @@ export default function CalendarScreen() {
             onDayPress={day => handleOpenEvent(day.dateString)}
             markedDates={{
               [selected]: { selected: true, selectedColor: '#1459b3' },
-              '2026-04-10': { marked: true, dotColor: '#4CAF50' },
-              '2026-04-01': { marked: true, dotColor: '#FFD700' },
+              '2026-05-10': { marked: true, dotColor: '#4CAF50' },
+              '2026-05-01': { marked: true, dotColor: '#FFD700' },
             }}
             theme={{
               // Círculo azul no dia de hoje
@@ -141,50 +142,3 @@ export default function CalendarScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#cfe0e8' },
-  header: {
-    backgroundColor: '#1459b3',
-    height: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-  },
-  headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 20 },
-  calendarContainer: { backgroundColor: '#FFF', margin: 15, borderRadius: 20, padding: 10, elevation: 4 },
-  eventSection: { paddingHorizontal: 20 },
-  eventSectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
-  eventCard: {
-    backgroundColor: '#FFF',
-    flexDirection: 'row',
-    padding: 12,
-    borderRadius: 15,
-    marginBottom: 12,
-    alignItems: 'center',
-    elevation: 2,
-  },
-  dateBadge: { width: 55, height: 60, borderWidth: 1, borderRadius: 8, overflow: 'hidden', marginRight: 15 },
-  dateBadgeTop: { height: '40%', justifyContent: 'center', alignItems: 'center' },
-  monthText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
-  dateBadgeBottom: { height: '60%', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF' },
-  dayText: { fontSize: 18, fontWeight: 'bold' },
-  eventInfo: { flex: 1 },
-  eventTitle: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  eventTimeInfo: { fontSize: 13, color: '#666', marginTop: 4 },
-  statusDot: { width: 8, height: 8, borderRadius: 4, marginLeft: 10 },
-  
-  // Estilos do Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '85%', backgroundColor: 'white', borderRadius: 20, overflow: 'hidden' },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20 },
-  modalTitle: { color: 'white', fontSize: 18, fontWeight: 'bold', flex: 1 },
-  modalBody: { padding: 20 },
-  modalInfoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  modalInfoText: { marginLeft: 10, fontSize: 16, color: '#444' },
-  descriptionTitle: { fontWeight: 'bold', marginTop: 15, fontSize: 16, color: '#333' },
-  descriptionText: { marginTop: 5, fontSize: 14, color: '#666', lineHeight: 20 },
-  closeButton: { backgroundColor: '#1459b3', marginTop: 20, padding: 12, borderRadius: 10, alignItems: 'center' },
-  closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
-});

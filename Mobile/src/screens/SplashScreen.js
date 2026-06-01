@@ -1,15 +1,22 @@
-import { useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Image  } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, Image } from "react-native";
+import { useIsFocused } from "@react-navigation/native"; // <-- O segredo está aqui
 
 const Logo = require('../../assets/LOGOBRANCO.png');
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen() {
+    const isFocused = useIsFocused(); // Detecta automaticamente se a tela está ativa
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
-        setTimeout(() => {
-        navigation.replace('Login');
-        }, 3000);
-    }, []);
+        if (isFocused) {
+            setIsLoading(true);
+            const timer = setTimeout(() => setIsLoading(false), 1200);
+            return () => clearTimeout(timer);
+        }
+    }, [isFocused]);
+
+    if (!isLoading) return null; // Se terminou de carregar, some da tela
 
     return (
         <View style={styles.container}>
@@ -17,23 +24,16 @@ export default function SplashScreen({ navigation }) {
             <Text style={styles.text}>Carregando...</Text>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        ...StyleSheet.absoluteFillObject, // Cobre a tela inteira sozinho
         backgroundColor: '#1459b3',
         alignItems: 'center',
         justifyContent: 'center',
+        zIndex: 9999, // Fica por cima de tudo
     },
-    logo: {
-        width: 150,
-        height: 150,
-        marginBottom: 20,
-    },
-    text: {
-        color: '#ffffff',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
+    logo: { width: 150, height: 150, marginBottom: 20 },
+    text: { color: '#ffffff', fontSize: 24, fontWeight: 'bold' },
 });

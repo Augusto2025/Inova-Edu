@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from "../components/Cores";
 
 // telas
 import HomeScreen from '../screens/HomeScreen';
@@ -8,12 +9,21 @@ import CalendarScreen from '../screens/Eventos';
 import ForumScreen from '../screens/Forum';
 import SettingsScreen from '../screens/SettingsScreen';
 import CursosScreen from '../screens/Cursos';
+import TurmasScreen from '../screens/Turmas';
+import ProjetosScreen from '../screens/Projetos';
+import RepositorioScreen from '../screens/Repositorio';
+import TituloScreen from '../screens/Titulo';
+import ConversaScreen from '../screens/Conversa';
+import NotificationScreen from "../screens/NotificationScreen";
+import ProfileScreen from '../screens/Perfil';
+
 
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
   return (
     <Tab.Navigator
+      backBehavior="history"
       screenOptions={({ route }) => ({
         headerShown: false,
 
@@ -21,9 +31,9 @@ export default function TabRoutes() {
           let iconName = 'home';
 
           if (route.name === 'Home') iconName = 'home';
-          else if (route.name === 'Calendario') iconName = 'calendar';
-          else if (route.name === 'Forum') iconName = 'chatbubble';
-          else if (route.name === 'Repositorio') iconName = 'folder';
+          else if (route.name === 'Eventos') iconName = 'calendar';
+          else if (route.name === 'Fórum') iconName = 'chatbubble';
+          else if (route.name === 'Repositório') iconName = 'folder';
           else if (route.name === 'Config') iconName = 'settings';
 
           return (
@@ -39,24 +49,93 @@ export default function TabRoutes() {
         tabBarInactiveTintColor: '#dcdcdc',
 
         tabBarStyle: {
-          backgroundColor: '#1459b3',
-          height: 85,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          elevation: 10,
+          backgroundColor: COLORS.primary,
+          height: 95,
         },
 
         tabBarLabelStyle: {
-          fontSize: 13,
-          marginBottom: 8,
+          fontSize: 12,
+          marginTop: 5,
         },
       })}
     >
+      {/* Visíveis */}
+      <Tab.Screen name="Eventos" component={CalendarScreen} />
+      <Tab.Screen name="Fórum" component={ForumScreen} />
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Calendario" component={CalendarScreen} />
-      <Tab.Screen name="Forum" component={ForumScreen} />
-      <Tab.Screen name="Repositorio" component={CursosScreen} />
+      <Tab.Screen name="Repositório" component={CursosScreen} />
       <Tab.Screen name="Config" component={SettingsScreen} />
+
+      {/* Ocultas */}
+      <Tab.Screen 
+        name="Perfil" 
+        component={ProfileScreen}
+        options={{
+            tabBarItemStyle: {
+              display: 'none',
+            },
+          }}
+      />
+      <Tab.Screen
+        name="Turmas"
+        component={TurmasScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+      
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+
+      <Tab.Screen
+        name="Projetos"
+        component={ProjetosScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+      <Tab.Screen
+        name="Repositorio"
+        component={RepositorioScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+      <Tab.Screen
+        name="Titulo"
+        component={TituloScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+
+      <Tab.Screen
+        name="Conversa"
+        component={ConversaScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
     </Tab.Navigator>
   );
 }
