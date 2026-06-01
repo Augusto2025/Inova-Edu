@@ -17,12 +17,69 @@ export default function HomeScreen() {
   const alertColor = COLORS.alert;
   const Logo = require('../../assets/Logo_azul_icone.png');
 
+  // INTEGRADO: Seus cursos reais vindos da tela de Cursos com projetos vinculados!
+  const categoriasCursos = [
+    {
+      id: "1",
+      nomeCurso: "Informática Básica", // Seu curso 1
+      projetos: [
+        {
+          id: "p1",
+          titulo: "Sistema de Gestão",
+          imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400",
+        },
+        {
+          id: "p2",
+          titulo: "Planilha de Controle",
+          imagem: "https://images.unsplash.com/photo-1627398242454-45a1465c2020?q=80&w=400",
+        },
+      ],
+    },
+    {
+      id: "2",
+      nomeCurso: "Excel Avançado", // Seu curso 2
+      projetos: [
+        {
+          id: "p3",
+          titulo: "Dashboard Automatizado",
+          imagem: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400",
+        },
+        {
+          id: "p4",
+          titulo: "Análise de Dados Macro",
+          imagem: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400",
+        },
+      ],
+    },
+    {
+      id: "3",
+      nomeCurso: "Desenvolvimento Web Full Stack", // Seu curso 3
+      projetos: [
+        {
+          id: "p5",
+          titulo: "My App - RN",
+          imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400",
+        },
+        {
+          id: "p6",
+          titulo: "Web Portal E-commerce",
+          imagem: "https://images.unsplash.com/photo-161474111887-7a4ee193a5fa?q=80&w=400",
+        },
+        {
+          id: "p7",
+          titulo: "API Restful Node",
+          imagem: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=400",
+        },
+      ],
+    },
+  ];
+
   return (
     <View style={styles.safe}>
       {/* HEADER */}
       <Header nomeTela="Olá, Alcides" subtitulo="Tec. Desenvolvimento de Sistemas" />
 
-      {/* CONTEÚDO COM A NOVA ORDEM */}
+      {/* CONTEÚDO */}
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -74,7 +131,6 @@ export default function HomeScreen() {
           <View style={[styles.statusDot, { backgroundColor: alertColor }]} />
         </TouchableOpacity>
 
-
         {/* 2. SEUS REPOSITÓRIOS (BUSCA + TAGS) */}
         <View style={styles.searchContainer}>
           <Text style={styles.searchTitle}>Seus Repositórios</Text>
@@ -101,7 +157,6 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </ScrollView>
         </View>
-
 
         {/* 3. FÓRUM ATIVO */}
         <Text style={styles.sectionTitle}>Fórum ativo</Text>
@@ -144,105 +199,42 @@ export default function HomeScreen() {
           </View>
         </View>
 
-
-        {/* 4. REPOSITÓRIOS RECENTES COM CATEGORIA ACIMA */}
-        <Text style={styles.sectionTitle}>Repositório Recentes</Text>
+        {/* 4. REPOSITÓRIOS RECENTES DINÂMICOS COM SEUS CURSOS */}
+        <Text style={styles.sectionTitle}>Repositórios Recentes</Text>
         
-        {/* O nome da categoria fica AQUI, do lado de fora do ScrollView horizontal */}
-        <Text style={styles.sectioncategoria}>Dev. full stack</Text>
-        
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalRepoContainer}
-        >
-          {/* CARD QUADRADO 1 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>My App - RN</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* CARD QUADRADO 2 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1627398242454-45a1465c2020?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>Python Script</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* CARD QUADRADO 3 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>Web Portal</Text>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
-{/* O nome da categoria fica AQUI, do lado de fora do ScrollView horizontal */}
-        <Text style={styles.sectioncategoria}>informatica</Text>
-        
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.horizontalRepoContainer}
-        >
-          {/* CARD QUADRADO 1 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>My App - RN</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* CARD QUADRADO 2 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1627398242454-45a1465c2020?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>Python Script</Text>
-            </View>
-          </TouchableOpacity>
-
-          {/* CARD QUADRADO 3 */}
-          <TouchableOpacity style={styles.repoSquareCard} activeOpacity={0.8}>
-            <View style={styles.imageWrapper}>
-              <Image
-                source={{ uri: "https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=400" }}
-                style={styles.repoCoverImage}
-              />
-            </View>
-            <View style={styles.repoContentArea}>
-              <Text style={styles.repoMainTitle} numberOfLines={1}>Web Portal</Text>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
-
+        {categoriasCursos.map((curso) => (
+          <View key={curso.id} style={styles.cursoSectionContainer}>
+            {/* Tema do Curso Real */}
+            <Text style={styles.sectioncategoria}>{curso.nomeCurso}</Text>
+            
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalRepoContainer}
+            >
+              {curso.projetos.map((projeto) => (
+                <TouchableOpacity 
+                  key={projeto.id}
+                  style={styles.repoSquareCard} 
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate("Repositorio", { projetoId: projeto.id })} 
+                >
+                  <View style={styles.imageWrapper}>
+                    <Image
+                      source={{ uri: projeto.imagem }}
+                      style={styles.repoCoverImage}
+                    />
+                  </View>
+                  <View style={styles.repoContentArea}>
+                    <Text style={styles.repoMainTitle} numberOfLines={2}>
+                      {projeto.titulo}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        ))}
 
       </ScrollView>
     </View>
@@ -524,12 +516,37 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   
-  /* ESTILIZAÇÃO DO NOME DO CURSO ACIMA DOS CARDS */
-  sectioncategoria: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#444",
-    marginBottom: 10, // margem para dar espaço até os cards começarem
-    textTransform: "capitalize",
-  },
+  cursoSectionContainer: { marginBottom: 10 },
+  sectioncategoria: { fontSize: 16, fontWeight: "600", color: "#444", marginBottom: 10 },
+  horizontalRepoContainer: { paddingBottom: 15, flexDirection: "row", gap: 14 },
+  repoSquareCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, width: 140 },
+  imageWrapper: { width: "100%", height: 100, backgroundColor: "#ececec" },
+  repoCoverImage: { width: "100%", height: "100%", resizeMode: "cover" },
+  repoContentArea: { padding: 12, justifyContent: "center", minHeight: 45 },
+  repoMainTitle: { fontSize: 14, fontWeight: "bold", color: "#111", textAlign: "center" },
+  
+  searchContainer: { backgroundColor: "#fff", borderRadius: 24, padding: 18, marginTop: 10, marginBottom: 25, elevation: 4, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4 },
+  searchTitle: { fontWeight: "bold", fontSize: 22, marginBottom: 15, color: "#111" },
+  searchBox: { backgroundColor: "#f1f1f1", borderRadius: 18, paddingHorizontal: 15 },
+  searchInput: { height: 50, fontSize: 15, color: "#111" },
+  tagsContainer: { paddingTop: 15 },
+  tag: { backgroundColor: "#ececec", paddingHorizontal: 16, paddingVertical: 10, borderRadius: 14, marginRight: 10 },
+  tagText: { color: "#333", fontWeight: "500" },
+  forumContainerCard: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginBottom: 25, elevation: 3, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4 },
+  forumHeaderRow: { flexDirection: "row", alignItems: "center" },
+  forumIconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 12 },
+  forumTitleBlock: { flex: 1 },
+  forumMainTitle: { fontSize: 16, fontWeight: "bold", color: "#111" },
+  forumTimeAgo: { fontSize: 12, color: "#888", position: "absolute", right: 35, top: 2 },
+  forumBadgeCount: { backgroundColor: "#5360f0", width: 22, height: 22, borderRadius: 11, justifyContent: "center", alignItems: "center" },
+  forumBadgeText: { color: "#fff", fontSize: 12, fontWeight: "bold" },
+  forumPublishDate: { fontSize: 13, color: "#999", marginLeft: 56, marginTop: -4, marginBottom: 10 },
+  forumBodyText: { fontSize: 14, color: "#555", marginLeft: 56, marginBottom: 15, lineHeight: 20 },
+  forumFooterRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginLeft: 56 },
+  forumMetaDetails: { flexDirection: "row", alignItems: "center", gap: 12 },
+  forumMetaItem: { flexDirection: "row", alignItems: "center" },
+  forumMetaText: { fontSize: 12, color: "#777" },
+  forumActions: { flexDirection: "row", gap: 8 },
+  actionButtonEdit: { backgroundColor: "#f0f2ff", padding: 8, borderRadius: 12 },
+  actionButtonDelete: { backgroundColor: "#fff0f2", padding: 8, borderRadius: 12 },
 });
