@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
+  Animated, // IMPORTADO: API de animação do React Native
 } from "react-native";
 
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { COLORS } from "./Cores"; // Importando as cores para manter a consistência visual
+import { Feather } from "@expo/vector-icons";
 import { useNavigation, TabActions } from "@react-navigation/native";
 
 export default function Header({
@@ -19,6 +19,29 @@ export default function Header({
   exibirCurva = true, 
 }) {
   const navigation = useNavigation();
+
+  // 1. CRIAR A CONFIGURAÇÃO DO VALOR DA ANIMAÇÃO (Começa em 1 = tamanho normal)
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // 2. CONFIGURAR O LOOP DO PULSO
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        // Encolhe um pouquinho ou expande (vamos expandir até 1.08x)
+        Animated.timing(pulseAnim, {
+          toValue: 1.08,
+          duration: 1200, // Tempo de ida (1.2 segundos)
+          useNativeDriver: true, // Melhora absurdamente a performance
+        }),
+        // Volta ao tamanho original
+        Animated.timing(pulseAnim, {
+          toValue: 1.0,
+          duration: 1200, // Tempo de volta (1.2 segundos)
+          useNativeDriver: true,
+        }),
+      ])
+    ).start(); // Inicia o loop infinito
+  }, [pulseAnim]);
 
   const lidarComVoltar = () => {
     if (telaDestino) {
@@ -35,9 +58,17 @@ export default function Header({
   return (
     <View style={styles.wrapper}>
 
-      {/* LINHA DA LOGOMARCA: Adicionada no topo do Header */}
+      {/* LINHA DA LOGOMARCA COM ANIMAÇÃO */}
       <View style={styles.logoRow}>
-        <Text style={styles.logoText}>Inova-Edu</Text>
+        {/*Substituímos o <Text> comum por <Animated.Text> para aceitar o estilo de escala */}
+        <Animated.Text 
+          style={[
+            styles.logoText, 
+            { transform: [{ scale: pulseAnim }] } // Aplica a pulsação aqui!
+          ]}
+        >
+          Inova-Edu
+        </Animated.Text>
       </View>
 
       {/* CONTEÚDO DO HEADER */}
@@ -62,12 +93,10 @@ export default function Header({
             </View>
           ) : (
             
-            /* CASO 2: SE FOR OUTRA TELA (Sem perfil, com botão de voltar embaixo do tema) */
+            /* CASO 2: SE FOR OUTRA TELA */
             <View style={styles.noProfileContainer}>
-              {/* O Tema/Título fica em cima */}
               <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
               
-              {/* O botão de voltar fica embaixo */}
               {temGoBack && (
                 <TouchableOpacity
                   onPress={lidarComVoltar}
@@ -83,7 +112,7 @@ export default function Header({
 
         </View>
 
-        {/* NOTIFICAÇÃO (Fica alinhada com o conteúdo inferior) */}
+        {/* NOTIFICAÇÃO */}
         <TouchableOpacity
           style={styles.notification}
           onPress={() => navigation.navigate("Notifications")}
@@ -93,21 +122,15 @@ export default function Header({
             <Text style={styles.badgeText}>3</Text>
           </View>
         </TouchableOpacity>
-              {/* NOTIFICAÇÃO */}
-              <TouchableOpacity
-                style={styles.notification}
-                onPress={() => navigation.navigate("Notifications")}
-              >
-                <Feather name="bell" size={24} color="#fff" />
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>3</Text>
-                </View>
-              </TouchableOpacity>
-
-            </View>
-          </View>
-        </View>
       </View>
+
+      {/* CURVA */}
+      {exibirCurva && (
+        <View style={styles.curveContainer}>
+          <View style={styles.curve} />
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -115,22 +138,22 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: "#1459b3",
   },
-  // Estilização da nova linha da logo
   logoRow: {
-    paddingTop: 55, // Afasta dos elementos físicos/notch do celular
+    paddingTop: 55, 
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#1459b3",
+    height: 90, // Forçamos uma altura fixa para a linha da logo não tremer o resto da tela ao pulsar
   },
   logoText: {
-    color: "#fff",
+    color: '#f7941d',
     fontSize: 18,
-    fontWeight: "800", // Bem marcante
-    letterSpacing: 1, // Espaçamento elegante entre as letras
+    fontWeight: "800", 
+    letterSpacing: 1, 
     opacity: 0.95,
   },
   header: {
-    paddingTop: 15, // Reduzido o paddingTop aqui porque a logo já ocupa o topo
+    paddingTop: 5, // Ajustado levemente para encaixar o respiro da logo fixa
     paddingBottom: 19, 
     paddingHorizontal: 22,
     flexDirection: "row",
@@ -141,25 +164,9 @@ const styles = StyleSheet.create({
   left: {
     flex: 1,
     marginRight: 10,
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  backButton: {
-    marginRight: 5,
-  },
-  profileArea: {
-    flexDirection: "column",
-  },
-  logoText: {
-    color: "#fff",
-    fontSize: 25,
-    marginBottom: 8,
-    alignItems: "center",
   },
   profileContainer: {
-    width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
   },
   profileImage: {
@@ -213,7 +220,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: COLORS.alert,
+    backgroundColor: "#ff4d67",
     width: 18,
     height: 18,
     borderRadius: 9,
@@ -229,14 +236,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#1459b3",
   },
   curve: {
-    height: 35,
-    backgroundColor: "#f5f7fb",
+    height: 45,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    height: 35,
-    backgroundColor: COLORS.background,
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
-    marginTop: -15,
   },
 });
