@@ -1,4 +1,6 @@
 // server.js (Solto na raiz do backend)
+require('dotenv').config(); // 🌟 ISSO AQUI DEVE SER SEMPRE A LINHA 1!
+
 const express = require('express');
 const cors = require('cors');
 
@@ -12,7 +14,7 @@ app.use(cors());
 // 2. Encaminha as chamadas para os arquivos certos
 app.use('/login', authRoutes);   // Tudo sobre login
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
-  console.log(`🔥 Servidor backend rodando na porta ${PORT}`);
+  console.log(`Servidor backend rodando na porta ${PORT}`);
 });

@@ -4,15 +4,18 @@ import { Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
+import SplashScreen from './SplashScreen';
 
 // npm install react-native-keyboard-aware-scroll-view
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [carregandoTransicao, setCarregandoTransicao] = useState(false);
     const Logo = require('../../assets/LOGOBRANCO.png');
 
-    const handleLogin = () => {
+    // 🌟 Transformada em async para poder realizar a requisição HTTP
+    const handleLogin = async () => {
         if (email === '' || senha === '') {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
             return;
@@ -23,37 +26,80 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // o replace é usado para substituir a tela atual, impedindo que o usuário volte para a tela de login usando o botão de voltar do dispositivo
-        navigation.replace('Main');
+        // ⚠️ Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
+        // Enquanto testa localmente no PC, use o seu IP: "http://192.168.X.X:3000/login"
+        const URL_BACKEND = "http://10.0.60.133:8081/login";
+
+        try {
+            // Envia os dados para o seu servidor
+            const resposta = await fetch(URL_BACKEND, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email.trim(), // Remove espaços em branco bobos
+                    senha: senha,
+                }),
+            });
+
+            const dados = await resposta.json();
+
+            if (dados.sucesso) {
+                // Se o banco validou, avança para a Main passando os dados obtidos (opcional)
+                setCarregandoTransicao(true);
+
+                // 2. Segura o usuário por 1.2 segundos para ele ver o "Carregando..."
+                setTimeout(() => {
+                    // 3. Só depois do tempo, joga ele para a tela principal
+                    navigation.replace('Main', { usuario: dados.usuario });
+                }, 1200); // 1200 milissegundos bate com o tempo da sua Splash!
+            } else {
+                // Alerta com a mensagem de erro vinda do seu banco de dados
+                Alert.alert('Erro de Login', dados.mensagem);
+            }
+
+        } catch (error) {
+            console.error('Erro na conexão:', error);
+            Alert.alert(
+                'Erro de Rede', 
+                'Não foi possível se comunicar com o servidor. Verifique a conexão com a internet.'
+            );
+        }
     };
 
     return (
-        <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
-            <View style={styles.containerTotal}>
-                <View style={styles.header}>
-                    <Image source={Logo} style={styles.Logo} />
-                    <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
-                </View>
-                <View style={styles.containerCenter}>
-                    <Text style={styles.titulo}>Login</Text>
+        <View style={{ flex: 1 }}>
+            
+            <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
+                <View style={styles.containerTotal}>
+                    <View style={styles.header}>
+                        <Image source={Logo} style={styles.Logo} />
+                        <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
+                    </View>
+                    <View style={styles.containerCenter}>
+                        <Text style={styles.titulo}>Login</Text>
 
-                    <CustomInput
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        />
-                    <CustomInput
-                        placeholder="Senha"
-                        value={senha}
-                        onChangeText={setSenha}
-                        // esconde o texto digitado, para proteger a senha do usuário
-                        secureTextEntry
-                        />
+                        <CustomInput
+                            placeholder="Email"
+                            value={email}
+                            onChangeText={setEmail}
+                            />
+                        <CustomInput
+                            placeholder="Senha"
+                            value={senha}
+                            onChangeText={setSenha}
+                            // esconde o texto digitado, para proteger a senha do usuário
+                            secureTextEntry
+                            />
 
-                    <CustomButton title="Entrar" onPress={handleLogin}/>
+                        <CustomButton title="Entrar" onPress={handleLogin}/>
+                    </View>
                 </View>
-            </View>
-        </KeyboardAwareScrollView>
+            </KeyboardAwareScrollView>
+
+            {carregandoTransicao && <SplashScreen />}
+        </View>
     )
 }
 
@@ -91,4 +137,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
-})
+});

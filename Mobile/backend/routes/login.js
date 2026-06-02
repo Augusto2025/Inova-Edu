@@ -1,20 +1,19 @@
-// backend/routes/login.js
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db'); // Puxa a conexão que testamos e funcionou!
+const pool = require('../config/db'); // Puxa a conexão do Postgres protegida pelo .env
 
-// Rota de Login (POST: http://localhost:3000/login)
-router.post('/login', async (req, res) => {
+// Rota de Login (POST: https://sua-api.onrender.com/login)
+router.post('/', async (req, res) => { // 🌟 Ajustado para '/' para evitar caminhos duplicados
   const { email, senha } = req.body;
 
   console.log(`📩 Tentativa de login recebida para o e-mail: ${email}`);
 
   try {
     // 1. Procura o usuário na tabela do banco de dados pelo e-mail
-    const queryText = 'SELECT idUsuario, Nome, Email, Senha FROM usuarios WHERE Email = $1';
+    const queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha" FROM usuario WHERE "Email" = $1';
     const resultado = await pool.query(queryText, [email]);
 
-    // 2. Se o banco não retornar nenhuma linha, significa que o e-mail não existe
+    // 2. Se o banco não retornar nenhuma linha, o e-mail não existe
     if (resultado.rows.length === 0) {
       return res.status(401).json({
         sucesso: false,
@@ -32,7 +31,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // 4. Se passou por tudo, o login deu certo! Retorna os dados (escondendo a senha)
+    // 4. Se passou por tudo, o login deu certo! Retorna os dados para o celular
     return res.json({
       sucesso: true,
       mensagem: 'Login efetuado com sucesso!',
@@ -52,4 +51,5 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Exporta a rota para o server.js
 module.exports = router;

@@ -18,7 +18,7 @@
                 {% if usuario.imagem %}
                     <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
                 {% else %}
-                    <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                    <img src="{% static 'img/default_user.png' %}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
                 {% endif %}
 
                 <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
