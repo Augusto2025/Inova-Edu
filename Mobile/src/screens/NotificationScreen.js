@@ -1,364 +1,196 @@
-import React, { useState } from "react";
-
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
-import Header from "../components/Header";
+// Importando o seu Header customizado
+import Header from "../components/Header"; 
 
-import { Ionicons } from "@expo/vector-icons";
+export default function NotificationsScreen() {
+  const navigation = useNavigation();
+  const [filtroAtivo, setFiltroAtivo] = useState("Todas");
 
-export default function NotificationScreen() {
-
-  const [filtroAtivo, setFiltroAtivo] =
-    useState("Todas");
-
-  const notificacoes = [
-
+  // LISTA DE NOTIFICAÇÕES (O estado inicial define o que aparece ao resetar/iniciar o app)
+  const [notificacoes, setNotificacoes] = useState([
     {
-      id: 1,
+      id: "1",
       tipo: "Forum",
       titulo: "Carlos respondeu seu tópico",
-      descricao: '"Como usar useState?"',
+      subtitulo: '"Como usar useState?"',
       tempo: "12 min",
-      icon: "chatbubble",
-      cor: "#5865F2",
-      novo: true,
+      isNova: true, // Começa como Novo ao iniciar o app
+      icon: "message-square",
+      iconColor: "#4d5dfb",
+      telaDestino: "Conversa",
+      parametros: { topicoId: "useState-id", titulo: "Como usar useState?" },
     },
-
     {
-      id: 2,
+      id: "2",
       tipo: "Eventos",
       titulo: "Novo evento disponível",
-      descricao: "React Native Meetup",
+      subtitulo: "React Native Meetup",
       tempo: "1 hora",
+      isNova: true, // Começa como Novo ao iniciar o app
       icon: "calendar",
-      cor: "#8B5CF6",
-      novo: true,
+      iconColor: "#a855f7",
+      telaDestino: "Eventos",
+      parametros: {},
     },
-
-    // {
-    // //   id: 3,
-    // //   // tipo: "Repos",
-    // //   titulo: "Repositório atualizado",
-    // //   descricao: "2 novos commits",
-    // //   tempo: "Ontem",
-    // //   icon: "flash",
-    // //   cor: "#0EA5E9",
-    // //   novo: false,
-    // // },
-
     {
-      id: 4,
+      id: "3",
       tipo: "Sistema",
       titulo: "Conta verificada",
-      descricao: "Seu perfil foi atualizado",
+      subtitulo: "Seu perfil foi atualizado",
       tempo: "2 dias",
-      icon: "shield-checkmark",
-      cor: "#F59E0B",
-      novo: false,
+      isNova: false, 
+      icon: "shield",
+      iconColor: "#f59e0b",
+      telaDestino: "Profile",
+      parametros: {},
     },
-  ];
+  ]);
 
-  const notificacoesFiltradas =
-    filtroAtivo === "Todas"
-      ? notificacoes
-      : notificacoes.filter(
-          (n) => n.tipo === filtroAtivo
-        );
+  // REMOVIDO o reset forçado no useFocusEffect para permitir que a tag suma ao clicar!
+  useFocusEffect(
+    useCallback(() => {
+      // Mantemos o hook aqui caso queira adicionar alguma lógica de foco no futuro,
+      // mas ele não vai mais sobrescrever o clique do usuário.
+    }, [])
+  );
+
+  const filtros = ["Todas", "Forum", "Eventos", "Sistema"];
+
+  // Filtra os itens com base na aba selecionada
+  const notificacoesFiltradas = notificacoes.filter((notif) => {
+    if (filtroAtivo === "Todas") return true;
+    return notif.tipo === filtroAtivo;
+  });
+
+  // Conta quantas notificações ainda têm a tag "NOVO" ativa
+  const totalNovas = notificacoes.filter((notif) => notif.isNova).length;
+
+  // CORRIGIDO: Agora marca o item específico como lido e remove o "NOVO" antes de navegar
+  const lidarComCliqueNotificacao = (item) => {
+    // 1. Atualiza o estado para mudar o isNova deste item para false
+    setNotificacoes((listaAntiga) =>
+      listaAntiga.map((notif) =>
+        notif.id === item.id ? { ...notif, isNova: false } : notif
+      )
+    );
+
+    // 2. Navega para a tela de destino correspondente
+    if (item.telaDestino) {
+      try {
+        navigation.navigate(item.telaDestino, item.parametros);
+      } catch (error) {
+        console.warn(`Erro ao navegar para a tela ${item.telaDestino}:`, error);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
-
-      {/* HEADER */}
-      <Header
-        nomeTela="Notificações"
+      <Header 
+        nomeTela="Notificações" 
+        temGoBack={true} 
+        exibirCurva={false} 
+        quantidadeNotificacoes={totalNovas} // Mostra a contagem real baseada nos "NOVOS" restantes
       />
 
-      {/* FILTROS */}
+      {/* BOTÕES DE FILTRO */}
       <View style={styles.filterWrapper}>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterContainer}
-        >
-
-          {[
-            "Todas",
-            "Forum",
-            "Eventos",
-            // "Repos",
-            "Sistema",
-          ].map((item) => (
-
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContainer}>
+          {filtros.map((filtro) => (
             <TouchableOpacity
-              key={item}
+              key={filtro}
               style={[
                 styles.filterButton,
-
-                filtroAtivo === item &&
-                  styles.filterButtonActive,
+                filtroAtivo === filtro && styles.filterButtonActive,
               ]}
-              onPress={() =>
-                setFiltroAtivo(item)
-              }
-              activeOpacity={0.8}
+              onPress={() => setFiltroAtivo(filtro)}
+              activeOpacity={0.7}
             >
-
               <Text
                 style={[
                   styles.filterText,
-
-                  filtroAtivo === item &&
-                    styles.filterTextActive,
+                  filtroAtivo === filtro && styles.filterTextActive,
                 ]}
               >
-                {item}
+                {filtro}
               </Text>
-
             </TouchableOpacity>
-
           ))}
-
         </ScrollView>
-
       </View>
 
-      {/* LISTA */}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      {/* CORPO DE NOTIFICAÇÕES */}
+      <ScrollView contentContainerStyle={styles.scrollList} showsVerticalScrollIndicator={false}>
+        <Text style={styles.sectionTitle}>Hoje</Text>
 
-        {/* TITULO */}
-        <Text style={styles.sectionTitle}>
-          Hoje
-        </Text>
-
-        {/* CARDS */}
-        {notificacoesFiltradas.map((item) => (
-
-          <TouchableOpacity
-            key={item.id}
-            style={styles.card}
-            activeOpacity={0.8}
-          >
-
-            {/* ÍCONE */}
-            <View
-              style={[
-                styles.iconContainer,
-                {
-                  backgroundColor: item.cor,
-                },
-              ]}
+        {notificacoesFiltradas.length > 0 ? (
+          notificacoesFiltradas.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.card}
+              onPress={() => lidarComCliqueNotificacao(item)} // Dispara a função corrigida
+              activeOpacity={0.8}
             >
-
-              <Ionicons
-                name={item.icon}
-                size={24}
-                color="#fff"
-              />
-
-            </View>
-
-            {/* CONTEÚDO */}
-            <View style={styles.content}>
-
-              <View style={styles.topRow}>
-
-                <Text style={styles.title}>
-                  {item.titulo}
-                </Text>
-
-                <Text style={styles.time}>
-                  {item.tempo}
-                </Text>
-
+              <View style={[styles.iconContainer, { backgroundColor: item.iconColor }]}>
+                <Feather name={item.icon} size={22} color="#fff" />
               </View>
 
-              <Text style={styles.description}>
-                {item.descricao}
-              </Text>
-
-              {item.novo && (
-
-                <View style={styles.newBadge}>
-
-                  <Text style={styles.newText}>
-                    NOVO
-                  </Text>
-
+              <View style={styles.contentContainer}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>{item.titulo}</Text>
+                  <Text style={styles.cardTime}>{item.tempo}</Text>
                 </View>
+                <Text style={styles.cardSubtitle} numberOfLines={1}>{item.subtitulo}</Text>
 
-              )}
-
-            </View>
-
-          </TouchableOpacity>
-
-        ))}
-
+                {/* Tag "NOVO" controlada dinamicamente */}
+                {item.isNova && (
+                  <View style={styles.newBadge}>
+                    <Text style={styles.newBadgeText}>NOVO</Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Feather name="bell-off" size={40} color="#bbb" />
+            <Text style={styles.emptyText}>Nenhuma notificação por aqui.</Text>
+          </View>
+        )}
       </ScrollView>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
-  /* CONTAINER */
-
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f7fb",
-  },
-
-  scrollContent: {
-    paddingBottom: 120,
-  },
-
-  /* FILTROS */
-
-  filterWrapper: {
-    maxHeight: 60,
-  },
-
-  filterContainer: {
-    paddingHorizontal: 18,
-  },
-
-  filterButton: {
-    backgroundColor: "#eceff5",
-
-    paddingHorizontal: 18,
-
-    height: 42,
-
-    borderRadius: 14,
-
-    marginRight: 10,
-
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  filterButtonActive: {
-    backgroundColor: "#2155f3",
-  },
-
-  filterText: {
-    color: "#555",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-
-  filterTextActive: {
-    color: "#fff",
-  },
-
-  /* TITULO */
-
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-
-    color: "#111",
-
-    marginBottom: 15,
-    marginTop: 15,
-
-    paddingHorizontal: 18,
-  },
-
-  /* CARD */
-
-  card: {
-    backgroundColor: "#fff",
-
-    marginHorizontal: 18,
-    marginBottom: 14,
-
-    borderRadius: 24,
-
-    padding: 16,
-
-    flexDirection: "row",
-
-    elevation: 3,
-  },
-
-  /* ICON */
-
-  iconContainer: {
-    width: 58,
-    height: 58,
-
-    borderRadius: 29,
-
-    justifyContent: "center",
-    alignItems: "center",
-
-    marginRight: 15,
-  },
-
-  /* CONTENT */
-
-  content: {
-    flex: 1,
-  },
-
-  topRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-
-    color: "#111",
-
-    flex: 1,
-    marginRight: 10,
-  },
-
-  time: {
-    color: "#888",
-    fontSize: 12,
-  },
-
-  description: {
-    color: "#666",
-    marginTop: 5,
-    fontSize: 14,
-  },
-
-  /* BADGE */
-
-  newBadge: {
-    marginTop: 10,
-
-    alignSelf: "flex-start",
-
-    backgroundColor: "#2155f3",
-
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-
-    borderRadius: 10,
-  },
-
-  newText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 11,
-  },
-
+  container: { flex: 1, backgroundColor: "#f8f9fa" },
+  filterWrapper: { backgroundColor: "#1459b3", paddingBottom: 15 },
+  filterContainer: { paddingHorizontal: 22, gap: 10 },
+  filterButton: { backgroundColor: "#ececec", paddingVertical: 10, paddingHorizontal: 20, borderRadius: 16 },
+  filterButtonActive: { backgroundColor: "#2b66ff" },
+  filterText: { color: "#666", fontSize: 14, fontWeight: "600" },
+  filterTextActive: { color: "#fff" },
+  scrollList: { paddingHorizontal: 22, paddingTop: 20, paddingBottom: 40 },
+  sectionTitle: { fontSize: 22, fontWeight: "bold", color: "#111", marginBottom: 15 },
+  card: { backgroundColor: "#fff", borderRadius: 20, padding: 16, flexDirection: "row", alignItems: "center", marginBottom: 14, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  iconContainer: { width: 50, height: 50, borderRadius: 25, justifyContent: "center", alignItems: "center", marginRight: 14 },
+  contentContainer: { flex: 1 },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cardTitle: { fontSize: 15, fontWeight: "bold", color: "#222", flex: 1, marginRight: 5 },
+  cardTime: { fontSize: 12, color: "#888" },
+  cardSubtitle: { fontSize: 13, color: "#666", marginTop: 2 },
+  newBadge: { backgroundColor: "#2b66ff", alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, marginTop: 8 },
+  newBadgeText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
+  emptyContainer: { alignItems: "center", justifyContent: "center", marginTop: 60, gap: 10 },
+  emptyText: { textAlign: "center", color: "#999", fontSize: 15, fontWeight: "500" },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
 import {
   View,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Animated,
 } from "react-native";
 import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
@@ -16,15 +17,37 @@ export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
   const alertColor = COLORS.alert;
 
+  // CORRIGIDO: O estado quantidadeNotif foi movido para DENTRO do componente
+  const [quantidadeNotif, setQuantidadeNotif] = useState(3);
   const [busca, setBusca] = useState("");
   
   // Quantidade de mensagens no fórum ativo
   const [totalMensagensForum, setTotalMensagensForum] = useState(3);
 
-  // 1. ESTADO PARA ARMAZENAR OS REPOSITÓRIOS REALMENTE ACESSADOS
+  // ESTADO PARA ARMAZENAR OS REPOSITÓRIOS REALMENTE ACESSADOS
   const [recentesAcessados, setRecentesAcessados] = useState([]);
 
-  // DADOS DOS EVENTOS VINDOS DO SEU CALENDÁRIO
+  // CONFIGURAÇÃO DA ANIMAÇÃO DE PULSAR
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.15,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [pulseAnim]);
+
+  // DADOS DOS EVENTOS
   const events = [
     { id: 1, title: 'Reunião de Pais', date: '2026-04-01', day: '01', month: 'ABR', time: '08:30', local: 'Sala 05', description: 'Alinhamento semestral com os responsáveis sobre o desempenho dos alunos.' },
     { id: 2, title: 'Palestra: Inovação', date: '2026-04-10', day: '10', month: 'ABR', time: '19:00', local: 'Auditório Central', description: 'Uma palestra incrível sobre as novas tecnologias no setor educacional.' },
@@ -62,28 +85,28 @@ export default function HomeScreen({ navigation }) {
     },
   ];
 
-  // FUNÇÃO PARA DETERMINAR A COR DO STATUS DO EVENTO (Igual ao seu calendário)
   const getEventStatusColor = (eventDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const evDate = new Date(eventDate);
     evDate.setHours(0, 0, 0, 0);
 
-    if (evDate.getTime() === today.getTime()) return '#FFD700'; // Hoje (Amarelo)
-    return evDate > today ? '#4CAF50' : '#F44336'; // Futuro (Verde) ou Passado (Vermelho)
+    if (evDate.getTime() === today.getTime()) return '#FFD700';
+    return evDate > today ? '#4CAF50' : '#F44336';
   };
 
-  // 2. FUNÇÃO MANDATÓRIA AO CLICAR EM UM REPOSITÓRIO
   const irParaRepositorio = (projeto) => {
     setRecentesAcessados((listaAntiga) => {
       const listaFiltrada = listaAntiga.filter((item) => item.id !== projeto.id);
       return [projeto, ...listaFiltrada];
     });
-
     navigation.navigate("Repositorio", { projetoId: projeto.id });
   };
 
-  // Filtro inteligente da busca
+  const removerDosRecentes = (id) => {
+    setRecentesAcessados((listaAntiga) => listaAntiga.filter((item) => item.id !== id));
+  };
+
   const filtrarResultados = () => {
     if (!busca) return [];
     let resultados = [];
@@ -111,13 +134,18 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.safe}>
-      <Header nomeTela="Olá, Alcides 👋" exibirPerfil={true} />
+      {/* CORRIGIDO: Passando a quantidade de notificações e a função para zerar */}
+      <Header 
+        nomeTela="Olá, Alcides 👋" 
+        exibirPerfil={true} 
+        quantidadeNotificacoes={quantidadeNotif}
+        aoClicarNoSino={() => setQuantidadeNotif(0)}
+      />
 
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* 1. PRÓXIMOS EVENTOS (DINÂMICOS E LINKADOS) */}
+        {/* 1. PRÓXIMOS EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
-        
         {events.map((event) => {
           const statusColor = getEventStatusColor(event.date);
           return (
@@ -185,7 +213,7 @@ export default function HomeScreen({ navigation }) {
           )}
         </View>
 
-        {/* 3. FÓRUM ATIVO (RETORNADO) */}
+        {/* 3. FÓRUM ATIVO */}
         <Text style={styles.sectionTitle}>Fórum ativo</Text>
         <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Fórum")}>
           <View style={styles.forumHeaderRow}>
@@ -194,29 +222,37 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
               <Text style={styles.forumTimeAgo}>há 2 min</Text>
             </View>
-            
-            <View style={[styles.forumBadgeCount, { backgroundColor: primaryColor }]}>
+            <Animated.View style={[
+              styles.forumBadgeCount, 
+              { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
+            ]}>
               <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
-            </View>
+            </Animated.View>
           </View>
           <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
           <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
         </TouchableOpacity>
 
-        {/* 4. REPOSITÓRIOS RECENTES DINÂMICOS */}
+        {/* 4. REPOSITÓRIOS RECENTES */}
         <Text style={styles.sectionTitle}>Repositórios Recentes</Text>
-        
         {recentesAcessados.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRepoContainer}>
             {recentesAcessados.map((projeto) => (
               <TouchableOpacity 
                 key={projeto.id}
                 style={styles.repoSquareCard} 
-                activeOpacity={0.7}
+                activeOpacity={0.8}
                 onPress={() => irParaRepositorio(projeto)} 
               >
                 <View style={styles.imageWrapper}>
-                  <Image source={{ uri: projeto.imagem }} style={styles.repoCoverImage} />
+                  <Image source={{ uri: project.imagem || projeto.imagem }} style={styles.repoCoverImage} />
+                  <TouchableOpacity 
+                    style={styles.removeButton} 
+                    activeOpacity={0.7}
+                    onPress={() => removerDosRecentes(projeto.id)}
+                  >
+                    <Ionicons name="close" size={14} color="#FFF" />
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.repoContentArea}>
                   <Text style={styles.repoMainTitle} numberOfLines={2}>{projeto.titulo}</Text>
@@ -230,15 +266,14 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.emptyRecentsText}>Os repositórios que você visitar aparecerão aqui.</Text>
           </View>
         )}
-
       </ScrollView>
     </View>
   );
 }
 
+// ... Mantive os mesmos estilos abaixo
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
-  // Devolve as bordas arredondadas e estruturação correta do topo branco
   container: { flex: 1, backgroundColor: '#FFFFFF', },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 40, paddingTop: 5 },
   sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 15, color: "#111" },
@@ -252,8 +287,6 @@ const styles = StyleSheet.create({
   eventTitle: { fontSize: 16, fontWeight: "bold", color: "#111", marginBottom: 4 },
   eventTimeInfo: { fontSize: 13, color: "#666" },
   statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
-  
-  // Estilos da Busca
   searchContainer: { backgroundColor: "#fff", borderRadius: 24, padding: 18, marginTop: 10, marginBottom: 25, elevation: 4 },
   searchTitle: { fontWeight: "bold", fontSize: 22, marginBottom: 15, color: "#111" },
   searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: "#f1f1f1", borderRadius: 18, paddingHorizontal: 15 },
@@ -263,8 +296,6 @@ const styles = StyleSheet.create({
   miniResultText: { fontSize: 11, fontWeight: 'bold', color: '#222', marginTop: 5, textAlign: 'center' },
   miniBadge: { backgroundColor: '#5360f0', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 },
   miniBadgeText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
-
-  // Estilos do Fórum
   forumContainerCard: { backgroundColor: '#FFFFFF', borderRadius: 20, padding: 16, marginBottom: 25, elevation: 3 },
   forumHeaderRow: { flexDirection: "row", alignItems: "center" },
   forumIconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 12 },
@@ -275,16 +306,13 @@ const styles = StyleSheet.create({
   forumBadgeText: { color: "#fff", fontSize: 12, fontWeight: "bold" },
   forumPublishDate: { fontSize: 13, color: "#999", marginLeft: 56, marginTop: -4, marginBottom: 10 },
   forumBodyText: { fontSize: 14, color: "#555", marginLeft: 56, marginBottom: 15, lineHeight: 20 },
-  
-  // Lista Horizontal dos Recentes Dinâmicos
   horizontalRepoContainer: { paddingBottom: 15, flexDirection: "row", gap: 14 },
-  repoSquareCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", elevation: 3, width: 140 },
-  imageWrapper: { width: "100%", height: 100, backgroundColor: "#ececec" },
+  repoSquareCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", elevation: 3, width: 140, position: 'relative' },
+  imageWrapper: { width: "100%", height: 100, backgroundColor: "#ececec", position: 'relative' },
   repoCoverImage: { width: "100%", height: "100%", resizeMode: "cover" },
   repoContentArea: { padding: 12, justifyContent: "center", minHeight: 45 },
   repoMainTitle: { fontSize: 14, fontWeight: "bold", color: "#111", textAlign: "center" },
-  
-  // Estilo do aviso de lista vazia
+  removeButton: { position: 'absolute', top: 6, right: 6, backgroundColor: 'rgba(0, 0, 0, 0.6)', width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
   emptyRecentsBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 15, borderRadius: 16, gap: 10, justifyContent: 'center' },
   emptyRecentsText: { color: '#888', fontSize: 12, fontWeight: '500' }
 });
