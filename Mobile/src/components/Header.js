@@ -100,7 +100,6 @@ export default function Header({
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{quantidadeNotificacoes}</Text>
             </View>
-<<<<<<< HEAD
           )}
         </AnimatedTouchableOpacity>
       </View>
@@ -111,9 +110,6 @@ export default function Header({
         </View>
       )}
     </View>
-=======
-          </View>
->>>>>>> fe8ed333d8f939bf6a5d687478470cb14e95227e
   );
 }
 
