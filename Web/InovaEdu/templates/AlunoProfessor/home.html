@@ -2,122 +2,69 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/global.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
 
-    <!-- campo de rota: indica em qual página está -->
-    <div class="rota">Página: Cursos
-
-        <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
-    </div>
-
-    <div class="titulo">
-        <p>Cursos</p>
-    </div>
-
-    
-    {% if curso|length == 0 %}
-        <p style="margin: 20px; text-align:center;">
-            Nenhum resultado encontrado.
-        </p>
-    {% endif %}
-
-    
-    <aside class="sidebar-filtro" id="sidebarFiltro">
-        <h3 style="text-align: center; color: #004A8D;">Filtros</h3>
-
-        <form method="get" action="{% url 'home' %}">
-
-            <!-- PESQUISA -->
-            <input class="pesquisa"
-                name="q"
-                type="search"
-                placeholder="Pesquisar"
-                value="{{ query }}">
-
-            {% comment %} {% if query %}
-                <a style="color:#004A8D" href="{% url 'home' %}">Limpar</a>
-            {% endif %} {% endcomment %}
-
-            <!-- DATA INÍCIO -->
-            <div class="campo-filtro">
-                <label>Data de início:</label>
-                <input type="date" name="inicio" value="{{ request.GET.inicio }}">
+    <main class="container">
+        
+        <header class="section-header">
+            <div class="rota">
+                Página: Cursos
             </div>
-
-            <!-- DATA FINAL -->
-            <div class="campo-filtro">
-                <label>Data final:</label>
-                <input type="date" name="fim" value="{{ request.GET.fim }}">
+            <div class="titulo">
+                <p class="main-title">Cursos</p>
             </div>
+        </header>
 
-            <!-- ORDENAÇÃO -->
-            <div class="campo-filtro">
-                <label>Ordenar por:</label>
-                <select name="ordenar">
-                    <option value="">Padrão</option>
-                    <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>A → Z</option>
-                    <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Z → A</option>
-                </select>
+        {% if curso|length == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
             </div>
-
-            <button type="submit" class="btn-aplicar">Aplicar filtros</button>
-        </form>
-    </aside>
-
-
-    <main class="blocos">
-        {% for Curso in curso %}
-        {% if Curso.imagem %}
-            <section class="cards_curso">
-                <img class="imagem_curso" src="{{ Curso.imagem.url }}" alt="Imagem do curso" />
-                <p>{{ Curso.nome_curso }}</p>
-                <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
-            </section>
-        {% else %}
-            <section class="cards_curso2">
-                <p>{{ Curso.nome_curso }}</p>
-                <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
-            </section>
-            <style>
-                .cards_curso2 {
-                    justify-content: center;
-                    background: white;
-                    flex-direction: column;
-                    width: 300px;
-                    height: 275px;
-                    border-radius: 18px;
-                    padding-bottom: 20px;
-                    box-shadow: var(--shadow);
-                    transition: transform 0.20s ease, box-shadow 0.20s ease;
-                }
-
-                .cards_curso2:hover {
-                    transform: translateY(-6px);
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-                }
-
-                .cards_curso2 p {
-                    margin: 18px 15px 5px 15px;
-                    color: var(--azul-Senac);
-                    font-size: 17px;
-                    font-weight: 600;
-                }
-
-                .Botao_entrar_curso{
-                    margin: 0%;
-                    margin-top: 20px;
-                    justify-self: end;
-                }
-            </style>
         {% endif %}
-        {% endfor %}
+
+       
+
+        <section class="search-container">
+            <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder="O que você deseja aprender hoje? Digite o nome do curso..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+
+        <section class="cards-grid">
+            {% for Curso in curso %}
+                <article class="card">
+                    
+                    {% if Curso.imagem %}
+                        <div class="card-image" style="background-image: url('{{ Curso.imagem.url }}'); background-size: cover; background-position: center;">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% else %}
+                        <div class="card-image img-fallback-gradient">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-content">
+                        <span class="tag tag-tech">TECNOLOGIA</span>
+                        <h3>{{ Curso.nome_curso }}</h3>
+                        <p>Clique no botão abaixo para conferir os detalhes.</p>
+                        <div class="borda"></div>
+                        <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+                    </div>
+
+                </article>
+            {% endfor %}
+        </section>
+
     </main>   
 
     <script>
@@ -126,13 +73,20 @@
             const sidebar = document.getElementById('sidebarFiltro');
 
             if (filtroBtn && sidebar) {
-                filtroBtn.addEventListener('click', () => {
+                filtroBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     sidebar.classList.toggle('open');
+                });
+
+                // Fecha o painel de filtros se o usuário clicar fora dele
+                document.addEventListener('click', (e) => {
+                    if (!sidebar.contains(e.target) && e.target !== filtroBtn) {
+                        sidebar.classList.remove('open');
+                    }
                 });
             }
         });
     </script>
-
 {% endblock %}
 
 {% block footer %}
