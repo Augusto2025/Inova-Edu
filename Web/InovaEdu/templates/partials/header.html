@@ -1,6 +1,9 @@
 {% load static %}
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 
 <header class="navbar">
 
@@ -19,27 +22,23 @@
     <!-- MENU -->
     <nav id="site-nav" class="menu">
 
-        <a
-            href="{% url 'home' %}"
-            class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        <a href="{% url 'home' %}"
+           class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             Cursos
         </a>
 
-        <a
-            href="{% url 'forum_blocos' %}"
-            class="{% if request.resolver_match.url_name == 'forum_blocos' %}active{% endif %}">
+        <a href="{% url 'forum_blocos' %}"
+           class="{% if request.resolver_match.url_name == 'forum_blocos' %}active{% endif %}">
             Fórum
         </a>
 
-        <a
-            href="{% url 'calendario' %}"
-            class="{% if request.resolver_match.url_name == 'calendario' %}active{% endif %}">
+        <a href="{% url 'calendario' %}"
+           class="{% if request.resolver_match.url_name == 'calendario' %}active{% endif %}">
             Eventos
         </a>
 
-        <a
-            href="{% url 'perfil' %}"
-            class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
+        <a href="{% url 'perfil' %}"
+           class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
             Perfil
         </a>
 
@@ -48,14 +47,12 @@
     <!-- USUÁRIO -->
     <div class="user">
 
-        <a href="{% url 'perfil' %}">
-            <span>Olá, {{ usuario.nome }}</span>
+        <a href="{% url 'perfil' %}" class="user-name">
+            Olá, {{ usuario.nome }}
         </a>
 
-        <a href="{% url 'login' %}" class="logout">
-            <span class="material-symbols-outlined">
-                logout
-            </span>
+       <a href="{% url 'login' %}" class="logout" title="Sair">
+          <span class="material-symbols-outlined">logout</span>
         </a>
 
     </div>
@@ -69,23 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.querySelector('.navbar');
 
     if(btn){
-
         btn.addEventListener('click', () => {
-
             navbar.classList.toggle('nav-open');
-
         });
-
     }
 
     window.addEventListener('resize', () => {
-
         if(window.innerWidth > 768){
-
             navbar.classList.remove('nav-open');
-
         }
-
     });
 
 });
