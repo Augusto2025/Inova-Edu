@@ -1,133 +1,92 @@
 {% load static %}
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=logout" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-<header>
-    <canvas id="header-stars" aria-hidden="true"></canvas>
+<header class="navbar">
 
-    <div class="logo_e_texto">
-        <button id="menuToggle" class="hamburger" aria-label="Abrir menu" aria-expanded="false">
-          <span class="bar" aria-hidden="true"></span>
-        </button>
-        
-        <a href="{% url "home" %}">
-          <img src="{% static 'img/Logo_branco_icone.png' %}" alt="" style="width: 50px;">
+    <!-- LOGO -->
+    <div class="logo">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'img/Logo_branco_icone.png' %}" alt="Logo">
         </a>
     </div>
 
-    <nav id="site-nav" class="Paginas">
-        <a href="{% url "home" %}">Cursos</a>
-        <a href="{% url "forum_blocos" %}">Fórum</a>
-        <a href="{% url "calendario" %}">Eventos</a>
-        <a href="{% url "perfil" %}">Perfil</a>
+    <!-- MENU MOBILE -->
+    <button id="menuToggle" class="hamburger" aria-label="Abrir menu">
+        ☰
+    </button>
+
+    <!-- MENU -->
+    <nav id="site-nav" class="menu">
+
+        <a
+            href="{% url 'home' %}"
+            class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            Cursos
+        </a>
+
+        <a
+            href="{% url 'forum_blocos' %}"
+            class="{% if request.resolver_match.url_name == 'forum_blocos' %}active{% endif %}">
+            Fórum
+        </a>
+
+        <a
+            href="{% url 'calendario' %}"
+            class="{% if request.resolver_match.url_name == 'calendario' %}active{% endif %}">
+            Eventos
+        </a>
+
+        <a
+            href="{% url 'perfil' %}"
+            class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
+            Perfil
+        </a>
+
     </nav>
 
-    <div style="display: flex; align-items: center; color: white;">
-        <a href="{% url "perfil" %}">
-            <p class="Nome_Usu">Olá, {{ usuario.nome }}</p>
+    <!-- USUÁRIO -->
+    <div class="user">
+
+        <a href="{% url 'perfil' %}">
+            <span>Olá, {{ usuario.nome }}</span>
         </a>
-        <a class="sair" href="{% url "login" %}">
-            <span class="material-symbols-outlined">logout</span>
+
+        <a href="{% url 'login' %}" class="logout">
+            <span class="material-symbols-outlined">
+                logout
+            </span>
         </a>
+
     </div>
+
 </header>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const btn = document.getElementById('menuToggle');
-  const headerEl = document.querySelector('header');
-  if (!btn || !headerEl) return;
-  btn.addEventListener('click', function () {
-    const opened = headerEl.classList.toggle('nav-open');
-    btn.setAttribute('aria-expanded', opened ? 'true' : 'false');
-  });
-  // fechar menu ao redimensionar para desktop
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 768) {
-      headerEl.classList.remove('nav-open');
-      btn.setAttribute('aria-expanded', 'false');
+document.addEventListener('DOMContentLoaded', () => {
+
+    const btn = document.getElementById('menuToggle');
+    const navbar = document.querySelector('.navbar');
+
+    if(btn){
+
+        btn.addEventListener('click', () => {
+
+            navbar.classList.toggle('nav-open');
+
+        });
+
     }
-  });
+
+    window.addEventListener('resize', () => {
+
+        if(window.innerWidth > 768){
+
+            navbar.classList.remove('nav-open');
+
+        }
+
+    });
+
 });
-</script>
-
-<script>
-(function () {
-  const canvas = document.getElementById('header-stars');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let clouds = [];
-  const CLOUD_COUNT = 6;
-
-  function resize() {
-    const headerEl = document.querySelector('header');
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(300, headerEl.offsetWidth) * dpr;
-    canvas.height = headerEl.offsetHeight * dpr;
-    canvas.style.width = '100%';
-    canvas.style.height = headerEl.offsetHeight + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function initClouds() {
-    clouds = [];
-    const w = canvas.width / (window.devicePixelRatio || 1);
-    const h = canvas.height / (window.devicePixelRatio || 1);
-    for (let i = 0; i < CLOUD_COUNT; i++) {
-      clouds.push({
-        x: Math.random() * w,
-        y: h - (10 + Math.random() * 15), // Posiciona na base do header
-        speed: 0.15 + Math.random() * 0.3,
-        alpha: 0.2 + Math.random() * 0.3,
-        scale: 0.6 + Math.random() * 0.5
-      });
-    }
-  }
-
-  function drawCloud(c) {
-    ctx.save();
-    ctx.translate(c.x, c.y);
-    ctx.scale(c.scale, 0.4); // Achata os círculos para parecer névoa horizontal
-    ctx.fillStyle = `rgba(255, 255, 255, ${c.alpha})`;
-    ctx.filter = 'blur(12px)'; 
-    
-    ctx.beginPath();
-    // Desenha o corpo da nuvem com 3 círculos sobrepostos
-    ctx.arc(0, 0, 50, 0, Math.PI * 2);
-    ctx.arc(-35, 5, 35, 0, Math.PI * 2);
-    ctx.arc(35, 5, 35, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function tick() {
-    const w = canvas.width / (window.devicePixelRatio || 1);
-    const h = canvas.height / (window.devicePixelRatio || 1);
-    ctx.clearRect(0, 0, w, h);
-
-    for (let c of clouds) {
-      drawCloud(c);
-      c.x += c.speed;
-      if (c.x - 120 > w) {
-        c.x = -120;
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-
-  function start() {
-    resize();
-    initClouds();
-    requestAnimationFrame(tick);
-  }
-
-  window.addEventListener('resize', function () {
-    resize();
-    initClouds();
-  });
-
-  document.addEventListener('readystatechange', function () {
-    if (document.readyState === 'complete' || document.readyState === 'interactive') start();
-  });
-})();
 </script>
