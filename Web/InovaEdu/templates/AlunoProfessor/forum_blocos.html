@@ -13,33 +13,39 @@
     {% endblock %}
 
     <main class="container">
-        
+
         <header class="section-header">
-            <div class="header-top-row">
-                <span class="rota-texto">Página: Todos os fóruns</span>
-                
+            <div class="rota">
+                Página: Todos os fóruns
             </div>
-            <h1 class="main-title">Temas dos fóruns</h1>
+            <div class="titulo">
+                <p class="main-title">Temas dos fóruns</p>
+            </div>
         </header>
+
+
 
         <section class="search-container">
             <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="search" name="q" placeholder="O que você deseja aprender hoje? Digite o nome do curso..." value="{{ query }}">
+                    <input type="search" name="q" placeholder="Pesquise um fórum..." value="{{ query }}">
                 </div>
                 <button type="submit" class="btn-search">Buscar</button>
             </form>
         </section>
-         <button id="abrirModalForum" class="botao-criar-forum" type="button">
-                + Criar Fórum
-            </button>
+    </main>
+       
 
 
 
-        
+    <main class="container">
 
         <section class="forum-grid">
+
+            <button id="abrirModalForum" class="botao-criar-forum" type="button">
+                + Criar Fórum
+            </button>
 
            
             

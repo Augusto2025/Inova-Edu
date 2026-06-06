@@ -5,6 +5,7 @@
     {% comment %} <link rel="stylesheet" href="{% static 'styles/global.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     {% block header %}
@@ -39,6 +40,9 @@
                 <button type="submit" class="btn-search">Buscar</button>
             </form>
         </section>
+    </main> 
+
+    <main class="container">
 
         <section class="cards-grid">
             {% for Curso in curso %}
@@ -65,8 +69,9 @@
                 </article>
             {% endfor %}
         </section>
+    </main>
 
-    </main>   
+      
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
