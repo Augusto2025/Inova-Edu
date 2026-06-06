@@ -99,6 +99,9 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(247, 148, 29, 0.25);
   transition: transform 0.2s ease, background-color 0.2s ease;
+  position: absolute;
+  right: 165px;
+  top: 20%;
 }
 
 .botao-criar-forum:hover {
