@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 import styles from '../styles/Curso';
+import BarraPesquisa from '../components/BarraPesquisa';
 import { COLORS } from '../components/Cores';
 
 export default function CursosScreen({ navigation }) {
@@ -29,6 +30,8 @@ export default function CursosScreen({ navigation }) {
       {/* HEADER */}
       <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
       
+      <BarraPesquisa />
+
       <ScrollView contentContainerStyle={styles.listaCursos}>
         {cursos.length === 0 ? (
           <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>

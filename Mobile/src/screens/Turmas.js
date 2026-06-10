@@ -11,6 +11,7 @@ import BreadcrumbCard from '../components/BreadcrumbCard';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Turma';
+import BarraPesquisa from '../components/BarraPesquisa';
 
 const DATA_TURMAS = [
   { idturma: 1, codigo_turma: "ADS-2024-1A", turno: "Manhã", professor: "Prof. Carlos Silva", ano: "2024" },
@@ -98,8 +99,10 @@ export default function TurmasScreen({ navigation }) {
 
         </ScrollView>
       </View>
-
+      
       <BreadcrumbCard titulo="Turmas:" itemSub="Curso: Programador de Sistemas" />
+
+      <BarraPesquisa />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {turmasExibidas.length === 0 ? (
