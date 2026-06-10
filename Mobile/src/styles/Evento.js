@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { COLORS } from "../components/Cores";
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: COLORS.backgroundCard },
   calendarContainer: { backgroundColor: '#FFF', margin: 15, borderRadius: 20, padding: 10, elevation: 4 },
   eventSection: { paddingHorizontal: 20 },
   eventSectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: COLORS.primary },
