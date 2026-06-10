@@ -36,6 +36,11 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     backgroundColor: COLORS.backgroundCard,
     borderLeftColor: COLORS.accent,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   breadcrumbInfo: { // Adicionado para evitar quebra caso use propriedades dele
     flexDirection: 'column',

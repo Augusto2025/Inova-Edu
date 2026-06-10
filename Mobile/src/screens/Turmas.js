@@ -1,125 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
-  LayoutAnimation,
-  Platform,
-  StatusBar,
-  ActivityIndicator,
-  Dimensions
+  StatusBar
 } from 'react-native';
 import Header from '../components/Header';
-import CursosScreen from './Cursos';
-import SplashScreen from '../screens/SplashScreen';
 import BreadcrumbCard from '../components/BreadcrumbCard';
 import { Feather } from '@expo/vector-icons';
-import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
+import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Turma';
 
-const { width } = Dimensions.get('window');
-
-const DATA_MOCK = {
-  "2024": [
-    { idturma: 1, codigo_turma: "ADS-2024-1A", turno: "Manhã" },
-    { idturma: 2, codigo_turma: "ADS-2024-1B", turno: "Noite" },
-    { idturma: 3, codigo_turma: "GTI-2024-2N", turno: "Noite" },
-  ],
-  "2023": [
-    { idturma: 4, codigo_turma: "ADS-2023-2B", turno: "Tarde" },
-    { idturma: 5, codigo_turma: "GTI-2023-1A", turno: "Manhã" },
-  ]
-};
+const DATA_TURMAS = [
+  { idturma: 1, codigo_turma: "ADS-2024-1A", turno: "Manhã", professor: "Prof. Carlos Silva", ano: "2024" },
+  { idturma: 2, codigo_turma: "ADS-2024-1B", turno: "Noite", professor: "Profa. Ana Beatriz", ano: "2024" },
+  { idturma: 3, codigo_turma: "GTI-2024-2N", turno: "Noite", professor: "Prof. Marcos Oliveira", ano: "2024" },
+  { idturma: 4, codigo_turma: "ADS-2023-2B", turno: "Tarde", professor: "Profa. Juliana Costa", ano: "2023" },
+  { idturma: 5, codigo_turma: "GTI-2023-1A", turno: "Manhã", professor: "Prof. Roberto Mendes", ano: "2023" },
+];
 
 export default function TurmasScreen({ navigation }) {
-  const [expandedYear, setExpandedYear] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const toggleYear = (year) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedYear(expandedYear === year ? null : year);
-  };
+  // Estados para gerenciar as seleções dos filtros
+  const [anoSelecionado, setAnoSelecionado] = useState(null); // '2024', '2023' ou null
+  const [turnoSelecionado, setTurnoSelecionado] = useState(null); // 'Manhã', 'Tarde', 'Noite' ou null
+  const [ordemAlfabetica, setOrdemAlfabetica] = useState(false); // true ou false
 
   const irParaProjetos = (turma) => {
     navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
   };
 
+  // 1. Aplica as regras de filtragem (Ano e Turno)
+  let turmasExibidas = DATA_TURMAS.filter(turma => {
+    const passaAno = anoSelecionado ? turma.ano === anoSelecionado : true;
+    const passaTurno = turnoSelecionado ? turma.turno === turnoSelecionado : true;
+    return passaAno && passaTurno;
+  });
+
+  // 2. Aplica a ordenação alfabética pelo nome do professor se estiver ativa
+  if (ordemAlfabetica) {
+    turmasExibidas = [...turmasExibidas].sort((a, b) => 
+      a.professor.localeCompare(b.professor)
+    );
+  }
+
   return (
     <View style={styles.safeArea}>
-      {/* StatusBar Branca para contrastar com Header Azul */}
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
-      {/* 
-      chamada da header (foto=não tem; escolherImagem=não tem; nome da tela; temGoBack= se sim vai voltar; telaDestino=nome da tela no tabroutes) 
-      se temGoBack=true, o botão de voltar aparece e ao clicar ele volta para a tela definida em telaDestino. Se temGoBack=false, o botão de voltar não aparece
-      */}
-      <Header foto={null} escolherImagem={null} nomeTela={"Turmas"} temGoBack={true} telaDestino={"Repositório"} />
+      <Header 
+        foto={null} 
+        escolherImagem={null} 
+        nomeTela={"Turmas"} 
+        temGoBack={true} 
+        telaDestino={"Repositório"} 
+      />
+
+      {/* SELEÇÃO DE FILTROS HORIZONTAIS (Acima do Breadcrumb) */}
+      <View style={styles.filtroContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtroScroll}>
+          
+          {/* Filtro de Ordem Alfabética */}
+          <TouchableOpacity 
+            style={[styles.chip, ordemAlfabetica && styles.chipAtivo]} 
+            onPress={() => setOrdemAlfabetica(!ordemAlfabetica)}
+          >
+            <Feather name="sort-by-alpha" size={14} color={ordemAlfabetica ? '#FFF' : COLORS.primary} style={{ marginRight: 4 }} />
+            <Text style={[styles.chipTexto, ordemAlfabetica && styles.chipTextoAtivo]}>A-Z</Text>
+          </TouchableOpacity>
+
+          {/* Separador visual opcional */}
+          <View style={styles.divisorFiltro} />
+
+          {/* Filtros de Ano */}
+          {['2024', '2023'].map(ano => (
+            <TouchableOpacity 
+              key={ano}
+              style={[styles.chip, anoSelecionado === ano && styles.chipAtivo]} 
+              onPress={() => setAnoSelecionado(anoSelecionado === ano ? null : ano)}
+            >
+              <Text style={[styles.chipTexto, anoSelecionado === ano && styles.chipTextoAtivo]}>{ano}</Text>
+            </TouchableOpacity>
+          ))}
+
+          <View style={styles.divisorFiltro} />
+
+          {/* Filtros de Turno */}
+          {['Manhã', 'Tarde', 'Noite'].map(turno => (
+            <TouchableOpacity 
+              key={turno}
+              style={[styles.chip, turnoSelecionado === turno && styles.chipAtivo]} 
+              onPress={() => setTurnoSelecionado(turnoSelecionado === turno ? null : turno)}
+            >
+              <Text style={[styles.chipTexto, turnoSelecionado === turno && styles.chipTextoAtivo]}>{turno}</Text>
+            </TouchableOpacity>
+          ))}
+
+        </ScrollView>
+      </View>
 
       <BreadcrumbCard titulo="Turmas:" itemSub="Curso: Programador de Sistemas" />
       
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {Object.entries(DATA_MOCK).map(([ano, turmas]) => (
-          <View key={ano} style={styles.yearSection}>
-            
-            <TouchableOpacity
-              style={[
-                styles.yearHeader, 
-                expandedYear === ano && styles.activeYearHeader
-              ]}
-              onPress={() => toggleYear(ano)}
-              activeOpacity={0.8}
+        {turmasExibidas.length === 0 ? (
+          <Text style={styles.vazio}>Nenhuma turma corresponde aos filtros selecionados.</Text>
+        ) : (
+          turmasExibidas.map((turma) => (
+            <TouchableOpacity 
+              key={turma.idturma} 
+              style={styles.turmaCard}
+              onPress={() => irParaProjetos(turma)}
+              activeOpacity={0.7}
             >
-              <View style={styles.yearRow}>
-                <Feather 
-                  name="calendar" 
-                  size={18} 
-                  color={expandedYear === ano ? COLORS.accent : COLORS.primary} 
-                  style={{marginRight: 10}}
-                />
-                <Text style={[
-                  styles.yearLabel, 
-                  expandedYear === ano && styles.activeYearLabel
-                ]}>
-                  Ano Letivo {ano}
-                </Text>
-              </View>
-              <Feather 
-                name={expandedYear === ano ? "chevron-up" : "chevron-down"} 
-                size={20} 
-                color={expandedYear === ano ? COLORS.accent : COLORS.textSecondary} 
-              />
-            </TouchableOpacity>
-
-            {expandedYear === ano && (
-              <View style={styles.cardsContainer}>
-                {turmas.map((turma) => (
-                  <View key={turma.idturma} style={styles.turmaCard}>
-                    <View style={styles.cardInfo}>
-                      <View style={styles.iconCircle}>
-                        <Feather name="users" size={18} color={COLORS.primary} />
-                      </View>
-                      <View style={{ flex: 1 }}> 
-                        <Text style={styles.codigoText}>{turma.codigo_turma}</Text>
-                        <Text style={styles.turnoText}>{turma.turno}</Text>
-                      </View>
-                    </View>
-
-                    <TouchableOpacity 
-                      style={styles.actionButton}
-                      onPress={() => irParaProjetos(turma)}
-                    >
-                      <Text style={styles.actionButtonText}>Abrir</Text>
-                      <Feather name="external-link" size={12} color="white" />
-                    </TouchableOpacity>
+              <View style={styles.cardInfo}>
+                <View style={styles.iconCircle}>
+                  <Feather name="users" size={18} color={COLORS.primary} />
+                </View>
+                
+                <View style={{ flex: 1 }}> 
+                  <Text style={styles.professorText}>{turma.professor}</Text>
+                  
+                  <View style={styles.subInfoContainer}>
+                    <Text style={styles.turnoText}>{turma.turno}</Text>
+                    <Text style={styles.divisor}>•</Text>
+                    <Text style={styles.codigoText}>{turma.codigo_turma}</Text>
                   </View>
-                ))}
+                </View>
               </View>
-            )}
-          </View>
-        ))}
+
+              <View style={styles.setaContainer}>
+                <Feather name="chevron-right" size={22} color={COLORS.primary} />
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
     </View>
   );
-};
+}

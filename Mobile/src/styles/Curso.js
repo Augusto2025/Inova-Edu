@@ -6,7 +6,7 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2; 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: COLORS.backgroundCard },
   
   filtroContainer: { width: '100%', paddingRight: 20, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row' },
   filtroBotaoHeader: { width: 50 },
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardCursoGrid: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.backgroundCard,
     width: CARD_WIDTH,
     borderRadius: 12,
     marginBottom: 16,
@@ -28,9 +28,9 @@ const styles = StyleSheet.create({
     // Sombras leves para destacar os blocos
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.9,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 5,
   },
   cursoImagem: {
     width: '100%',
