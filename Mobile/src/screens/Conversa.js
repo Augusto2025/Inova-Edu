@@ -147,7 +147,7 @@ export default function ConversaScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F4F6FB" },
+  container: { flex: 1, backgroundColor: "#ffffff" },
   pathContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 15, marginTop: 12, marginBottom: 10 },
   pathText: { color: "#777", fontSize: 13, marginRight: 4 },
   pathActive: { color: "#2563EB", fontSize: 13, fontWeight: "700", marginLeft: 4 },
