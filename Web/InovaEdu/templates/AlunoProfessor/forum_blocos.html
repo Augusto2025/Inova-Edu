@@ -23,9 +23,7 @@
             </div>
         </header>
         
-        <button id="abrirModalForum" class="botao-criar-forum" type="button">
-            + Criar Fórum
-        </button>
+        
 
 
         <section class="search-container">
@@ -57,10 +55,15 @@
             
             {% for Forum in foruns %}
                 <article class="forum-card">
+                   
+
                     <div class="card-top-content">
                         <h2 class="forum-card-title">{{ Forum.nome }}</h2>
                         <div class="orange-divider"></div>
                     </div>
+                     <button id="abrirModalForum" class="botao-criar-forum" type="button">
+                        + Criar Fórum
+                    </button>
                     
                     <div class="forum-card-meta">
                         <span class="meta-label">DATA DE CRIAÇÃO</span>
