@@ -8,7 +8,6 @@ import {
   StatusBar,
   ActivityIndicator
 } from 'react-native';
-
 import Header from '../components/Header';
 import SplashScreen from '../screens/SplashScreen';
 
@@ -47,18 +46,15 @@ export default function RepositorioScreen() {
   
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       
       <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
       {/* Corpo da tela com o fundo correto */}
-      <View style={{ flex: 1, backgroundColor: '#f5f7fb' }}>
+      <View style={{ flex: 1, backgroundColor: COLORS.backgroundCard }}>
         <BreadcrumbCard 
           titulo="Repositório:" 
-          itemSub="Projeto: Sistema de Gestão Hospitalar" 
-          botaoAcao={true} 
-          aoPressionar={() => {}} 
-          iconeBotao="download" 
+          itemSub="Projeto: Sistema de Gestão Hospitalar"
         />
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -99,6 +95,15 @@ export default function RepositorioScreen() {
           ))}
         </ScrollView>
       </View>
-    </ScrollView>
+      <TouchableOpacity 
+          style={styles.btnActionMain} 
+          // não faça nada com o onPress por enquanto, é só para mostrar o botão
+          onPress={() => {}}
+          activeOpacity={0.7}
+        >
+          <Feather name="download" size={25} color="white"/>
+          <Text style={{ color: 'white', fontSize: 13, marginTop: 2 }}>Baixar</Text>
+        </TouchableOpacity>
+    </View>
   );
 }

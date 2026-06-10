@@ -5,22 +5,13 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS } from "./Cores"; // Importando as cores do Card para manter a consistência visual
 
 // CORREÇÃO: Nome do componente alterado para começar com Letra Maiúscula (BreadcrumbCard)
-export default function BreadcrumbCard({ titulo, itemSub, botaoAcao, aoPressionar, iconeBotao }) {
+export default function BreadcrumbCard({ titulo, itemSub, }) {
   return (
     <View style={styles.breadcrumbCard}>
       <View style={styles.breadcrumbInfo}>
         <Text style={styles.itemSub}>{itemSub}</Text>
         <Text style={styles.textPrimary}>{titulo}</Text>
       </View>
-      {botaoAcao && (
-        <TouchableOpacity 
-          style={styles.btnActionMain} 
-          onPress={aoPressionar}
-          activeOpacity={0.7}
-        >
-          <Feather name={iconeBotao} size={20} color="white"/>
-        </TouchableOpacity>
-      )}
     </View>
   );
 }
@@ -45,7 +36,6 @@ const styles = StyleSheet.create({
   breadcrumbInfo: { // Adicionado para evitar quebra caso use propriedades dele
     flexDirection: 'column',
   },
-  btnActionMain: { marginLeft: '30%', backgroundColor: COLORS.accent, width: 45, height: 45, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   textPrimary: { 
     fontSize: 14, 
     fontWeight: 'bold', 

@@ -35,7 +35,19 @@ const styles = StyleSheet.create({
   },
   breadcrumbPath: { fontSize: 11, color: COLORS.textSecondary },
   projetoBadge: { fontSize: 15, fontWeight: 'bold', color: COLORS.dark, marginTop: 2 },
-  btnActionMain: { width: 45, height: 45, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  btnActionMain: {
+    position: "absolute",
+    bottom: 48,
+    right: 16,
+    width: 62,
+    height: 62,
+    borderRadius: 14,
+    backgroundColor: "#ff8c00",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    backgroundColor: COLORS.accent, 
+  },
 
   // Listagem
   sectionHeader: { 
