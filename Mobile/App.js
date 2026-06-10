@@ -9,7 +9,7 @@ import SplashScreen from './src/screens/SplashScreen';
 
 import ForumScreen from './src/screens/Forum'; 
 import ConversaScreen from "./src/screens/Conversa";
-import TituloScreen from "./src/screens/Titulo";
+import TituloScreen from "./src/screens/Topico";
 import ProfilePage from './src/screens/Perfil';
 import CursosScreen from './src/screens/Cursos';
 import TurmasScreen from './src/screens/Turmas';
