@@ -53,7 +53,7 @@ export default function Header({
   return (
     <View style={styles.wrapper}>
       <View style={styles.logoRow}>
-        <Text style={styles.logoText}>Inova-Edu</Text>
+        {/* <Text style={styles.logoText}>Inova-Edu</Text> */}
       </View>
 
       <View style={styles.header}>

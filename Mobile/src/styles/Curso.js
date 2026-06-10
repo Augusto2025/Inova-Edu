@@ -1,8 +1,10 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
-const { width } = Dimensions.get('window');
+import { COLORS } from "../components/Cores"; // Mantendo a consistência visual do seu projeto
 
-// Criamos e exportamos como PADRÃO (default)
+const { width } = Dimensions.get('window');
+// Calcula a largura exata para 2 colunas considerando as margens da lista
+const CARD_WIDTH = (width - 48) / 2; 
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
   
@@ -10,7 +12,61 @@ const styles = StyleSheet.create({
   filtroBotaoHeader: { width: 50 },
   filtroIconeTexto: { color: '#004A8D', fontSize: 45, textAlign: 'right' },
 
-  // SIDEBAR
+  // NOVA ESTRUTURA DE LISTA EM DUAS COLUNAS
+  listaCursos: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  cardCursoGrid: {
+    backgroundColor: '#FFFFFF',
+    width: CARD_WIDTH,
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+    // Sombras leves para destacar os blocos
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cursoImagem: {
+    width: '100%',
+    height: 110,
+    resizeMode: 'cover',
+  },
+  placeholderImagemContainer: {
+    width: '100%',
+    height: 110,
+    backgroundColor: '#E9ECEF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderIcone: {
+    fontSize: 28,
+  },
+  textoCursoContainer: {
+    padding: 12,
+    justifyContent: 'center',
+    minHeight: 50,
+  },
+  tituloCursoGrid: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333333',
+    textAlign: 'center',
+  },
+  vazio: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#666',
+    fontSize: 16,
+  },
+
+  // SIDEBAR (Preservado original)
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', flexDirection: 'row' },
   foraModal: { flex: 1 },
   sidebar: { 
