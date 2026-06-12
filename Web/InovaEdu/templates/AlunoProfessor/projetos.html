@@ -2,27 +2,68 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/global.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'styles/projetos.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
 
     {% block header %}
     {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="rota">
-        Página:
-        {{ turma.curso.nome_curso }} >
-        {{ turma.codigo_turma }} >
-        Projetos
+    <main class="container">
 
-        {% if can_modify %}
-            <button id="abrirModalCadastro" class="btn-primary">+ Cadastrar Projeto</button>
-        {% endif %}
-    </div>
+        <header class="section-header">
 
-    <div class="titulo">
-        <p>Projetos da Turma {{ turma.codigo_turma }}</p>
-    </div>
+            <div class="rota">
+                Página:
+                {{ turma.curso.nome_curso }}
+                >
+                {{ turma.codigo_turma }}
+                >
+                Projetos
+            </div>
+
+            <div class="titulo">
+                <p class="main-title">
+                    Projetos da Turma {{ turma.codigo_turma }}
+                </p>
+            </div>
+
+            {% if can_modify %}
+                <button id="abrirModalCadastro" class="btn-primary">
+                    + Cadastrar Projeto
+                </button>
+            {% endif %}
+
+        </header>
+
+    </main>
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+        <div class="rota">
+            Página:
+            {{ turma.curso.nome_curso }} >
+            {{ turma.codigo_turma }} >
+            Projetos dddddddd
+
+            {% if can_modify %}
+                <button id="abrirModalCadastro" class="btn-primary">+ Cadastrar Projeto</button>
+            {% endif %}
+        </div>
+
+        <div class="titulo">
+            <p>Projetos da Turmadddd {{ turma.codigo_turma }}</p>
+        </div> {% endcomment %}
 
     <div class="container">
         {% if projetos %}
