@@ -55,6 +55,10 @@ export default function ProjetosScreen({ route, navigation }) {
     }
   };
 
+  const irParaRepositorio = (projeto) => {
+    navigation.navigate("Repositorio", { projetoId: projeto.idprojeto, projetoNome: projeto.nome_projeto });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
@@ -84,7 +88,7 @@ export default function ProjetosScreen({ route, navigation }) {
                 key={projeto.idprojeto} 
                 style={styles.projetoCard}
                 activeOpacity={0.7}
-                // Se no futuro quiser abrir a edição ou detalhes, basta colocar o onPress aqui
+                onPress={() => irParaRepositorio(projeto)}
               >
                 <View style={styles.cardInfo}>
                   
