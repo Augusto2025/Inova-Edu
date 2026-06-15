@@ -10,7 +10,8 @@ import SplashScreen from './SplashScreen';
 
 // Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
 // Adeus IP local! Agora o seu app aponta para a internet real:
-const URL_BACKEND = process.env.EXPO_PUBLIC_URL_BACKEND;
+const BASE_URL = process.env.EXPO_PUBLIC_URL_BACKEND;
+const URL_BACKEND = `${BASE_URL}/login`;
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
