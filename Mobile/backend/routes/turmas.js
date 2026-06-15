@@ -29,7 +29,10 @@ router.get('/', async (req, res) => {
 
     } catch (error) {
         console.error('Erro ao buscar turmas no banco:', error);
-        res.status(500).json({ mensagem: 'Erro interno no servidor de turmas.' });
+        res.status(500).json({ 
+            mensagem: 'Erro interno no servidor de turmas.', 
+            detalhe: error.message 
+        });
     }
 });
 

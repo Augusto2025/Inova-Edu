@@ -44,22 +44,25 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
       console.log("Tentando conectar em:", urlCompleta);
 
       const resposta = await fetch(urlCompleta);
-      
-      // 🔬 Captura a resposta como texto puro para o app não travar
-      const textoBruto = await resposta.text();
+      const dados = await resposta.json(); // Lemos direto como JSON de forma segura
       
       console.log("================ SERVIDOR RESPONDEU (TURMAS) ================");
-      console.log(textoBruto);
+      console.log(dados);
       console.log("=============================================================");
 
-      if (textoBruto.trim().startsWith('[') || textoBruto.trim().startsWith('{')) {
-        const dados = JSON.parse(textoBruto);
+      // 🌟 Só salva no estado se o servidor devolveu uma LISTA válida
+      if (Array.isArray(dados)) {
         setTurmas(dados);
       } else {
-        Alert.alert("Erro", "O servidor mandou HTML. Olhe o terminal do VS Code.");
+        // Se o backend mandou um objeto de erro, exibe o motivo na tela!
+        Alert.alert(
+          "Erro no Banco de Dados", 
+          `${dados.mensagem}\n\nDetalhe Técnico: ${dados.detalhe || 'Verifique os logs.'}`
+        );
       }
     } catch (error) {
       console.error("Erro ao buscar turmas:", error);
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
     } finally {
       setCarregando(false);
     }
