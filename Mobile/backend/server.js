@@ -8,7 +8,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/login');
 const cursosRoutes = require('./routes/cursos');
 const turmasRoutes = require('./routes/turmas');
-
+const projetosRoutes = require('./routes/projetos');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -17,6 +17,7 @@ app.use(cors());
 app.use('/login', authRoutes);   // Tudo sobre login
 app.use('/cursos', cursosRoutes); // LINHA NOVA: Tudo sobre cursos
 app.use('/turmas', turmasRoutes); // LINHA NOVA: Tudo sobre turmas
+app.use('/projetos', projetosRoutes); // LINHA NOVA: Tudo sobre projetos
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
