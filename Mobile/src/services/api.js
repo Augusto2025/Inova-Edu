@@ -6,4 +6,7 @@ export const API_ENDPOINTS = {
   eventos: `${BASE_URL}/eventos`,
   forum: `${BASE_URL}/forum`,
   perfil: `${BASE_URL}/perfil`,
+  turmas: `${BASE_URL}/turmas`,
+  projetos: `${BASE_URL}/projetos`,
+  repositorio: `${BASE_URL}/repositorio`,
 };

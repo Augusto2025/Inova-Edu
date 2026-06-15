@@ -21,7 +21,6 @@ import styles from '../styles/Projeto';
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
 export default function ProjetosScreen({ route, navigation }) {
-  // Captura de forma segura os dados enviados pela tela de Turmas
   const { turmaId, codigoTurma } = route.params || { turmaId: null, codigoTurma: "Turma" };
 
   const [projetos, setProjetos] = useState([]); 
@@ -56,14 +55,6 @@ export default function ProjetosScreen({ route, navigation }) {
     }
   };
 
-  const irParaRepositorio = (repositorio) => {
-    if (repositorio) {
-      navigation.navigate("Repositorio", { url: repositorio });
-    } else {
-      Alert.alert("Repositório", "Este projeto não possui um link de repositório cadastrado.");
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
@@ -76,7 +67,6 @@ export default function ProjetosScreen({ route, navigation }) {
         telaDestino={"Turmas"} 
       />
 
-      {/* Exibe dinamicamente o código da turma selecionada */}
       <BreadcrumbCard titulo="Projetos:" itemSub={`Turma: ${codigoTurma}`} />
 
       {carregando ? (
@@ -93,12 +83,12 @@ export default function ProjetosScreen({ route, navigation }) {
               <TouchableOpacity 
                 key={projeto.idprojeto} 
                 style={styles.projetoCard}
-                onPress={() => irParaRepositorio(projeto.repo_url)}
                 activeOpacity={0.7}
+                // Se no futuro quiser abrir a edição ou detalhes, basta colocar o onPress aqui
               >
                 <View style={styles.cardInfo}>
                   
-                  {/* Imagem ou Placeholder da Capa do Projeto */}
+                  {/* Imagem de Capa ou Pasta Placeholder */}
                   {projeto.imagem ? (
                     <Image source={{ uri: projeto.imagem }} style={styles.projetoImagemQuadrada} />
                   ) : (
