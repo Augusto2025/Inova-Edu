@@ -10,6 +10,7 @@ const cursosRoutes = require('./routes/cursos');
 const turmasRoutes = require('./routes/turmas');
 const projetosRoutes = require('./routes/projetos');
 const repositorioRoutes = require('./routes/repositorio');
+const eventosRoutes = require('./routes/eventos');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/cursos', cursosRoutes);
 app.use('/turmas', turmasRoutes);
 app.use('/projetos', projetosRoutes); 
 app.use('/repositorio', repositorioRoutes); 
+app.use('/eventos', eventosRoutes);
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
