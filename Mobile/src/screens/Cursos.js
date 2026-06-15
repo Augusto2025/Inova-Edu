@@ -12,10 +12,10 @@ import Header from '../components/Header';
 import styles from '../styles/Curso';
 import BarraPesquisa from '../components/BarraPesquisa';
 import { COLORS } from '../components/Cores';
+import { API_ENDPOINTS } from '../services/api';
 
 // Sem gambiarra de .replace()! Somamos a BASE com o caminho de cursos:
-const BASE_URL = process.env.EXPO_PUBLIC_URL_BACKEND;
-const URL_CURSOS = `${BASE_URL}/cursos`;
+const URL_CURSOS = API_ENDPOINTS.cursos;
 
 export default function CursosScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -31,22 +31,18 @@ export default function CursosScreen({ navigation }) {
     try {
       setCarregando(true);
       const resposta = await fetch(URL_CURSOS, {
-        method: 'GET', // Requisição do tipo GET para puxar dados
-        headers: {
-          'Content-Type': 'application/json',
-        }
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       });
 
-      const dados = await resposta.json();
-      
-      // Se o backend devolver a lista diretamente:
+      const dados = await resposta.json(); // Pode voltar o .json() original!
       setCursos(dados); 
       
     } catch (error) {
       console.error('Erro ao buscar cursos:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os cursos do servidor.');
+      Alert.alert('Erro', 'Não foi possível carregar os cursos.');
     } finally {
-      setCarregando(false); // Desliga a rodinha de carregamento
+      setCarregando(false);
     }
   };
 
