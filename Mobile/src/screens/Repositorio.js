@@ -13,6 +13,8 @@ import { Feather } from '@expo/vector-icons';
 import BreadcrumbCard from '../components/BreadcrumbCard'; 
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Repositorio'; 
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
@@ -23,6 +25,7 @@ export default function RepositorioScreen({ route, navigation }) {
   const [pastas, setPastas] = useState([]);
   const [arquivos, setArquivos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false); // 🌟 Estado para o loading do download
   
   // Estados para controlar a navegação profunda
   const [pastaIdAtual, setPastaIdAtual] = useState(null);
@@ -58,6 +61,44 @@ export default function RepositorioScreen({ route, navigation }) {
     }
   };
 
+  // 🌟 FUNÇÃO PARA BAIXAR O REPOSITÓRIO EM ZIP
+  const baixarRepositorioZip = async () => {
+    if (!projetoId) {
+      Alert.alert("Erro", "ID do projeto inválido.");
+      return;
+    }
+
+    try {
+      setDownloading(true);
+
+      const urlZip = `${URL_BASE}/repositorio/download-zip?projetoId=${projetoId}`;
+      const localDoArquivo = `${FileSystem.documentDirectory}repositorio_${projetoId}.zip`;
+
+      // Faz o download do arquivo binário gerado pelo backend
+      const resultadoDownload = await FileSystem.downloadAsync(urlZip, localDoArquivo);
+
+      if (resultadoDownload.status === 200) {
+        // Verifica se o dispositivo do usuário permite compartilhar/salvar arquivos externos
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(resultadoDownload.uri, {
+            mimeType: 'application/zip',
+            dialogTitle: `Baixar Repositório: ${projetoNome}`,
+            UTI: 'public.zip-archive' // Garante que o iOS reconheça como ZIP
+          });
+        } else {
+          Alert.alert("Erro", "Seu dispositivo não suporta compartilhamento de arquivos.");
+        }
+      } else {
+        Alert.alert("Erro", "Não foi possível gerar o arquivo ZIP no servidor.");
+      }
+    } catch (error) {
+      Alert.alert("Falha no download", "Houve um problema ao processar o download do repositório.");
+      console.log(error);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const entrarNaPasta = (pasta) => {
     setHistoricoPastas([...historicoPastas, { id: pasta.id, nome: pasta.nome }]);
     setPastaIdAtual(pasta.id);
@@ -70,7 +111,7 @@ export default function RepositorioScreen({ route, navigation }) {
     setPastaIdAtual(novoHistorico.length > 0 ? novoHistorico[novoHistorico.length - 1].id : null);
   };
 
-  // Cria a string do caminho atual dinamicamente (Ex: Projeto: Hospital > Web > Src)
+  // Cria a string do caminho atual dinamicamente
   const stringCaminho = historicoPastas.length > 0 
     ? `Projeto: ${projetoNome} > ${historicoPastas.map(p => p.nome).join(' > ')}`
     : `Projeto: ${projetoNome}`;
@@ -93,7 +134,7 @@ export default function RepositorioScreen({ route, navigation }) {
         ) : (
           <ScrollView contentContainerStyle={styles.scrollContent}>
             
-            {/* Botão de Voltar de nível (aparece apenas quando estiver dentro de alguma pasta) */}
+            {/* Botão de Voltar de nível */}
             {pastaIdAtual && (
               <TouchableOpacity style={[styles.itemCard, { backgroundColor: '#F8FAFC' }]} onPress={voltarPasta}>
                 <View style={styles.itemInfo}>
@@ -152,13 +193,21 @@ export default function RepositorioScreen({ route, navigation }) {
         )}
       </View>
 
+      {/* 🌟 BOTÃO FLUTUANTE DE DOWNLOAD ATUALIZADO */}
       <TouchableOpacity 
-        style={styles.btnActionMain} 
-        onPress={() => {}}
+        style={[styles.btnActionMain, downloading && { backgroundColor: '#94A3B8' }]} 
+        onPress={baixarRepositorioZip}
+        disabled={downloading}
         activeOpacity={0.7}
       >
-        <Feather name="download" size={25} color="white"/>
-        <Text style={{ color: 'white', fontSize: 13, marginTop: 2 }}>Baixar</Text>
+        {downloading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <>
+            <Feather name="download" size={25} color="white"/>
+            <Text style={{ color: 'white', fontSize: 13, marginTop: 2 }}>Baixar</Text>
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );
