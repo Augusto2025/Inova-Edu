@@ -5,7 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator, // Adicionado para o carregamento
+  ActivityIndicator,
   Alert
 } from 'react-native';
 import Header from '../components/Header';
@@ -15,14 +15,12 @@ import { COLORS } from "../components/Cores";
 import styles from '../styles/Turma';
 import BarraPesquisa from '../components/BarraPesquisa';
 
-// URL Base limpa para buscar as turmas
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
-export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado 'route' aqui
-  // Captura os dados enviados pela tela de Cursos (com um fallback seguro)
+export default function TurmasScreen({ route, navigation }) {
   const { cursoId, nomeCurso } = route.params || { cursoId: null, nomeCurso: "Curso" };
 
-  const [turmas, setTurmas] = useState([]); // 📥 Armazena as turmas vindas do banco
+  const [turmas, setTurmas] = useState([]); 
   const [carregando, setCarregando] = useState(true);
   const [search, setSearch] = useState('');
   
@@ -30,7 +28,6 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
   const [turnoSelecionado, setTurnoSelecionado] = useState(null); 
   const [ordemAlfabetica, setOrdemAlfabetica] = useState(false); 
 
-  // 🚀 Busca as turmas correspondentes ao curso assim que a tela abre
   useEffect(() => {
     if (cursoId) {
       buscarTurmas();
@@ -41,27 +38,18 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
     try {
       setCarregando(true);
       const urlCompleta = `${URL_BASE}/turmas?cursoId=${cursoId}`;
-      console.log("Tentando conectar em:", urlCompleta);
-
       const resposta = await fetch(urlCompleta);
-      const dados = await resposta.json(); // Lemos direto como JSON de forma segura
+      const dados = await resposta.json();
       
-      console.log("================ SERVIDOR RESPONDEU (TURMAS) ================");
-      console.log(dados);
-      console.log("=============================================================");
-
-      // 🌟 Só salva no estado se o servidor devolveu uma LISTA válida
       if (Array.isArray(dados)) {
         setTurmas(dados);
       } else {
-        // Se o backend mandou um objeto de erro, exibe o motivo na tela!
         Alert.alert(
           "Erro no Banco de Dados", 
           `${dados.mensagem}\n\nDetalhe Técnico: ${dados.detalhe || 'Verifique os logs.'}`
         );
       }
     } catch (error) {
-      console.error("Erro ao buscar turmas:", error);
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
     } finally {
       setCarregando(false);
@@ -72,7 +60,6 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
     navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
   };
 
-  // 1. Aplica os filtros (Ano e Turno) e também a Barra de Pesquisa (opcional por código do curso)
   let turmasExibidas = turmas.filter(turma => {
     const passaAno = anoSelecionado ? String(turma.ano) === String(anoSelecionado) : true;
     const passaTurno = turnoSelecionado ? turma.turno === turnoSelecionado : true;
@@ -80,7 +67,6 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
     return passaAno && passaTurno && passaPesquisa;
   });
 
-  // 2. Aplica a ordenação alfabética pelo nome do professor
   if (ordemAlfabetica) {
     turmasExibidas = [...turmasExibidas].sort((a, b) => 
       (a.professor || '').localeCompare(b.professor || '')
@@ -96,49 +82,73 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
         escolherImagem={null} 
         nomeTela={"Turmas"} 
         temGoBack={true} 
-        telaDestino={"Cursos"} // Retorna para a listagem de cursos
+        telaDestino={"Cursos"} 
       />
 
-      {/* SELEÇÃO DE FILTROS HORIZONTAIS */}
-      <View style={styles.filtroContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtroScroll}>
-          
+      {/* 🌟 NOVO DESIGN DE FILTROS: Clean, moderno e espaçado */}
+      <View style={{ paddingVertical: 12, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#F2F2F2' }}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={{ paddingHorizontal: 16, alignItems: 'center', gap: 8 }}
+        >
+          {/* Botão de Ordenação Inteligente */}
           <TouchableOpacity 
-            style={[styles.chip, ordemAlfabetica && styles.chipAtivo]} 
+            style={[
+              styles.chip, 
+              ordemAlfabetica && styles.chipAtivo,
+              { flexDirection: 'row', alignItems: 'center', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 }
+            ]} 
             onPress={() => setOrdemAlfabetica(!ordemAlfabetica)}
           >
-            <Feather name="sort-by-alpha" size={14} color={ordemAlfabetica ? '#FFF' : COLORS.primary} style={{ marginRight: 4 }} />
-            <Text style={[styles.chipTexto, ordemAlfabetica && styles.chipTextoAtivo]}>A-Z</Text>
+            <Feather 
+              name="sliders" 
+              size={14} 
+              color={ordemAlfabetica ? '#FFF' : COLORS.primary} 
+              style={{ marginRight: 6 }} 
+            />
+            <Text style={[styles.chipTexto, ordemAlfabetica && styles.chipTextoAtivo, { fontWeight: '600' }]}>
+              {ordemAlfabetica ? 'A-Z Ativo' : 'Ordenar A-Z'}
+            </Text>
           </TouchableOpacity>
 
-          <View style={styles.divisorFiltro} />
-
+          {/* Filtros Dinâmicos de Ano */}
           {['2026', '2025', '2024'].map(ano => (
             <TouchableOpacity 
               key={ano}
-              style={[styles.chip, anoSelecionado === ano && styles.chipAtivo]} 
+              style={[
+                styles.chip, 
+                anoSelecionado === ano && styles.chipAtivo,
+                { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 }
+              ]} 
               onPress={() => setAnoSelecionado(anoSelecionado === ano ? null : ano)}
             >
-              <Text style={[styles.chipTexto, anoSelecionado === ano && styles.chipTextoAtivo]}>{ano}</Text>
+              <Text style={[styles.chipTexto, anoSelecionado === ano && styles.chipTextoAtivo, { fontWeight: '500' }]}>
+                {anoSelecionado === ano ? `Ano: ${ano}` : ano}
+              </Text>
             </TouchableOpacity>
           ))}
 
-          <View style={styles.divisorFiltro} />
-
+          {/* Filtros Dinâmicos de Turno */}
           {['Manhã', 'Tarde', 'Noite'].map(turno => (
             <TouchableOpacity 
               key={turno}
-              style={[styles.chip, turnoSelecionado === turno && styles.chipAtivo]} 
+              style={[
+                styles.chip, 
+                turnoSelecionado === turno && styles.chipAtivo,
+                { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6 }
+              ]} 
               onPress={() => setTurnoSelecionado(turnoSelecionado === turno ? null : turno)}
             >
-              <Text style={[styles.chipTexto, turnoSelecionado === turno && styles.chipTextoAtivo]}>{turno}</Text>
+              <Text style={[styles.chipTexto, turnoSelecionado === turno && styles.chipTextoAtivo, { fontWeight: '500' }]}>
+                {turnoSelecionado === turno ? `Turno: ${turno}` : turno}
+              </Text>
             </TouchableOpacity>
           ))}
 
         </ScrollView>
       </View>
       
-      {/* 🌟 O Breadcrumb agora exibe dinamicamente o nome do curso clicado! */}
       <BreadcrumbCard titulo="Turmas:" itemSub={`Curso: ${nomeCurso}`} />
 
       <BarraPesquisa value={search} onChangeText={setSearch} />
@@ -166,7 +176,6 @@ export default function TurmasScreen({ route, navigation }) { // 🌟 Adicionado
                   </View>
                   
                   <View style={{ flex: 1 }}> 
-                    {/* Exibe o nome do professor vindo do JOIN do banco */}
                     <Text style={styles.professorText}>{turma.professor || "Sem professor designado"}</Text>
                     
                     <View style={styles.subInfoContainer}>
