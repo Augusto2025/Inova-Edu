@@ -8,6 +8,10 @@ import SplashScreen from './SplashScreen';
 
 // npm install react-native-keyboard-aware-scroll-view
 
+// Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
+// Adeus IP local! Agora o seu app aponta para a internet real:
+const URL_BACKEND = process.env.EXPO_PUBLIC_URL_BACKEND;
+
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -26,10 +30,7 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
-        // Adeus IP local! Agora o seu app aponta para a internet real:
-        const URL_BACKEND = process.env.URL_BACKEND;
-
+    
         try {
             // Envia os dados para o seu servidor
             const resposta = await fetch(URL_BACKEND, {
