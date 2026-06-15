@@ -1,6 +1,8 @@
+// backend/routes/turmas.js
+
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db'); // Sua conexão do banco
+const db = require('../config/db');
 
 router.get('/', async (req, res) => {
     try {
@@ -10,8 +12,7 @@ router.get('/', async (req, res) => {
             return res.status(400).json({ mensagem: 'O parâmetro cursoId é obrigatório.' });
         }
 
-        // Query SQL com JOIN para buscar os dados da turma e o nome do professor (Usuario)
-        // Adaptado com aspas duplas seguindo o padrão de maiúsculas gerado pelo Django
+        // CORREÇÃO AQUI: Mudamos de u."id" para u."idUsuario"
         const queryTexto = `
             SELECT 
                 t."idTurma" AS idturma,
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
                 t."Ano" AS ano,
                 u."Nome" AS professor
             FROM turma t
-            LEFT JOIN usuario u ON t."professor_id" = u."id"
+            LEFT JOIN usuario u ON t."professor_id" = u."idUsuario"
             WHERE t."ID_Curso" = $1
         `;
 
