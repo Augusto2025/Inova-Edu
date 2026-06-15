@@ -26,9 +26,9 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // ⚠️ Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
-        // Enquanto testa localmente no PC, use o seu IP: "http://192.168.X.X:3000/login"
-        const URL_BACKEND = "http://10.0.60.133:8081/login";
+        // Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
+        // Adeus IP local! Agora o seu app aponta para a internet real:
+        const URL_BACKEND = process.env.URL_BACKEND;
 
         try {
             // Envia os dados para o seu servidor
