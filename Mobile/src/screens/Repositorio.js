@@ -13,6 +13,7 @@ import { Feather } from '@expo/vector-icons';
 import BreadcrumbCard from '../components/BreadcrumbCard'; 
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Repositorio'; 
+// 🌟 Novos imports para manipulação e compartilhamento de arquivos nativos
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
@@ -25,7 +26,7 @@ export default function RepositorioScreen({ route, navigation }) {
   const [pastas, setPastas] = useState([]);
   const [arquivos, setArquivos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false); // 🌟 Estado para o loading do download
+  const [downloading, setDownloading] = useState(false); // 🌟 Estado para controlar o loading do download
   
   // Estados para controlar a navegação profunda
   const [pastaIdAtual, setPastaIdAtual] = useState(null);
@@ -46,6 +47,14 @@ export default function RepositorioScreen({ route, navigation }) {
       }
 
       const resposta = await fetch(url);
+
+      // PASSO 1: Verifica se o servidor respondeu com erro (Ex: 404, 500, etc.)
+      if (!resposta.ok) {
+        // Se deu erro, lança um erro com o número do Status (Ex: "Erro 404")
+        throw new Error(`Servidor respondeu com código ${resposta.status}`);
+      }
+
+      // Só tenta ler o JSON se a resposta foi um sucesso (Status 200)
       const dados = await resposta.json();
 
       if (dados.pastas && dados.arquivos) {
@@ -55,16 +64,22 @@ export default function RepositorioScreen({ route, navigation }) {
         Alert.alert("Erro", dados.mensagem || "Não foi possível carregar os dados.");
       }
     } catch (error) {
-      Alert.alert("Erro", "Falha na conexão com o servidor do repositório.");
+      // PASSO 2: Mostra a mensagem real que quebrou o código
+      Alert.alert(
+        "Erro na Requisição", 
+        error.message === "Network request failed" 
+          ? "Falha na conexão: Verifique sua internet ou se o servidor está ligado." 
+          : error.message
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // 🌟 FUNÇÃO PARA BAIXAR O REPOSITÓRIO EM ZIP
+  // Nova função responsável por baixar e disparar o compartilhamento do ZIP
   const baixarRepositorioZip = async () => {
     if (!projetoId) {
-      Alert.alert("Erro", "ID do projeto inválido.");
+      Alert.alert("Erro", "Não foi possível identificar o ID do projeto.");
       return;
     }
 
@@ -74,16 +89,17 @@ export default function RepositorioScreen({ route, navigation }) {
       const urlZip = `${URL_BASE}/repositorio/download-zip?projetoId=${projetoId}`;
       const localDoArquivo = `${FileSystem.documentDirectory}repositorio_${projetoId}.zip`;
 
-      // Faz o download do arquivo binário gerado pelo backend
+      // Executa o download do arquivo gerado pelo backend
       const resultadoDownload = await FileSystem.downloadAsync(urlZip, localDoArquivo);
 
       if (resultadoDownload.status === 200) {
-        // Verifica se o dispositivo do usuário permite compartilhar/salvar arquivos externos
-        if (await Sharing.isAvailableAsync()) {
+        // Verifica se o sistema operacional oferece suporte para compartilhar/salvar arquivos
+        const disponivel = await Sharing.isAvailableAsync();
+        if (disponivel) {
           await Sharing.shareAsync(resultadoDownload.uri, {
             mimeType: 'application/zip',
             dialogTitle: `Baixar Repositório: ${projetoNome}`,
-            UTI: 'public.zip-archive' // Garante que o iOS reconheça como ZIP
+            UTI: 'public.zip-archive' // Compatibilidade para dispositivos iOS reconhecerem o arquivo ZIP
           });
         } else {
           Alert.alert("Erro", "Seu dispositivo não suporta compartilhamento de arquivos.");
@@ -92,7 +108,7 @@ export default function RepositorioScreen({ route, navigation }) {
         Alert.alert("Erro", "Não foi possível gerar o arquivo ZIP no servidor.");
       }
     } catch (error) {
-      Alert.alert("Falha no download", "Houve um problema ao processar o download do repositório.");
+      Alert.alert("Falha no download", "Houve um problema ao baixar o arquivo do repositório.");
       console.log(error);
     } finally {
       setDownloading(false);
@@ -111,7 +127,7 @@ export default function RepositorioScreen({ route, navigation }) {
     setPastaIdAtual(novoHistorico.length > 0 ? novoHistorico[novoHistorico.length - 1].id : null);
   };
 
-  // Cria a string do caminho atual dinamicamente
+  // Cria a string do caminho atual dinamicamente (Ex: Projeto: Hospital > Web > Src)
   const stringCaminho = historicoPastas.length > 0 
     ? `Projeto: ${projetoNome} > ${historicoPastas.map(p => p.nome).join(' > ')}`
     : `Projeto: ${projetoNome}`;
@@ -134,7 +150,7 @@ export default function RepositorioScreen({ route, navigation }) {
         ) : (
           <ScrollView contentContainerStyle={styles.scrollContent}>
             
-            {/* Botão de Voltar de nível */}
+            {/* Botão de Voltar de nível (aparece apenas quando estiver dentro de alguma pasta) */}
             {pastaIdAtual && (
               <TouchableOpacity style={[styles.itemCard, { backgroundColor: '#F8FAFC' }]} onPress={voltarPasta}>
                 <View style={styles.itemInfo}>
@@ -193,7 +209,7 @@ export default function RepositorioScreen({ route, navigation }) {
         )}
       </View>
 
-      {/* 🌟 BOTÃO FLUTUANTE DE DOWNLOAD ATUALIZADO */}
+      {/* Botão Flutuante atualizado com feedbacks e bloqueio de cliques simultâneos */}
       <TouchableOpacity 
         style={[styles.btnActionMain, downloading && { backgroundColor: '#94A3B8' }]} 
         onPress={baixarRepositorioZip}
