@@ -1,12 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const archiverModule = require('archiver');
-// Garante compatibilidade local e no Render (CJS / ESM Interop)
-const archiver = typeof archiverModule === 'function' ? archiverModule : archiverModule.default;
+
+// IMPORTAÇÃO DETECTIVE: Captura o módulo do archiver
+const archiverModule = require('archiver'); 
+
+// FUNÇÃO AUXILIAR: Tenta todas as formas possíveis de criar o ZIP
+function criarInstanciaZip(format, options) {
+    // 1. Se for o padrão CommonJS (função direta)
+    if (typeof archiverModule === 'function') {
+        return archiverModule(format, options);
+    }
+    // 2. Se for interop de ES Modules (dentro de .default)
+    if (archiverModule.default && typeof archiverModule.default === 'function') {
+        return archiverModule.default(format, options);
+    }
+    // 3. Se o módulo expuser o método nativo .create
+    if (typeof archiverModule.create === 'function') {
+        return archiverModule.create(format, options);
+    }
+    // 4. Se o método .create estiver dentro do .default
+    if (archiverModule.default && typeof archiverModule.default.create === 'function') {
+        return archiverModule.default.create(format, options);
+    }
+    
+    throw new Error("Não foi possível encontrar uma estrutura válida para o 'archiver'.");
+}
 
 // ==========================================
-// 🌟 1. ROTA PARA LISTAR PASTAS E ARQUIVOS NA TELA
+// 1. ROTA PARA LISTAR PASTAS E ARQUIVOS NA TELA
 // ==========================================
 router.get('/', async (req, res) => {
     const { projetoId, pastaId } = req.query;
@@ -19,17 +41,13 @@ router.get('/', async (req, res) => {
         let queryPastas, queryArquivos;
         let paramsPastas, paramsArquivos;
 
-        // Se o usuário clicou para entrar em uma pasta
         if (pastaId && pastaId !== 'null') {
-            // ⚠️ ATENÇÃO: Se a coluna que liga uma subpasta à pasta pai tiver outro nome 
-            // no seu banco (ex: pai_id, ou pasta_pai_id), altere aqui embaixo!
             queryPastas = 'SELECT id, nome FROM pasta WHERE projeto_id = $1 AND pasta_pai_id = $2';
             paramsPastas = [projetoId, pastaId];
 
             queryArquivos = 'SELECT id, nome FROM arquivo WHERE projeto_id = $1 AND pasta_id = $2';
             paramsArquivos = [projetoId, pastaId];
         } else {
-            // Se o usuário está na raiz do projeto (fora de qualquer pasta)
             queryPastas = 'SELECT id, nome FROM pasta WHERE projeto_id = $1 AND pasta_pai_id IS NULL';
             paramsPastas = [projetoId];
 
@@ -40,14 +58,12 @@ router.get('/', async (req, res) => {
         const resPastas = await db.query(queryPastas, paramsPastas);
         const resArquivos = await db.query(queryArquivos, paramsArquivos);
 
-        // Mapeia as pastas para incluir o contador de itens exigido pelo seu frontend
         const pastasFormatadas = resPastas.rows.map(pasta => ({
             id: pasta.id,
             nome: pasta.nome,
-            itens: 0 // Opcional: futuramente você pode fazer um COUNT de sub-itens aqui
+            itens: 0 
         }));
 
-        // Retorna exatamente a estrutura que o seu "carregarConteudo" do React Native espera
         res.json({
             pastas: pastasFormatadas,
             arquivos: resArquivos.rows
@@ -61,7 +77,7 @@ router.get('/', async (req, res) => {
 
 
 // ==========================================
-// 🌟 2. ROTA PARA DOWNLOAD DO REPOSITÓRIO EM ZIP
+// 2. ROTA PARA DOWNLOAD DO REPOSITÓRIO EM ZIP
 // ==========================================
 router.get('/download-zip', async (req, res) => {
     const { projetoId } = req.query;
@@ -82,7 +98,8 @@ router.get('/download-zip', async (req, res) => {
         res.attachment(`repositorio_projeto_${projetoId}.zip`);
         res.setHeader('Content-Type', 'application/zip');
 
-        const archive = archiver('zip', { zlib: { level: 9 } }); 
+        // ALTERADO AQUI: Agora usamos a nossa função inteligente de criação
+        const archive = criarInstanciaZip('zip', { zlib: { level: 9 } }); 
         archive.pipe(res);
 
         arquivos.forEach(arquivo => {
