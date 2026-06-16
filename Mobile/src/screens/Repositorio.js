@@ -13,8 +13,8 @@ import { Feather } from '@expo/vector-icons';
 import BreadcrumbCard from '../components/BreadcrumbCard'; 
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Repositorio'; 
-// 🌟 Novos imports para manipulação e compartilhamento de arquivos nativos
-import * as FileSystem from 'expo-file-system';
+// Novos imports para manipulação e compartilhamento de arquivos nativos
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
