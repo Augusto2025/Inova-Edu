@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+
 // TELAS
 import LoginScreen from './src/screens/Login';
 import SplashScreen from './src/screens/SplashScreen';

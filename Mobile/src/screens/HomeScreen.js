@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
+import Skeleton from "../components/Skeleton"; 
 import {
   View,
   Text,
@@ -17,17 +18,14 @@ export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
   const alertColor = COLORS.alert;
 
-  // CORRIGIDO: O estado quantidadeNotif foi movido para DENTRO do componente
   const [quantidadeNotif, setQuantidadeNotif] = useState(3);
   const [busca, setBusca] = useState("");
-  
-  // Quantidade de mensagens no fórum ativo
   const [totalMensagensForum, setTotalMensagensForum] = useState(3);
-
-  // ESTADO PARA ARMAZENAR OS REPOSITÓRIOS REALMENTE ACESSADOS
+  
+  // Estado inicializado como array vazio para evitar erros de undefined antes do map
   const [recentesAcessados, setRecentesAcessados] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
-  // CONFIGURAÇÃO DA ANIMAÇÃO DE PULSAR
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -47,7 +45,20 @@ export default function HomeScreen({ navigation }) {
     ).start();
   }, [pulseAnim]);
 
-  // DADOS DOS EVENTOS
+  // Simulação limpa do carregamento inicial (sem quebrar propriedades)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Alimenta os recentes com itens seguros baseados na sua lista real de projetos
+      setRecentesAcessados([
+        { id: "p5", titulo: "My App - RN", imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" },
+        { id: "p1", titulo: "Sistema de Gestão", imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400" }
+      ]);
+      setCarregando(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const events = [
     { id: 1, title: 'Reunião de Pais', date: '2026-04-01', day: '01', month: 'ABR', time: '08:30', local: 'Sala 05', description: 'Alinhamento semestral com os responsáveis sobre o desempenho dos alunos.' },
     { id: 2, title: 'Palestra: Inovação', date: '2026-04-10', day: '10', month: 'ABR', time: '19:00', local: 'Auditório Central', description: 'Uma palestra incrível sobre as novas tecnologias no setor educacional.' },
@@ -134,7 +145,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.safe}>
-      {/* CORRIGIDO: Passando a quantidade de notificações e a função para zerar */}
+      {/* O Header foi integrado de forma limpa e puxará o subtítulo interno */}
       <Header 
         nomeTela="Olá, Alcides 👋" 
         exibirPerfil={true} 
@@ -146,96 +157,143 @@ export default function HomeScreen({ navigation }) {
         
         {/* 1. PRÓXIMOS EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
-        {events.map((event) => {
-          const statusColor = getEventStatusColor(event.date);
-          return (
-            <TouchableOpacity 
-              key={event.id} 
-              style={styles.eventCard} 
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate("Eventos", { selectedDate: event.date })}
-            >
-              <View style={[styles.dateBadge, { borderColor: statusColor }]}>
-                <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}><Text style={styles.monthText}>{event.month}</Text></View>
-                <View style={styles.dateBadgeBottom}><Text style={[styles.dayText, { color: '#333' }]}>{event.day}</Text></View>
+        
+        {carregando ? (
+          [1, 2, 3].map((key) => (
+            <View key={key} style={[styles.eventCard, { gap: 14 }]}>
+              <Skeleton width={52} height={56} borderRadius={10} />
+              <View style={{ flex: 1, gap: 8 }}>
+                <Skeleton width="75%" height={16} borderRadius={4} />
+                <Skeleton width="45%" height={12} borderRadius={4} />
               </View>
-              <View style={styles.eventInfo}>
-                <Text style={styles.eventTitle}>{event.title}</Text>
-                <Text style={styles.eventTimeInfo}>
-                  <Ionicons name="time-outline" size={13} color="#777" /> {event.time} • {event.local}
-                </Text>
-              </View>
-              <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-            </TouchableOpacity>
-          );
-        })}
+            </View>
+          ))
+        ) : (
+          events.map((event) => {
+            const statusColor = getEventStatusColor(event.date);
+            return (
+              <TouchableOpacity 
+                key={event.id} 
+                style={styles.eventCard} 
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate("Eventos", { selectedDate: event.date })}
+              >
+                <View style={[styles.dateBadge, { borderColor: statusColor }]}>
+                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}><Text style={styles.monthText}>{event.month}</Text></View>
+                  <View style={styles.dateBadgeBottom}><Text style={[styles.dayText, { color: '#333' }]}>{event.day}</Text></View>
+                </View>
+                <View style={styles.eventInfo}>
+                  <Text style={styles.eventTitle}>{event.title}</Text>
+                  <Text style={styles.eventTimeInfo}>
+                    <Ionicons name="time-outline" size={13} color="#777" /> {event.time} • {event.local}
+                  </Text>
+                </View>
+                <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+              </TouchableOpacity>
+            );
+          })
+        )}
 
         {/* 2. MEUS REPOSITÓRIOS COM BUSCADOR */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchTitle}>Meus Repositórios</Text>
-          <View style={styles.searchBox}>
-            <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
-            <TextInput
-              placeholder="Buscar por curso, turma ou repositório..."
-              placeholderTextColor="#888"
-              style={styles.searchInput}
-              value={busca}
-              onChangeText={setBusca}
-            />
+        {carregando ? (
+          <View style={styles.searchContainer}>
+            <Skeleton width={160} height={22} borderRadius={4} style={{ marginBottom: 15 }} />
+            <Skeleton width="100%" height={50} borderRadius={18} />
+          </View>
+        ) : (
+          <View style={styles.searchContainer}>
+            <Text style={styles.searchTitle}>Meus Repositórios</Text>
+            <View style={styles.searchBox}>
+              <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
+              <TextInput
+                placeholder="Buscar por curso, turma ou repositório..."
+                placeholderTextColor="#888"
+                style={styles.searchInput}
+                value={busca}
+                onChangeText={setBusca}
+              />
+              {busca !== "" && (
+                <TouchableOpacity onPress={() => setBusca("")}>
+                  <Ionicons name="close-circle" size={18} color="#999" />
+                </TouchableOpacity>
+              )}
+            </View>
+
             {busca !== "" && (
-              <TouchableOpacity onPress={() => setBusca("")}>
-                <Ionicons name="close-circle" size={18} color="#999" />
-              </TouchableOpacity>
+              <View style={{ marginTop: 15 }}>
+                <Text style={{ fontSize: 12, color: '#888', marginBottom: 5 }}>{resultadosDaBusca.length} encontrados:</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+                  {resultadosDaBusca.length > 0 ? (
+                    resultadosDaBusca.map((item) => (
+                      <TouchableOpacity 
+                        key={item.id} 
+                        style={styles.miniResultCard}
+                        onPress={() => irParaRepositorio(item)}
+                      >
+                        <Image source={{ uri: item.imagem }} style={styles.miniResultImg} />
+                        <Text numberOfLines={1} style={styles.miniResultText}>{item.titulo}</Text>
+                        <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{item.origem}</Text></View>
+                      </TouchableOpacity>
+                    ))
+                  ) : (
+                    <Text style={{ color: '#999', fontSize: 13, fontStyle: 'italic' }}>Nenhum resultado para "{busca}"</Text>
+                  )}
+                </ScrollView>
+              </View>
             )}
           </View>
-
-          {busca !== "" && (
-            <View style={{ marginTop: 15 }}>
-              <Text style={{ fontSize: 12, color: '#888', marginBottom: 5 }}>{resultadosDaBusca.length} encontrados:</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-                {resultadosDaBusca.length > 0 ? (
-                  resultadosDaBusca.map((item) => (
-                    <TouchableOpacity 
-                      key={item.id} 
-                      style={styles.miniResultCard}
-                      onPress={() => irParaRepositorio(item)}
-                    >
-                      <Image source={{ uri: item.imagem }} style={styles.miniResultImg} />
-                      <Text numberOfLines={1} style={styles.miniResultText}>{item.titulo}</Text>
-                      <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{item.origem}</Text></View>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text style={{ color: '#999', fontSize: 13, fontStyle: 'italic' }}>Nenhum resultado para "{busca}"</Text>
-                )}
-              </ScrollView>
-            </View>
-          )}
-        </View>
+        )}
 
         {/* 3. FÓRUM ATIVO */}
         <Text style={styles.sectionTitle}>Fórum ativo</Text>
-        <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Fórum")}>
-          <View style={styles.forumHeaderRow}>
-            <View style={styles.forumIconCircle}><MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" /></View>
-            <View style={styles.forumTitleBlock}>
-              <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
-              <Text style={styles.forumTimeAgo}>há 2 min</Text>
+        
+        {carregando ? (
+          <View style={[styles.forumContainerCard, { gap: 12 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Skeleton width={44} height={44} borderRadius={22} />
+              <View style={{ flex: 1, gap: 6 }}>
+                <Skeleton width="55%" height={16} borderRadius={4} />
+                <Skeleton width="25%" height={12} borderRadius={4} />
+              </View>
             </View>
-            <Animated.View style={[
-              styles.forumBadgeCount, 
-              { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
-            ]}>
-              <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
-            </Animated.View>
+            <View style={{ marginLeft: 56, gap: 6 }}>
+              <Skeleton width="90%" height={14} borderRadius={4} />
+              <Skeleton width="65%" height={14} borderRadius={4} />
+            </View>
           </View>
-          <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
-          <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
-        </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Fórum")}>
+            <View style={styles.forumHeaderRow}>
+              <View style={styles.forumIconCircle}><MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" /></View>
+              <View style={styles.forumTitleBlock}>
+                <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
+                <Text style={styles.forumTimeAgo}>há 2 min</Text>
+              </View>
+              <Animated.View style={[
+                styles.forumBadgeCount, 
+                { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
+              ]}>
+                <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
+              </Animated.View>
+            </View>
+            <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
+            <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
+          </TouchableOpacity>
+        )}
 
         {/* 4. REPOSITÓRIOS RECENTES */}
         <Text style={styles.sectionTitle}>Repositórios Recentes</Text>
-        {recentesAcessados.length > 0 ? (
+        
+        {carregando ? (
+          <View style={{ flexDirection: 'row', gap: 14, paddingBottom: 15 }}>
+            {[1, 2].map((key) => (
+              <View key={key} style={{ gap: 8 }}>
+                <Skeleton width={140} height={100} borderRadius={20} />
+                <Skeleton width={100} height={14} borderRadius={4} style={{ alignSelf: 'center' }} />
+              </View>
+            ))}
+          </View>
+        ) : recentesAcessados && recentesAcessados.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRepoContainer}>
             {recentesAcessados.map((projeto) => (
               <TouchableOpacity 
@@ -245,7 +303,7 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => irParaRepositorio(projeto)} 
               >
                 <View style={styles.imageWrapper}>
-                  <Image source={{ uri: project.imagem || projeto.imagem }} style={styles.repoCoverImage} />
+                  <Image source={{ uri: projeto?.imagem }} style={styles.repoCoverImage} />
                   <TouchableOpacity 
                     style={styles.removeButton} 
                     activeOpacity={0.7}
@@ -271,7 +329,6 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-// ... Mantive os mesmos estilos abaixo
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
   container: { flex: 1, backgroundColor: '#FFFFFF', },

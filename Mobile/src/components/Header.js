@@ -9,6 +9,10 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation, TabActions } from "@react-navigation/native";
+import Skeleton from "./Skeleton";
+
+// 1. IMPORTE A SUA FOTO LOCAL AQUI (Ajuste o caminho se sua pasta for diferente)
+import FotoPerfilLocal from "../../assets/pascal.jpg"; 
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -18,15 +22,15 @@ export default function Header({
   telaDestino,
   exibirPerfil = false, 
   exibirCurva = true, 
-  quantidadeNotificacoes = 0, // CORRIGIDO: Recebe do componente pai
-  aoClicarNoSino,            // CORRIGIDO: Executa função para mudar o estado local da Home
+  quantidadeNotificacoes = 0, 
+  aoClicarNoSino,            
+  carregando = false, 
 }) {
   const navigation = useNavigation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Só deixa ativo o efeito de pulsação se houver notificações pendentes
-    if (quantidadeNotificacoes > 0) {
+    if (quantidadeNotificacoes > 0 && !carregando) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
@@ -34,9 +38,9 @@ export default function Header({
         ])
       ).start();
     } else {
-      pulseAnim.setValue(1); // Mantém o tamanho original caso esteja zerado
+      pulseAnim.setValue(1); 
     }
-  }, [pulseAnim, quantidadeNotificacoes]);
+  }, [pulseAnim, quantidadeNotificacoes, carregando]);
 
   const lidarComVoltar = () => {
     if (telaDestino) {
@@ -52,56 +56,70 @@ export default function Header({
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.logoRow}>
-        {/* <Text style={styles.logoText}>Inova-Edu</Text> */}
-      </View>
+      <View style={styles.logoRow} />
 
       <View style={styles.header}>
         <View style={styles.left}>
           {exibirPerfil ? (
             <View style={styles.profileContainer}>
-              <Image source={{ uri: "https://i.pravatar.cc/300" }} style={styles.profileImage} />
+              
+              {/* Mantemos o Skeleton se a tela toda estiver carregando dados */}
+              {carregando ? (
+                <Skeleton width={52} height={52} borderRadius={26} style={{ marginRight: 12 }} />
+              ) : (
+                /* 2. ALTERADO AQUI: Agora passa a foto importada direto */
+                <Image source={FotoPerfilLocal} style={styles.profileImage} />
+              )}
+
               <View style={styles.rightHeaderText}>
-                <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
-                <Text style={styles.courseSubtitle} numberOfLines={1}>
-                  Tec. Desenvolvimento de Sistemas
-                </Text>
+                {carregando ? (
+                  <View style={{ gap: 6, justifyContent: 'center', height: 52 }}>
+                    <Skeleton width={110} height={16} borderRadius={4} />
+                    <Skeleton width={150} height={12} borderRadius={4} />
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
+                    <Text style={styles.courseSubtitle} numberOfLines={1}>
+                      Tec. Desenvolvimento de Sistemas
+                    </Text>
+                  </>
+                )}
               </View>
             </View>
           ) : (
             <View style={styles.noProfileContainer}>
-              <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
-              {temGoBack && (
-                <TouchableOpacity onPress={lidarComVoltar} style={styles.backButtonUnder} activeOpacity={0.7}>
-                  <Feather name="arrow-left" size={16} color="#dfe6ff" />
-                  <Text style={styles.backButtonText}>Voltar</Text>
-                </TouchableOpacity>
+              {carregando ? (
+                <Skeleton width={140} height={20} borderRadius={4} />
+              ) : (
+                <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
               )}
             </View>
           )}
         </View>
 
-        {/* BOTÃO DO SINO INTEIRO COM FEEDBACK DINÂMICO */}
-        <AnimatedTouchableOpacity
-          style={[
-            styles.notification,
-            quantidadeNotificacoes > 0 && { transform: [{ scale: pulseAnim }] }
-          ]}
-          onPress={() => {
-            if (aoClicarNoSino) aoClicarNoSino(); // Zera as notificações na Home
-            navigation.navigate("Notifications");
-          }}
-          activeOpacity={0.8}
-        >
-          <Feather name="bell" size={24} color="#fff" />
-          
-          {/* CORRIGIDO: O número vermelho do Badge some totalmente se for igual a 0 */}
-          {quantidadeNotificacoes > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{quantidadeNotificacoes}</Text>
-            </View>
-          )}
-        </AnimatedTouchableOpacity>
+        {carregando ? (
+          <Skeleton width={48} height={48} borderRadius={24} style={{ alignSelf: 'center' }} />
+        ) : (
+          <AnimatedTouchableOpacity
+            style={[
+              styles.notification,
+              quantidadeNotificacoes > 0 && { transform: [{ scale: pulseAnim }] }
+            ]}
+            onPress={() => {
+              if (aoClicarNoSino) aoClicarNoSino(); 
+              navigation.navigate("Notifications");
+            }}
+            activeOpacity={0.8}
+          >
+            <Feather name="bell" size={24} color="#fff" />
+            {quantidadeNotificacoes > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{quantidadeNotificacoes}</Text>
+              </View>
+            )}
+          </AnimatedTouchableOpacity>
+        )}
       </View>
 
       {exibirCurva && (
@@ -113,19 +131,15 @@ export default function Header({
   );
 }
 
-// ... Mantive os mesmos estilos abaixo
 const styles = StyleSheet.create({
   wrapper: { backgroundColor: "#1459b3" },
-  logoRow: { paddingTop: 55, alignItems: "center", justifyContent: "center", backgroundColor: "#1459b3", height: 90 },
-  logoText: { color: '#f7941d', fontSize: 18, fontWeight: "800", letterSpacing: 1, opacity: 0.95 },
+  logoRow: { paddingTop: 70, backgroundColor: "#1459b3", height: 60 },
   header: { paddingTop: 5, paddingBottom: 19, paddingHorizontal: 22, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", backgroundColor: "#1459b3" },
   left: { flex: 1, marginRight: 10 },
   profileContainer: { flexDirection: "row", alignItems: "center" },
   profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2, borderColor: "#fff" },
   rightHeaderText: { flex: 1 },
   noProfileContainer: { flexDirection: "column", justifyContent: "center", height: 52 },
-  backButtonUnder: { flexDirection: "row", alignItems: "center", marginTop: 4 },
-  backButtonText: { color: "#dfe6ff", fontSize: 13, fontWeight: "500", marginLeft: 4 },
   title: { color: "#fff", fontSize: 22, fontWeight: "bold" },
   courseSubtitle: { color: "#dfe6ff", fontSize: 12, marginTop: 2, fontWeight: "500" },
   notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(255,255,255,0.15)", alignSelf: "center" },
