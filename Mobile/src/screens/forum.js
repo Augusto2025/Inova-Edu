@@ -5,82 +5,91 @@ import Header from "../components/Header";
 import BarraPesquisa from "../components/BarraPesquisa";
 import { COLORS } from "../components/Cores";
 
-// SUBSTITUA PELO URL DO SEU BACKEND NO RENDER (OU LOCALHOST)
+// Ajusta a URL base removendo o /login se existir
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+// Cria a URL específica para o endpoint do fórum, garantindo a barra correta
+const URL_FORUM = URL_BASE.endsWith('/') ? `${URL_BASE}forum` : `${URL_BASE}/forum`;
   
 export default function ForumScreen({ navigation }) {
   const [topicos, setTopicos] = useState([]);
   const [carregando, setCarregando] = useState(true);
 
-  // Estado do Modal adaptado para usar o 'id' do banco em vez do 'index' do array
-  const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", descricao: "", id: null });
+  // Modal com o 'id' do banco
+  const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", id: null });
 
-  // 1. FUNÇÃO PARA BUSCAR OS TÓPICOS DO BACKEND (GET)
+  // ==========================================
+  // 1. BUSCAR OS TÓPICOS DO BACKEND (GET)
+  // ==========================================
   const carregarTopicos = async () => {
     try {
       setCarregando(true);
-      const response = await fetch(URL_BASE);
-      if (!response.ok) throw new Error("Erro na resposta do servidor");
+      
+      // Agora aponta para URL_FORUM (ex: http://.../forum)
+      const response = await fetch(URL_FORUM); 
+      
+      if (!response.ok) {
+        const textoErro = await response.text();
+        throw new Error(`Status ${response.status}: ${textoErro || "Erro no servidor"}`);
+      }
       
       const dados = await response.json();
       setTopicos(dados);
     } catch (error) {
       console.error("Erro ao carregar fórum:", error);
-      Alert.alert("Erro", "Não foi possível carregar os tópicos do fórum.");
+      Alert.alert("Erro de Conexão", `Não foi possível carregar o fórum.\n\nDetalhe: ${error.message}`);
     } finally {
       setCarregando(false);
     }
   };
 
-  // Carrega os dados assim que a tela abre
   useEffect(() => {
     carregarTopicos();
   }, []);
 
-  // 2. FUNÇÃO PARA SALVAR / EDITAR NO BACKEND (POST / PUT)
+  // ==========================================
+  // 2. SALVAR / EDITAR NO BACKEND (POST / PUT)
+  // ==========================================
   const salvarTopico = async () => {
-    if (!modal.titulo.trim() || !modal.descricao.trim()) return;
+    if (!modal.titulo.trim()) return;
 
     try {
       if (modal.modo === "Criar") {
-        // Envia requisição POST para criar
-        const response = await fetch(URL_BASE, {
+        // Envia requisição POST para URL_FORUM
+        const response = await fetch(URL_FORUM, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: modal.titulo,
-            descricao: modal.descricao,
-            categoria: "React Native", // Pode ser dinâmico se tiver um seletor
-            usuarioId: 1 // 🌟 Importante: ID do usuário logado (substitua pelo id real do seu Auth)
+            usuarioId: 1 // ID temporário do autor do fórum
           })
         });
 
-        if (!response.ok) throw new Error("Erro ao criar tópico");
+        if (!response.ok) throw new Error("Erro ao criar tópico no servidor.");
       } else {
-        // Envia requisição PUT para editar usando o ID do tópico
-        const response = await fetch(`${URL_BASE}/${modal.id}`, {
+        // Envia requisição PUT para URL_FORUM/id
+        const response = await fetch(`${URL_FORUM}/${modal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            titulo: modal.titulo,
-            descricao: modal.descricao
+            titulo: modal.titulo
           })
         });
 
-        if (!response.ok) throw new Error("Erro ao editar tópico");
+        if (!response.ok) throw new Error("Erro ao editar tópico no servidor.");
       }
 
-      // Recarrega a lista vinda do banco e fecha o modal
       carregarTopicos();
       fecharModal();
 
     } catch (error) {
       console.error("Erro ao salvar:", error);
-      Alert.alert("Erro", "Houve um problema ao salvar o tópico.");
+      Alert.alert("Erro", `Houve um problema ao salvar o tópico:\n${error.message}`);
     }
   };
 
-  // 3. FUNÇÃO PARA ELIMINAR DO BACKEND (DELETE)
+  // ==========================================
+  // 3. ELIMINAR DO BACKEND (DELETE)
+  // ==========================================
   const eliminarTopico = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -92,14 +101,14 @@ export default function ForumScreen({ navigation }) {
           style: "destructive", 
           onPress: async () => {
             try {
-              const response = await fetch(`${URL_BASE}/${id}`, { method: "DELETE" });
-              if (!response.ok) throw new Error("Erro ao eliminar");
+              // Envia requisição DELETE para URL_FORUM/id
+              const response = await fetch(`${URL_FORUM}/${id}`, { method: "DELETE" });
+              if (!response.ok) throw new Error("Erro ao eliminar do servidor.");
               
-              // Atualiza a lista local removendo o item apagado
               setTopicos(topicos.filter(item => item.id !== id));
             } catch (error) {
               console.error("Erro ao eliminar:", error);
-              Alert.alert("Erro", "Não foi possível eliminar o tópico.");
+              Alert.alert("Erro", `Não foi possível eliminar o tópico:\n${error.message}`);
             }
           }
         }
@@ -107,7 +116,7 @@ export default function ForumScreen({ navigation }) {
     );
   };
 
-  const fecharModal = () => setModal({ visible: false, modo: "Criar", titulo: "", descricao: "", id: null });
+  const fecharModal = () => setModal({ visible: false, modo: "Criar", titulo: "", id: null });
 
   return (
     <View style={styles.container}>
@@ -150,9 +159,7 @@ export default function ForumScreen({ navigation }) {
                   </View>
 
                   <View style={styles.actions}>
-                    {/* Botão Editar: Passa o ID do banco para o estado do modal */}
-                    <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, descricao: item.descricao, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
-                    {/* Botão Eliminar: Chama a função passando o ID do banco */}
+                    <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
                     <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
                   </View>
                 </View>
@@ -162,7 +169,7 @@ export default function ForumScreen({ navigation }) {
         </ScrollView>
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", descricao: "", id: null })}><Ionicons name="add" size={28} color="#fff" /></TouchableOpacity>
+      <TouchableOpacity style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", id: null })}><Ionicons name="add" size={28} color="#fff" /></TouchableOpacity>
 
       {/* MODAL DE CRIAÇÃO / EDIÇÃO */}
       <Modal visible={modal.visible} transparent animationType="fade" onRequestClose={fecharModal}>
@@ -183,10 +190,7 @@ export default function ForumScreen({ navigation }) {
                   <TextInput placeholder="Digite o título..." value={modal.titulo} onChangeText={(t) => setModal({ ...modal, titulo: t })} style={styles.input} />
                 </View>
 
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Descrição</Text>
-                  <TextInput placeholder="Digite a descrição..." value={modal.descricao} onChangeText={(d) => setModal({ ...modal, descricao: d })} style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline />
-                </View>
+                {/* Nota: Removemos o input de descrição aqui pois o seu modelo de Banco de Dados não possui este campo */}
 
                 <TouchableOpacity style={styles.saveBtn} onPress={salvarTopico}>
                   <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>
