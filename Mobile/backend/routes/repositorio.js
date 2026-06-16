@@ -2,25 +2,34 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// IMPORTAÇÃO DETECTIVE: Captura o módulo do archiver
+// Importa o módulo do archiver
 const archiverModule = require('archiver'); 
 
-// FUNÇÃO AUXILIAR: Tenta todas as formas possíveis de criar o ZIP
+// 🌟 FUNÇÃO AUXILIAR COM DIAGNÓSTICO PARA O RENDER
 function criarInstanciaZip(format, options) {
+    // Esses logs vão aparecer direto no painel "Logs" do seu serviço no Render
+    console.log("========= [DIAGNÓSTICO DO ARCHIVER] =========");
+    console.log("1. O que o require retornou?:", archiverModule);
+    console.log("2. Qual o tipo do que foi retornado?:", typeof archiverModule);
+    if (archiverModule) {
+        console.log("3. Quais propriedades existem dentro dele?:", Object.keys(archiverModule));
+    }
+    console.log("=============================================");
+
     // 1. Se for o padrão CommonJS (função direta)
     if (typeof archiverModule === 'function') {
         return archiverModule(format, options);
     }
     // 2. Se for interop de ES Modules (dentro de .default)
-    if (archiverModule.default && typeof archiverModule.default === 'function') {
+    if (archiverModule && typeof archiverModule.default === 'function') {
         return archiverModule.default(format, options);
     }
     // 3. Se o módulo expuser o método nativo .create
-    if (typeof archiverModule.create === 'function') {
+    if (archiverModule && typeof archiverModule.create === 'function') {
         return archiverModule.create(format, options);
     }
     // 4. Se o método .create estiver dentro do .default
-    if (archiverModule.default && typeof archiverModule.default.create === 'function') {
+    if (archiverModule && archiverModule.default && typeof archiverModule.default.create === 'function') {
         return archiverModule.default.create(format, options);
     }
     
@@ -98,7 +107,7 @@ router.get('/download-zip', async (req, res) => {
         res.attachment(`repositorio_projeto_${projetoId}.zip`);
         res.setHeader('Content-Type', 'application/zip');
 
-        // ALTERADO AQUI: Agora usamos a nossa função inteligente de criação
+        // Chama a função assistente que vai disparar os logs de diagnóstico
         const archive = criarInstanciaZip('zip', { zlib: { level: 9 } }); 
         archive.pipe(res);
 
