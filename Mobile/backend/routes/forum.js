@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
                 u.nome AS autor,
                 (SELECT COUNT(*) FROM mensagem m WHERE m.forum_id = f.idforum) AS mensagens
             FROM forum f
-            LEFT JOIN usuario u ON f.usuario_id = u.id
+            LEFT JOIN usuario u ON f.usuario_id = u.idusuario -- ALTERADO DE u.id PARA u.idusuario
             ORDER BY f.idforum DESC
         `;
         
@@ -24,8 +24,6 @@ router.get('/', async (req, res) => {
         const topicosFormatados = resultado.rows.map(item => ({
             id: item.id,
             titulo: item.titulo,
-            // Como não há essas colunas no banco, enviamos valores fixos 
-            // para manter o layout do React Native funcionando perfeitamente
             descricao: "Clique para abrir este fórum e participar das discussões.", 
             categoria: "Geral", 
             mensagens: parseInt(item.mensagens) || 0,
