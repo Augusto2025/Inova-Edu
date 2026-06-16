@@ -230,15 +230,15 @@
                                 id="projetoIdExcluir"
                                 name="projeto_id">
 
-                            <div class="modal-footer">
+                            <div class="acoes-modal-excluir">
 
                                 <button type="button"
-                                        class="btn-secondary fechar">
+                                        class="btn-cancelar-excluir fechar">
                                     Cancelar
                                 </button>
 
                                 <button type="submit"
-                                        class="btn-danger">
+                                        class="btn-confirmar-excluir">
                                     Excluir
                                 </button>
 
@@ -420,10 +420,11 @@
                 document.getElementById('projetoIdExcluir').value =
                     this.dataset.id;
 
-                document.getElementById('nomeProjetoExcluir').innerText =
+                document.getElementById('nomeProjetoExcluir').textContent =
                     this.dataset.nome;
 
-                modalExcluir.style.display = 'flex';
+                document.getElementById('modalExcluir').style.display = 'flex';
+
             });
 
         });

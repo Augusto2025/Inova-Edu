@@ -187,127 +187,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ================= MODAL ================= */
-
-.modal-content {
-    width: 100%;
-    max-width: 420px; /* menor */
-
-    background: #fff;
-    border-radius: 16px;
-
-    overflow: hidden;
-
-    box-shadow: 0 10px 30px rgba(214, 11, 11, 0.15);
-
-    animation: modalFade .25s ease;
-}
-
-/* Cabeçalho */
-.modal-header {
-    background: #0A4E97;
-    color: #fff;
-    padding: 18px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #fff !important;
-}
-
-/* Form */
-#formProjeto {
-    padding: 18px;
-}
-
-.campo {
-    margin-bottom: 14px;
-}
-
-.campo label {
-    display: block;
-
-    margin-bottom: 6px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    color: #444;
-}
-
-#formProjeto input[type="text"],
-#formProjeto textarea,
-#formProjeto input[type="file"] {
-    width: 100%;
-
-    padding: 10px 12px;
-
-    border: 1px solid #d6dce5;
-    border-radius: 8px;
-
-    font-size: 14px;
-
-    box-sizing: border-box;
-}
-
-#formProjeto textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-/* Rodapé */
-.modal-footer {
-    margin-top: 10px;
-
-    padding-top: 12px;
-
-    border-top: 1px solid #eee;
-
-    display: flex;
-    justify-content: flex-end;
-}
-
-.modal-footer button {
-    background: #F79433;
-    color: white;
-
-    border: none;
-    border-radius: 8px;
-
-    padding: 10px 18px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-
-
-
 /* Modal de Permissões */
 
 .modal-moderno {
@@ -465,52 +344,162 @@
 }
 
 
+/* ====================================
+   MODAL EXCLUIR PROJETO
+==================================== */
 
+/* ====================================
+   MODAL EXCLUIR PROJETO
+==================================== */
 
+#modalExcluir .modal-content {
+    width: 100%;
+    max-width: 360px;
 
+    background: #fff;
 
+    border-radius: 14px;
 
+    overflow: hidden;
 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
 
+    animation: modalFade .25s ease;
+}
 
+/* Cabeçalho */
 
+#modalExcluir .modal-header {
+    background: #0A4E97;
 
+    padding: 14px 18px;
 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+#modalExcluir .modal-header h2 {
+    margin: 0;
 
+    color: #fff;
 
+    font-size: 17px;
+    font-weight: 600;
+}
 
+#modalExcluir .fechar {
+    color: #fff;
 
+    font-size: 24px;
+    font-weight: bold;
 
+    cursor: pointer;
 
+    line-height: 1;
 
+    transition: .2s;
+}
 
+#modalExcluir .fechar:hover {
+    opacity: .8;
+}
 
+/* Corpo */
 
+#modalExcluir .conteudo-excluir {
+    padding: 16px;
+}
 
+#modalExcluir p {
+    margin: 0;
 
+    color: #444;
 
+    font-size: 14px;
 
+    line-height: 1.5;
+}
 
+#nomeProjetoExcluir {
+    color: #0A4E97;
+    font-weight: 700;
+}
 
+/* Botões */
 
+.acoes-modal-excluir {
+    margin-top: 18px;
 
+    display: flex;
+    justify-content: flex-end;
 
+    gap: 8px;
+}
 
+.btn-cancelar-excluir {
+    min-width: 90px;
 
+    padding: 8px 14px;
 
+    border: 1px solid #d9d9d9;
 
+    border-radius: 8px;
 
+    background: #f5f5f5;
 
+    color: #444;
 
+    font-size: 13px;
+    font-weight: 600;
 
+    cursor: pointer;
 
+    transition: .2s;
+}
 
+.btn-cancelar-excluir:hover {
+    background: #e9ecef;
+}
 
+.btn-confirmar-excluir {
+    min-width: 90px;
 
+    padding: 8px 14px;
 
+    border: none;
 
+    border-radius: 8px;
 
+    background: #dc3545;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.btn-confirmar-excluir:hover {
+    background: #c62828;
+}
+
+/* Animação */
+
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 
 
