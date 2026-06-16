@@ -5,22 +5,13 @@ const db = require('../config/db');
 // Importa o módulo do archiver
 const archiverModule = require('archiver'); 
 
-// 🌟 FUNÇÃO AUXILIAR COM DIAGNÓSTICO PARA O RENDER
+// FUNÇÃO AUXILIAR ATUALIZADA COM INSTANCIAÇÃO DIRETA DE CLASSE
 function criarInstanciaZip(format, options) {
-    // Esses logs vão aparecer direto no painel "Logs" do seu serviço no Render
-    console.log("========= [DIAGNÓSTICO DO ARCHIVER] =========");
-    console.log("1. O que o require retornou?:", archiverModule);
-    console.log("2. Qual o tipo do que foi retornado?:", typeof archiverModule);
-    if (archiverModule) {
-        console.log("3. Quais propriedades existem dentro dele?:", Object.keys(archiverModule));
-    }
-    console.log("=============================================");
-
     // 1. Se for o padrão CommonJS (função direta)
     if (typeof archiverModule === 'function') {
         return archiverModule(format, options);
     }
-    // 2. Se for interop de ES Modules (dentro de .default)
+    // 2. Se for interop de ES Modules tradicional (dentro de .default)
     if (archiverModule && typeof archiverModule.default === 'function') {
         return archiverModule.default(format, options);
     }
@@ -28,9 +19,22 @@ function criarInstanciaZip(format, options) {
     if (archiverModule && typeof archiverModule.create === 'function') {
         return archiverModule.create(format, options);
     }
-    // 4. Se o método .create estiver dentro do .default
-    if (archiverModule && archiverModule.default && typeof archiverModule.default.create === 'function') {
-        return archiverModule.default.create(format, options);
+    
+    // 🌟 4. SOLUÇÃO PARA O RENDER: Instancia a classe correspondente direto do protótipo do módulo
+    if (archiverModule) {
+        if (format === 'zip' && typeof archiverModule.ZipArchive === 'function') {
+            return new archiverModule.ZipArchive(options);
+        }
+        if (format === 'tar' && typeof archiverModule.TarArchive === 'function') {
+            return new archiverModule.TarArchive(options);
+        }
+    }
+
+    // 5. Caso a classe estivesse dentro de um .default
+    if (archiverModule && archiverModule.default) {
+        if (format === 'zip' && typeof archiverModule.default.ZipArchive === 'function') {
+            return new archiverModule.default.ZipArchive(options);
+        }
     }
     
     throw new Error("Não foi possível encontrar uma estrutura válida para o 'archiver'.");
