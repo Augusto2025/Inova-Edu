@@ -24,14 +24,14 @@ router.get('/', async (req, res) => {
             queryPastas = 'SELECT id, nome FROM pasta WHERE projeto_id = $1 AND pasta_pai_id = $2';
             paramsPastas = [projetoId, pastaId];
 
-            queryArquivos = 'SELECT id, nome, tamanho FROM arquivo WHERE projeto_id = $1 AND pasta_id = $2';
+            queryArquivos = 'SELECT id, nome FROM arquivo WHERE projeto_id = $1 AND pasta_id = $2';
             paramsArquivos = [projetoId, pastaId];
         } else {
             // Se o usuário está na raiz do projeto (fora de qualquer pasta)
             queryPastas = 'SELECT id, nome FROM pasta WHERE projeto_id = $1 AND pasta_pai_id IS NULL';
             paramsPastas = [projetoId];
 
-            queryArquivos = 'SELECT id, nome, tamanho FROM arquivo WHERE projeto_id = $1 AND pasta_id IS NULL';
+            queryArquivos = 'SELECT id, nome FROM arquivo WHERE projeto_id = $1 AND pasta_id IS NULL';
             paramsArquivos = [projetoId];
         }
 
