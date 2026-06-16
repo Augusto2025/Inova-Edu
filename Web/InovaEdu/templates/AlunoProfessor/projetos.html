@@ -59,7 +59,9 @@
                     </button>
             </div>
             {% endif %}
-            
+
+
+
             <!--CADASTRO DE PROJETOS -->
             <div id="modalProjeto" class="modal">
                 <div class="modal-content">
@@ -197,8 +199,64 @@
 
             </div>
 
+
+
+
+
             <!-- Modal Permissões -->
             {% if can_modify %}
+            <div id="modalExcluir" class="modal">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h2>Confirmar Exclusão</h2>
+                        <span class="fechar">&times;</span>
+                    </div>
+
+                    <div style="padding:20px;">
+                        <p>
+                            Tem certeza que deseja excluir o projeto
+                            <strong id="nomeProjetoExcluir"></strong>?
+                        </p>
+
+                        <form id="formExcluir" method="post">
+                            {% csrf_token %}
+
+                            <input type="hidden"
+                                name="action"
+                                value="excluir_projeto">
+
+                            <input type="hidden"
+                                id="projetoIdExcluir"
+                                name="projeto_id">
+
+                            <div class="modal-footer">
+
+                                <button type="button"
+                                        class="btn-secondary fechar">
+                                    Cancelar
+                                </button>
+
+                                <button type="submit"
+                                        class="btn-danger">
+                                    Excluir
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
             <div id="modalAlunos{{ projeto.idprojeto }}" class="modal">
                 <div class="modal-moderno">
                     <div class="modal-header">
