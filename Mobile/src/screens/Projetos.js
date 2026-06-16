@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -8,7 +8,9 @@ import {
   Image,
   Modal,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import Header from '../components/Header';
 import BreadcrumbCard from '../components/BreadcrumbCard';
@@ -16,36 +18,46 @@ import { Feather } from '@expo/vector-icons';
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Projeto';
 
-const PROJETOS_ESTATICOS = [
-  {
-    id: 1,
-    nome: "Sistema de Gestão Hospitalar",
-    descricao: "Desenvolvimento de uma interface para triagem rápida de pacientes em prontos-socorros.",
-    imagem: "https://picsum.photos/seed/hosp/300/200",
-    repo: "https://github.com/exemplo/hospital"
-  },
-  {
-    id: 2,
-    nome: "E-Commerce de Artesanato",
-    descricao: "Plataforma para artesãos locais venderem produtos com foco em sustentabilidade.",
-    imagem: "https://picsum.photos/seed/shop/300/200",
-    repo: "https://github.com/exemplo/shop"
-  },
-  {
-    id: 3,
-    nome: "App de Monitoramento Ambiental",
-    descricao: "Aplicação mobile que utiliza sensores IoT para medir a qualidade do ar em tempo real.",
-    imagem: null, 
-    repo: "https://github.com/exemplo/eco"
-  }
-];
+const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
-export default function ProjetosScreen({ navigation }) {
+export default function ProjetosScreen({ route, navigation }) {
+  const { turmaId, codigoTurma } = route.params || { turmaId: null, codigoTurma: "Turma" };
+
+  const [projetos, setProjetos] = useState([]); 
+  const [carregando, setCarregando] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const irParaRepositorio = (repositorio) => {
-    navigation.navigate("Repositorio", { url: repositorio });
+  useEffect(() => {
+    if (turmaId) {
+      buscarProjetos();
+    }
+  }, [turmaId]);
+
+  const buscarProjetos = async () => {
+    try {
+      setCarregando(true);
+      const urlCompleta = `${URL_BASE}/projetos?turmaId=${turmaId}`;
+      const resposta = await fetch(urlCompleta);
+      const dados = await resposta.json();
+      
+      if (Array.isArray(dados)) {
+        setProjetos(dados);
+      } else {
+        Alert.alert(
+          "Erro no Banco de Dados", 
+          `${dados.mensagem}\n\nDetalhe Técnico: ${dados.detalhe || 'Erro desconhecido.'}`
+        );
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor de projetos.");
+    } finally {
+      setCarregando(false);
+    }
   };
+
+  const irParaRepositorio = (projeto) => {
+    navigation.navigate("Repositorio", { projetoId: projeto.idprojeto, projetoNome: projeto.nome_projeto });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,54 +71,56 @@ export default function ProjetosScreen({ navigation }) {
         telaDestino={"Turmas"} 
       />
 
-      <BreadcrumbCard titulo="Projetos:" itemSub="Turma: ADS-2024-1A" />
+      <BreadcrumbCard titulo="Projetos:" itemSub={`Turma: ${codigoTurma}`} />
 
-      {/* Botão flutuante ou de topo para abrir o cadastro do modal, caso precise */}
-      {/* <View style={{ paddingHorizontal: 16, alignItems: 'flex-end', marginBottom: 4 }}>
-        <TouchableOpacity style={styles.btnAdd} onPress={() => setModalVisible(true)}>
-          <Feather name="plus" size={20} color="white" />
-        </TouchableOpacity>
-      </View> */}
-
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {PROJETOS_ESTATICOS.map((projeto) => (
-          <TouchableOpacity 
-            key={projeto.id} 
-            style={styles.projetoCard}
-            onPress={() => irParaRepositorio(projeto.repo)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.cardInfo}>
-              
-              {/* Imagem Quadrada (ou Placeholder) alinhada à esquerda */}
-              {projeto.imagem ? (
-                <Image source={{ uri: projeto.imagem }} style={styles.projetoImagemQuadrada} />
-              ) : (
-                <View style={[styles.projetoImagemQuadrada, styles.placeholderImagemContainer]}>
-                  <Feather name="folder" size={22} color={COLORS.primary} />
+      {carregando ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={{ marginTop: 10, color: COLORS.primary }}>Carregando projetos...</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {projetos.length === 0 ? (
+            <Text style={styles.vazio}>Nenhum projeto cadastrado para esta turma.</Text>
+          ) : (
+            projetos.map((projeto) => (
+              <TouchableOpacity 
+                key={projeto.idprojeto} 
+                style={styles.projetoCard}
+                activeOpacity={0.7}
+                onPress={() => irParaRepositorio(projeto)}
+              >
+                <View style={styles.cardInfo}>
+                  
+                  {/* Imagem de Capa ou Pasta Placeholder */}
+                  {projeto.imagem ? (
+                    <Image source={{ uri: projeto.imagem }} style={styles.projetoImagemQuadrada} />
+                  ) : (
+                    <View style={[styles.projetoImagemQuadrada, styles.placeholderImagemContainer]}>
+                      <Feather name="folder" size={22} color={COLORS.primary} />
+                    </View>
+                  )}
+                  
+                  <View style={{ flex: 1 }}> 
+                    <Text style={styles.projetoNome} numberOfLines={1}>
+                      {projeto.nome_projeto}
+                    </Text>
+                    <Text style={styles.projetoDesc} numberOfLines={2}>
+                      {projeto.descricao || "Sem descrição disponível."}
+                    </Text>
+                  </View>
                 </View>
-              )}
-              
-              {/* Bloco de texto: Nome acima e Descrição abaixo */}
-              <View style={{ flex: 1 }}> 
-                <Text style={styles.projetoNome} numberOfLines={1}>
-                  {projeto.nome}
-                </Text>
-                <Text style={styles.projetoDesc} numberOfLines={2}>
-                  {projeto.descricao}
-                </Text>
-              </View>
-            </View>
 
-            {/* Ícone de seta lateral idêntico ao das turmas */}
-            <View style={styles.setaContainer}>
-              <Feather name="chevron-right" size={22} color={COLORS.primary} />
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+                <View style={styles.setaContainer}>
+                  <Feather name="chevron-right" size={22} color={COLORS.primary} />
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </ScrollView>
+      )}
 
-      {/* MODAL DE CADASTRO (ESTÁTICO) */}
+      {/* MODAL DE CADASTRO */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>

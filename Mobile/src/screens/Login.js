@@ -5,8 +5,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import SplashScreen from './SplashScreen';
+import { API_ENDPOINTS } from '../services/api';
 
 // npm install react-native-keyboard-aware-scroll-view
+
+// Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
+// Adeus IP local! Agora o seu app aponta para a internet real:
+const URL_BACKEND = API_ENDPOINTS.login;
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
@@ -26,10 +31,7 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // ⚠️ Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
-        // Enquanto testa localmente no PC, use o seu IP: "http://192.168.X.X:3000/login"
-        const URL_BACKEND = "http://10.0.60.133:8081/login";
-
+    
         try {
             // Envia os dados para o seu servidor
             const resposta = await fetch(URL_BACKEND, {
