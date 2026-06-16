@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const archiver = require('archiver'); 
+const archiverModule = require('archiver');
+// Garante compatibilidade local e no Render (CJS / ESM Interop)
+const archiver = typeof archiverModule === 'function' ? archiverModule : archiverModule.default;
 
 // ==========================================
 // 🌟 1. ROTA PARA LISTAR PASTAS E ARQUIVOS NA TELA
