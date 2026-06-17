@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../config/db'); 
 
 // ==========================================
-// 1. ROTA: LISTAR TODOS OS TÓPICOS (GET)
+// 1. ROTA: LISTAR TODOS OS TÓPICOS (GET) - CORRIGIDA COM SEU MODEL REAL
 // ==========================================
 router.get('/', async (req, res) => {
     try {
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
                 u.nome AS autor,
                 (SELECT COUNT(*) FROM mensagem m WHERE m.forum_id = f.idforum) AS mensagens
             FROM forum f
-            LEFT JOIN usuario u ON f.usuario_id = u.usuario_id
+            LEFT JOIN usuario u ON f.usuario_id = u.idusuario
             ORDER BY f.idforum DESC
         `;
         
