@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const COLORS = { primary: "#0e68d6" };
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
-const URL_MENSAGEM = URL_BASE.endsWith('/') ? `${URL_BASE}mensagem` : `${URL_BASE}/mensagem`;
+const URL_MENSAGEM = URL_BASE.endsWith('/') ? `${URL_BASE}conversa` : `${URL_BASE}/conversa`;
 
 export default function ConversaScreen({ navigation, route }) {
   const forumNome = route.params?.forum || "Fórum";
@@ -33,18 +33,22 @@ export default function ConversaScreen({ navigation, route }) {
     try {
       setCarregando(true);
       
-      // 1. Pega quem está logado no celular
       const idSalvo = await AsyncStorage.getItem('idUsuario');
       const idUser = idSalvo ? parseInt(idSalvo) : null;
       setUsuarioLogadoId(idUser);
 
-      // 2. Busca as mensagens do tópico na API
       if (topico?.id) {
+        console.log("📡 Buscando mensagens na URL:", `${URL_MENSAGEM}/topico/${topico.id}`);
         const response = await fetch(`${URL_MENSAGEM}/topico/${topico.id}`);
-        if (!response.ok) throw new Error("Não foi possível carregar o chat.");
+        
+        // MODIFICAÇÃO AQUI: Captura o erro real do servidor
+        if (!response.ok) {
+          const textoErro = await response.text();
+          throw new Error(`Status ${response.status}: ${textoErro || "Sem detalhes"}`);
+        }
+        
         const dados = await response.json();
 
-        // Mapeia os dados adaptando para o layout dos balões (meu vs outro)
         const formatadas = dados.map(msg => ({
           id: msg.id,
           nome: msg.nome || "Usuário",
@@ -56,8 +60,9 @@ export default function ConversaScreen({ navigation, route }) {
         setMensagens(formatadas);
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Erro", "Erro ao sincronizar mensagens.");
+      console.error("❌ Erro ao carregar dados:", error);
+      // Alerta melhorado para te mostrar o culpado:
+      Alert.alert("Erro no Carregamento", error.message);
     } finally {
       setCarregando(false);
     }
