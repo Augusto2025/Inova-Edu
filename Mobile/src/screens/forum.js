@@ -4,27 +4,25 @@ import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import BarraPesquisa from "../components/BarraPesquisa";
 import { COLORS } from "../components/Cores";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Ajusta a URL base removendo o /login se existir
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
-// Cria a URL específica para o endpoint do fórum, garantindo a barra correta
 const URL_FORUM = URL_BASE.endsWith('/') ? `${URL_BASE}forum` : `${URL_BASE}/forum`;
   
 export default function ForumScreen({ navigation }) {
   const [topicos, setTopicos] = useState([]);
   const [carregando, setCarregando] = useState(true);
-
-  // Modal com o 'id' do banco
   const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", id: null });
+  
+  // Estado que guarda o ID do usuário real logado vindo do AsyncStorage
+  const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
 
   // ==========================================
-  // 1. BUSCAR OS TÓPICOS DO BACKEND (GET)
+  // 1. CARREGAR DADOS INICIAIS (GETS)
   // ==========================================
   const carregarTopicos = async () => {
     try {
       setCarregando(true);
-      
-      // Agora aponta para URL_FORUM (ex: http://.../forum)
       const response = await fetch(URL_FORUM); 
       
       if (!response.ok) {
@@ -42,7 +40,19 @@ export default function ForumScreen({ navigation }) {
     }
   };
 
+  const obterUsuarioLogado = async () => {
+    try {
+      const idSalvo = await AsyncStorage.getItem('idUsuario'); 
+      if (idSalvo !== null) {
+        setUsuarioLogadoId(parseInt(idSalvo)); // 🌟 Define o ID real no estado do componente
+      }
+    } catch (error) {
+      console.error("Erro ao ler ID do usuário:", error);
+    }
+  };
+
   useEffect(() => {
+    obterUsuarioLogado();
     carregarTopicos();
   }, []);
 
@@ -54,28 +64,32 @@ export default function ForumScreen({ navigation }) {
 
     try {
       if (modal.modo === "Criar") {
-        // Envia requisição POST para URL_FORUM
+        // Criar Novo Fórum
         const response = await fetch(URL_FORUM, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: modal.titulo,
-            usuarioId: 1 // ID temporário do autor do fórum
+            usuarioId: usuarioLogadoId // 🌟 Enviando o ID real do AsyncStorage
           })
         });
 
         if (!response.ok) throw new Error("Erro ao criar tópico no servidor.");
       } else {
-        // Envia requisição PUT para URL_FORUM/id
+        // Editar Fórum
         const response = await fetch(`${URL_FORUM}/${modal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            titulo: modal.titulo
+            titulo: modal.titulo,
+            usuarioId: usuarioLogadoId // 🌟 Enviando o ID real do AsyncStorage para o backend validar dono
           })
         });
 
-        if (!response.ok) throw new Error("Erro ao editar tópico no servidor.");
+        if (!response.ok) {
+          if(response.status === 403) throw new Error("Você não tem permissão para editar este tópico.");
+          throw new Error("Erro ao editar tópico no servidor.");
+        }
       }
 
       carregarTopicos();
@@ -83,7 +97,7 @@ export default function ForumScreen({ navigation }) {
 
     } catch (error) {
       console.error("Erro ao salvar:", error);
-      Alert.alert("Erro", `Houve um problema ao salvar o tópico:\n${error.message}`);
+      Alert.alert("Ação Negada", error.message);
     }
   };
 
@@ -101,14 +115,24 @@ export default function ForumScreen({ navigation }) {
           style: "destructive", 
           onPress: async () => {
             try {
-              // Envia requisição DELETE para URL_FORUM/id
-              const response = await fetch(`${URL_FORUM}/${id}`, { method: "DELETE" });
-              if (!response.ok) throw new Error("Erro ao eliminar do servidor.");
+              const response = await fetch(`${URL_FORUM}/${id}`, { 
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  usuarioId: usuarioLogadoId // 🌟 Diz pro backend quem está tentando apagar
+                })
+              });
+
+              if (!response.ok) {
+                if(response.status === 403) throw new Error("Você não tem permissão para apagar este tópico.");
+                throw new Error("Erro ao eliminar do servidor.");
+              }
               
               setTopicos(topicos.filter(item => item.id !== id));
+              Alert.alert("Sucesso", "Tópico excluído com sucesso!");
             } catch (error) {
               console.error("Erro ao eliminar:", error);
-              Alert.alert("Erro", `Não foi possível eliminar o tópico:\n${error.message}`);
+              Alert.alert("Ação Negada", error.message);
             }
           }
         }
@@ -158,10 +182,14 @@ export default function ForumScreen({ navigation }) {
                     </View>
                   </View>
 
-                  <View style={styles.actions}>
-                    <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
-                    <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
-                  </View>
+                  {/* 🌟 FILTRO DINÂMICO: Os botões só aparecem se o id do criador do tópico bater com o usuário logado vindo do AsyncStorage */}
+                  {item.usuarioIdCriador === usuarioLogadoId && (
+                    <View style={styles.actions}>
+                      <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
+                      <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
+                    </View>
+                  )}
+
                 </View>
               </View>
             </TouchableOpacity>
@@ -189,8 +217,6 @@ export default function ForumScreen({ navigation }) {
                   <Text style={styles.inputLabel}>Título do Tópico</Text>
                   <TextInput placeholder="Digite o título..." value={modal.titulo} onChangeText={(t) => setModal({ ...modal, titulo: t })} style={styles.input} />
                 </View>
-
-                {/* Nota: Removemos o input de descrição aqui pois o seu modelo de Banco de Dados não possui este campo */}
 
                 <TouchableOpacity style={styles.saveBtn} onPress={salvarTopico}>
                   <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>
