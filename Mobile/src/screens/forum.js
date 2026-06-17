@@ -172,14 +172,6 @@ export default function ForumScreen({ navigation }) {
                         {item.autor}
                       </Text>
                     </View>
-                    <View style={styles.info}>
-                      <Ionicons name="chatbubble-outline" size={13} color="#777" />
-                      <Text style={styles.infoText}>{item.mensagens}</Text>
-                    </View>
-                    <View style={styles.info}>
-                      <Feather name="tag" size={13} color="#777" />
-                      <Text style={styles.infoText}>{item.categoria}</Text>
-                    </View>
                   </View>
 
                   {/* 🌟 FILTRO DINÂMICO: Os botões só aparecem se o id do criador do tópico bater com o usuário logado vindo do AsyncStorage */}
