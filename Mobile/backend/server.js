@@ -12,6 +12,7 @@ const projetosRoutes = require('./routes/projetos');
 const repositorioRoutes = require('./routes/repositorio');
 const eventosRoutes = require('./routes/eventos');
 const forumRoutes = require('./routes/forum');
+const topicoRoutes = require('./routes/topico');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -24,6 +25,7 @@ app.use('/projetos', projetosRoutes);
 app.use('/repositorio', repositorioRoutes); 
 app.use('/eventos', eventosRoutes);
 app.use('/forum', forumRoutes);
+app.use('/topico', topicoRoutes);
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
