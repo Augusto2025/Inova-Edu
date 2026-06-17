@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
                 u.nome AS autor,
                 (SELECT COUNT(*) FROM mensagem m WHERE m.forum_id = f.idforum) AS mensagens
             FROM forum f
-            LEFT JOIN usuario u ON f.usuario_id = u.idUsuario
+            LEFT JOIN usuario u ON f.usuario_id = u."idUsuario"
             ORDER BY f.idforum DESC
         `;
         
