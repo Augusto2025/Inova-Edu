@@ -1,3 +1,11 @@
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
 .container {
     max-width: 1200px;
     width: 100%;
@@ -84,7 +92,7 @@
 .acoes{
     display:flex;
     flex-wrap:wrap;
-    gap:15px;
+    gap:8px;
     margin-top:auto;
 }
 
@@ -130,61 +138,81 @@
     font-size:18px;
 }
 
-/* CARD NOVO PROJETO */
+/*================== 
+CARD NOVO PROJETO
+================== */
 
 .novo-projeto{
-    border:2px dashed #d6dbe5;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    min-height:260px;
+    border: 2px dashed #d6dbe5;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 260px;
+
+    transition: all .3s ease;
+    cursor: pointer;
+    border-radius: 16px;
+    background: #fff;
+}
+
+/* Hover do card */
+.novo-projeto:hover{
+    transform: translateY(-6px);
+    border-color: #f59e0b;
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
 }
 
 .icone-plus{
-    width:50px;
-    height:50px;
-    background:#f59e0b;
-    color:white;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:30px;
-    margin-bottom:15px;
+    width: 50px;
+    height: 50px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    margin-bottom: 15px;
+
+    transition: .3s ease;
+}
+
+/* Efeito no ícone */
+.novo-projeto:hover .icone-plus{
+    transform: rotate(90deg) scale(1.08);
 }
 
 .novo-projeto h3{
-    color:#003b8e;
-    margin-bottom:10px;
+    color: #003b8e;
+    margin-bottom: 10px;
 }
 
 .novo-projeto p{
-    max-width:240px;
-    color:#666;
-    margin-bottom:20px;
+    max-width: 240px;
+    color: #666;
+    margin-bottom: 20px;
 }
 
 .btn-primary{
-    background:#f59e0b;
-    color:white;
-    border:none;
-    padding:12px 18px;
-    border-radius:8px;
-    font-weight:600;
-    cursor:pointer;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+/* Hover do botão */
+.btn-primary:hover{
+    background: #e88c06;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(245,158,11,.35);
 }
 
 
 
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
 
 
 /* Modal de Permissões */
@@ -345,8 +373,157 @@
 
 
 /* ====================================
-   MODAL EXCLUIR PROJETO
+   MODAL CADASTRAR PROJETO
 ==================================== */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+/* ==========================
+   MODAL PROJETO
+========================== */
+#modalProjeto {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+#modalProjeto .modal-content {
+    width: 100%;
+    max-width: 380px;
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .15);
+    animation: aparecer .25s ease;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* HEADER */
+
+#modalProjeto .modal-header {
+    background: linear-gradient(135deg, #003366, #0055aa);
+    padding: 14px 18px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#modalProjeto .modal-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#modalProjeto .fechar {
+    font-size: 24px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+#modalProjeto .fechar:hover {
+    transform: rotate(90deg);
+}
+
+/* FORM */
+
+#modalProjeto form {
+    padding: 18px;
+}
+
+#modalProjeto .campo {
+    margin-bottom: 14px;
+}
+
+#modalProjeto .campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+#modalProjeto .campo input[type="text"],
+#modalProjeto .campo textarea,
+#modalProjeto .campo input[type="file"] {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: .3s;
+}
+
+#modalProjeto .campo textarea {
+    min-height: 75px;
+    resize: none;
+}
+
+#modalProjeto .campo input:focus,
+#modalProjeto .campo textarea:focus {
+    outline: none;
+    border-color: #0055aa;
+    box-shadow: 0 0 0 3px rgba(0, 85, 170, .12);
+}
+
+/* BOTÃO */
+
+#modalProjeto .modal-footer {
+    margin-top: 10px;
+}
+
+#modalProjeto .modal-footer button {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 11px;
+    background: linear-gradient(135deg, #003366, #0055aa);
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+#modalProjeto .modal-footer button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 85, 170, .25);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* ====================================
    MODAL EXCLUIR PROJETO
@@ -391,7 +568,7 @@
 #modalExcluir .fechar {
     color: #fff;
 
-    font-size: 24px;
+    font-size: 13px;
     font-weight: bold;
 
     cursor: pointer;
