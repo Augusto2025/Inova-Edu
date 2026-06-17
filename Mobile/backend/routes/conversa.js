@@ -28,15 +28,16 @@ router.get('/topico/:topicoId', async (req, res) => {
     }
 });
 
-// 2. POST: Enviar uma nova mensagem no tópico
+// POST: Enviar uma nova mensagem no tópico
 // URL: /mensagem
 router.post('/', async (req, res) => {
     const { conteudo, topicoId, usuarioId } = req.body;
 
     try {
+        // Adicionamos "Data_criacao" e o valor NOW() para o Postgres preencher sozinho
         const queryText = `
-            INSERT INTO mensagem ("Conteudo", "ID_Topico", "ID_Usuario", "excluida") 
-            VALUES ($1, $2, $3, false) 
+            INSERT INTO mensagem ("Conteudo", "ID_Topico", "ID_Usuario", "excluida", "Data_criacao") 
+            VALUES ($1, $2, $3, false, NOW()) 
             RETURNING "id"
         `;
         const resultado = await pool.query(queryText, [conteudo, topicoId, usuarioId]);
@@ -47,7 +48,7 @@ router.post('/', async (req, res) => {
             id: resultado.rows[0].id
         });
     } catch (err) {
-        console.error('❌ Erro ao enviar mensagem:', err.message);
+        console.error('❌ Erro detalhado no banco Postgres:', err.message);
         return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao enviar mensagem.' });
     }
 });

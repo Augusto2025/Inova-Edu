@@ -141,7 +141,7 @@ export default function TopicosScreen({ navigation, route }) {
     const exibirBotoes = item.usuarioIdCriador === usuarioLogadoId && usuarioLogadoId !== null;
 
     return (
-      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Conversa", { forum: "Forum", topico: item.titulo })} activeOpacity={0.9}>
+      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Conversa", { forum: "Fórum", topico: item })} activeOpacity={0.9}>
         <View style={styles.iconBox}><Ionicons name="chatbubble-ellipses" size={22} color="#fff" /></View>
         <View style={styles.content}>
           <View style={styles.topRow}>

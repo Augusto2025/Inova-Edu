@@ -77,7 +77,21 @@ export default function ConversaScreen({ navigation, route }) {
   // OPERAÇÕES DA API (POST, PUT, DELETE)
   // ==========================================
   const enviarMensagem = async () => {
-    if (!novaMensagem.trim() || !topico?.id || !usuarioLogadoId) return;
+    if (!novaMensagem.trim()) return;
+
+    // Verificações de segurança para conferir no console do celular
+    console.log("📌 Dados locais antes do envio:");
+    console.log("- ID do Tópico:", topico?.id);
+    console.log("- ID do Usuário Logado:", usuarioLogadoId);
+
+    if (!topico?.id) {
+      Alert.alert("Erro", "O ID do tópico está indefinido (undefined).");
+      return;
+    }
+    if (!usuarioLogadoId) {
+      Alert.alert("Erro", "O ID do usuário logado não foi encontrado no AsyncStorage.");
+      return;
+    }
 
     try {
       const response = await fetch(URL_MENSAGEM, {
@@ -90,13 +104,19 @@ export default function ConversaScreen({ navigation, route }) {
         })
       });
 
-      if (!response.ok) throw new Error();
+      // Captura o texto puro retornado pelo backend (seja JSON ou HTML de erro)
+      const textoResposta = await response.text();
+
+      if (!response.ok) {
+        throw new Error(`Status ${response.status}: ${textoResposta || "Sem detalhes"}`);
+      }
 
       setNovaMensagem("");
       Keyboard.dismiss();
-      carregarDados(); // Recarrega para trazer a nova mensagem na lista
+      carregarDados(); // Recarrega o chat com a nova mensagem
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível enviar sua mensagem.");
+      console.error("❌ Erro detalhado no envio:", error);
+      Alert.alert("Erro ao Enviar", error.message);
     }
   };
 
