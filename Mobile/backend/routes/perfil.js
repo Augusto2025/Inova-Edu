@@ -10,10 +10,14 @@ router.get('/:usuarioId', async (req, res) => {
     try {
         // 1. Busca dados do usuário + Nome da Turma (fazendo JOIN com as tabelas intermediárias)
         // Nota: Assumi que a tabela 'turma' possui uma coluna 'nome' ou 'codigo'. Ajuste se necessário!
+        // 1. Busca dados do usuário + Monta a string da Turma combinando os campos reais
         const userQuery = `
             SELECT 
-                u."idUsuario", u."Nome" as nome, u."Sobrenome" as sobrenome, u."Descricao" as descricao,
-                t."Nome" as turma
+                u."idUsuario", 
+                u."Nome" as nome, 
+                u."Sobrenome" as sobrenome, 
+                u."Descricao" as descricao,
+                CONCAT(t."Codigo_Turma", ' - ', t."Ano", ' (', t."Turno", ')') as turma
             FROM usuario u
             LEFT JOIN usuario_da_turma ut ON u."idUsuario" = ut."ID_Usuario"
             LEFT JOIN turma t ON ut."ID_Turma" = t."idTurma"
