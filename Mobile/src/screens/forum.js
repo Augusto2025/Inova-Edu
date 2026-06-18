@@ -82,7 +82,7 @@ export default function ForumScreen({ navigation }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             titulo: modal.titulo,
-            usuarioId: usuarioLogadoId // 🌟 Enviando o ID real do AsyncStorage para o backend validar dono
+            usuarioId: usuarioLogadoId // Enviando o ID real do AsyncStorage para o backend validar dono
           })
         });
 
