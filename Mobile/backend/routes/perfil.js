@@ -32,13 +32,16 @@ router.get('/:usuarioId', async (req, res) => {
             WHERE "usuario_id" = $1
         `;
 
-        // 3. Busca os projetos onde o aluno está vinculado (Relação ManyToMany do Django)
-        // O Django cria a tabela intermediária com o padrão 'nome_tabela_nome_m2m' -> 'projeto_alunos'
+        // 3. Busca os projetos do aluno (Por vínculo direto OU por pertencer à mesma Turma)
         const projQuery = `
-            SELECT p."idProjeto" as id, p."Nome_projeto" as nome, p."Descricao" as descricao
+            SELECT DISTINCT 
+                p."idProjeto" as id, 
+                p."Nome_projeto" as nome, 
+                p."Descricao" as descricao
             FROM projeto p
-            INNER JOIN projeto_alunos pa ON p."idProjeto" = pa."projeto_id"
-            WHERE pa."usuario_id" = $1
+            LEFT JOIN projeto_alunos pa ON p."idProjeto" = pa."projeto_id"
+            LEFT JOIN usuario_da_turma ut ON p."ID_Turma" = ut."ID_Turma"
+            WHERE pa."usuario_id" = $1 OR ut."ID_Usuario" = $1
         `;
 
         // Executa todas as consultas em paralelo para máxima performance
