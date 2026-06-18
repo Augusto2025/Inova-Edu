@@ -60,13 +60,22 @@ export default function ProfileScreen() {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
+        // 1. Pega o texto que veio do banco
+        let urlCompleta = dados.usuario.imagem;
+
+        // 2. Se o texto existir e NÃO começar com "http", nós grudamos a base do Cloudinary nele
+        if (urlCompleta && !urlCompleta.startsWith('http')) {
+          urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
+        }
+
         setUser({
           nome: dados.usuario.nome || "Sem nome",
           sobrenome: dados.usuario.sobrenome || "",
           descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
-          imagem: dados.usuario.imagem || null, 
+          imagem: urlCompleta || null, // Agora passa a URL certinha e completa!
           turma: dados.usuario.turma || "Sem Turma Vinculada"
         });
+        
         setCertificados(dados.certificados || []);
         setProjetos(dados.projetos || []);
       } else {
@@ -124,8 +133,8 @@ export default function ProfileScreen() {
                 name: 'profile.jpg',
               });
               
-              formData.append('upload_preset', process.env.CLOUDINARY_UPLOAD_PRESET);
-              const CLOUD_NAME = process.env.CLOUD_NAME;
+              formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+              const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
 
               const respostaCloudinary = await fetch(
                 `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
@@ -204,15 +213,64 @@ export default function ProfileScreen() {
     setModalCertVisible(true);
   };
 
-  const salvarCertificado = () => {
-    if (modalCertModo === "Criar") {
-      const novoCert = { id: Date.now(), nome: certForm.nome, descricao: certForm.descricao };
-      setCertificados([...certificados, novoCert]);
-    } else {
-      setCertificados(certificados.map(c => c.id === certForm.id ? { ...c, ...certForm } : c));
+  const salvarCertificado = async () => {
+    // Validação simples para não salvar em branco
+    if (!certForm.nome.trim()) {
+      Alert.alert("Erro", "O nome do certificado é obrigatório.");
+      return;
     }
-    setModalCertVisible(false);
-    Alert.alert("Sucesso", `Certificado ${modalCertModo === "Criar" ? "adicionado" : "atualizado"}!`);
+
+    try {
+      if (modalCertModo === "Criar") {
+        const response = await fetch(`${URL_BASE}/perfil/certificado`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            usuarioId: user.idUsuario, // Certifique-se de usar a variável que guarda o ID do usuário logado
+            nome: certForm.nome, 
+            descricao: certForm.descricao 
+          }),
+        });
+
+        const dados = await response.json();
+
+        if (dados.sucesso) {
+          // Atualiza a tela usando o ID REAL gerado pelo banco de dados (Postgres)
+          setCertificados([...certificados, dados.certificado]);
+          Alert.alert("Sucesso", "Certificado adicionado ao banco!");
+        } else {
+          Alert.alert("Erro", dados.mensagem || "Erro ao adicionar certificado.");
+        }
+
+      } else {
+        // 📝 ATUALIZA NO BANCO DE DADOS (PUT)
+        const response = await fetch(`${URL_BASE}/perfil/certificado/${certForm.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            nome: certForm.nome, 
+            descricao: certForm.descricao 
+          }),
+        });
+
+        const dados = await response.json();
+
+        if (dados.sucesso) {
+          // Atualiza o estado na tela refletindo a mudança real do banco
+          setCertificados(certificados.map(c => c.id === certForm.id ? { ...c, ...certForm } : c));
+          Alert.alert("Sucesso", "Certificado atualizado com sucesso!");
+        } else {
+          Alert.alert("Erro", dados.mensagem || "Erro ao atualizar certificado.");
+        }
+      }
+
+      // Fecha o modal após o sucesso da requisição
+      setModalCertVisible(false);
+
+    } catch (error) {
+      console.error("❌ Erro ao salvar certificado no banco:", error);
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
   };
 
   const abrirExcluirCertificado = (cert) => {
@@ -220,10 +278,30 @@ export default function ProfileScreen() {
     setModalExcluirVisible(true);
   };
 
-  const confirmarExclusao = () => {
-    setCertificados(certificados.filter(c => c.id !== certParaExcluir.id));
-    setModalExcluirVisible(false);
-    Alert.alert("Sucesso", "Certificado removido.");
+  const confirmarExclusao = async () => {
+    try {
+      // ⚠️ ATENÇÃO: Substitua pelo endereço do seu servidor (o mesmo usado no salvar)
+      const response = await fetch(`${URL_BASE}/perfil/certificado/${certParaExcluir.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        // Se o seu backend exigir o usuarioId no DELETE, descomente a linha abaixo:
+        // body: JSON.stringify({ usuarioId: user.idUsuario }) 
+      });
+
+      const dados = await response.json();
+
+      if (dados.sucesso) {
+        // Remove da tela somente se o banco confirmar a exclusão
+        setCertificados(certificados.filter(c => c.id !== certParaExcluir.id));
+        setModalExcluirVisible(false);
+        Alert.alert("Sucesso", "Certificado removido do banco!");
+      } else {
+        Alert.alert("Erro", dados.mensagem || "Não foi possível excluir no servidor.");
+      }
+    } catch (error) {
+      console.error("❌ Erro ao excluir certificado:", error);
+      Alert.alert("Erro", "Falha ao conectar com o servidor.");
+    }
   };
 
   if (carregando) {
@@ -244,8 +322,13 @@ export default function ProfileScreen() {
         <View style={styles.profileHeaderCard}>
           <View style={styles.photoContainer}>
             <View style={styles.profileImagePlaceholder}>
-              {user.imagem ? (
-                <Image source={{ uri: user.imagem }} style={styles.profileImage} />
+              {/* RENDERIZAÇÃO CONDICIONAL DA IMAGEM BLINDADA */}
+              {user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
+                <Image 
+                  source={{ uri: user.imagem }} 
+                  style={styles.profileImage} 
+                  onError={(e) => console.log("❌ Erro ao renderizar a URL da imagem:", e.nativeEvent.error)}
+                />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
