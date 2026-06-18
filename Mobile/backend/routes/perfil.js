@@ -13,10 +13,10 @@ router.get('/:usuarioId', async (req, res) => {
         const userQuery = `
             SELECT 
                 u."idUsuario", u."Nome" as nome, u."Sobrenome" as sobrenome, u."Descricao" as descricao,
-                t."nome" as turma
+                t."Nome" as turma
             FROM usuario u
             LEFT JOIN usuario_da_turma ut ON u."idUsuario" = ut."ID_Usuario"
-            LEFT JOIN turma t ON ut."ID_Turma" = t."id"
+            LEFT JOIN turma t ON ut."ID_Turma" = t."idTurma"
             WHERE u."idUsuario" = $1
         `;
         
