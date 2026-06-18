@@ -3,12 +3,13 @@ import {
   View, Text, StyleSheet, ScrollView, 
   TouchableOpacity, SafeAreaView, ActivityIndicator, Alert,
   Modal, TextInput, TouchableWithoutFeedback,
-  Image // ✅ ADICIONADO: Importado para exibir a foto de perfil
+  Image,
+  Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker'; // ✅ ADICIONADO: Import do seletor de imagens
+import * as ImagePicker from 'expo-image-picker'; 
 import Header from "../components/Header";
 import { COLORS } from "../components/Cores";
 
@@ -63,7 +64,7 @@ export default function ProfileScreen() {
           nome: dados.usuario.nome || "Sem nome",
           sobrenome: dados.usuario.sobrenome || "",
           descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
-          imagem: dados.usuario.imagem || null, // Recebe a string URL do banco
+          imagem: dados.usuario.imagem || null, 
           turma: dados.usuario.turma || "Sem Turma Vinculada"
         });
         setCertificados(dados.certificados || []);
@@ -85,7 +86,7 @@ export default function ProfileScreen() {
     }, [])
   );
 
-  // --- ✅ NOVA FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
+  // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
   const alterarFotoPerfil = async () => {
     const idSalvo = await AsyncStorage.getItem('idUsuario');
 
@@ -96,14 +97,12 @@ export default function ProfileScreen() {
         {
           text: "Escolher da Galeria",
           onPress: async () => {
-            // Pedir permissão da galeria
             const dadosPermissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (!dadosPermissao.granted) {
               Alert.alert("Permissão necessária", "Precisamos de acesso às fotos para alterar o perfil.");
               return;
             }
 
-            // Abrir a galeria
             const resultado = await ImagePicker.launchImageLibraryAsync({
               mediaTypes: ImagePicker.MediaTypeOptions.Images,
               allowsEditing: true,
@@ -118,7 +117,6 @@ export default function ProfileScreen() {
             try {
               setCarregando(true);
 
-              // 1. Preparar FormData para o Cloudinary
               const formData = new FormData();
               formData.append('file', {
                 uri: fotoLocalUri,
@@ -126,11 +124,9 @@ export default function ProfileScreen() {
                 name: 'profile.jpg',
               });
               
-              // ⚠️ COLOQUE SEUS DADOS DO CLOUDINARY AQUI:
               formData.append('upload_preset', process.env.CLOUDINARY_UPLOAD_PRESET);
               const CLOUD_NAME = process.env.CLOUD_NAME;
 
-              // 2. Enviar direto para o Cloudinary
               const respostaCloudinary = await fetch(
                 `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
                 { method: 'POST', body: formData, headers: { 'Content-Type': 'multipart/form-data' } }
@@ -140,8 +136,6 @@ export default function ProfileScreen() {
               if (!respostaCloudinary.ok) throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
 
               const urlCloudinary = dadosFoto.secure_url;
-
-              // 3. Salvar no seu backend Node.js
               await atualizarFotoNoBackend(idSalvo, urlCloudinary);
 
             } catch (error) {
@@ -156,7 +150,6 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               setCarregando(true);
-              // Passa 'null' para apagar a foto do banco
               await atualizarFotoNoBackend(idSalvo, null); 
             } catch (error) {
               Alert.alert("Erro ao remover foto", error.message);
@@ -169,7 +162,6 @@ export default function ProfileScreen() {
     );
   };
 
-  // Função auxiliar para atualizar a URL no banco de dados
   const atualizarFotoNoBackend = async (idUsuario, urlImagem) => {
     const respostaBackend = await fetch(`${URL_BASE}/perfil/atualizar-foto`, {
       method: 'PUT',
@@ -180,8 +172,8 @@ export default function ProfileScreen() {
     const dadosBack = await respostaBackend.json();
 
     if (dadosBack.sucesso) {
-      setUser({ ...user, imagem: urlImagem }); // Atualiza o estado da tela na hora
-      Alert.alert("Sucesso", "Foto de perfil atualizada!");
+      setUser({ ...user, imagem: urlImagem }); 
+      Alert.alert("Sucesso", "Foto de perfil updated!");
     } else {
       throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
     }
@@ -197,7 +189,7 @@ export default function ProfileScreen() {
   const salvarPerfil = () => {
     setUser({ ...user, ...perfilForm });
     setModalPerfilVisible(false);
-    Alert.alert("Sucesso", "Perfil updated com sucesso!");
+    Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
   };
 
   const abrirCriarCertificado = () => {
@@ -252,14 +244,12 @@ export default function ProfileScreen() {
         <View style={styles.profileHeaderCard}>
           <View style={styles.photoContainer}>
             <View style={styles.profileImagePlaceholder}>
-              {/* RENDERIZAÇÃO CONDICIONAL DA IMAGEM */}
               {user.imagem ? (
                 <Image source={{ uri: user.imagem }} style={styles.profileImage} />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
             </View>
-            {/* Botão da câmera agora chama a função real */}
             <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
               <Ionicons name="camera" size={16} color="white" />
             </TouchableOpacity>
@@ -344,7 +334,12 @@ export default function ProfileScreen() {
                   <Text style={styles.projectSub}>{proj.descricao || "Sem descrição disponível."}</Text>
                 </View>
                 
-                <TouchableOpacity style={styles.repoLinkBtn} activeOpacity={0.7}>
+                {/* ✅ SISTEMA DE LINK REDIRECIONÁVEL ATIVADO */}
+                <TouchableOpacity 
+                  style={styles.repoLinkBtn} 
+                  activeOpacity={0.7}
+                  onPress={() => proj.link_repo ? Linking.openURL(proj.link_repo) : Alert.alert("Ops", "Link do repositório não disponível.")}
+                >
                   <Text style={styles.repoLinkText}>Acessar Repositório</Text>
                   <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
                 </TouchableOpacity>
@@ -392,12 +387,13 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </Modal>
 
-      {/* 2. MODAL CERTIFICADO */}
+      {/* 2. MODAL CERTIFICADO (CORRIGIDO) */}
       <Modal visible={modalCertVisible} transparent animationType="fade" onRequestClose={() => setModalCertVisible(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalCertVisible(false)}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
+                {/* 🛠️ CORREÇÃO REALIZADA AQUI: O texto condicional foi extraído do style */}
                 <Text style={styles.modalTitle}>{modalCertModo === "Criar" ? "Adicionar Certificado" : "Editar Certificado"}</Text>
                 <TouchableOpacity onPress={() => setModalCertVisible(false)} style={{ position: 'absolute', right: 20 }}>
                   <Feather name="x" size={20} color="white" />
@@ -469,10 +465,9 @@ const styles = StyleSheet.create({
   photoContainer: { position: 'relative', marginBottom: 12 },
   profileImagePlaceholder: { 
     width: 105, height: 105, borderRadius: 55, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', 
-    borderWidth: 1, borderColor: '#E2E8F0',
-    overflow: 'hidden' // ✅ ADICIONADO: Corta a imagem para ficar redondinha perfeita
+    borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' 
   },
-  profileImage: { width: '100%', height: '100%', resizeMode: 'cover' }, // ✅ ADICIONADO: Estilo da imagem do Cloudinary
+  profileImage: { width: '100%', height: '100%', resizeMode: 'cover' }, 
   cameraBtn: { position: 'absolute', bottom: 2, right: 2, backgroundColor: COLORS.primary, borderRadius: 18, padding: 8, borderWidth: 3, borderColor: 'white', elevation: 3 },
   userName: { fontSize: 22, fontWeight: '700', color: '#1E293B', textAlign: 'center' },
   turmaBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EFF6FF', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, marginTop: 8 },
