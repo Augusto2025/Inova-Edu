@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Caminho para a sua configuração do Pool do Postgres
+const pool = require('../config/db'); // Conexão com o Postgres
 
 // GET: Buscar todos os dados do perfil de um usuário específico
 // URL: /perfil/:usuarioId
