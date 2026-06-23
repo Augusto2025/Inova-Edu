@@ -330,7 +330,7 @@ export default function CalendarScreen() {
                   </TouchableOpacity>
               )}
               {/* Dentro do modal de detalhes, abaixo da descrição: */}
-              {isProfessor && parseInt(idUsuarioLogado) === eventSelected?.usuario_id && (
+              {isProfessor && parseInt(idUsuarioLogado) === parseInt(eventSelected?.usuario_id) &&(
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                       
                       {/* Botão Editar */}

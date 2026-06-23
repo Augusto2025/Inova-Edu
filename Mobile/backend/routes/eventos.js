@@ -43,22 +43,40 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
-    const { title, time, date, description, local, usuario_id } = req.body;
-
+router.get('/', async (req, res) => {
     try {
         const query = `
-            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "ID_Usuario")
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
+            SELECT 
+                "idEventos" AS id, 
+                "Nome_do_evento" AS title, 
+                "Hora_do_evento" AS time, 
+                "Data_do_evento" AS date, 
+                "Descricao" AS description, 
+                "Endereco" AS local,
+                "ID_Usuario" AS usuario_id  // <--- ADICIONE ESTA LINHA
+            FROM eventos 
+            ORDER BY "Data_do_evento" ASC, "Hora_do_evento" ASC
         `;
         
-        await db.query(query, [title, time, date, description, local, usuario_id]);
+        const resultado = await db.query(query);
         
-        res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
+        const eventos_Formatados = resultado.rows.map(evento => {
+            const dataIso = new Date(evento.date).toISOString().split('T')[0];
+            
+            return {
+                id: evento.id,
+                title: evento.title,
+                date: dataIso,
+                time: evento.time.slice(0, 5),
+                local: evento.local,
+                description: evento.description,
+                usuario_id: evento.usuario_id // <--- E ADICIONE ESTA LINHA AQUI TAMBÉM
+            };
+        });
+
+        res.json(eventos_Formatados);
     } catch (error) {
-        console.error("Erro ao salvar:", error);
-        res.status(500).json({ mensagem: 'Erro ao criar evento.', detalhe: error.message });
+        res.status(500).json({ mensagem: 'Erro ao buscar eventos.', detalhe: error.message });
     }
 });
 
