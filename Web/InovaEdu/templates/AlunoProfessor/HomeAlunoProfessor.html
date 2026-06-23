@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+    <link rel="stylesheet" href="{% static 'styles/HomeAlunoProfessor.css' %}">
+</head>
+
+<body>
+
+    <section class="hero">
+
+        <!-- Carrossel de fundo -->
+        <div class="carousel">
+            <div class="slides">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f">
+                <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8">
+                <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216">
+                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d">
+            </div>
+        </div>
+
+        <!-- Área fixa -->
+        <div class="hero-info">
+            <h1>Repositório<br> Seus projetos</h1>
+
+            <p>
+                O objetivo deste repositório acadêmico é reunir, organizar e disponibilizar os Projetos Integradores
+                desenvolvidos pelos alunos do Senac.
+            </p>
+        </div>
+
+    </section>
+
+    <section class="hearder-meio">
+        <div class="links-meio">
+
+            <a href="{% url 'repositorio' %}">Repositório</a>
+            <a href="{% url 'cursos' %}">Cursos</a>
+            <a href="{% url 'turmas' %}">Turmas</a>
+            <a href="{% url 'perfil' %}">Perfil</a>
+
+        </div>
+    </section>
+
+    <section class="cursos">
+
+        <div class="card">
+            <div class="icon">💻</div>
+            <h3>Desenvolvimento Web</h3>
+            <p>Aprenda HTML, CSS, JavaScript e construa sites modernos e responsivos.</p>
+            <button>Acessar Curso</button>
+        </div>
+
+        <div class="card active">
+            <div class="icon">💼</div>
+            <h3>Administração</h3>
+            <p>Desenvolva habilidades em gestão, organização e processos administrativos.</p>
+            <button>Acessar Curso</button>
+        </div>
+
+        <div class="card">
+            <div class="icon">🎨</div>
+            <h3>Design Gráfico</h3>
+            <p>Crie identidades visuais, layouts e projetos criativos profissionais.</p>
+            <button>Acessar Curso</button>
+        </div>
+
+    </section>
+
+    <script src="{% static 'scripts/HomeAlunoProfessor.js' %}"></script>
+
+</body>
+</html>

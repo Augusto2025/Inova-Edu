@@ -1,0 +1,248 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.hero{
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+/* CARROSSEL */
+
+.carousel{
+    position: absolute;
+    inset: 0;
+}
+
+.slides{
+    display: flex;
+    height: 100%;
+    transition: transform 1.2s ease;
+}
+
+.slides img{
+    width: 100vw;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+
+/* ÁREA FIXA */
+
+.hero-info{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 50%;
+    height: 100%;
+
+    z-index: 10;
+
+    padding: 120px 80px;
+
+    /* Fundo com degradê */
+    background: linear-gradient(
+        to right,
+        rgba(245,240,232,0.98) 65%,
+        rgba(245,240,232,0.85) 80%,
+        rgba(245,240,232,0.35) 92%,
+        rgba(245,240,232,0) 100%
+    );
+}
+
+.hero-info h1{
+    font-size: 4rem;
+    color: #5D2486;
+}
+
+.hero-info p{
+    margin-top: 30px;
+    max-width: 600px;
+    font-size: 1.3rem;
+}
+
+/* HEADER DO MEIO ====== */
+.hearder-meio{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 100;
+}
+
+.links-meio{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    background: rgba(0, 74, 141, 0.9);
+
+    padding: 12px 30px;
+
+    border-radius: 50px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.links-meio a{
+    position: relative;
+
+    text-decoration: none;
+    color: #fff;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    padding: 12px 20px;
+
+    transition: all .3s ease;
+}
+
+/* Linha laranja inferior */
+.links-meio a::after{
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 5px;
+
+    width: 0;
+    height: 3px;
+
+    background: #F7941D;
+
+    border-radius: 10px;
+
+    transform: translateX(-50%);
+
+    transition: width .3s ease;
+}
+
+.links-meio a:hover{
+    color: #F7941D;
+}
+
+.links-meio a:hover::after{
+    width: 70%;
+}
+
+/* Link ativo */
+.links-meio a.ativo{
+    color: #F7941D;
+}
+
+.links-meio a.ativo::after{
+    width: 70%;
+}
+
+/* Responsividade */
+@media (max-width: 768px){
+
+    .links-meio{
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 25px;
+        padding: 15px;
+        width: 90%;
+    }
+
+    .links-meio a{
+        font-size: .95rem;
+        padding: 10px 15px;
+    }
+}
+
+/* CARDS CURSOS */
+
+
+.cursos {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 40px;
+  flex-wrap: wrap;
+  margin-top: 120px;
+}
+
+.card {
+  width: 260px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: 0.3s;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* linha laranja embaixo (como destaque) */
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 3px;
+  background: transparent;
+  transition: 0.3s;
+}
+
+/* card ativo (igual o do meio na imagem) */
+.card.active::after {
+  background: #f28c28; /* laranja Senac */
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 15px;
+  background: #e8f1ff;
+  color: #0b5ed7; /* azul Senac */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+h3 {
+  color: #0b5ed7;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 14px;
+  color: #555;
+  min-height: 60px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border: none;
+  background: #0b5ed7;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #094db3;
+}
