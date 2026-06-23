@@ -139,12 +139,13 @@ export default function CalendarScreen() {
   };
 
   const handleOpenEvent = (dateString) => {
-    const foundEvent = events.find(e => e.date === dateString);
-    if (foundEvent) {
-      setEventSelected(foundEvent);
-      setModalVisible(true);
-    }
-    setSelected(dateString);
+      const foundEvent = events.find(e => e.date === dateString);
+      if (foundEvent) {
+          console.log("Evento Selecionado:", foundEvent); // VEJA ISSO NO TERMINAL DO VS CODE
+          setEventSelected(foundEvent);
+          setModalVisible(true);
+      }
+      setSelected(dateString);
   };
 
   // Monta o objeto de marcações do calendário unindo os pontos do banco com o dia selecionado
@@ -314,12 +315,12 @@ export default function CalendarScreen() {
               <Text style={styles.descriptionTitle}>Descrição:</Text>
               <Text style={styles.descriptionText}>{eventSelected?.description || "Sem descrição informada."}</Text>
               
-              <TouchableOpacity 
+              {/* <TouchableOpacity 
                 style={styles.closeButton} 
                 onPress={() => setModalVisible(false)}
               >
                 <Text style={styles.closeButtonText}>Fechar</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               {/* Dentro do modal de detalhes, onde você exibe os dados: */}
               {parseInt(idUsuarioLogado) === eventSelected?.usuario_id && (
                   <TouchableOpacity 
