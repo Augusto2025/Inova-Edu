@@ -36,7 +36,19 @@ const styles = StyleSheet.create({
   descriptionTitle: { fontWeight: 'bold', marginTop: 15, fontSize: 16, color: '#333' },
   descriptionText: { marginTop: 5, fontSize: 14, color: '#666', lineHeight: 20 },
   closeButton: { backgroundColor: '#1459b3', marginTop: 20, padding: 12, borderRadius: 10, alignItems: 'center' },
-  closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
+  closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#1459b3',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5
+}
 });
 
 export default styles;

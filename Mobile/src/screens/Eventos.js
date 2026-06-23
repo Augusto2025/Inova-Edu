@@ -17,6 +17,28 @@ export default function CalendarScreen() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Adicione estes estados no topo do seu componente
+  const [modalAddVisible, setModalAddVisible] = useState(false);
+  const [novoEvento, setNovoEvento] = useState({ title: '', date: '', time: '', local: '', description: '' });
+
+  // Função para salvar
+  const salvarEvento = async () => {
+      try {
+          const response = await fetch(`${URL_BASE}/eventos`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(novoEvento)
+          });
+          if (response.ok) {
+              Alert.alert("Sucesso", "Evento criado!");
+              setModalAddVisible(false);
+              buscarEventos(); // Recarrega a lista
+          }
+      } catch (error) {
+          Alert.alert("Erro", "Falha ao salvar evento.");
+      }
+  };
+
   useEffect(() => {
     buscarEventos();
   }, []);
@@ -119,6 +141,12 @@ export default function CalendarScreen() {
             />
           </View>
 
+          {isProfessor && (
+              <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>
+                  <Ionicons name="add" size={28} color="white" />
+              </TouchableOpacity>
+          )}
+
           <View style={styles.eventSection}>
             <Text style={styles.eventSectionTitle}>Eventos Cadastrados</Text>
             
@@ -160,6 +188,23 @@ export default function CalendarScreen() {
           </View>
         </ScrollView>
       )}
+      
+      {/* Modal de Cadastro */}
+      <Modal visible={modalAddVisible} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Novo Evento</Text>
+                  <TextInput placeholder="Título" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, title: t})} />
+                  <TextInput placeholder="Data (AAAA-MM-DD)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, date: t})} />
+                  <TextInput placeholder="Hora (HH:MM)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, time: t})} />
+                  <TextInput placeholder="Local" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, local: t})} />
+                  <TextInput placeholder="Descrição" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, description: t})} />
+                  <TouchableOpacity style={styles.saveBtn} onPress={salvarEvento}>
+                      <Text style={styles.saveBtnText}>Salvar Evento</Text>
+                  </TouchableOpacity>
+              </View>
+          </View>
+      </Modal>
 
       {/* MODAL DE DETALHES */}
       <Modal

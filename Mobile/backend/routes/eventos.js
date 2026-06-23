@@ -43,4 +43,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    const { title, time, date, description, local } = req.body;
+    try {
+        const query = `
+            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco")
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *
+        `;
+        await db.query(query, [title, time, date, description, local]);
+        res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao criar evento.', detalhe: error.message });
+    }
+});
+
 module.exports = router;
