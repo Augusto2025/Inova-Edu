@@ -87,4 +87,21 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Rota para EXCLUIR
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { usuario_id } = req.body; // Enviado pelo App para segurança
+
+    try {
+        // Exclui apenas se o ID do evento for o passado E o ID do usuário for o dono
+        const query = 'DELETE FROM eventos WHERE "idEventos" = $1 AND "ID_Usuario" = $2';
+        const result = await db.query(query, [id, usuario_id]);
+
+        if (result.rowCount === 0) return res.status(403).json({ mensagem: "Ação não permitida." });
+        res.json({ sucesso: true });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao excluir.' });
+    }
+});
+
 module.exports = router;

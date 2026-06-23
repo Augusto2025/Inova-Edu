@@ -63,6 +63,32 @@ export default function CalendarScreen() {
       }
   };
 
+  const confirmarExclusao = (idEvento) => {
+      Alert.alert("Confirmar", "Deseja realmente excluir este evento?", [
+          { text: "Cancelar" },
+          { text: "Sim", onPress: () => excluirEvento(idEvento) }
+      ]);
+  };
+
+  const excluirEvento = async (idEvento) => {
+      const idUsuario = await AsyncStorage.getItem('idUsuario');
+      try {
+          const response = await fetch(`${URL_BASE}/eventos/${idEvento}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usuario_id: idUsuario })
+          });
+
+          if (response.ok) {
+              Alert.alert("Sucesso", "Evento removido!");
+              setModalVisible(false);
+              buscarEventos();
+          }
+      } catch (error) {
+          Alert.alert("Erro", "Não foi possível excluir.");
+      }
+  };
+
   useEffect(() => {
     const carregarDados = async () => {
       const id = await AsyncStorage.getItem('idUsuario');
@@ -302,6 +328,27 @@ export default function CalendarScreen() {
                   >
                       <Text style={styles.closeButtonText}>Editar Evento</Text>
                   </TouchableOpacity>
+              )}
+              {/* Dentro do modal de detalhes, abaixo da descrição: */}
+              {isProfessor && parseInt(idUsuarioLogado) === eventSelected?.usuario_id && (
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                      
+                      {/* Botão Editar */}
+                      <TouchableOpacity 
+                          style={[styles.closeButton, { backgroundColor: '#FF9800', flex: 0.48 }]} 
+                          onPress={() => habilitarEdicao(eventSelected)}
+                      >
+                          <Text style={styles.closeButtonText}>Editar</Text>
+                      </TouchableOpacity>
+
+                      {/* Botão Excluir */}
+                      <TouchableOpacity 
+                          style={[styles.closeButton, { backgroundColor: '#d32f2f', flex: 0.48 }]} 
+                          onPress={() => confirmarExclusao(eventSelected.id)}
+                      >
+                          <Text style={styles.closeButtonText}>Excluir</Text>
+                      </TouchableOpacity>
+                  </View>
               )}
             </View>
           </View>
