@@ -26,16 +26,28 @@ export default function CalendarScreen() {
 
   // Função para salvar
   const salvarEvento = async () => {
+      // 1. Pega o ID do usuário logado
+      const idUsuario = await AsyncStorage.getItem('idUsuario');
+
+      if (!idUsuario) {
+          Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
+          return;
+      }
+
       try {
           const response = await fetch(`${URL_BASE}/eventos`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(novoEvento)
+              body: JSON.stringify({
+                  ...novoEvento,
+                  usuario_id: idUsuario
+              })
           });
+          
           if (response.ok) {
               Alert.alert("Sucesso", "Evento criado!");
               setModalAddVisible(false);
-              buscarEventos(); // Recarrega a lista
+              buscarEventos();
           }
       } catch (error) {
           Alert.alert("Erro", "Falha ao salvar evento.");
@@ -46,7 +58,7 @@ export default function CalendarScreen() {
       const tipoUsuario = await AsyncStorage.getItem('tipo'); // Buscará o valor 'professor' ou 'aluno'
       console.log("Tipo do usuário logado:", tipoUsuario);
 
-      if (tipoUsuario === 'professor') {
+      if (tipoUsuario === 'Professor') {
           setIsProfessor(true);
       }
   };
@@ -132,12 +144,20 @@ export default function CalendarScreen() {
     <View style={styles.container}>
       <Header nomeTela={"Calendário"} />
 
+      {/* Botão flutuante para adicionar evento */}
+      {isProfessor && (
+              <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>
+                  <Ionicons name="add" size={28} color="white" />
+              </TouchableOpacity>
+          )}
+
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#1459b3" />
           <Text style={{ marginTop: 10, color: '#1459b3' }}>Buscando cronograma...</Text>
         </View>
       ) : (
+        
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
           <View style={styles.calendarContainer}>
             <Calendar
@@ -154,11 +174,6 @@ export default function CalendarScreen() {
             />
           </View>
 
-          {isProfessor && (
-              <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>
-                  <Ionicons name="add" size={28} color="white" />
-              </TouchableOpacity>
-          )}
 
           <View style={styles.eventSection}>
             <Text style={styles.eventSectionTitle}>Eventos Cadastrados</Text>
@@ -206,15 +221,31 @@ export default function CalendarScreen() {
       <Modal visible={modalAddVisible} transparent animationType="slide">
           <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Novo Evento</Text>
-                  <TextInput placeholder="Título" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, title: t})} />
-                  <TextInput placeholder="Data (AAAA-MM-DD)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, date: t})} />
-                  <TextInput placeholder="Hora (HH:MM)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, time: t})} />
-                  <TextInput placeholder="Local" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, local: t})} />
-                  <TextInput placeholder="Descrição" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, description: t})} />
-                  <TouchableOpacity style={styles.saveBtn} onPress={salvarEvento}>
-                      <Text style={styles.saveBtnText}>Salvar Evento</Text>
-                  </TouchableOpacity>
+                  {/* Header seguindo o padrão */}
+                  <View style={[styles.modalHeader, { backgroundColor: '#1459b3' }]}>
+                      <Text style={styles.modalTitle}>Novo Evento</Text>
+                      <TouchableOpacity onPress={() => setModalAddVisible(false)}>
+                          <Ionicons name="close-circle" size={30} color="white" />
+                      </TouchableOpacity>
+                  </View>
+
+                  {/* Body seguindo o padrão */}
+                  <View style={styles.modalBody}>
+                      <TextInput placeholder="Título" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, title: t})} />
+                      <TextInput placeholder="Data (AAAA-MM-DD)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, date: t})} />
+                      <TextInput placeholder="Hora (HH:MM)" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, time: t})} />
+                      <TextInput placeholder="Local" style={styles.input} onChangeText={t => setNovoEvento({...novoEvento, local: t})} />
+                      <TextInput 
+                          placeholder="Descrição" 
+                          style={[styles.input, { height: 80, textAlignVertical: 'top' }]} 
+                          multiline 
+                          onChangeText={t => setNovoEvento({...novoEvento, description: t})} 
+                      />
+                      
+                      <TouchableOpacity style={styles.saveBtn} onPress={salvarEvento}>
+                          <Text style={styles.saveBtnText}>Cadastrar Evento</Text>
+                      </TouchableOpacity>
+                  </View>
               </View>
           </View>
       </Modal>

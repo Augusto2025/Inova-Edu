@@ -44,16 +44,20 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const { title, time, date, description, local } = req.body;
+    const { title, time, date, description, local, usuario_id } = req.body;
+
     try {
         const query = `
-            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco")
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "idUsuario")
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
-        await db.query(query, [title, time, date, description, local]);
+        
+        await db.query(query, [title, time, date, description, local, usuario_id]);
+        
         res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
     } catch (error) {
+        console.error("Erro ao salvar:", error);
         res.status(500).json({ mensagem: 'Erro ao criar evento.', detalhe: error.message });
     }
 });

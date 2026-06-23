@@ -37,9 +37,30 @@ const styles = StyleSheet.create({
   descriptionText: { marginTop: 5, fontSize: 14, color: '#666', lineHeight: 20 },
   closeButton: { backgroundColor: '#1459b3', marginTop: 20, padding: 12, borderRadius: 10, alignItems: 'center' },
   closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  saveBtn: {
+    backgroundColor: '#1459b3',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveBtnText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   fab: {
     position: 'absolute',
-    bottom: 30, // Aumente se necessário
+    bottom: 30,
     right: 30,
     backgroundColor: '#1469b3',
     width: 60,
