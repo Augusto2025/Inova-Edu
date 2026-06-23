@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }) {
                 // ATENÇÃO AQUI: Salva o ID real do usuário no celular 
                 // Convertemos para String porque o AsyncStorage só aceita texto.
                 await AsyncStorage.setItem('idUsuario', dados.usuario.id.toString());
-
+                await AsyncStorage.setItem('tipo', dados.usuario.tipo);
                 // Se o banco validou, avança para a Main passando os dados obtidos (opcional)
                 setCarregandoTransicao(true);
 

@@ -39,16 +39,17 @@ const styles = StyleSheet.create({
   closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
   fab: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#1459b3',
+    bottom: 30, // Aumente se necessário
+    right: 30,
+    backgroundColor: '#1469b3',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5
-}
+    elevation: 10,
+    zIndex: 999,  
+},
 });
 
 export default styles;

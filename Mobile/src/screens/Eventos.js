@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity,  TextInput,Modal, ActivityIndicator, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import { COLORS } from '../components/Cores';
 import styles from '../styles/Evento';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
@@ -20,6 +21,8 @@ export default function CalendarScreen() {
   // Adicione estes estados no topo do seu componente
   const [modalAddVisible, setModalAddVisible] = useState(false);
   const [novoEvento, setNovoEvento] = useState({ title: '', date: '', time: '', local: '', description: '' });
+
+  const [isProfessor, setIsProfessor] = useState(false);
 
   // Função para salvar
   const salvarEvento = async () => {
@@ -39,7 +42,17 @@ export default function CalendarScreen() {
       }
   };
 
+  const verificarCargo = async () => {
+      const tipoUsuario = await AsyncStorage.getItem('tipo'); // Buscará o valor 'professor' ou 'aluno'
+      console.log("Tipo do usuário logado:", tipoUsuario);
+
+      if (tipoUsuario === 'professor') {
+          setIsProfessor(true);
+      }
+  };
+
   useEffect(() => {
+    verificarCargo();
     buscarEventos();
   }, []);
 
@@ -188,7 +201,7 @@ export default function CalendarScreen() {
           </View>
         </ScrollView>
       )}
-      
+
       {/* Modal de Cadastro */}
       <Modal visible={modalAddVisible} transparent animationType="slide">
           <View style={styles.modalOverlay}>
