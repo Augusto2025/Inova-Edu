@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 
     try {
         const query = `
-            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "idUsuario")
+            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "ID_Usuario")
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
