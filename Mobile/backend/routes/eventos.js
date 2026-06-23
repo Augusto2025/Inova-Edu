@@ -62,4 +62,29 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, time, date, description, local, usuario_id } = req.body;
+
+    try {
+        // Verifica se o evento pertence ao usuário antes de atualizar
+        const query = `
+            UPDATE eventos 
+            SET "Nome_do_evento" = $1, "Hora_do_evento" = $2, "Data_do_evento" = $3, 
+                "Descricao" = $4, "Endereco" = $5
+            WHERE "idEventos" = $6 AND "ID_Usuario" = $7
+            RETURNING *
+        `;
+        const resultado = await db.query(query, [title, time, date, description, local, id, usuario_id]);
+
+        if (resultado.rowCount === 0) {
+            return res.status(403).json({ mensagem: "Você não tem permissão ou o evento não existe." });
+        }
+
+        res.json({ sucesso: true, mensagem: "Evento atualizado!" });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao atualizar.', detalhe: error.message });
+    }
+});
+
 module.exports = router;

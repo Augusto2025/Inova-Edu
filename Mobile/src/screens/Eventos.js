@@ -21,7 +21,7 @@ export default function CalendarScreen() {
   // Adicione estes estados no topo do seu componente
   const [modalAddVisible, setModalAddVisible] = useState(false);
   const [novoEvento, setNovoEvento] = useState({ title: '', date: '', time: '', local: '', description: '' });
-
+  const [idUsuarioLogado, setIdUsuarioLogado] = useState(null);
   const [isProfessor, setIsProfessor] = useState(false);
 
   // Função para salvar
@@ -64,8 +64,13 @@ export default function CalendarScreen() {
   };
 
   useEffect(() => {
-    verificarCargo();
-    buscarEventos();
+    const carregarDados = async () => {
+      const id = await AsyncStorage.getItem('idUsuario');
+      setIdUsuarioLogado(id);
+      verificarCargo();
+      buscarEventos();
+    };
+    carregarDados();
   }, []);
 
   const buscarEventos = async () => {
@@ -289,6 +294,15 @@ export default function CalendarScreen() {
               >
                 <Text style={styles.closeButtonText}>Fechar</Text>
               </TouchableOpacity>
+              {/* Dentro do modal de detalhes, onde você exibe os dados: */}
+              {parseInt(idUsuarioLogado) === eventSelected?.usuario_id && (
+                  <TouchableOpacity 
+                      style={[styles.closeButton, { backgroundColor: '#FF9800' }]} 
+                      onPress={() => habilitarEdicao(eventSelected)}
+                  >
+                      <Text style={styles.closeButtonText}>Editar Evento</Text>
+                  </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
