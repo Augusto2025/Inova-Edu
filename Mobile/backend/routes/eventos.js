@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
                 "Data_do_evento" AS date, 
                 "Descricao" AS description, 
                 "Endereco" AS local,
-                "ID_Usuario" AS usuario_id  // <--- ADICIONE ESTA LINHA
+                "ID_Usuario" AS usuario_id 
             FROM eventos 
             ORDER BY "Data_do_evento" ASC, "Hora_do_evento" ASC
         `;
@@ -29,13 +29,17 @@ router.get('/', async (req, res) => {
                 time: evento.time.slice(0, 5),
                 local: evento.local,
                 description: evento.description,
-                usuario_id: evento.usuario_id // <--- E ADICIONE ESTA LINHA AQUI TAMBÉM
+                usuario_id: evento.usuario_id
             };
         });
 
         res.json(eventos_Formatados);
     } catch (error) {
-        res.status(500).json({ mensagem: 'Erro ao buscar eventos.', detalhe: error.message });
+        console.error("Erro na busca de eventos:", error);
+        res.status(500).json({ 
+            mensagem: 'Erro ao buscar eventos no banco de dados.', 
+            detalhe: error.message 
+        });
     }
 });
 
