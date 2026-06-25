@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
+// ROTA GET (Busca)
 router.get('/', async (req, res) => {
     try {
         const query = `
@@ -36,19 +37,36 @@ router.get('/', async (req, res) => {
         res.json(eventos_Formatados);
     } catch (error) {
         console.error("Erro na busca de eventos:", error);
-        res.status(500).json({ 
-            mensagem: 'Erro ao buscar eventos no banco de dados.', 
-            detalhe: error.message 
-        });
+        res.status(500).json({ mensagem: 'Erro ao buscar eventos.', detalhe: error.message });
     }
 });
 
+// ROTA POST (Cadastro) - ESTA ERA A QUE FALTAVA
+router.post('/', async (req, res) => {
+    const { title, time, date, description, local, usuario_id } = req.body;
+
+    try {
+        const query = `
+            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "ID_Usuario")
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *
+        `;
+        
+        await db.query(query, [title, time, date, description, local, usuario_id]);
+        
+        res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        res.status(500).json({ mensagem: 'Erro ao criar evento.', detalhe: error.message });
+    }
+});
+
+// ROTA PUT (Editar)
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { title, time, date, description, local, usuario_id } = req.body;
 
     try {
-        // Verifica se o evento pertence ao usuário antes de atualizar
         const query = `
             UPDATE eventos 
             SET "Nome_do_evento" = $1, "Hora_do_evento" = $2, "Data_do_evento" = $3, 
@@ -68,13 +86,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Rota para EXCLUIR
+// ROTA DELETE (Excluir)
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    const { usuario_id } = req.body; // Enviado pelo App para segurança
+    const { usuario_id } = req.body;
 
     try {
-        // Exclui apenas se o ID do evento for o passado E o ID do usuário for o dono
         const query = 'DELETE FROM eventos WHERE "idEventos" = $1 AND "ID_Usuario" = $2';
         const result = await db.query(query, [id, usuario_id]);
 
