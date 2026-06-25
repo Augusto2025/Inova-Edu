@@ -9,4 +9,5 @@ export const API_ENDPOINTS = {
   turmas: `${BASE_URL}/turmas`,
   projetos: `${BASE_URL}/projetos`,
   repositorio: `${BASE_URL}/repositorio`,
+  home: `${BASE_URL}/home`,
 };

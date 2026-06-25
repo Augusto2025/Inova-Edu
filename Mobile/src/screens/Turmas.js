@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
-  Alert
+  Alert,
+  BackHandler // 🌟 Reimportado para controlar o botão físico do Android
 } from 'react-native';
 import Header from '../components/Header';
 import BreadcrumbCard from '../components/BreadcrumbCard';
@@ -27,6 +28,30 @@ export default function TurmasScreen({ route, navigation }) {
   const [anoSelecionado, setAnoSelecionado] = useState(null); 
   const [turnoSelecionado, setTurnoSelecionado] = useState(null); 
   const [ordemAlfabetica, setOrdemAlfabetica] = useState(false); 
+
+  // 🌟 FUNÇÃO DE VOLTAR CORRIGIDA: Usa goBack() para evitar o erro JUMP_TO de abas aninhadas
+  const lidarComVoltar = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack(); // Desempilha a tela atual e revela a anterior sem forçar rotas por nome
+    } else {
+      navigation.navigate("Home"); // Fallback seguro
+    }
+  };
+
+  // 🌟 Controla o comportamento do botão físico do Android
+  useEffect(() => {
+    const acaoBotaoVoltar = () => {
+      lidarComVoltar();
+      return true; 
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      acaoBotaoVoltar
+    );
+
+    return () => backHandler.remove(); 
+  }, [navigation]);
 
   useEffect(() => {
     if (cursoId) {
@@ -77,12 +102,13 @@ export default function TurmasScreen({ route, navigation }) {
     <View style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
+      {/* 🌟 CORRIGIDO: Removido 'telaDestino' e adicionado 'onPressBack' chamando a função com goBack() */}
       <Header 
         foto={null} 
         escolherImagem={null} 
         nomeTela={"Turmas"} 
         temGoBack={true} 
-        telaDestino={"Cursos"} 
+        onPressBack={lidarComVoltar}
       />
 
       {/* 🌟 NOVO DESIGN DE FILTROS: Clean, moderno e espaçado */}

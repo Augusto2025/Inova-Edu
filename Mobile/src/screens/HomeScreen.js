@@ -16,87 +16,66 @@ import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
-  const alertColor = COLORS.alert;
 
   const [quantidadeNotif, setQuantidadeNotif] = useState(3);
   const [busca, setBusca] = useState("");
   const [totalMensagensForum, setTotalMensagensForum] = useState(3);
-  
-  // Estado inicializado como array vazio para evitar erros de undefined antes do map
-  const [recentesAcessados, setRecentesAcessados] = useState([]);
+
+  // ESTADOS CONECTADOS AO BACKEND
   const [carregando, setCarregando] = useState(true);
+  const [events, setEvents] = useState([]);
+  const [categoriasCursos, setCategoriasCursos] = useState([]);
+  const [recentesAcessados, setRecentesAcessados] = useState([]);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.15,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
+        Animated.timing(pulseAnim, { toValue: 1.15, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
       ])
     ).start();
   }, [pulseAnim]);
 
-  // Simulação limpa do carregamento inicial (sem quebrar propriedades)
+  // BUSCA DOS DADOS NO BACKEND
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // Alimenta os recentes com itens seguros baseados na sua lista real de projetos
-      setRecentesAcessados([
-        { id: "p5", titulo: "My App - RN", imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" },
-        { id: "p1", titulo: "Sistema de Gestão", imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400" }
-      ]);
-      setCarregando(false);
-    }, 4000);
+    async function puxarDadosDoServidor() {
+      try {
+        setCarregando(true);
+        
+        const ipBackend = process.env.EXPO_PUBLIC_URL_BACKEND || 'http://10.0.60.213:3000';
+        const urlLimpa = ipBackend.replace('/login', '');
+        
+        const [resEventos, resCursos] = await Promise.all([
+          fetch(`${urlLimpa}/eventos`),
+          fetch(`${urlLimpa}/cursos`)
+        ]);
 
-    return () => clearTimeout(timer);
+        if (!resEventos.ok) console.warn(`Rota /eventos retornou status: ${resEventos.status}`);
+        if (!resCursos.ok) console.warn(`Rota /cursos retornou status: ${resCursos.status}`);
+
+        const dadosEventos = resEventos.ok ? await resEventos.json() : [];
+        const dadosCursos = resCursos.ok ? await resCursos.json() : [];
+        
+        console.log("👉 ESTRUTURA RECEBIDA DE /CURSOS:", JSON.stringify(dadosCursos, null, 2));
+
+        setEvents(dadosEventos);
+        setCategoriasCursos(dadosCursos);
+        setRecentesAcessados([]);
+        
+      } catch (error) {
+        console.error("❌ Erro ao buscar dados da Home com Fetch local:", error.message);
+      } finally {
+        setCarregando(false); 
+      }
+    }
+
+    puxarDadosDoServidor();
   }, []);
 
-  const events = [
-    { id: 1, title: 'Reunião de Pais', date: '2026-04-01', day: '01', month: 'ABR', time: '08:30', local: 'Sala 05', description: 'Alinhamento semestral com os responsáveis sobre o desempenho dos alunos.' },
-    { id: 2, title: 'Palestra: Inovação', date: '2026-04-10', day: '10', month: 'ABR', time: '19:00', local: 'Auditório Central', description: 'Uma palestra incrível sobre as novas tecnologias no setor educacional.' },
-    { id: 3, title: 'Entrega de Notas', date: '2026-03-25', day: '25', month: 'MAR', time: '14:00', local: 'Online', description: 'Publicação oficial das notas no portal do aluno.' },
-  ];
-
-  const categoriasCursos = [
-    {
-      id: "1",
-      nomeCurso: "Informática Básica",
-      turma: "Turma A",
-      projetos: [
-        { id: "p1", titulo: "Sistema de Gestão", imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400" },
-        { id: "p2", titulo: "Planilha de Controle", imagem: "https://images.unsplash.com/photo-1627398242454-45a1465c2020?q=80&w=400" },
-      ],
-    },
-    {
-      id: "2",
-      nomeCurso: "Excel Avançado",
-      turma: "Turma B",
-      projetos: [
-        { id: "p3", titulo: "Dashboard Automatizado", imagem: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400" },
-        { id: "p4", titulo: "Análise de Dados Macro", imagem: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400" },
-      ],
-    },
-    {
-      id: "3",
-      nomeCurso: "Desenvolvimento Web Full Stack",
-      turma: "Turma C",
-      projetos: [
-        { id: "p5", titulo: "My App - RN", imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" },
-        { id: "p6", titulo: "Web Portal E-commerce", imagem: "https://images.unsplash.com/photo-161474111887-7a4ee193a5fa?q=80&w=400" },
-        { id: "p7", titulo: "API Restful Node", imagem: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=400" },
-      ],
-    },
-  ];
-
   const getEventStatusColor = (eventDate) => {
+    if (!eventDate) return '#4CAF50';
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const evDate = new Date(eventDate);
@@ -107,57 +86,105 @@ export default function HomeScreen({ navigation }) {
   };
 
   const irParaRepositorio = (projeto) => {
+    const idDoProjeto = projeto.idprojeto || projeto.id;
+    const nomeDoProjeto = projeto.nome_projeto || projeto.titulo;
+
     setRecentesAcessados((listaAntiga) => {
-      const listaFiltrada = listaAntiga.filter((item) => item.id !== projeto.id);
+      const listaFiltrada = listaAntiga.filter((item) => (item.idprojeto || item.id) !== idDoProjeto);
       return [projeto, ...listaFiltrada];
     });
-    navigation.navigate("Repositorio", { projetoId: projeto.id });
+
+    navigation.navigate("Repositorio", { 
+      projetoId: idDoProjeto, 
+      projetoNome: nomeDoProjeto 
+    });
   };
 
   const removerDosRecentes = (id) => {
-    setRecentesAcessados((listaAntiga) => listaAntiga.filter((item) => item.id !== id));
+    setRecentesAcessados((listaAntiga) => listaAntiga.filter((item) => (item.idprojeto || item.id) !== id));
   };
 
+  // 🌟 FILTRO ULTRA-FLEXÍVEL: Busca profunda por Curso, Turma ou Projeto
   const filtrarResultados = () => {
-    if (!busca) return [];
+    if (!busca || busca.trim() === "") {
+      return [];
+    }
+
     let resultados = [];
-    const termo = busca.toLowerCase();
+    if (!categoriasCursos || !Array.isArray(categoriasCursos)) return [];
 
-    categoriasCursos.forEach(curso => {
-      const combinaCursoOuTurma = 
-        curso.nomeCurso.toLowerCase().includes(termo) || 
-        curso.turma.toLowerCase().includes(termo);
+    const termo = busca.toLowerCase().trim();
 
-      if (combinaCursoOuTurma) {
-        resultados.push(...curso.projetos.map(p => ({ ...p, origem: curso.nomeCurso })));
-      } else {
-        const projetosMatch = curso.projetos.filter(p => 
-          p.titulo.toLowerCase().includes(termo)
-        );
-        resultados.push(...projetosMatch.map(p => ({ ...p, origem: "Repositório" })));
+    categoriasCursos.forEach(item => {
+      // Captura possíveis variações de nomes para Curso e Turma no objeto principal
+      const nomeDoCurso = (item.nomeCurso || item.nome_curso || item.nome || item.curso || "").toLowerCase();
+      const nomeDaTurma = (item.turma || item.nome_turma || item.sigla_turma || item.turma_nome || "").toLowerCase();
+      
+      // Captura a lista interna de sub-projetos
+      const listaDeProjetos = item.projetos || item.Projetos || item.repositorios || item.Repositorios || item.projeto || item.Projeto;
+
+      if (Array.isArray(listaDeProjetos) && listaDeProjetos.length > 0) {
+        // CASO A: Estrutura aninhada clássica (Curso/Turma -> [Projetos])
+        listaDeProjetos.forEach(p => {
+          if (!p) return;
+
+          const nomeDoProjeto = (p.nome_projeto || p.titulo || p.nome || p.nomeProjeto || "").toLowerCase();
+
+          // Regra: Se o termo bate com o Curso OU com a Turma OU com o Projeto, empurra o PROJETO estruturado
+          if (
+            nomeDoProjeto.includes(termo) || 
+            nomeDoCurso.includes(termo) || 
+            nomeDaTurma.includes(termo)
+          ) {
+            resultados.push({
+              ...p,
+              idprojeto: p.idprojeto || p.id || String(Math.random()),
+              nome_projeto: p.nome_projeto || p.titulo || p.nome || p.nomeProjeto || "Projeto sem título",
+              imagem: p.imagem || p.capa || p.url_imagem || null,
+              origem: item.nomeCurso || item.nome || item.nome_curso || "Curso"
+            });
+          }
+        });
+      } else if (!listaDeProjetos) {
+        // CASO B: O item principal da raiz já é o próprio projeto isolado
+        const nomeDoProjeto = (item.nome_projeto || item.titulo || item.nome || item.nomeProjeto || "").toLowerCase();
+        
+        if (
+          nomeDoProjeto.includes(termo) || 
+          nomeDoCurso.includes(termo) || 
+          nomeDaTurma.includes(termo)
+        ) {
+          resultados.push({
+            ...item,
+            idprojeto: item.idprojeto || item.id || String(Math.random()),
+            nome_projeto: item.nome_projeto || item.titulo || item.nome || item.nomeProjeto || "Projeto sem título",
+            imagem: item.imagem || item.capa || item.url_imagem || null,
+            origem: item.nomeCurso || item.nome || "Repositório"
+          });
+        }
       }
     });
 
-    return Array.from(new Set(resultados.map(a => a.id))).map(id => resultados.find(a => a.id === id));
+    return resultados;
   };
 
   const resultadosDaBusca = filtrarResultados();
 
   return (
     <View style={styles.safe}>
-      {/* O Header foi integrado de forma limpa e puxará o subtítulo interno */}
       <Header 
         nomeTela="Olá, Alcides 👋" 
         exibirPerfil={true} 
         quantidadeNotificacoes={quantidadeNotif}
         aoClicarNoSino={() => setQuantidadeNotif(0)}
+        carregando={carregando} 
       />
 
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
         {/* 1. PRÓXIMOS EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
-        
+
         {carregando ? (
           [1, 2, 3].map((key) => (
             <View key={key} style={[styles.eventCard, { gap: 14 }]}>
@@ -168,33 +195,53 @@ export default function HomeScreen({ navigation }) {
               </View>
             </View>
           ))
-        ) : (
+        ) : events.length > 0 ? (
           events.map((event) => {
-            const statusColor = getEventStatusColor(event.date);
+            const dataBanco = event.data || event.date;
+            const mesesAbv = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+            
+            let diaExibicao = "•";
+            let mesExibicao = "EVT";
+
+            if (dataBanco) {
+              const dataObj = new Date(dataBanco);
+              diaExibicao = dataObj.getUTCDate();
+              mesExibicao = mesesAbv[dataObj.getUTCMonth()];
+            }
+
+            const statusColor = getEventStatusColor(dataBanco);
+
             return (
               <TouchableOpacity 
-                key={event.id} 
+                key={event.id || event.idevento} 
                 style={styles.eventCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate("Eventos", { selectedDate: event.date })}
+                onPress={() => navigation.navigate("Eventos", { selectedDate: dataBanco })}
               >
                 <View style={[styles.dateBadge, { borderColor: statusColor }]}>
-                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}><Text style={styles.monthText}>{event.month}</Text></View>
-                  <View style={styles.dateBadgeBottom}><Text style={[styles.dayText, { color: '#333' }]}>{event.day}</Text></View>
+                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
+                    <Text style={styles.monthText}>{mesExibicao}</Text>
+                  </View>
+                  <View style={styles.dateBadgeBottom}>
+                    <Text style={[styles.dayText, { color: '#333' }]}>{diaExibicao}</Text>
+                  </View>
                 </View>
+                
                 <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
+                  <Text style={styles.eventTitle}>{event.titulo || event.title || "Sem título"}</Text>
                   <Text style={styles.eventTimeInfo}>
-                    <Ionicons name="time-outline" size={13} color="#777" /> {event.time} • {event.local}
+                    <Ionicons name="time-outline" size={13} color="#777" /> {event.horario || event.time || "Dia todo"} • {event.local || "InovaEdu"}
                   </Text>
                 </View>
                 <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
               </TouchableOpacity>
             );
           })
+        ) : (
+          <Text style={styles.emptyText}>Nenhum evento agendado no banco.</Text>
         )}
 
-        {/* 2. MEUS REPOSITÓRIOS COM BUSCADOR */}
+        {/* 2. MEUS REPOSITÓRIOS COM BUSCADOR INTEGRADO */}
         {carregando ? (
           <View style={styles.searchContainer}>
             <Skeleton width={160} height={22} borderRadius={4} style={{ marginBottom: 15 }} />
@@ -219,67 +266,56 @@ export default function HomeScreen({ navigation }) {
               )}
             </View>
 
-            {busca !== "" && (
-              <View style={{ marginTop: 15 }}>
-                <Text style={{ fontSize: 12, color: '#888', marginBottom: 5 }}>{resultadosDaBusca.length} encontrados:</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-                  {resultadosDaBusca.length > 0 ? (
-                    resultadosDaBusca.map((item) => (
-                      <TouchableOpacity 
-                        key={item.id} 
-                        style={styles.miniResultCard}
-                        onPress={() => irParaRepositorio(item)}
-                      >
-                        <Image source={{ uri: item.imagem }} style={styles.miniResultImg} />
-                        <Text numberOfLines={1} style={styles.miniResultText}>{item.titulo}</Text>
-                        <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{item.origem}</Text></View>
-                      </TouchableOpacity>
-                    ))
-                  ) : (
-                    <Text style={{ color: '#999', fontSize: 13, fontStyle: 'italic' }}>Nenhum resultado para "{busca}"</Text>
-                  )}
-                </ScrollView>
-              </View>
-            )}
+            <View style={{ marginTop: 15 }}>
+              <Text style={{ fontSize: 12, color: '#888', marginBottom: 8 }}>
+                {busca.trim() !== "" ? `${resultadosDaBusca.length} encontrados:` : "Digite para buscar um repositório:"}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 5 }}>
+                {resultadosDaBusca.length > 0 ? (
+                  resultadosDaBusca.map((item) => (
+                    <TouchableOpacity 
+                      key={item.idprojeto || item.id} 
+                      style={styles.miniResultCard}
+                      onPress={() => irParaRepositorio(item)}
+                    >
+                      {item.imagem || item.capa ? (
+                        <Image source={{ uri: item.imagem || item.capa }} style={styles.miniResultImg} />
+                      ) : (
+                        <View style={[styles.miniResultImg, { backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center' }]}>
+                          <Feather name="folder" size={20} color={COLORS.primary} />
+                        </View>
+                      )}
+                      <Text numberOfLines={1} style={styles.miniResultText}>{item.nome_projeto || item.titulo || "Projeto"}</Text>
+                      <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{item.origem}</Text></View>
+                    </TouchableOpacity>
+                  ))
+                ) : busca.trim() !== "" ? (
+                  <Text style={{ color: '#999', fontSize: 13, fontStyle: 'italic' }}>Nenhum repositório encontrado para "{busca}"</Text>
+                ) : null}
+              </ScrollView>
+            </View>
           </View>
         )}
 
         {/* 3. FÓRUM ATIVO */}
         <Text style={styles.sectionTitle}>Fórum ativo</Text>
-        
-        {carregando ? (
-          <View style={[styles.forumContainerCard, { gap: 12 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Skeleton width={44} height={44} borderRadius={22} />
-              <View style={{ flex: 1, gap: 6 }}>
-                <Skeleton width="55%" height={16} borderRadius={4} />
-                <Skeleton width="25%" height={12} borderRadius={4} />
-              </View>
+        <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Forum")}>
+          <View style={styles.forumHeaderRow}>
+            <View style={styles.forumIconCircle}><MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" /></View>
+            <View style={styles.forumTitleBlock}>
+              <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
+              <Text style={styles.forumTimeAgo}>há 2 min</Text>
             </View>
-            <View style={{ marginLeft: 56, gap: 6 }}>
-              <Skeleton width="90%" height={14} borderRadius={4} />
-              <Skeleton width="65%" height={14} borderRadius={4} />
-            </View>
+            <Animated.View style={[
+              styles.forumBadgeCount, 
+              { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
+            ]}>
+              <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
+            </Animated.View>
           </View>
-        ) : (
-          <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Fórum")}>
-            <View style={styles.forumHeaderRow}>
-              <View style={styles.forumIconCircle}><MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" /></View>
-              <View style={styles.forumTitleBlock}>
-                <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
-                <Text style={styles.forumTimeAgo}>há 2 min</Text>
-              </View>
-              <Animated.View style={[
-                styles.forumBadgeCount, 
-                { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
-              ]}>
-                <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
-              </Animated.View>
-            </View>
-            <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
-            <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
-          </TouchableOpacity>
-        )}
+          <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
+          <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
+        </TouchableOpacity>
 
         {/* 4. REPOSITÓRIOS RECENTES */}
         <Text style={styles.sectionTitle}>Repositórios Recentes</Text>
@@ -295,28 +331,37 @@ export default function HomeScreen({ navigation }) {
           </View>
         ) : recentesAcessados && recentesAcessados.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRepoContainer}>
-            {recentesAcessados.map((projeto) => (
-              <TouchableOpacity 
-                key={projeto.id}
-                style={styles.repoSquareCard} 
-                activeOpacity={0.8}
-                onPress={() => irParaRepositorio(projeto)} 
-              >
-                <View style={styles.imageWrapper}>
-                  <Image source={{ uri: projeto?.imagem }} style={styles.repoCoverImage} />
-                  <TouchableOpacity 
-                    style={styles.removeButton} 
-                    activeOpacity={0.7}
-                    onPress={() => removerDosRecentes(projeto.id)}
-                  >
-                    <Ionicons name="close" size={14} color="#FFF" />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.repoContentArea}>
-                  <Text style={styles.repoMainTitle} numberOfLines={2}>{projeto.titulo}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            {recentesAcessados.map((projeto) => {
+              const idProj = projeto.idprojeto || projeto.id;
+              return (
+                <TouchableOpacity 
+                  key={idProj}
+                  style={styles.repoSquareCard} 
+                  activeOpacity={0.8}
+                  onPress={() => irParaRepositorio(projeto)} 
+                >
+                  <View style={styles.imageWrapper}>
+                    {projeto?.imagem || projeto?.capa ? (
+                      <Image source={{ uri: projeto?.imagem || projeto?.capa }} style={styles.repoCoverImage} />
+                    ) : (
+                      <View style={[styles.repoCoverImage, { backgroundColor: '#ececec', justifyContent: 'center', alignItems: 'center' }]}>
+                        <Feather name="folder" size={24} color={COLORS.primary} />
+                      </View>
+                    )}
+                    <TouchableOpacity 
+                      style={styles.removeButton} 
+                      activeOpacity={0.7}
+                      onPress={() => removerDosRecentes(idProj)}
+                    >
+                      <Ionicons name="close" size={14} color="#FFF" />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.repoContentArea}>
+                    <Text style={styles.repoMainTitle} numberOfLines={2}>{projeto.nome_projeto || projeto.titulo}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         ) : (
           <View style={styles.emptyRecentsBox}>
@@ -331,7 +376,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor: '#FFFFFF', },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 40, paddingTop: 5 },
   sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 15, color: "#111" },
   eventCard: { backgroundColor: "#fff", borderRadius: 18, padding: 14, marginBottom: 12, flexDirection: "row", alignItems: "center", elevation: 3 },
@@ -371,5 +416,6 @@ const styles = StyleSheet.create({
   repoMainTitle: { fontSize: 14, fontWeight: "bold", color: "#111", textAlign: "center" },
   removeButton: { position: 'absolute', top: 6, right: 6, backgroundColor: 'rgba(0, 0, 0, 0.6)', width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
   emptyRecentsBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 15, borderRadius: 16, gap: 10, justifyContent: 'center' },
-  emptyRecentsText: { color: '#888', fontSize: 12, fontWeight: '500' }
+  emptyRecentsText: { color: '#888', fontSize: 12, fontWeight: '500' },
+  emptyText: { color: '#888', fontStyle: 'italic', marginVertical: 10, textAlign: 'center' }
 });
