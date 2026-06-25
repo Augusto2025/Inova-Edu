@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { 
   View, 
   Text, 
   ScrollView, 
   TouchableOpacity, 
   Image,
-  ActivityIndicator, // Adicionado para o efeito de carregamento
+  ActivityIndicator, 
   Alert
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native'; // 1. Hook de recarregamento
 import Header from '../components/Header';
 import styles from '../styles/Curso';
 import BarraPesquisa from '../components/BarraPesquisa';
-import { COLORS } from '../components/Cores';
 import { API_ENDPOINTS } from '../services/api';
 
-// Sem gambiarra de .replace()! Somamos a BASE com o caminho de cursos:
+// 2. Importação do Contexto de Tema e Acessibilidade
+import { ThemeContext } from '../context/ThemeContext';
+
 const URL_CURSOS = API_ENDPOINTS.cursos;
 
 export default function CursosScreen({ navigation }) {
+  // Puxando as variáveis globais
+  const { theme, fontSizeScale } = useContext(ThemeContext);
+
   const [search, setSearch] = useState('');
-  const [cursos, setCursos] = useState([]); // 📥 Começa como uma lista vazia
-  const [carregando, setCarregando] = useState(true); // ⏳ Estado de carregamento
+  const [cursos, setCursos] = useState([]); 
+  const [carregando, setCarregando] = useState(true); 
 
-  // Dispara a busca automática assim que a tela abre
-  useEffect(() => {
-    buscarCursos();
-  }, []);
-
-  const buscarCursos = async () => {
+  // 3. Transformamos a busca em um useCallback para evitar loops infinitos
+  const buscarCursos = useCallback(async () => {
     try {
       setCarregando(true);
       const resposta = await fetch(URL_CURSOS, {
@@ -35,7 +36,7 @@ export default function CursosScreen({ navigation }) {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      const dados = await resposta.json(); // Pode voltar o .json() original!
+      const dados = await resposta.json(); 
       setCursos(dados); 
       
     } catch (error) {
@@ -44,49 +45,61 @@ export default function CursosScreen({ navigation }) {
     } finally {
       setCarregando(false);
     }
-  };
+  }, []);
+
+  // 4. MÁGICA DO RECARREGAMENTO: Executa buscarCursos() toda vez que a tela é aberta
+  useFocusEffect(
+    useCallback(() => {
+      buscarCursos();
+    }, [buscarCursos])
+  );
 
   const irParaTurmas = (curso) => {
-    // Ajustado de curso.id para curso.idcurso para bater com seu Django
     navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso });
   };
 
   return (
-    <View style={styles.container}>
-      {/* HEADER */}
+    // Fundo dinâmico aplicado ao container principal
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      
       <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
       
       <BarraPesquisa value={search} onChangeText={setSearch} />
 
-      {/* Se estiver carregando, mostra a rodinha. Se não, mostra a lista */}
       {carregando ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#1459b3" />
-          <Text style={{ marginTop: 10, color: '#1459b3' }}>Buscando cursos...</Text>
+          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>
+            Buscando cursos...
+          </Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.listaCursos}>
           {cursos.length === 0 ? (
-            <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
+            <Text style={[styles.vazio, { color: theme.text, fontSize: 16 * fontSizeScale }]}>
+              Nenhum resultado encontrado.
+            </Text>
           ) : (
             cursos.map((curso) => (
               <TouchableOpacity 
-                key={curso.idcurso} // Ajustado para idcurso
-                style={styles.cardCursoGrid}
+                key={curso.idcurso} 
+                // Card dinâmico (Cor de fundo se adapta ao modo escuro)
+                style={[styles.cardCursoGrid, { backgroundColor: theme.card }]}
                 onPress={() => irParaTurmas(curso)}
                 activeOpacity={0.8}
               >
-                {/* O Cloudinary envia a URL pronta na propriedade curso.imagem */}
                 {curso.imagem ? (
                   <Image source={{ uri: curso.imagem }} style={styles.cursoImagem} />
                 ) : (
-                  <View style={styles.placeholderImagemContainer}>
+                  // O fundo do placeholder também fica mais escuro no dark mode
+                  <View style={[styles.placeholderImagemContainer, { backgroundColor: theme.border }]}>
                     <Text style={styles.placeholderIcone}>🎓</Text>
                   </View>
                 )}
                 
                 <View style={styles.textoCursoContainer}>
-                  <Text style={styles.tituloCursoGrid} numberOfLines={2}>
+                  {/* Fonte dinâmica e cor do texto adaptável */}
+                  <Text style={[styles.tituloCursoGrid, { color: theme.text, fontSize: 14 * fontSizeScale }]} numberOfLines={2}>
                     {curso.nome_curso}
                   </Text>
                 </View>

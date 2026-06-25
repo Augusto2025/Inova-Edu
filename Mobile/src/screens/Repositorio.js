@@ -149,62 +149,68 @@ export default function RepositorioScreen({ route, navigation }) {
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            
-            {/* Botão de Voltar de nível (aparece apenas quando estiver dentro de alguma pasta) */}
             {pastaIdAtual && (
-              <TouchableOpacity style={[styles.itemCard, { backgroundColor: '#F8FAFC' }]} onPress={voltarPasta}>
+              <TouchableOpacity style={[styles.itemCard, { backgroundColor: theme.card }]} onPress={() => {
+                const novoHistorico = [...historicoPastas];
+                novoHistorico.pop();
+                setHistoricoPastas(novoHistorico);
+                setPastaIdAtual(novoHistorico.length > 0 ? novoHistorico[novoHistorico.length - 1].id : null);
+              }}>
                 <View style={styles.itemInfo}>
-                  <Feather name="arrow-left" size={22} color={COLORS.textSecondary} />
-                  <Text style={[styles.itemName, { marginLeft: 12, color: COLORS.textSecondary }]}>.. Voltar para pasta anterior</Text>
+                  <Feather name="arrow-left" size={20 * fontSizeScale} color={theme.text} />
+                  <Text style={{ marginLeft: 12, color: theme.text, fontSize: 14 * fontSizeScale }}>Voltar</Text>
                 </View>
               </TouchableOpacity>
             )}
 
-            {/* SEÇÃO DE PASTAS */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Pastas</Text>
-            </View>
-
-            {pastas.length === 0 && (
-              <Text style={[styles.itemSub, { paddingLeft: 16, fontStyle: 'italic' }]}>Nenhuma subpasta aqui.</Text>
-            )}
-
-            {pastas.map((pasta) => (
-              <TouchableOpacity 
-                key={pasta.id} 
-                style={[styles.itemCard, styles.folderBorder]}
-                onPress={() => entrarNaPasta(pasta)}
-              >
-                <View style={styles.itemInfo}>
-                  <Feather name="folder" size={24} color={COLORS.primary} />
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.itemName}>{pasta.nome}</Text>
-                    <Text style={styles.itemSub}>{pasta.itens} itens</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-
-            {/* SEÇÃO DE ARQUIVOS */}
-            <View style={[styles.sectionHeader, { marginTop: 20 }]}>
-              <Text style={styles.sectionTitle}>Arquivos</Text>
-            </View>
-
-            {arquivos.length === 0 && (
-              <Text style={[styles.itemSub, { paddingLeft: 16, fontStyle: 'italic' }]}>Nenhum arquivo nesta pasta.</Text>
-            )}
-
-            {arquivos.map((arquivo) => (
-              <View key={arquivo.id} style={[styles.itemCard, styles.fileBorder]}>
-                <View style={styles.itemInfo}>
-                  <Feather name="file-text" size={24} color={COLORS.textSecondary} />
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.itemName}>{arquivo.nome}</Text>
-                    <Text style={styles.itemSub}>{arquivo.tamanho}</Text>
-                  </View>
-                </View>
+            {/* VERIFICAÇÃO DE VAZIO: Se não houver pastas nem arquivos */}
+            {pastas.length === 0 && arquivos.length === 0 ? (
+              <View style={{ marginTop: 40, alignItems: 'center', padding: 20 }}>
+                <Feather name="folder-minus" size={48 * fontSizeScale} color={theme.text} style={{ opacity: 0.5 }} />
+                <Text style={{ color: theme.text, fontSize: 16 * fontSizeScale, marginTop: 15, textAlign: 'center', opacity: 0.7 }}>
+                  Nenhuma pasta ou arquivo disponível neste local.
+                </Text>
               </View>
-            ))}
+            ) : (
+              <>
+                {/* Pastas */}
+                {pastas.length > 0 && (
+                  <>
+                    <Text style={[styles.sectionTitle, { color: theme.text, marginVertical: 10 }]}>Pastas</Text>
+                    {pastas.map((pasta) => (
+                      <TouchableOpacity key={pasta.id} style={[styles.itemCard, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => {
+                        setHistoricoPastas([...historicoPastas, { id: pasta.id, nome: pasta.nome }]);
+                        setPastaIdAtual(pasta.id);
+                      }}>
+                        <View style={styles.itemInfo}>
+                          <Feather name="folder" size={24 * fontSizeScale} color={COLORS.primary} />
+                          <View style={{ marginLeft: 12 }}>
+                            <Text style={[styles.itemName, { color: theme.text, fontSize: 15 * fontSizeScale }]}>{pasta.nome}</Text>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                )}
+
+                {/* Arquivos */}
+                {arquivos.length > 0 && (
+                  <>
+                    <Text style={[styles.sectionTitle, { color: theme.text, marginVertical: 10 }]}>Arquivos</Text>
+                    {arquivos.map((arquivo) => (
+                      <View key={arquivo.id} style={[styles.itemCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                        <View style={styles.itemInfo}>
+                          <Feather name="file-text" size={24 * fontSizeScale} color={theme.text} />
+                          <View style={{ marginLeft: 12 }}>
+                            <Text style={[styles.itemName, { color: theme.text, fontSize: 15 * fontSizeScale }]}>{arquivo.nome}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    ))}
+                  </>
+                )}
+              </>
+            )}
           </ScrollView>
         )}
       </View>
