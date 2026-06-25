@@ -1,13 +1,11 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import { ThemeProvider } from './src/context/ThemeContext';
 
 // TELAS
 import LoginScreen from './src/screens/Login';
 import SplashScreen from './src/screens/SplashScreen';
-
-
-
 import ForumScreen from './src/screens/Forum'; 
 import ConversaScreen from "./src/screens/Conversa";
 import TituloScreen from "./src/screens/Topico";
@@ -26,33 +24,24 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen}/>
-        <Stack.Screen name="Main" component={TabRoutes}/>
-        <Stack.Screen name="Profile" component={ProfilePage}/>
-        <Stack.Screen name="Cursos" component={CursosScreen}/>
-        <Stack.Screen name="Turmas" component={TurmasScreen}/>
-        <Stack.Screen name="Projetos" component={ProjetosScreen}/>
-        <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-
-        <Stack.Screen name="Splash" component={SplashScreen}/>
-        
-        <Stack.Screen name="Forum" component={ForumScreen}/>
-        <Stack.Screen name="Titulo" component={TituloScreen} />
-        <Stack.Screen name="Conversa" component={ConversaScreen} />
-
- 
-        <Stack.Screen name="Eventos" component={CalendarScreen}/>
-
-
-        {/* <Stack.Screen name="footerforum" component={FooterForum}/>  
-        <Stack.Screen name="headerforum" component={HeaderForum}/> */}
-
-        {/* <Stack.Screen name="Splash" component={SplashScreen}/> */}
-
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Main" component={TabRoutes}/>
+          <Stack.Screen name="Login" component={LoginScreen}/>
+          <Stack.Screen name="Profile" component={ProfilePage}/>
+          <Stack.Screen name="Cursos" component={CursosScreen}/>
+          <Stack.Screen name="Turmas" component={TurmasScreen}/>
+          <Stack.Screen name="Projetos" component={ProjetosScreen}/>
+          <Stack.Screen name="Repositorio" component={RepositorioScreen}/>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="Splash" component={SplashScreen}/>
+          <Stack.Screen name="Forum" component={ForumScreen}/>
+          <Stack.Screen name="Titulo" component={TituloScreen} />
+          <Stack.Screen name="Conversa" component={ConversaScreen} />
+          <Stack.Screen name="Eventos" component={CalendarScreen}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
