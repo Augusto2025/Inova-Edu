@@ -1,189 +1,597 @@
 import React, { useState } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, 
-  TouchableOpacity, Modal, TextInput, SafeAreaView 
+  TouchableOpacity, SafeAreaView, ActivityIndicator, Alert,
+  Modal, TextInput, TouchableWithoutFeedback,
+  Image,
+  Linking
 } from 'react-native';
-// Usando o pacote de ícones padrão do Expo
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker'; 
 import Header from "../components/Header";
-import ModalSave from '../components/ModalSave'; // Importando o componente ModalSave para reutilização
-import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
+import { COLORS } from "../components/Cores";
+
+const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
 export default function ProfileScreen() {
+  const [carregando, setCarregando] = useState(true);
+  
+  // Dados do Usuário
   const [user, setUser] = useState({
-    nome: "João",
-    sobrenome: "Silva",
-    descricao: "Desenvolvedor Full Stack em formação no Senac.",
-    imagem: null, // Mantendo null como solicitado
-    turma: "T924 - 2026 (Noite)"
+    nome: "",
+    sobrenome: "",
+    descricao: "",
+    imagem: null,
+    turma: ""
   });
 
-  const [certificados, setCertificados] = useState([
-    { id: 1, nome: "React Basic", descricao: "Curso de Hooks e Componentes" }
-  ]);
+  const [certificados, setCertificados] = useState([]);
+  const [projetos, setProjetos] = useState([]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputsExtras, setInputsExtras] = useState([]);
-  const lidarComSalvar = () => {    
-    setIsModalOpen(false); // Fecha o modal após salvar
+  // --- ESTADOS DOS MODAIS ---
+  const [modalPerfilVisible, setModalPerfilVisible] = useState(false);
+  const [perfilForm, setPerfilForm] = useState({ nome: "", sobrenome: "", descricao: "" });
+  const [modalCertVisible, setModalCertVisible] = useState(false);
+  const [modalCertModo, setModalCertModo] = useState("Criar"); 
+  const [certForm, setCertForm] = useState({ id: null, nome: "", descricao: "" });
+  const [modalExcluirVisible, setModalExcluirVisible] = useState(false);
+  const [certParaExcluir, setCertParaExcluir] = useState({ id: null, nome: "" });
+
+  // --- FUNÇÕES DE CARREGAMENTO ---
+  const carregarDadosPerfil = async () => {
+    try {
+      setCarregando(true);
+      const idSalvo = await AsyncStorage.getItem('idUsuario');
+      
+      if (!idSalvo) {
+        Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
+        return;
+      }
+
+      const response = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
+      const textoRaw = await response.text();
+
+      if (!response.ok) {
+        throw new Error(`Status ${response.status}: ${textoRaw || "Sem detalhes"}`);
+      }
+
+      const dados = JSON.parse(textoRaw);
+
+      if (dados.sucesso) {
+        // 1. Pega o texto que veio do banco
+        let urlCompleta = dados.usuario.imagem;
+
+        // 2. Se o texto existir e NÃO começar com "http", nós grudamos a base do Cloudinary nele
+        if (urlCompleta && !urlCompleta.startsWith('http')) {
+          urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
+        }
+
+        setUser({
+          nome: dados.usuario.nome || "Sem nome",
+          sobrenome: dados.usuario.sobrenome || "",
+          descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
+          imagem: urlCompleta || null, // Agora passa a URL certinha e completa!
+          turma: dados.usuario.turma || "Sem Turma Vinculada"
+        });
+        
+        setCertificados(dados.certificados || []);
+        setProjetos(dados.projetos || []);
+      } else {
+        throw new Error(dados.mensagem || "Erro desconhecido");
+      }
+    } catch (error) {
+      console.error("❌ Erro ao carregar perfil:", error);
+      Alert.alert("Erro no Carregamento", error.message);
+    } finally {
+      setCarregando(false);
+    }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      carregarDadosPerfil();
+    }, [])
+  );
+
+  // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
+  const alterarFotoPerfil = async () => {
+    const idSalvo = await AsyncStorage.getItem('idUsuario');
+
+    Alert.alert(
+      "Foto de Perfil",
+      "Escolha o que deseja fazer com sua foto:",
+      [
+        {
+          text: "Escolher da Galeria",
+          onPress: async () => {
+            const dadosPermissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!dadosPermissao.granted) {
+              Alert.alert("Permissão necessária", "Precisamos de acesso às fotos para alterar o perfil.");
+              return;
+            }
+
+            const resultado = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.7,
+            });
+
+            if (resultado.canceled) return;
+
+            const fotoLocalUri = resultado.assets[0].uri;
+
+            try {
+              setCarregando(true);
+
+              const formData = new FormData();
+              formData.append('file', {
+                uri: fotoLocalUri,
+                type: 'image/jpeg',
+                name: 'profile.jpg',
+              });
+              
+              formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+              const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
+
+              const respostaCloudinary = await fetch(
+                `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+                { method: 'POST', body: formData, headers: { 'Content-Type': 'multipart/form-data' } }
+              );
+
+              const dadosFoto = await respostaCloudinary.json();
+              if (!respostaCloudinary.ok) throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
+
+              const urlCloudinary = dadosFoto.secure_url;
+              await atualizarFotoNoBackend(idSalvo, urlCloudinary);
+
+            } catch (error) {
+              Alert.alert("Erro ao subir imagem", error.message);
+              setCarregando(false);
+            }
+          }
+        },
+        {
+          text: "Remover Foto Atual",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setCarregando(true);
+              await atualizarFotoNoBackend(idSalvo, null); 
+            } catch (error) {
+              Alert.alert("Erro ao remover foto", error.message);
+              setCarregando(false);
+            }
+          }
+        },
+        { text: "Cancelar", style: "cancel" }
+      ]
+    );
+  };
+
+  const atualizarFotoNoBackend = async (idUsuario, urlImagem) => {
+    const respostaBackend = await fetch(`${URL_BASE}/perfil/atualizar-foto`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idUsuario, imagem: urlImagem })
+    });
+
+    const dadosBack = await respostaBackend.json();
+
+    if (dadosBack.sucesso) {
+      setUser({ ...user, imagem: urlImagem }); 
+      Alert.alert("Sucesso", "Foto de perfil updated!");
+    } else {
+      throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
+    }
+    setCarregando(false);
+  };
+
+  // --- FUNÇÕES DE AÇÃO DOS MODAIS ---
+  const abrirEditarPerfil = () => {
+    setPerfilForm({ nome: user.nome, sobrenome: user.sobrenome, descricao: user.descricao });
+    setModalPerfilVisible(true);
+  };
+
+  const salvarPerfil = () => {
+    setUser({ ...user, ...perfilForm });
+    setModalPerfilVisible(false);
+    Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+  };
+
+  const abrirCriarCertificado = () => {
+    setModalCertModo("Criar");
+    setCertForm({ id: null, nome: "", descricao: "" });
+    setModalCertVisible(true);
+  };
+
+  const abrirEditarCertificado = (cert) => {
+    setModalCertModo("Editar");
+    setCertForm({ id: cert.id, nome: cert.nome, descricao: cert.descricao });
+    setModalCertVisible(true);
+  };
+
+  const salvarCertificado = async () => {
+    // Validação simples para não salvar em branco
+    if (!certForm.nome.trim()) {
+      Alert.alert("Erro", "O nome do certificado é obrigatório.");
+      return;
+    }
+
+    try {
+      if (modalCertModo === "Criar") {
+        const response = await fetch(`${URL_BASE}/perfil/certificado`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            usuarioId: user.idUsuario, // Certifique-se de usar a variável que guarda o ID do usuário logado
+            nome: certForm.nome, 
+            descricao: certForm.descricao 
+          }),
+        });
+
+        const dados = await response.json();
+
+        if (dados.sucesso) {
+          // Atualiza a tela usando o ID REAL gerado pelo banco de dados (Postgres)
+          setCertificados([...certificados, dados.certificado]);
+          Alert.alert("Sucesso", "Certificado adicionado ao banco!");
+        } else {
+          Alert.alert("Erro", dados.mensagem || "Erro ao adicionar certificado.");
+        }
+
+      } else {
+        // 📝 ATUALIZA NO BANCO DE DADOS (PUT)
+        const response = await fetch(`${URL_BASE}/perfil/certificado/${certForm.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            nome: certForm.nome, 
+            descricao: certForm.descricao 
+          }),
+        });
+
+        const dados = await response.json();
+
+        if (dados.sucesso) {
+          // Atualiza o estado na tela refletindo a mudança real do banco
+          setCertificados(certificados.map(c => c.id === certForm.id ? { ...c, ...certForm } : c));
+          Alert.alert("Sucesso", "Certificado atualizado com sucesso!");
+        } else {
+          Alert.alert("Erro", dados.mensagem || "Erro ao atualizar certificado.");
+        }
+      }
+
+      // Fecha o modal após o sucesso da requisição
+      setModalCertVisible(false);
+
+    } catch (error) {
+      console.error("❌ Erro ao salvar certificado no banco:", error);
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
+  };
+
+  const abrirExcluirCertificado = (cert) => {
+    setCertParaExcluir({ id: cert.id, nome: cert.nome });
+    setModalExcluirVisible(true);
+  };
+
+  const confirmarExclusao = async () => {
+    try {
+      // ⚠️ ATENÇÃO: Substitua pelo endereço do seu servidor (o mesmo usado no salvar)
+      const response = await fetch(`${URL_BASE}/perfil/certificado/${certParaExcluir.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        // Se o seu backend exigir o usuarioId no DELETE, descomente a linha abaixo:
+        // body: JSON.stringify({ usuarioId: user.idUsuario }) 
+      });
+
+      const dados = await response.json();
+
+      if (dados.sucesso) {
+        // Remove da tela somente se o banco confirmar a exclusão
+        setCertificados(certificados.filter(c => c.id !== certParaExcluir.id));
+        setModalExcluirVisible(false);
+        Alert.alert("Sucesso", "Certificado removido do banco!");
+      } else {
+        Alert.alert("Erro", dados.mensagem || "Não foi possível excluir no servidor.");
+      }
+    } catch (error) {
+      console.error("❌ Erro ao excluir certificado:", error);
+      Alert.alert("Erro", "Falha ao conectar com o servidor.");
+    }
+  };
+
+  if (carregando) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"}/>
       
-      <ScrollView contentContainerStyle={{ paddingBottom: 40}}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         
-        {/* CARD DE PERFIL */}
-        <View style={styles.profileCard}>
-          <View style={styles.photoWrapper}>
-            {/* ALTERAÇÃO 1: Apenas a borda circular, sem imagem */}
-            <View style={styles.profileImagePlaceholder} />
-            
-            <TouchableOpacity style={styles.cameraBtn}>
+        {/* CARD PRINCIPAL DO PERFIL */}
+        <View style={styles.profileHeaderCard}>
+          <View style={styles.photoContainer}>
+            <View style={styles.profileImagePlaceholder}>
+              {/* RENDERIZAÇÃO CONDICIONAL DA IMAGEM BLINDADA */}
+              {user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
+                <Image 
+                  source={{ uri: user.imagem }} 
+                  style={styles.profileImage} 
+                  onError={(e) => console.log("❌ Erro ao renderizar a URL da imagem:", e.nativeEvent.error)}
+                />
+              ) : (
+                <Ionicons name="person" size={50} color="#B0B8C4" />
+              )}
+            </View>
+            <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
               <Ionicons name="camera" size={16} color="white" />
             </TouchableOpacity>
           </View>
 
           <Text style={styles.userName}>{user.nome} {user.sobrenome}</Text>
+          
           <View style={styles.turmaBadge}>
+            <Ionicons name="school-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
             <Text style={styles.turmaText}>{user.turma}</Text>
           </View>
           
           <Text style={styles.userDesc}>{user.descricao}</Text>
 
-          <TouchableOpacity 
-            style={styles.editProfileBtn} 
-            onPress={() => setIsModalOpen(true)}
-          >
+          <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
             <Ionicons name="create-outline" size={18} color="white" />
             <Text style={styles.editProfileBtnText}>Editar Perfil</Text>
           </TouchableOpacity>
         </View>
 
-        {/* SEÇÃO CERTIFICADOS */}
+        {/* SEÇÃO: CERTIFICADOS */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Certificados</Text>
-            <TouchableOpacity style={styles.plusBtn}>
+            <View style={styles.titleRow}>
+              <Ionicons name="ribbon-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
+              <Text style={styles.sectionTitle}>Certificados</Text>
+            </View>
+            <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
               <Ionicons name="add" size={20} color="white" />
             </TouchableOpacity>
           </View>
 
-          {certificados.map(cert => (
-            <View key={cert.id} style={styles.certCard}>
-              {/* ALTERAÇÃO 2: Substituído o calendário por um ícone de certificado */}
-              <View style={styles.certIconBadge}>
-                <FontAwesome5 name="award" size={24} color={COLORS.primary} />
-              </View>
+          {certificados.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="document-text-outline" size={32} color="#BBB" />
+              <Text style={styles.emptyText}>Nenhum certificado adicionado.</Text>
+            </View>
+          ) : (
+            certificados.map(cert => (
+              <View key={cert.id} style={styles.certCard}>
+                <View style={styles.certIconBadge}>
+                  <FontAwesome5 name="award" size={22} color={COLORS.primary} />
+                </View>
 
-              <View style={styles.certInfo}>
-                <Text style={styles.certTitle}>{cert.nome}</Text>
-                <Text style={styles.certSub}>{cert.descricao}</Text>
-                <View style={styles.certActions}>
-                   <Text style={styles.actionEdit}>Editar</Text>
-                   <Text style={styles.actionDelete}>Excluir</Text>
+                <View style={styles.certInfo}>
+                  <Text style={styles.certTitle} numberOfLines={1}>{cert.nome}</Text>
+                  <Text style={styles.certSub} numberOfLines={2}>{cert.descricao || "Sem descrição"}</Text>
+                </View>
+
+                <View style={styles.certActionColumn}>
+                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirEditarCertificado(cert)}>
+                    <Ionicons name="pencil" size={16} color={COLORS.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirExcluirCertificado(cert)}>
+                    <Ionicons name="trash-outline" size={16} color="#F44336" />
+                  </TouchableOpacity>
                 </View>
               </View>
-            </View>
-          ))}
+            ))
+          )}
         </View>
 
-        {/* SEÇÃO PROJETOS */}
+        {/* SEÇÃO: PROJETOS */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Projetos</Text>
-          <View style={styles.projectCard}>
-            <Text style={styles.projectTitle}>Sistema de Gestão Escolar</Text>
-            <Text style={styles.projectSub}>
-              <Ionicons name="people" size={12} /> Turma: T924 - ADS
-            </Text>
-            <TouchableOpacity style={styles.repoBtn}>
-              <Text style={styles.repoBtnText}>Abrir Repositório</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionHeader}>
+            <View style={styles.titleRow}>
+              <Ionicons name="folder-open-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
+              <Text style={styles.sectionTitle}>Projetos Integradores</Text>
+            </View>
           </View>
+          
+          {projetos.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="code-slash" size={32} color="#BBB" />
+              <Text style={styles.emptyText}>Nenhum projeto vinculado a você.</Text>
+            </View>
+          ) : (
+            projetos.map(proj => (
+              <View key={proj.id} style={styles.projectCard}>
+                <View style={styles.projectMainInfo}>
+                  <Text style={styles.projectTitle}>{proj.nome}</Text>
+                  <Text style={styles.projectSub}>{proj.descricao || "Sem descrição disponível."}</Text>
+                </View>
+                
+                {/* ✅ SISTEMA DE LINK REDIRECIONÁVEL ATIVADO */}
+                <TouchableOpacity 
+                  style={styles.repoLinkBtn} 
+                  activeOpacity={0.7}
+                  onPress={() => proj.link_repo ? Linking.openURL(proj.link_repo) : Alert.alert("Ops", "Link do repositório não disponível.")}
+                >
+                  <Text style={styles.repoLinkText}>Acessar Repositório</Text>
+                  <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
         </View>
 
       </ScrollView>
 
-      {/* MODAL DE EDIÇÃO */}
-      <ModalSave
-        modalEditarVisible={isModalOpen}        
-        setModalEditarVisible={setIsModalOpen}  
-        salvarEdicao={lidarComSalvar}           
-        tituloModal="Preencher Cadastro"
-        
-        adicionarMaisInputs={true}
-        
-        // 🚀 Aqui você define os nomes personalizados que quiser e quantos quiser!
-        labelsInputs={["Nome Completo", "E-mail Corporativo", "Telefone de Contato"]}
-        
-        inputsExtras={inputsExtras}
-        setInputsExtras={setInputsExtras}
-      />
+      {/* 1. MODAL EDITAR PERFIL */}
+      <Modal visible={modalPerfilVisible} transparent animationType="fade" onRequestClose={() => setModalPerfilVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalPerfilVisible(false)}>
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Editar Perfil</Text>
+                <TouchableOpacity onPress={() => setModalPerfilVisible(false)} style={{ position: 'absolute', right: 20 }}>
+                  <Feather name="x" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.modalBody}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Nome</Text>
+                  <TextInput placeholder="Digite seu nome..." value={perfilForm.nome} onChangeText={(text) => setPerfilForm({ ...perfilForm, nome: text })} style={styles.input} />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Sobrenome</Text>
+                  <TextInput placeholder="Digite seu sobrenome..." value={perfilForm.sobrenome} onChangeText={(text) => setPerfilForm({ ...perfilForm, sobrenome: text })} style={styles.input} />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Bio / Descrição</Text>
+                  <TextInput placeholder="Fale um pouco sobre você..." value={perfilForm.descricao} onChangeText={(text) => setPerfilForm({ ...perfilForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={3} textAlignVertical="top" />
+                </View>
+
+                <TouchableOpacity style={styles.saveBtn} onPress={salvarPerfil}>
+                  <Text style={styles.saveBtnText}>Salvar Alterações</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* 2. MODAL CERTIFICADO (CORRIGIDO) */}
+      <Modal visible={modalCertVisible} transparent animationType="fade" onRequestClose={() => setModalCertVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalCertVisible(false)}>
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                {/* 🛠️ CORREÇÃO REALIZADA AQUI: O texto condicional foi extraído do style */}
+                <Text style={styles.modalTitle}>{modalCertModo === "Criar" ? "Adicionar Certificado" : "Editar Certificado"}</Text>
+                <TouchableOpacity onPress={() => setModalCertVisible(false)} style={{ position: 'absolute', right: 20 }}>
+                  <Feather name="x" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.modalBody}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Nome do Certificado</Text>
+                  <TextInput placeholder="Ex: Curso de React Native" value={certForm.nome} onChangeText={(text) => setCertForm({ ...certForm, nome: text })} style={styles.input} />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>Descrição / Instituição</Text>
+                  <TextInput placeholder="Ex: Udemy - 40 horas" value={certForm.descricao} onChangeText={(text) => setCertForm({ ...certForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={2} textAlignVertical="top" />
+                </View>
+
+                <TouchableOpacity style={styles.saveBtn} onPress={salvarCertificado}>
+                  <Text style={styles.saveBtnText}>{modalCertModo === "Criar" ? "Adicionar" : "Salvar"}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* 3. MODAL DE CONFIRMAÇÃO DE EXCLUSÃO */}
+      <Modal visible={modalExcluirVisible} transparent animationType="fade" onRequestClose={() => setModalExcluirVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalExcluirVisible(false)}>
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              <View style={[styles.modalHeader, { backgroundColor: '#F44336' }]}>
+                <Text style={styles.modalTitle}>Excluir Certificado</Text>
+                <TouchableOpacity onPress={() => setModalExcluirVisible(false)} style={{ position: 'absolute', right: 20 }}>
+                  <Feather name="x" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.modalBody}>
+                <Text style={styles.deleteConfirmText}>
+                  Tem certeza de que deseja remover o certificado <Text style={{ fontWeight: 'bold', color: '#1E293B' }}>"{certParaExcluir.nome}"</Text>? Essa ação não pode ser desfeita.
+                </Text>
+
+                <View style={styles.deleteActionRow}>
+                  <TouchableOpacity style={[styles.saveBtn, styles.btnCancelar]} onPress={() => setModalExcluirVisible(false)}>
+                    <Text style={[styles.saveBtnText, { color: '#64748B' }]}>Cancelar</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={[styles.saveBtn, styles.btnConfirmarExcluir]} onPress={confirmarExclusao}>
+                    <Text style={styles.saveBtnText}>Excluir</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
 
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.backgroundCard },
-  // Profile Card
-  profileCard: { backgroundColor: 'white', margin: 15, borderRadius: 20, padding: 20, alignItems: 'center', elevation: 3 },
-  photoWrapper: { position: 'relative' },
-  // Estilo para o placeholder circular com borda
+  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  profileHeaderCard: { 
+    backgroundColor: 'white', marginHorizontal: 20, marginTop: 20, marginBottom: 10, borderRadius: 24, padding: 24, alignItems: 'center', 
+    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 4 
+  },
+  photoContainer: { position: 'relative', marginBottom: 12 },
   profileImagePlaceholder: { 
-    width: 100, 
-    height: 100, 
-    borderRadius: 50, 
-    borderWidth: 3, // Borda visível
-    borderColor: COLORS.primary, // Cor azul Senac
-    backgroundColor: '#f0f0f0' // Um cinza muito claro interno
+    width: 105, height: 105, borderRadius: 55, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', 
+    borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' 
   },
-  cameraBtn: { position: 'absolute', bottom: 0, right: 0, backgroundColor: COLORS.primary, borderRadius: 20, padding: 8, borderWidth: 2, borderColor: 'white' },
-  userName: { fontSize: 22, fontWeight: 'bold', color: COLORS.primary, marginTop: 10 },
-  turmaBadge: { backgroundColor: COLORS.primary, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 15, marginTop: 5 },
-  turmaText: { color: 'white', fontSize: 11, fontWeight: 'bold' },
-  userDesc: { textAlign: 'center', color: '#666', marginTop: 12, fontSize: 14, lineHeight: 20 },
-  editProfileBtn: { flexDirection: 'row', backgroundColor: COLORS.accent, marginTop: 15, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, alignItems: 'center', gap: 8 },
-  editProfileBtnText: { color: 'white', fontWeight: 'bold' },
+  profileImage: { width: '100%', height: '100%', resizeMode: 'cover' }, 
+  cameraBtn: { position: 'absolute', bottom: 2, right: 2, backgroundColor: COLORS.primary, borderRadius: 18, padding: 8, borderWidth: 3, borderColor: 'white', elevation: 3 },
+  userName: { fontSize: 22, fontWeight: '700', color: '#1E293B', textAlign: 'center' },
+  turmaBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EFF6FF', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, marginTop: 8 },
+  turmaText: { color: COLORS.primary, fontSize: 12, fontWeight: '600' },
+  userDesc: { textAlign: 'center', color: '#64748B', marginTop: 14, fontSize: 14, lineHeight: 21, paddingHorizontal: 10 },
+  editProfileBtn: { flexDirection: 'row', backgroundColor: COLORS.primary, marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 16, alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center' },
+  editProfileBtnText: { color: 'white', fontWeight: '600', fontSize: 15 },
+  section: { paddingHorizontal: 20, marginTop: 25 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  titleRow: { flexDirection: 'row', alignItems: 'center' },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1E293B' },
+  plusBtn: { backgroundColor: COLORS.primary, padding: 6, borderRadius: 10 },
+  certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 16, borderRadius: 18, marginBottom: 12, alignItems: 'center', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
+  certIconBadge: { width: 46, height: 46, borderRadius: 12, backgroundColor: '#EFF6FF', justifyContent: 'center', alignItems: 'center', marginRight: 14 },
+  certInfo: { flex: 1, paddingRight: 8 },
+  certTitle: { fontWeight: '600', fontSize: 15, color: '#1E293B' },
+  certSub: { fontSize: 13, color: '#64748B', marginTop: 2 },
+  certActionColumn: { flexDirection: 'column', gap: 8, justifyContent: 'center', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#F1F5F9', paddingLeft: 12 },
+  miniActionBtn: { padding: 4 },
+  projectCard: { backgroundColor: 'white', padding: 20, borderRadius: 18, marginBottom: 12, shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
+  projectMainInfo: { marginBottom: 14 },
+  projectTitle: { fontWeight: '700', color: '#1E293B', fontSize: 16 },
+  projectSub: { fontSize: 13, color: '#64748B', marginTop: 6, lineHeight: 18 },
+  repoLinkBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: 4, paddingVertical: 4 },
+  repoLinkText: { color: COLORS.primary, fontWeight: '600', fontSize: 14 },
+  emptyContainer: { backgroundColor: '#F1F5F9', borderRadius: 16, padding: 20, alignItems: 'center', justifyContent: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: '#CBD5E1', marginTop: 5 },
+  emptyText: { color: '#64748B', fontStyle: 'italic', textAlign: 'center', marginTop: 8, fontSize: 13 },
 
-  // Sections
-  section: { paddingHorizontal: 20, marginTop: 15 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.primary, marginBottom: 5 },
-  plusBtn: { backgroundColor: COLORS.accent, padding: 5, borderRadius: 8 },
-  
-  // Certificados (Novo Estilo com Ícone)
-  certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 15, borderRadius: 15, marginBottom: 10, elevation: 1, alignItems: 'center' },
-  // Estilo para o container do ícone à esquerda
-  certIconBadge: { 
-    width: 50, 
-    height: 50, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginRight: 15 
-  },
-  certInfo: { flex: 1 },
-  certTitle: { fontWeight: 'bold', fontSize: 15, color: '#333' },
-  certSub: { fontSize: 12, color: '#888' },
-  certActions: { flexDirection: 'row', gap: 15, marginTop: 8 },
-  actionEdit: { color: COLORS.primary, fontSize: 12, fontWeight: 'bold' },
-  actionDelete: { color: '#F44336', fontSize: 12, fontWeight: 'bold' },
-
-  // Projeto
-  projectCard: { backgroundColor: 'white', padding: 15, borderRadius: 15, borderLeftWidth: 5, borderLeftColor: COLORS.primary },
-  projectTitle: { fontWeight: 'bold', color: COLORS.primary, fontSize: 16 },
-  projectSub: { fontSize: 12, color: '#666', marginTop: 5 },
-  repoBtn: { backgroundColor: COLORS.primary, marginTop: 15, padding: 10, borderRadius: 8, alignItems: 'center' },
-  repoBtnText: { color: 'white', fontWeight: 'bold', fontSize: 13 },
-
-  // Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.67)', justifyContent: 'center', padding: 15 },
-  modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden' },
-  modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
-  modalTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
-  modalBody: { padding: 20 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 12, marginBottom: 15 },
-  saveBtn: { backgroundColor: COLORS.primary, padding: 15, borderRadius: 12, alignItems: 'center' },
-  saveBtnText: { color: 'white', fontWeight: 'bold' }
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.55)', justifyContent: 'center', padding: 20 },
+  modalContent: { backgroundColor: 'white', borderRadius: 24, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10 },
+  modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', padding: 20, alignItems: 'center', justifyContent: 'center' },
+  modalTitle: { color: 'white', fontSize: 18, fontWeight: '700' },
+  modalBody: { padding: 24 },
+  inputContainer: { marginBottom: 16 },
+  inputLabel: { fontSize: 14, fontWeight: "600", color: "#334155", marginBottom: 6, paddingLeft: 2 },
+  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 14, padding: 14, color: '#1E293B', backgroundColor: '#F8FAFC', fontSize: 15 },
+  inputMultiline: { minHeight: 70 },
+  saveBtn: { backgroundColor: COLORS.primary, padding: 15, borderRadius: 14, alignItems: 'center', marginTop: 10, justifyContent: 'center' },
+  saveBtnText: { color: 'white', fontWeight: '700', fontSize: 15 },
+  deleteConfirmText: { fontSize: 15, color: '#475569', textAlign: 'center', lineHeight: 22, marginBottom: 20 },
+  deleteActionRow: { flexDirection: 'row', gap: 12 },
+  btnCancelar: { flex: 1, backgroundColor: '#E2E8F0', marginTop: 0 },
+  btnConfirmarExcluir: { flex: 1, backgroundColor: '#F44336', marginTop: 0 }
 });

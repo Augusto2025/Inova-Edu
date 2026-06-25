@@ -12,10 +12,10 @@ router.get('/', async (req, res) => {
                 f.idforum AS id,
                 f.nome AS titulo,
                 f.data_criacao,
-                u.nome AS autor,
-                (SELECT COUNT(*) FROM mensagem m WHERE m.forum_id = f.idforum) AS mensagens
+                f.usuario_id,
+                u."Nome" AS autor
             FROM forum f
-            LEFT JOIN usuario u ON f.usuario_id = u.usuario_id
+            LEFT JOIN usuario u ON f.usuario_id = u."idUsuario"
             ORDER BY f.idforum DESC
         `;
         
@@ -26,9 +26,10 @@ router.get('/', async (req, res) => {
             titulo: item.titulo,
             descricao: "Clique para abrir este fórum e participar das discussões.", 
             categoria: "Geral", 
-            mensagens: parseInt(item.mensagens) || 0,
+            mensagens: 0, // Fixado em 0 por enquanto, ignorando a tabela de mensagens
             tempo: formatarData(item.data_criacao),
             autor: item.autor || "Usuário Anônimo",
+            usuarioIdCriador: item.usuario_id, // Enviado ao Frontend para controle de permissões
             cor: "#0e68d6" 
         }));
 
@@ -44,7 +45,6 @@ router.get('/', async (req, res) => {
 // 2. ROTA: CRIAR NOVO TÓPICO (POST)
 // ==========================================
 router.post('/', async (req, res) => {
-    // Removemos a obrigatoriedade da descrição aqui, pois o banco não a guarda
     const { titulo, usuarioId } = req.body;
 
     if (!titulo || !titulo.trim()) {
@@ -52,7 +52,6 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        // Query ajustada apenas para as colunas reais do seu modelo Django
         const query = `
             INSERT INTO forum (nome, usuario_id, data_criacao)
             VALUES ($1, $2, CURRENT_DATE)
@@ -73,23 +72,24 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 3. ROTA: EDITAR UM TÓPICO (PUT)
+// 3. ROTA: EDITAR UM TÓPICO (PUT) - VALIDA DONO
 // ==========================================
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { titulo } = req.body; // Altera apenas o título (nome)
+    const { titulo, usuarioId } = req.body; // Recebe quem está tentando editar
 
     try {
+        // O WHERE agora garante que só atualiza se o fórum pertencer a esse usuarioId
         const query = `
             UPDATE forum 
             SET nome = $1
-            WHERE idforum = $2
+            WHERE idforum = $2 AND usuario_id = $3
             RETURNING idforum
         `;
-        const resultado = await db.query(query, [titulo, id]);
+        const resultado = await db.query(query, [titulo, id, usuarioId]);
 
         if (resultado.rows.length === 0) {
-            return res.status(404).json({ mensagem: 'Tópico não encontrado para edição.' });
+            return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste tópico.' });
         }
 
         res.json({ mensagem: 'Tópico atualizado com sucesso!' });
@@ -101,20 +101,22 @@ router.put('/:id', async (req, res) => {
 });
 
 // ==========================================
-// 4. ROTA: DELETAR UM TÓPICO (DELETE)
+// 4. ROTA: DELETAR UM TÓPICO (DELETE) - VALIDA DONO
 // ==========================================
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
+    const { usuarioId } = req.body; // Recebe quem está tentando deletar
 
     try {
-        const query = 'DELETE FROM forum WHERE idforum = $1 RETURNING idforum';
-        const resultado = await db.query(query, [id]);
+        // O WHERE garante que a deleção só ocorre se for o dono real
+        const query = 'DELETE FROM forum WHERE idforum = $1 AND usuario_id = $2 RETURNING idforum';
+        const resultado = await db.query(query, [id, usuarioId]);
 
         if (resultado.rows.length === 0) {
-            return res.status(404).json({ mensagem: 'Tópico não encontrado para exclusão.' });
+            return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste tópico.' });
         }
 
-        res.json({ message: 'Tópico excluído com sucesso!' });
+        res.json({ mensagem: 'Tópico excluído com sucesso!' });
 
     } catch (error) {
         console.error("Erro ao deletar tópico:", error);

@@ -10,7 +10,7 @@ router.post('/', async (req, res) => { // 🌟 Ajustado para '/' para evitar cam
 
   try {
     // 1. Procura o usuário na tabela do banco de dados pelo e-mail
-    const queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha" FROM usuario WHERE "Email" = $1';
+    const queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha", "Tipo" FROM usuario WHERE "Email" = $1';
     const resultado = await pool.query(queryText, [email]);
 
     // 2. Se o banco não retornar nenhuma linha, o e-mail não existe
@@ -38,7 +38,8 @@ router.post('/', async (req, res) => { // 🌟 Ajustado para '/' para evitar cam
       usuario: {
         id: usuarioEncontrado.idUsuario,
         nome: usuarioEncontrado.Nome,
-        email: usuarioEncontrado.Email
+        email: usuarioEncontrado.Email,
+        tipo: usuarioEncontrado.Tipo
       }
     });
 

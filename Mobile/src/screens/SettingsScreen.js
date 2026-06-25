@@ -134,31 +134,6 @@ export default function ConfiguracoesScreen({ navigation }) {
 
         </View>
 
-        {/* Repositório */}
-
-        <Text style={styles.titulo}>
-          Repositório
-        </Text>
-
-        <View style={styles.card}>
-
-          <ItemBotao
-            icon="download"
-            titulo="Downloads automáticos"
-          />
-
-          <ItemBotao
-            icon="cloud-upload"
-            titulo="Backup automático"
-          />
-
-          <ItemBotao
-            icon="folder"
-            titulo="Arquivos recentes"
-          />
-
-        </View>
-
         {/* Notificações */}
 
         <Text style={styles.titulo}>

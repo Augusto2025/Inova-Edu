@@ -6,6 +6,7 @@ import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import SplashScreen from './SplashScreen';
 import { API_ENDPOINTS } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // npm install react-native-keyboard-aware-scroll-view
 
@@ -48,6 +49,10 @@ export default function LoginScreen({ navigation }) {
             const dados = await resposta.json();
 
             if (dados.sucesso) {
+                // ATENÇÃO AQUI: Salva o ID real do usuário no celular 
+                // Convertemos para String porque o AsyncStorage só aceita texto.
+                await AsyncStorage.setItem('idUsuario', dados.usuario.id.toString());
+                await AsyncStorage.setItem('tipo', dados.usuario.tipo);
                 // Se o banco validou, avança para a Main passando os dados obtidos (opcional)
                 setCarregandoTransicao(true);
 
@@ -55,7 +60,7 @@ export default function LoginScreen({ navigation }) {
                 setTimeout(() => {
                     // 3. Só depois do tempo, joga ele para a tela principal
                     navigation.replace('Main', { usuario: dados.usuario });
-                }, 1200); // 1200 milissegundos bate com o tempo da sua Splash!
+                }, 1200); 
             } else {
                 // Alerta com a mensagem de erro vinda do seu banco de dados
                 Alert.alert('Erro de Login', dados.mensagem);
