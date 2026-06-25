@@ -2,7 +2,7 @@
    VARIÁVEIS INSTITUCIONAIS DO DESIGN
    =========================================================== */
 :root {
-  --laranja-Senac: #F7941D;
+  --laranja-Senac: #f7941d;
   --azul-Senac: #0046b8;
   --azul-Senac-hover: #00358a;
   --background-cinza: #f3f4f6;
@@ -16,13 +16,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
   background-color: #f8fafc;
   color: var(--text-main);
-
 }
 
 .container {
@@ -40,15 +39,14 @@ body {
 }
 
 .rota {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 15px;
 }
-
 
 /* .header-top-row {
   display: flex;
@@ -75,7 +73,7 @@ body {
 }
 /* Detalhe da barra laranja abaixo do título */
 .main-title::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   bottom: 0;
@@ -88,7 +86,7 @@ body {
 /* ===========================================================
    BOTÃO DE CRIAR FÓRUM (ESTILO DO NOVO CARD DO TOPO)
    =========================================================== */
-.botao-criar-forum {
+/* .botao-criar-forum {
   background-color: var(--laranja-Senac);
   color: #ffffff;
   border: none;
@@ -107,163 +105,188 @@ body {
 .botao-criar-forum:hover {
   transform: translateY(-2px);
   background-color: #e08316;
-}
-
+} */
 
 /* ===========================================================
    GRID DE CARDS DE TEMAS DOS FÓRUNS
    =========================================================== */
+
 .forum-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 30px;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
 }
 
+/* CARD PADRÃO */
 .forum-card {
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 30px 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 230px;
-  border: 1px solid rgba(0, 0, 0, 0.005);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .forum-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  transform: translateY(-5px);
 }
 
-.card-top-content {
+/* CARD CRIAR FÓRUM */
+.create-card {
+  border: 2px dashed #ff9800;
+  background: #fffaf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BOTÃO DENTRO DO CARD */
+.botao-criar-forum {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 8px;
+  font-family: inherit;
 }
 
+/* CÍRCULO COM + */
+.plus-circle {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #ff9800;
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* TEXTO */
+.botao-criar-forum span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.botao-criar-forum small {
+  font-size: 12px;
+  color: #777;
+}
+
+/* TITULO CARD */
 .forum-card-title {
-  font-size: 1.8rem;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--azul-Senac);
-  margin-bottom: 8px;
+  color: #0d47a1;
 }
 
 .orange-divider {
-  width: 40px;
+  width: 50px;
   height: 3px;
-  background-color: var(--laranja-Senac);
-  border-radius: 2px;
-  margin-bottom: 15px;
+  background: #ff9800;
+  margin-top: 6px;
+  border-radius: 10px;
 }
 
+/* META */
 .forum-card-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 25px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #666;
 }
 
-.meta-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.5px;
-}
-
-.meta-value {
-  font-size: 0.95rem;
-  color: #475569;
-  font-weight: 500;
-}
-
-/* Rodapé Interno do Card e Ações */
+/* BOTÕES */
 .card-footer-actions {
+  margin-top: 15px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 100%;
 }
 
-.forum-card .Botao_entrar_forum {
-  background-color: var(--azul-Senac);
-  color: #ffffff;
+.Botao_entrar_forum {
+  background: #0d47a1;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
   text-decoration: none;
-  text-align: center;
-  padding: 10px 45px;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-
-.forum-card .Botao_entrar_forum:hover {
-  background-color: var(--azul-Senac-hover);
-}
-
-/* Painel flutuante interno para ações administrativas (Edit/Delete) */
-.acoes-forum {
-  position: absolute;
-  right: 0;
-  display: flex;
-  gap: 8px;
+  font-size: 13px;
 }
 
 .acoes-forum button {
-  background: transparent;
   border: none;
+  background: #f1f1f1;
+  padding: 6px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
-  color: #94a3b8;
-  transition: color 0.2s ease;
 }
 
 .acoes-forum button:hover {
-  color: var(--laranja-Senac);
+  background: #ddd;
 }
 
-/* Card pontilhado para placeholder de futuros itens */
-.card-placeholder-dashed {
-  border: 2px dashed #cbd5e1;
-  background-color: transparent;
-  box-shadow: none;
-  justify-content: center;
-  align-items: center;
-}
 
-.card-placeholder-dashed:hover {
-  box-shadow: none;
-  transform: none;
-}
 
-.placeholder-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #94a3b8;
-  gap: 12px;
-}
 
-.placeholder-icon {
-  font-size: 2rem;
-}
 
-.placeholder-content span {
-  font-size: 0.95rem;
-  font-weight: 500;
-}
 
-.empty-state-wrapper {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px;
-  color: #64748b;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ===========================================================
    SUPORTE DE ESTILOS PARA OS MODAIS (SOBREPOSIÇÃO)

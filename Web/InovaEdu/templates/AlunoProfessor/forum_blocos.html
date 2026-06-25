@@ -3,7 +3,6 @@
 
 {% block content %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/global.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="{% static 'styles/forum_blocos.css' %}">
     <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     
@@ -47,67 +46,52 @@
 
     <main class="container">
 
-        <section class="forum-grid">
+       <section class="forum-grid">
 
-          
-
-           
-            
-            {% for Forum in foruns %}
-                <article class="forum-card">
-                   
-
-                    <div class="card-top-content">
-                        <h2 class="forum-card-title">{{ Forum.nome }}</h2>
-                        <div class="orange-divider"></div>
-                    </div>
-                     <button id="abrirModalForum" class="botao-criar-forum" type="button">
-                        + Criar Fórum
-                    </button>
-                    
-                    <div class="forum-card-meta">
-                        <span class="meta-label">DATA DE CRIAÇÃO</span>
-                        <span class="meta-value">{{ Forum.data_criacao }}</span>
-                    </div>
-
-                    <div class="card-footer-actions">
-                        <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">Entrar</a>
-                        
-                        {% if request.session.usuario_email == Forum.usuario.email %}
-                            <div class="acoes-forum">
-                                <button class="btn-editar" 
-                                    data-forum-id="{{ Forum.idforum }}" 
-                                    data-forum-nome="{{ Forum.nome }}" 
-                                    data-topico-titulo="{{ Forum.topicos.first.titulo }}" 
-                                    data-topico-descricao="{{ Forum.topicos.first.descricao|default_if_none:'' }}">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button class="btn-excluir" data-forum-id="{{ Forum.idforum }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        {% endif %}
-                    </div>
-                </article>
-            {% empty %}
-                <div class="empty-state-wrapper">
-                    {% if query %}
-                        <p>Nenhum resultado encontrado para a sua busca.</p>
-                    {% else %}
-                        <p>Nenhum fórum criado até o momento.</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-            <article class="forum-card card-placeholder-dashed">
-                <div class="placeholder-content">
-                    <i class="fa-solid fa-plus placeholder-icon"></i>
-                    <span>Outros fóruns em breve</span>
-                </div>
+            <!-- CARD CRIAR FÓRUM -->
+            <article class="forum-card create-card">
+                <button id="abrirModalForum" class="botao-criar-forum" type="button">
+                    <div class="plus-circle">+</div>
+                    <span>Novo Fórum</span>
+                    <small>Clique para criar um novo fórum</small>
+                </button>
             </article>
 
+            {% for Forum in foruns %}
+            <article class="forum-card">
+
+                <div class="card-top-content">
+                    <h2 class="forum-card-title">{{ Forum.nome }}</h2>
+                    <div class="orange-divider"></div>
+                </div>
+
+                <div class="forum-card-meta">
+                    <span class="meta-label">DATA DE CRIAÇÃO</span>
+                    <span class="meta-value">{{ Forum.data_criacao }}</span>
+                </div>
+
+                <div class="card-footer-actions">
+                    <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
+                        Entrar
+                    </a>
+
+                    {% if request.session.usuario_email == Forum.usuario.email %}
+                    <div class="acoes-forum">
+                        <button class="btn-editar"
+                            data-forum-id="{{ Forum.idforum }}">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-excluir" data-forum-id="{{ Forum.idforum }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </article>
+            {% endfor %}
+
         </section>
-    </main>
 
     <div id="modalCriarForum" class="modal-overlay">
         <div class="modal-content">
