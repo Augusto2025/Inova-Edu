@@ -12,11 +12,13 @@ import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker'; 
 import Header from "../components/Header";
 import { COLORS } from "../components/Cores";
+import { useTheme } from '../context/ThemeContext';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
 export default function ProfileScreen() {
   const [carregando, setCarregando] = useState(true);
+  const { theme, fontSizeScale } = useTheme();
   
   // Dados do Usuário
   const [user, setUser] = useState({
@@ -313,22 +315,17 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"}/>
       
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         
         {/* CARD PRINCIPAL DO PERFIL */}
-        <View style={styles.profileHeaderCard}>
+        <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}>
           <View style={styles.photoContainer}>
-            <View style={styles.profileImagePlaceholder}>
-              {/* RENDERIZAÇÃO CONDICIONAL DA IMAGEM BLINDADA */}
+            <View style={[styles.profileImagePlaceholder, { backgroundColor: theme.background }]}>
               {user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
-                <Image 
-                  source={{ uri: user.imagem }} 
-                  style={styles.profileImage} 
-                  onError={(e) => console.log("❌ Erro ao renderizar a URL da imagem:", e.nativeEvent.error)}
-                />
+                <Image source={{ uri: user.imagem }} style={styles.profileImage} />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
@@ -338,14 +335,14 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.userName}>{user.nome} {user.sobrenome}</Text>
+          <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{user.nome} {user.sobrenome}</Text>
           
-          <View style={styles.turmaBadge}>
+          <View style={styles.turmaBadge, [{ backgroundColor: theme.card, borderColor: theme.border }]}>
             <Ionicons name="school-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
-            <Text style={styles.turmaText}>{user.turma}</Text>
+            <Text style={[styles.turmaText, { color: theme.text, fontSize: 13 * fontSizeScale }]}>{user.turma}</Text>
           </View>
           
-          <Text style={styles.userDesc}>{user.descricao}</Text>
+          <Text style={[styles.userDesc, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{user.descricao}</Text>
 
           <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
             <Ionicons name="create-outline" size={18} color="white" />
@@ -358,28 +355,29 @@ export default function ProfileScreen() {
           <View style={styles.sectionHeader}>
             <View style={styles.titleRow}>
               <Ionicons name="ribbon-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
-              <Text style={styles.sectionTitle}>Certificados</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Certificados</Text>
             </View>
             <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
               <Ionicons name="add" size={20} color="white" />
             </TouchableOpacity>
           </View>
-
+          
+          {/* faltando o tema escuro */}
           {certificados.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Ionicons name="document-text-outline" size={32} color="#BBB" />
-              <Text style={styles.emptyText}>Nenhum certificado adicionado.</Text>
+              <Text style={[styles.emptyText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nenhum certificado adicionado.</Text>
             </View>
           ) : (
             certificados.map(cert => (
-              <View key={cert.id} style={styles.certCard}>
+              <View key={cert.id} style={[styles.certCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                 <View style={styles.certIconBadge}>
                   <FontAwesome5 name="award" size={22} color={COLORS.primary} />
                 </View>
 
                 <View style={styles.certInfo}>
-                  <Text style={styles.certTitle} numberOfLines={1}>{cert.nome}</Text>
-                  <Text style={styles.certSub} numberOfLines={2}>{cert.descricao || "Sem descrição"}</Text>
+                  <Text style={[styles.certTitle, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>{cert.nome}</Text>
+                  <Text style={[styles.certSub, { color: theme.text, fontSize: 12 * fontSizeScale }]} numberOfLines={2}>{cert.descricao || "Sem descrição"}</Text>
                 </View>
 
                 <View style={styles.certActionColumn}>
@@ -400,21 +398,21 @@ export default function ProfileScreen() {
           <View style={styles.sectionHeader}>
             <View style={styles.titleRow}>
               <Ionicons name="folder-open-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
-              <Text style={styles.sectionTitle}>Projetos Integradores</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Projetos Integradores</Text>
             </View>
           </View>
           
           {projetos.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Ionicons name="code-slash" size={32} color="#BBB" />
-              <Text style={styles.emptyText}>Nenhum projeto vinculado a você.</Text>
+              <Text style={[styles.emptyText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nenhum projeto vinculado a você.</Text>
             </View>
           ) : (
             projetos.map(proj => (
               <View key={proj.id} style={styles.projectCard}>
                 <View style={styles.projectMainInfo}>
-                  <Text style={styles.projectTitle}>{proj.nome}</Text>
-                  <Text style={styles.projectSub}>{proj.descricao || "Sem descrição disponível."}</Text>
+                  <Text style={[styles.projectTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{proj.nome}</Text>
+                  <Text style={[styles.projectSub, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{proj.descricao || "Sem descrição disponível."}</Text>
                 </View>
                 
                 {/* ✅ SISTEMA DE LINK REDIRECIONÁVEL ATIVADO */}
@@ -423,7 +421,7 @@ export default function ProfileScreen() {
                   activeOpacity={0.7}
                   onPress={() => proj.link_repo ? Linking.openURL(proj.link_repo) : Alert.alert("Ops", "Link do repositório não disponível.")}
                 >
-                  <Text style={styles.repoLinkText}>Acessar Repositório</Text>
+                  <Text style={[styles.repoLinkText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Acessar Repositório</Text>
                   <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
                 </TouchableOpacity>
               </View>
@@ -447,17 +445,17 @@ export default function ProfileScreen() {
 
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Nome</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nome</Text>
                   <TextInput placeholder="Digite seu nome..." value={perfilForm.nome} onChangeText={(text) => setPerfilForm({ ...perfilForm, nome: text })} style={styles.input} />
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Sobrenome</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Sobrenome</Text>
                   <TextInput placeholder="Digite seu sobrenome..." value={perfilForm.sobrenome} onChangeText={(text) => setPerfilForm({ ...perfilForm, sobrenome: text })} style={styles.input} />
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Bio / Descrição</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Bio / Descrição</Text>
                   <TextInput placeholder="Fale um pouco sobre você..." value={perfilForm.descricao} onChangeText={(text) => setPerfilForm({ ...perfilForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={3} textAlignVertical="top" />
                 </View>
 
@@ -485,12 +483,12 @@ export default function ProfileScreen() {
 
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Nome do Certificado</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nome do Certificado</Text>
                   <TextInput placeholder="Ex: Curso de React Native" value={certForm.nome} onChangeText={(text) => setCertForm({ ...certForm, nome: text })} style={styles.input} />
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Descrição / Instituição</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Descrição / Instituição</Text>
                   <TextInput placeholder="Ex: Udemy - 40 horas" value={certForm.descricao} onChangeText={(text) => setCertForm({ ...certForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={2} textAlignVertical="top" />
                 </View>
 
@@ -516,7 +514,7 @@ export default function ProfileScreen() {
               </View>
 
               <View style={styles.modalBody}>
-                <Text style={styles.deleteConfirmText}>
+                <Text style={[styles.deleteConfirmText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
                   Tem certeza de que deseja remover o certificado <Text style={{ fontWeight: 'bold', color: '#1E293B' }}>"{certParaExcluir.nome}"</Text>? Essa ação não pode ser desfeita.
                 </Text>
 

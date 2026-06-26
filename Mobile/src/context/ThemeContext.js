@@ -1,11 +1,10 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react'; // Importado useContext
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
-    // 1.0 = Normal, 1.2 = Grande, 1.4 = Muito Grande
     const [fontSizeScale, setFontSizeScale] = useState(1.0); 
 
     useEffect(() => {
@@ -24,7 +23,6 @@ export const ThemeProvider = ({ children }) => {
         await AsyncStorage.setItem('isDarkMode', JSON.stringify(newValue));
     };
 
-    // Altera o tamanho da fonte em ciclo (Normal -> Grande -> Muito Grande -> Normal)
     const alterarTamanhoFonte = async () => {
         let novaEscala = 1.0;
         if (fontSizeScale === 1.0) novaEscala = 1.2;
@@ -35,7 +33,6 @@ export const ThemeProvider = ({ children }) => {
         await AsyncStorage.setItem('fontSizeScale', JSON.stringify(novaEscala));
     };
 
-    // Retorna o texto amigável do tamanho atual
     const obterNomeTamanhoFonte = () => {
         if (fontSizeScale === 1.0) return "Normal";
         if (fontSizeScale === 1.2) return "Grande";
@@ -63,3 +60,6 @@ export const ThemeProvider = ({ children }) => {
         </ThemeContext.Provider>
     );
 };
+
+// ADICIONE ESTA LINHA ABAIXO:
+export const useTheme = () => useContext(ThemeContext);

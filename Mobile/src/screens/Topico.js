@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, Keyboard, TouchableWithoutFeedback, ActivityIndicator, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback, ActivityIndicator, Alert, FlatList } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import BarraPesquisa from "../components/BarraPesquisa";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { COLORS } from "../components/Cores";
+import { useTheme } from '../context/ThemeContext';
 
-const COLORS = { primary: "#0e68d6" };
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 const URL_TOPICO = URL_BASE.endsWith('/') ? `${URL_BASE}topico` : `${URL_BASE}/topico`;
 
 export default function TopicosScreen({ navigation, route }) {
+  const { theme, fontSizeScale } = useTheme();
   // Pega o objeto do Fórum que foi clicado na tela anterior
   const forumSelecionado = route.params?.topico; 
 
@@ -141,24 +143,52 @@ export default function TopicosScreen({ navigation, route }) {
     const exibirBotoes = item.usuarioIdCriador === usuarioLogadoId && usuarioLogadoId !== null;
 
     return (
-      <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Conversa", { forum: "Fórum", topico: item })} activeOpacity={0.9}>
+      <TouchableOpacity 
+        // 1. Fundo do card dinâmico
+        style={[styles.card, { backgroundColor: theme.card }]} 
+        onPress={() => navigation.navigate("Conversa", { forum: "Fórum", topico: item })} 
+        activeOpacity={0.9}
+      >
         <View style={styles.iconBox}><Ionicons name="chatbubble-ellipses" size={22} color="#fff" /></View>
+        
         <View style={styles.content}>
           <View style={styles.topRow}>
-            <Text style={styles.title} numberOfLines={1}>{item.titulo}</Text>
-            <Text style={styles.time}>{item.horario || "Agora"}</Text>
+            {/* 2. Cor do texto e Fonte escalável */}
+            <Text style={[styles.title, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>
+              {item.titulo}
+            </Text>
+            <Text style={[styles.time, { color: theme.text, fontSize: 11 * fontSizeScale }]}>
+              {item.horario || "Agora"}
+            </Text>
           </View>
-          <Text style={styles.date}>Autor: {item.autor || "Anônimo"}</Text>
-          <Text style={styles.description} numberOfLines={2}>{item.mensagem}</Text>
+          
+          <Text style={[styles.date, { color: theme.text, fontSize: 13 * fontSizeScale }]}>
+              Autor: {item.autor || "Anônimo"}
+          </Text>
+          
+          <Text style={[styles.description, { color: theme.text, fontSize: 13 * fontSizeScale }]} numberOfLines={2}>
+              {item.mensagem}
+          </Text>
+          
           <View style={styles.footer}>
             <View style={styles.footerLeft}>
-              <View style={styles.info}><Ionicons name="chatbubble-outline" size={14} color="#777" /><Text style={styles.infoText}>Visualizar conversa</Text></View>
+              <View style={styles.info}>
+                {/* 3. Ícone também recebe a cor do tema para garantir contraste */}
+                <Ionicons name="chatbubble-outline" size={14} color={theme.text} />
+                <Text style={[styles.infoText, { color: theme.text, fontSize: 12 * fontSizeScale }]}>
+                    Visualizar conversa
+                </Text>
+              </View>
             </View>
             
             {exibirBotoes && (
               <View style={styles.actions}>
-                <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, descricao: item.mensagem, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
+                <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, descricao: item.mensagem, id: item.id })}>
+                  <Feather name="edit-2" size={16} color="#5B5EF7" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}>
+                  <MaterialIcons name="delete-outline" size={18} color="#FF6B6B" />
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -168,34 +198,46 @@ export default function TopicosScreen({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Header nomeTela={"Título"} temGoBack={true} telaDestino={"Fórum"} />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Header nomeTela={"Tópico"} temGoBack={true} telaDestino={"Fórum"} />
       <BarraPesquisa />
 
+      {/* Caminho (Breadcrumb) com cor dinâmica */}
       <View style={styles.pathContainer}>
-        <Text style={styles.pathLabel}>Fórum</Text>
-        <Ionicons name="chevron-forward" size={14} color="#777" style={styles.iconArrow} />
-        <Text style={styles.pathActive} numberOfLines={1}>{forumSelecionado?.titulo || "Tópicos"}</Text>
+        <Text style={[styles.pathLabel, { color: theme.text }]}>Fórum</Text>
+        <Ionicons name="chevron-forward" size={14} color={theme.text} style={styles.iconArrow} />
+        <Text style={[styles.pathActive, { color: theme.text }]} numberOfLines={1}>
+            {forumSelecionado?.titulo || "Tópicos"}
+        </Text>
       </View>
 
       {carregando ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={{ marginTop: 10, color: '#777' }}>Carregando tópicos...</Text>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>Carregando tópicos...</Text>
         </View>
       ) : (
-        <FlatList data={topicos} keyExtractor={(item) => item.id.toString()} renderItem={renderItem} contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 120 }} showsVerticalScrollIndicator={false} />
+        <FlatList 
+            data={topicos} 
+            keyExtractor={(item) => item.id.toString()} 
+            // IMPORTANTE: Se o seu  tiver Textos e Views, aplique theme e fontSizeScale lá também!
+            renderItem={renderItem} 
+            contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 120 }} 
+            showsVerticalScrollIndicator={false} 
+        />
       )}
 
-      <TouchableOpacity activeOpacity={0.8} style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", descricao: "", id: null })}><Ionicons name="add" size={32} color="#fff" /></TouchableOpacity>
+      <TouchableOpacity activeOpacity={0.8} style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", descricao: "", id: null })}>
+        <Ionicons name="add" size={32} color="#fff" />
+      </TouchableOpacity>
 
       {/* MODAL INTEGRADO */}
       <Modal visible={modal.visible} transparent animationType="fade" onRequestClose={fecharModal}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={fecharModal}>
           <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
+    renderItem        <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{modal.modo === "Criar" ? "Criar Tópico" : "Editar Tópico"}</Text>
+                <Text style={[styles.modalTitle, { fontSize: 18 * fontSizeScale }]}>{modal.modo === "Criar" ? "Criar Tópico" : "Editar Tópico"}</Text>
                 <TouchableOpacity onPress={fecharModal} style={{ position: 'absolute', right: 20 }}>
                   <Feather name="x" size={20} color="white" />
                 </TouchableOpacity>
@@ -203,13 +245,26 @@ export default function TopicosScreen({ navigation, route }) {
 
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Título do Tópico</Text>
-                  <TextInput placeholder="Digite o título..." value={modal.titulo} onChangeText={(t) => setModal({ ...modal, titulo: t })} style={styles.input} />
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Título do Tópico</Text>
+                  <TextInput 
+                    placeholder="Digite o título..." 
+                    placeholderTextColor={theme.text + '80'}
+                    value={modal.titulo} 
+                    onChangeText={(t) => setModal({ ...modal, titulo: t })} 
+                    style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border, fontSize: 16 * fontSizeScale }]} 
+                  />
                 </View>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Descrição</Text>
-                  <TextInput placeholder="Digite a descrição..." value={modal.descricao} onChangeText={(d) => setModal({ ...modal, descricao: d })} style={[styles.input, { height: 80, textAlignVertical: 'top' }]} multiline />
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Descrição</Text>
+                  <TextInput 
+                    placeholder="Digite a descrição..." 
+                    placeholderTextColor={theme.text + '80'}
+                    value={modal.descricao} 
+                    onChangeText={(d) => setModal({ ...modal, descricao: d })} 
+                    style={[styles.input, { height: 80, textAlignVertical: 'top', backgroundColor: theme.background, color: theme.text, borderColor: theme.border, fontSize: 16 * fontSizeScale }]} 
+                    multiline 
+                  />
                 </View>
 
                 <TouchableOpacity style={styles.saveBtn} onPress={salvarTopico}>
