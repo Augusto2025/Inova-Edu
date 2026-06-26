@@ -48,19 +48,7 @@ body {
   margin-bottom: 15px;
 }
 
-/* .header-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 10px;
-}
 
-.rota-texto {
-  font-size: 0.88rem;
-  color: #64748b;
-  font-weight: 500;
-} */
 
 .main-title {
   color: var(--azul-Senac);
@@ -82,30 +70,6 @@ body {
   background-color: var(--laranja-Senac);
   border-radius: 2px;
 }
-
-/* ===========================================================
-   BOTÃO DE CRIAR FÓRUM (ESTILO DO NOVO CARD DO TOPO)
-   =========================================================== */
-/* .botao-criar-forum {
-  background-color: var(--laranja-Senac);
-  color: #ffffff;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(247, 148, 29, 0.25);
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  position: absolute;
-  right: 26em;
-  top: 13%;
-}
-
-.botao-criar-forum:hover {
-  transform: translateY(-2px);
-  background-color: #e08316;
-} */
 
 /* ===========================================================
    GRID DE CARDS DE TEMAS DOS FÓRUNS
