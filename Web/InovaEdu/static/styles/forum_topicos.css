@@ -185,7 +185,13 @@ CARD DOIS TOPICOS
 }
 
 
+.modal-overlay {
+    display: none;
+}
 
+.modal-overlay.open {
+    display: flex;
+}
 
 
 
