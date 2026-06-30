@@ -6,6 +6,12 @@
   --azul-Senac: #004A8D;
   --cinza-Senac: #D9D9D9;
 }
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 .criar-evento-container{
   max-width:720px;

@@ -74,24 +74,39 @@
     margin-bottom: 25px;
 }
 
-/* .rota  {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin-bottom: 15px;
-} */
+
+
+
 
 .rota {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-size: 0.9rem;
     color: var(--text-muted);
     font-weight: 500;
+    margin-bottom: 15px;
 }
+
+.rota a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.rota a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
