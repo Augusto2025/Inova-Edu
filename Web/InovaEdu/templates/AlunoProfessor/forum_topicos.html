@@ -12,8 +12,10 @@
         
         <header class="section-header">
             <div class="rota">
-                Página: <a href="{% url 'forum_blocos' %}">Todos os fóruns</a> >
-                {{ forum.nome }}
+                <span>Página:</span>
+                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a>
+                <span>></span>
+                <span>{{ forum.nome }}</span>
             </div>
             <div class="titulo">
                 <p class="main-title">Tópicos do fórum</p>
@@ -38,22 +40,6 @@
     </main> 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-                
-   
     <main class="container">
         <div class="grid-topicos">
             <!-- CARD CRIAR TÓPICO -->

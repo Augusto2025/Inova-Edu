@@ -184,6 +184,9 @@ CARD DOIS TOPICOS
   }
 }
 
+/* =========================
+  ESSA DUAS CLASS SÃO PARA A MODAL ABRIR E FECHAR, NÃO REMOVA
+========================= */
 
 .modal-overlay {
     display: none;
@@ -192,6 +195,7 @@ CARD DOIS TOPICOS
 .modal-overlay.open {
     display: flex;
 }
+/* =========================  */
 
 
 
