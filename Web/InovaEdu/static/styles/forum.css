@@ -31,7 +31,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    flex-direction: row-reverse;
+        flex-direction: row-reverse;
 }
 
 .forum-icon {
