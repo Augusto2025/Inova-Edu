@@ -108,17 +108,7 @@ body {
     flex: 1;
 }
 
-.tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 4px;
-    width: max-content;
-    margin-bottom: 12px;
-    letter-spacing: 0.5px;
-    background-color: #eff6ff;
-    color: #2563eb;
-}
+
 
 .card-content h3 {
     font-size: 1.2rem;
