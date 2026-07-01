@@ -60,8 +60,7 @@ class CalendarioDesktopApp(ctk.CTkFrame):
                      font=ctk.CTkFont(size=26, weight="bold"), 
                      text_color=Branco).pack(side="left", padx=30)
 
-        # --- NOVA REGRA DE PERMISSÃO ---
-        # O Botão Criar Evento SÓ aparece na tela se o usuário logado for um Professor
+        # SE FOR PROFESSOR: Renderiza o botão. SE FOR ALUNO: O botão simplesmente não existe na tela
         if self.controller.e_professor():
             self.btn_criar = ctk.CTkButton(self.header, text="➕ Criar Evento", width=140, 
                                            fg_color="#22c55e", hover_color="#16a34a", 
@@ -220,8 +219,10 @@ class CalendarioDesktopApp(ctk.CTkFrame):
                 dia_frame.configure(border_color="#3b82f6", border_width=2)
 
     # --- MÉTODOS DE GERENCIAMENTO (POP-UPS DE FORMULÁRIOS) ---
-
     def abrir_modal_criar(self):
+        if not self.controller.e_professor():
+            return
+        
         modal = ctk.CTkToplevel(self)
         modal.title("Criar Novo Evento")
         modal.geometry("500x550")
@@ -305,21 +306,33 @@ class CalendarioDesktopApp(ctk.CTkFrame):
             if sucesso:
                 modal.destroy()
                 self.atualizar_calendario()
-                # Limpa os detalhes inferiores para atualizar a tela
-                for widget in self.detalhes_frame.winfo_children(): widget.destroy()
-                self.label_aviso.place(relx=0.5, rely=0.5, anchor="center")
+                
+                # --- CORREÇÃO DO ERRO AQUI ---
+                # Limpa tudo com segurança
+                for widget in self.detalhes_frame.winfo_children(): 
+                    widget.destroy()
+                
+                # Criamos um NOVO label de aviso na hora em vez de tentar usar o antigo que foi destruído
+                aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
+                                     font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
+                aviso.place(relx=0.5, rely=0.5, anchor="center")
             else:
                 print(f"Erro: {msg}")
 
         ctk.CTkButton(modal, text="Atualizar Dados", fg_color="#3b82f6", command=salvar_alteracao).pack(pady=20)
 
     def confirmar_exclusao(self, id_evento):
-        # Caixa simples de confirmação no terminal ou modal se preferir, aqui executa direto
         msg, sucesso = self.controller.deletar_evento(id_evento)
         if sucesso:
             self.atualizar_calendario()
-            for widget in self.detalhes_frame.winfo_children(): widget.destroy()
-            self.label_aviso.place(relx=0.5, rely=0.5, anchor="center")
+            
+            # --- CORREÇÃO DO ERRO NA EXCLUSÃO TAMBÉM ---
+            for widget in self.detalhes_frame.winfo_children(): 
+                widget.destroy()
+                
+            aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
+                                 font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
+            aviso.place(relx=0.5, rely=0.5, anchor="center")
 
     def alterar_mes(self, delta):
         self.mes_atual += delta

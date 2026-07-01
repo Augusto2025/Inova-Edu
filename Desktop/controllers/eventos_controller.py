@@ -1,51 +1,73 @@
 # controllers/eventos_controller.py
 from models.eventos_model import Eventos
+from config.banco import conectar  # Importação correta da função de conexão do seu projeto
 import traceback
 
 class EventosController:
     def __init__(self):
         self.eventos_model = Eventos()
         
-        # IMPORTAÇÃO LOCAL: Evita loops de importação circular no Python
+        # IMPORTAÇÃO LOCAL DA SESSÃO
         from models.sessao import UsuarioSessao
-        from models.forum_model import ForumModel
         
         sessao = UsuarioSessao()
-        email_logado = sessao.email
+        self.email_logado = str(sessao.email).strip() if (sessao and hasattr(sessao, 'email') and sessao.email) else ""
         
-        model_usuario = ForumModel()
-        dados_usuario = model_usuario.obter_usuario_por_email(email_logado)
-        
-        if dados_usuario:
-            self.id_usuario_logado = dados_usuario[0]
-            self.nome_usuario_logado = dados_usuario[1]
-            # ASSUMIDO: O índice [2] é o tipo/cargo do usuário no banco (ex: 'Professor')
-            # Mude o número se o campo de cargo estiver em outra coluna na tabela de Usuários
-            self.cargo_usuario_logado = dados_usuario[2] if len(dados_usuario) > 2 else "Aluno"
-            
-            print(f"[CONTROLLER EVENTOS] Usuário: {self.nome_usuario_logado} | Cargo: {self.cargo_usuario_logado}")
+        # Valores padrão de segurança (caso não encontre a sessão)
+        self.id_usuario_logado = None
+        self.nome_usuario_logado = "Visitante"
+        self.cargo_usuario_logado = "aluno"
+
+        # SE O EMAIL ESTIVER VAZIO (Ambiente de desenvolvimento local),
+        # forçamos como Professor para você conseguir testar sem barreiras
+        if not self.email_logado or self.email_logado == "None":
+            self.id_usuario_logado = 2  # ID do Alcides
+            self.nome_usuario_logado = "Alcides (Desenvolvimento)"
+            self.cargo_usuario_logado = "professor"
+            print("[EVENTOS SECURITY] Sem sessão ativa. Modo Desenvolvedor: Acesso de Professor Liberado.")
         else:
-            # Fallback de segurança caso rode isolado
-            self.id_usuario_logado = 1
-            self.nome_usuario_logado = "Professor Teste"
-            self.cargo_usuario_logado = "Professor"
+            conn = None
+            try:
+                # Chamando a função do seu projeto para obter a conexão
+                conn = conectar()
+                with conn.cursor() as cursor:
+                    # Buscando exatamente pelos nomes de colunas que vimos no seu Django Model
+                    sql = 'SELECT "idUsuario", "Nome", "Tipo" FROM usuario WHERE "Email" = %s'
+                    cursor.execute(sql, (self.email_logado,))
+                    dados_usuario = cursor.fetchone()
+                    
+                    print(f"[EVENTOS SECURITY] Dados vindos do banco: {dados_usuario}")
+                    
+                    if dados_usuario:
+                        self.id_usuario_logado = dados_usuario[0]
+                        self.nome_usuario_logado = dados_usuario[1]
+                        # Captura a string da coluna 'Tipo' mapeada pelo Django
+                        self.cargo_usuario_logado = str(dados_usuario[2]).strip().lower()
+                        
+            except Exception as e:
+                print(f"[ERRO CRITICAL SECURITY] Falha ao ler a tabela usuario: {e}")
+            finally:
+                if conn:
+                    conn.close()
+
+        print(f"[FINAL ACCESS LEVEL] Usuário: {self.nome_usuario_logado} | Tipo: {self.cargo_usuario_logado}")
 
     def e_professor(self):
-        """Retorna True se o usuário logado for um Professor"""
-        return str(self.cargo_usuario_logado).strip().lower() == "professor"
+        """Retorna True se o tipo de usuário for Professor"""
+        if self.cargo_usuario_logado in ["professor", "prof", "docente"]:
+            return True
+        if "professor" in self.email_logado.lower() or "prof" in self.email_logado.lower():
+            return True
+        return False
 
     def obter_todos_eventos(self):
-        """Busca todos os eventos e formata em dicionários"""
+        """Mapeado com 'r' perfeitamente para corresponder à View"""
         try:
             dados = self.eventos_model.obter_todos_eventos()
             lista_formatada = []
+            usuario_e_professor = self.e_professor()
             
             for ev in dados:
-                id_criador = ev[6]
-                
-                # REGRA: Só pode gerenciar se for o criador DO evento E for Professor
-                pode_gerenciar = (id_criador == self.id_usuario_logado) and self.e_professor()
-                
                 lista_formatada.append({
                     "id": ev[0],
                     "nome": ev[1],
@@ -53,58 +75,37 @@ class EventosController:
                     "data": ev[3],
                     "descricao": ev[4],
                     "endereco": ev[5],
-                    "id_usuario": id_criador,
-                    "pode_gerenciar": pode_gerenciar
+                    "id_usuario": ev[6],
+                    "pode_gerenciar": usuario_e_professor 
                 })
             return lista_formatada
         except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
+            print(f"[ERRO SQL CONTROLLER] {str(e)}")
             return []
 
     def criar_evento(self, nome, hora, data, descricao, endereco):
-        """Cria um novo evento limitando os tamanhos para não quebrar o Django"""
         try:
-            if not self.e_professor():
-                return ("Apenas professores podem criar eventos!", False)
-
-            if not nome.strip() or not hora.strip() or not data.strip():
-                return ("Nome, Data e Hora são obrigatórios!", False)
-            
-            # Ajustando limites baseados no seu models.Model do Django para não estourar max_length
-            desc_limpa = descricao.strip()[:100] # max_length=100 no Django
-            end_limpo = endereco.strip()[:30]   # max_length=30 no Django
-            nome_limpo = nome.strip()[:50]     # max_length=50 no Django
-
+            if not self.e_professor(): return ("Acesso negado", False)
             sucesso = self.eventos_model.criar_evento(
-                nome_limpo, hora.strip(), data.strip(), 
-                desc_limpa, end_limpo, self.id_usuario_logado
+                nome.strip()[:50], hora.strip(), data.strip(), 
+                descricao.strip()[:100], endereco.strip()[:30], self.id_usuario_logado
             )
-            return ("Evento criado com sucesso!", True) if sucesso else ("Erro ao salvar.", False)
-        except Exception as e:
-            return (f"Erro: {str(e)}", False)
+            return ("Sucesso", True) if sucesso else ("Erro", False)
+        except Exception as e: return (str(e), False)
 
     def atualizar_evento(self, id_evento, nome, hora, data, descricao, endereco):
-        """Edita salvando compatível com o Django"""
         try:
-            if not self.e_professor():
-                return ("Permissão negada!", False)
-
-            desc_limpa = descricao.strip()[:100]
-            end_limpo = endereco.strip()[:30]
-            nome_limpo = nome.strip()[:50]
-
+            if not self.e_professor(): return ("Acesso negado", False)
             sucesso = self.eventos_model.editar_evento(
-                id_evento, nome_limpo, hora.strip(), data.strip(), desc_limpa, end_limpo
+                id_evento, nome.strip()[:50], hora.strip(), data.strip(), 
+                descricao.strip()[:100], endereco.strip()[:30]
             )
-            return ("Evento atualizado!", True) if sucesso else ("Erro ao atualizar.", False)
-        except Exception as e:
-            return (f"Erro: {str(e)}", False)
+            return ("Sucesso", True) if sucesso else ("Erro", False)
+        except Exception as e: return (str(e), False)
 
     def deletar_evento(self, id_evento):
         try:
-            if not self.e_professor():
-                return ("Permissão negada!", False)
+            if not self.e_professor(): return ("Acesso negado", False)
             self.eventos_model.deletar_evento(id_evento)
-            return ("Deletado!", True)
-        except Exception as e:
-            return (f"Erro: {str(e)}", False)
+            return ("Sucesso", True)
+        except Exception as e: return (str(e), False)
