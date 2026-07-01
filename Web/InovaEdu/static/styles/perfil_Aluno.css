@@ -10,20 +10,17 @@
 }
 
 /* -------------------- RESET -------------------- */
-/* * {
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-} */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 body {
-    font-family: "Roboto", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    background-image: url("../img/Fundo.png"); 
-    /* padding-top: 80px;
-    padding-bottom: 60px; */
-    position: relative;
+    background-color: #f8fafc;
+    color: var(--text-main);
 }
 
 /* -------------------- HEADER -------------------- */
@@ -606,6 +603,15 @@ header > div {
     align-items: center;
     gap: 5px;
     font-size: 0.9em;  /* Reduzido */
+    
+}
+.cancel-btn{
+    background: #6c757d;
+    color: white;
+}
+.save-btn{
+    background: var(--azul-Senac);
+    color: white;
 }
 
 /* -------------------- NO ITEMS -------------------- */

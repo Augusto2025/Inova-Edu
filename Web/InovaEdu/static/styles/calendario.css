@@ -9,14 +9,17 @@
   --transition: .2s ease;
 }
 
-body{
-  margin: 0;
-  padding: 0;
-  background-image: url("../img/Fundo.png"); /* sobe 1 nível de css/ para img/ */
-  background-size: cover;       /* opcional: ajusta ao viewport */
-  background-repeat: no-repeat; /* opcional: não repetir */
-  background-position: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* mudar a letra da pagina */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8fafc;
+    color: var(--text-main);
 }
 
 /* CONTAINER PRINCIPAL ------------------------------------------------------ */
