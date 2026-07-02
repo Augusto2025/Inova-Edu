@@ -12,14 +12,11 @@ const projetosRoutes = require('./routes/projetos');
 const repositorioRoutes = require('./routes/repositorio');
 const eventosRoutes = require('./routes/eventos');
 const forumRoutes = require('./routes/forum');
-<<<<<<< HEAD
 const homeRoutes = require('./routes/home'); // 💻 Corrigido: alterado de 'home' para 'homeRoutes'
 
-=======
 const topicoRoutes = require('./routes/topico');
 const conversaRoutes = require('./routes/conversa');
 const perfilRoutes = require('./routes/perfil');
->>>>>>> Deploys
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -32,13 +29,10 @@ app.use('/projetos', projetosRoutes);
 app.use('/repositorio', repositorioRoutes); 
 app.use('/eventos', eventosRoutes);
 app.use('/forum', forumRoutes);
-<<<<<<< HEAD
 app.use('/home', homeRoutes); // 💻 Agora a variável existe e aponta corretamente!
-=======
 app.use('/topico', topicoRoutes);
 app.use('/conversa', conversaRoutes);
 app.use('/perfil', perfilRoutes);
->>>>>>> Deploys
 
 // Alterado para 3000 para alinhar com o padrão do seu frontend
 const PORT = process.env.PORT || 3000; 
