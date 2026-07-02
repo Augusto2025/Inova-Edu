@@ -63,9 +63,6 @@ class RepositorioDashboard(ctk.CTkFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
-        from assets.header import HeaderPadrao
-        header = HeaderPadrao(self, titulo=self.nome_projeto, comando_voltar=None)
-
         # Botão Voltar (aparece apenas se não estiver na raiz)
         if self.pasta_atual_id:
             btn_voltar = ctk.CTkButton(header, text="⬅ Voltar", width=90, height=35,
@@ -73,11 +70,9 @@ class RepositorioDashboard(ctk.CTkFrame):
                                       hover_color=AzulHover, command=self.voltar_raiz)
             btn_voltar.pack(side="left", padx=20)
 
-        lbl_titulo = ctk.CTkLabel(header, text=self.nome_projeto, 
-                                 font=ctk.CTkFont(size=22, weight="bold"), 
-                                 text_color=Branco)
-        lbl_titulo.pack(side="left", padx=20)
-
+        from assets.header import HeaderPadrao
+        header = HeaderPadrao(self, titulo=self.nome_projeto, comando_voltar=None)
+        
         # Botão de Download Geral
         btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
                                text_color=Branco, width=160, height=35, 
