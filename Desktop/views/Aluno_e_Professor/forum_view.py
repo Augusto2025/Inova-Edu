@@ -24,11 +24,8 @@ class Forum(ctk.CTkFrame):
         self.setup_ui()
 
     def setup_ui(self):
-        # 1. HEADER SUPERIOR FIXO
-        self.header = ctk.CTkFrame(self, fg_color=self.azul, height=65, corner_radius=0)
-        self.header.pack(fill="x")
-        self.header.pack_propagate(False)
-        ctk.CTkLabel(self.header, text="Fórum de Discussões", font=("Segoe UI", 22, "bold"), text_color="white").pack(side="left", padx=25, pady=15)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self, titulo="Fórum de Discussões", comando_voltar=None)
 
         # CONTAINER INFERIOR
         container_corpo = ctk.CTkFrame(self, fg_color="transparent")

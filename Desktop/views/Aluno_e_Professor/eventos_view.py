@@ -50,15 +50,8 @@ class CalendarioDesktopApp(ctk.CTkFrame):
             return []
 
     def criar_interface(self):
-        # --- HEADER (Cabeçalho Azul) ---
-        self.header = ctk.CTkFrame(self, fg_color=azulEscuro, height=100, corner_radius=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
-
-        # Título dentro da Header
-        ctk.CTkLabel(self.header, text="Calendário de Eventos", 
-                     font=ctk.CTkFont(size=26, weight="bold"), 
-                     text_color=Branco).pack(side="left", padx=30)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self, titulo="Calendário de Eventos", comando_voltar=None)
 
         # SE FOR PROFESSOR: Renderiza o botão. SE FOR ALUNO: O botão simplesmente não existe na tela
         if self.controller.e_professor():

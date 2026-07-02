@@ -35,21 +35,8 @@ class EditarPerfilView(ctk.CTkFrame):
         self.render_tela()
 
     def render_header(self):
-        self.header = ctk.CTkFrame(self, fg_color=AZUL_SENAC, height=80, corner_radius=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
-
-        ctk.CTkLabel(
-            self.header, text="✏️ Editar Perfil Acadêmico", 
-            font=("Roboto", 22, "bold"), text_color=BRANCO
-        ).pack(side="left", padx=30)
-
-        ctk.CTkButton(
-            self.header, text="Voltar", width=100, height=32,
-            fg_color="transparent", border_width=2, border_color=BRANCO,
-            hover_color="#003566", font=("Roboto", 12, "bold"),
-            command=self.voltar_perfil
-        ).pack(side="right", padx=30)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self, titulo="Editar Perfil Acadêmico", comando_voltar=self.voltar_perfil)
 
     def render_tela(self):
         self.main_content = ctk.CTkFrame(self.scroll_container, fg_color="transparent")
@@ -194,16 +181,19 @@ class EditarPerfilView(ctk.CTkFrame):
         filedialog.askopenfilename(filetypes=[("Imagens", "*.jpg;*.png;*.jpeg")])
 
     def voltar_perfil(self):
-        """Limpa as views empilhadas de forma segura e renderiza o UserProfileSystem limpo"""
+        """Limpa as views empilhadas de forma segura e renderiza o UserProfileSystem correto"""
         from views.Aluno_e_Professor.profile_view import UserProfileSystem
     
-        # Varre o frame master buscando qualquer fragmento visual anterior e limpa
-        for widget in self.janela.winfo_children():
-            # Remove views de perfil/edição antigas para evitar sobreposição ou botões fantasmas
+        # 1. Varre o frame master buscando qualquer fragmento visual anterior e limpa
+        for widget in list(self.janela.winfo_children()):
             if widget.__class__.__name__ in ["EditarPerfilView", "UserProfileSystem"]:
                 widget.pack_forget()
                 widget.destroy()
         
-        # Renderiza a tela limpa e atualizada no canto direito ao lado da Sidebar fixa
-        tela_perfil = UserProfileSystem(self.janela, self.controller)
+        # 2. Captura o email direto da sessão ativa
+        email_sessao = self.sessao.email
+        print(f"[NAV FIX] Voltando para UserProfileSystem passando o e-mail: {email_sessao}")
+        
+        # 3. Renderiza a tela de perfil passando o EMAIL no segundo parâmetro, exatamente como o __init__ dela pede!
+        tela_perfil = UserProfileSystem(master=self.janela, email_usuario=email_sessao)
         tela_perfil.pack(side="right", fill="both", expand=True)

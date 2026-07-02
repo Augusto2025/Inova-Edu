@@ -39,15 +39,8 @@ class Home(ctk.CTkFrame):
         self.atualizar_cards()
 
     def criar_interface(self):
-        # 1. HEADER ESTILIZADO (Azul Escuro)
-        self.header = ctk.CTkFrame(self.container_principal, fg_color=azulEscuro, height=100, corner_radius=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
-
-        # Título à esquerda
-        ctk.CTkLabel(self.header, text="Cursos", 
-                     font=ctk.CTkFont(size=28, weight="bold"), 
-                     text_color=Branco).pack(side="left", padx=30)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self.container_principal, titulo="Cursos", comando_voltar=None)
 
         # Container de Pesquisa e Filtro à direita (dentro do header)
         search_container = ctk.CTkFrame(self.header, fg_color="transparent")
@@ -61,13 +54,6 @@ class Home(ctk.CTkFrame):
         self.nome_filter.pack(side="left", padx=10)
         self.nome_filter.bind("<Return>", lambda e: self.aplicar_filtros())
 
-        # Botão de Filtros com contorno Branco
-        filtros_btn = ctk.CTkButton(search_container, text="⚙️ Filtros", width=100, height=35,
-                                    fg_color="transparent", border_width=1, border_color=Branco,
-                                    text_color=Branco, hover='transparent',
-                                    command=self.abrir_modal_filtros)
-        filtros_btn.pack(side="left", padx=5)
-
         # 2. ÁREA DE CONTEÚDO
         self.conteudo = ctk.CTkFrame(self.container_principal, fg_color="transparent")
         self.conteudo.pack(fill="both", expand=True)
@@ -79,42 +65,6 @@ class Home(ctk.CTkFrame):
         self.cards_container = ctk.CTkFrame(self.scroll_area, fg_color="transparent")
         self.cards_container.pack(expand=True, fill="both") 
         self.cards_container.grid_columnconfigure((0, 1, 2), weight=1, uniform="col")
-
-    def abrir_modal_filtros(self):
-        """Janela Modal de Filtros"""
-        modal = ctk.CTkToplevel(self.janela)
-        modal.title("Filtros Avançados")
-        modal.geometry("500x400")
-        modal.grab_set()
-        modal.configure(fg_color="#f5f7fb")
-        modal.after(10, lambda: modal.focus_force())
-
-        # Header do Modal (Azul)
-        m_header = ctk.CTkFrame(modal, fg_color=azulEscuro, corner_radius=0, height=60)
-        m_header.pack(fill="x")
-        ctk.CTkLabel(m_header, text="⚙️ Opções de Filtro", font=ctk.CTkFont(size=16, weight="bold"), text_color=Branco).pack(pady=15)
-
-        # Opções de Ordenação
-        content = ctk.CTkFrame(modal, fg_color="transparent")
-        content.pack(fill="both", expand=True, padx=30, pady=20)
-
-        ctk.CTkLabel(content, text="Ordenar por nome:", font=ctk.CTkFont(weight="bold"), text_color=azulEscuro).pack(anchor="w", pady=(0,10))
-        
-        ctk.CTkRadioButton(content, text="A-Z (Crescente)", variable=self.ordenar_var, value="A-Z", text_color="#1e293b").pack(anchor="w", pady=5)
-        ctk.CTkRadioButton(content, text="Z-A (Decrescente)", variable=self.ordenar_var, value="Z-A", text_color="#1e293b").pack(anchor="w", pady=5)
-
-        # Botão Aplicar
-        ctk.CTkButton(modal, text="Aplicar Filtros", fg_color=azulEscuro, text_color=Branco, height=40,
-                      command=lambda: [self.aplicar_filtros(), modal.destroy()]).pack(fill="x", padx=30, pady=20)
-
-    def aplicar_filtros(self):
-        nome = self.nome_filter.get().strip().lower()
-        filtrados = [c for c in self.cursos if (not nome) or (nome in c["name"].lower())]
-        
-        reverse = self.ordenar_var.get() == "Z-A"
-        filtrados.sort(key=lambda x: x["name"].lower(), reverse=reverse)
-        
-        self.atualizar_cards(filtrados)
 
     def atualizar_cards(self, lista=None):
         for w in self.cards_container.winfo_children():

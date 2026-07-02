@@ -63,10 +63,8 @@ class RepositorioDashboard(ctk.CTkFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
-        # --- HEADER ---
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=90, corner_radius=0)
-        header.pack(fill="x", side="top")
-        header.pack_propagate(False)
+        from assets.header import HeaderPadrao
+        header = HeaderPadrao(self, titulo=self.nome_projeto, comando_voltar=None)
 
         # Botão Voltar (aparece apenas se não estiver na raiz)
         if self.pasta_atual_id:
