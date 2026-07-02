@@ -141,9 +141,15 @@ class UserProfileSystem(ctk.CTkFrame):
         threading.Thread(target=thread_task, daemon=True).start()
 
     def aplicar_foto(self, ctk_img):
-        """Remove o texto '👤' e aplica o objeto de imagem gerado"""
-        self.lbl_foto.configure(image=ctk_img, text="")
-        self.lbl_foto._image = ctk_img  # Mantém a referência na memória
+        """Remove o texto '👤' e aplica o objeto de imagem gerado com segurança"""
+        try:
+            # Verifica se o widget do CustomTkinter e o label interno do Tkinter ainda existem na tela
+            if self.winfo_exists() and hasattr(self, 'lbl_foto') and self.lbl_foto.winfo_exists():
+                self.lbl_foto.configure(image=ctk_img, text="")
+                self.lbl_foto._image = ctk_img  # Mantém a referência na memória
+        except Exception as e:
+            # Silencia o erro caso a janela tenha sido fechada no exato milissegundo da transição
+            print(f"[PROFILE] Download concluído após o fechamento da tela: {e}")
 
     # --- ADAPTADO: ADICIONADO O ARGUMENTO url_foto NO FINAL ---
     def atualizar_dados_principais(self, nome, sobrenome, descricao, turma_nome, url_foto=None):

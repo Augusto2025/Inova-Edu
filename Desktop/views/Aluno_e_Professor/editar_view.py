@@ -2,6 +2,13 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from models.sessao import UsuarioSessao 
 
+# --- IMPORTS PARA TRATAMENTO DE IMAGEM DA WEB E LOCAL ---
+from PIL import Image
+import urllib.request
+import io
+import threading
+import os
+
 # Cores do Sistema
 AZUL_SENAC = "#004A8D"
 LARANJA_SENAC = "#F7941D"
@@ -18,6 +25,8 @@ class EditarPerfilView(ctk.CTkFrame):
         
         # Variável temporária para armazenar a nova senha obtida via modal
         self.nova_senha_definida = ""
+        # Variável temporária para armazenar o caminho local do novo arquivo de foto selecionado
+        self.caminho_nova_foto_local = None
 
         try:
             perfil_completo = self.controller.model.obter_dados_perfil(self.sessao.email)
@@ -33,6 +42,9 @@ class EditarPerfilView(ctk.CTkFrame):
         self.scroll_container.pack(fill="both", expand=True)
         
         self.render_tela()
+        
+        # Dispara a busca automática da foto atual do banco de dados de forma assíncrona
+        self.inicializar_foto_atual()
 
     def render_header(self):
         from assets.header import HeaderPadrao
@@ -42,14 +54,29 @@ class EditarPerfilView(ctk.CTkFrame):
         self.main_content = ctk.CTkFrame(self.scroll_container, fg_color="transparent")
         self.main_content.pack(pady=40, padx=50, fill="x")
 
-        # --- SEÇÃO FOTO ---
+        # --- SEÇÃO FOTO INTEGRADA COM BOTÃO ---
         foto_section = ctk.CTkFrame(self.main_content, fg_color="transparent")
         foto_section.pack(fill="x", pady=(0, 40))
+        
         self.borda_foto = ctk.CTkFrame(foto_section, width=180, height=180, corner_radius=90, fg_color=AZUL_SENAC)
         self.borda_foto.pack(side="left", padx=(0, 30))
         self.borda_foto.pack_propagate(False)
+        
         self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 75), width=172, height=172, fg_color=CINZA_CLARO, corner_radius=86)
         self.lbl_foto.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Container dos botões do lado da foto
+        botoes_foto_frame = ctk.CTkFrame(foto_section, fg_color="transparent")
+        botoes_foto_frame.pack(side="left", fill="y", expand=True, pady=10)
+        
+        ctk.CTkLabel(botoes_foto_frame, text="Foto de Perfil", font=("Roboto", 16, "bold"), text_color=AZUL_SENAC).pack(anchor="w")
+        ctk.CTkLabel(botoes_foto_frame, text="Escolha uma imagem quadrada JPG ou PNG.", font=("Roboto", 12), text_color="#64748B").pack(anchor="w", pady=(0, 15))
+        
+        self.btn_alterar_foto = ctk.CTkButton(
+            botoes_foto_frame, text="📁 Selecionar Nova Imagem", fg_color=AZUL_SENAC, hover_color="#003566",
+            height=35, font=("Roboto", 13, "bold"), command=self.escolher_imagem
+        )
+        self.btn_alterar_foto.pack(anchor="w")
 
         # --- FORMULÁRIO COM DADOS REAIS ---
         form_grid = ctk.CTkFrame(self.main_content, fg_color="transparent")
@@ -73,7 +100,6 @@ class EditarPerfilView(ctk.CTkFrame):
         col2.grid(row=0, column=1, sticky="nsew", padx=(20, 0))
         self.ent_sobrenome = self.criar_campo(col2, "Sobrenome", sobrenome_db)
         
-        # MODIFICAÇÃO: Botão para disparar o Modal de Senha no modelo solicitado
         container_btn = ctk.CTkFrame(col2, fg_color="transparent")
         container_btn.pack(fill="x", pady=10, padx=20)
         ctk.CTkLabel(container_btn, text="Segurança de Acesso", font=("Roboto", 14, "bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(0, 5))
@@ -111,8 +137,65 @@ class EditarPerfilView(ctk.CTkFrame):
         entry.insert(0, valor_inicial)
         return entry
 
+    # --- LÓGICA DE CARREGAMENTO ASSÍNCRONO DA FOTO ATUAL ---
+    def inicializar_foto_atual(self):
+        """Monta o link com base no que está salvo na base e inicia o download da imagem atual"""
+        u = self.dados_banco
+        imagem_bruta = u.get('imagem') or u.get('imagem_usuario') or u.get('Imagem')
+        
+        if imagem_bruta:
+            imagem_str = str(imagem_bruta).strip()
+            if imagem_str.startswith("http"):
+                url_final = imagem_str
+            else:
+                # Carrega o .env localizado em controllers/
+                from dotenv import load_dotenv
+                diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+                # Ajusta o caminho se esta view estiver em views/Aluno_e_Professor/
+                caminho_controllers_env = os.path.join(os.path.dirname(diretorio_atual), '..', 'controllers', '.env')
+                load_dotenv(caminho_controllers_env)
+                
+                cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME") or "dw0pxfap3"
+                url_final = f"https://res.cloudinary.com/{cloud_name}/image/upload/{imagem_str}" if "image/upload/" not in imagem_str else f"https://res.cloudinary.com/{cloud_name}/{imagem_str}"
+            
+            # Executa a thread para baixar a foto atual
+            def thread_task():
+                try:
+                    with urllib.request.urlopen(url_final) as resposta:
+                        dados = resposta.read()
+                    img_pil = Image.open(io.BytesIO(dados))
+                    ctk_img = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(172, 172))
+                    self.janela.after(0, lambda: self.aplicar_foto_na_lbl(ctk_img))
+                except Exception as e:
+                    print(f"[EDIT PERFIL] Falha ao carregar imagem atual: {e}")
+
+            threading.Thread(target=thread_task, daemon=True).start()
+
+    def aplicar_foto_na_lbl(self, ctk_img):
+        """Aplica a foto com segurança checando se o widget ainda existe na memória"""
+        try:
+            if self.winfo_exists() and hasattr(self, 'lbl_foto') and self.lbl_foto.winfo_exists():
+                self.lbl_foto.configure(image=ctk_img, text="")
+                self.lbl_foto._image = ctk_img
+        except Exception as e:
+            print(f"[EDIT] Download concluído após o fechamento da tela: {e}")
+
+    # --- LÓGICA DE SELEÇÃO DE IMAGEM LOCAL ---
+    def escolher_imagem(self):
+        caminho_arquivo = filedialog.askopenfilename(filetypes=[("Imagens", "*.jpg;*.png;*.jpeg")])
+        if caminho_arquivo:
+            self.caminho_nova_foto_local = caminho_arquivo
+            
+            # Carrega a imagem local no preview redondo imediatamente
+            try:
+                img_pil = Image.open(caminho_arquivo)
+                ctk_img = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(172, 172))
+                self.aplicar_foto_na_lbl(ctk_img)
+                self.btn_alterar_foto.configure(text="✅ Foto Selecionada", fg_color="#22c55e")
+            except Exception as e:
+                messagebox.showerror("Erro de Imagem", f"Não foi possível abrir o arquivo: {e}")
+
     def abrir_modal_senha(self):
-        """Janela Modal de Senha baseada perfeitamente no seu modelo de filtros"""
         modal = ctk.CTkToplevel(self.janela)
         modal.title("Alteração de Segurança")
         modal.geometry("500x420")
@@ -121,21 +204,17 @@ class EditarPerfilView(ctk.CTkFrame):
         modal.resizable(False, False)
         modal.after(10, lambda: modal.focus_force())
 
-        # Header do Modal (Igual ao seu modelo)
         m_header = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=60)
         m_header.pack(fill="x")
         ctk.CTkLabel(m_header, text="🔒 Alterar Senha de Acesso", font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
 
-        # Container do Conteúdo
         content = ctk.CTkFrame(modal, fg_color="transparent")
         content.pack(fill="both", expand=True, padx=40, pady=20)
 
-        # Input Nova Senha
         ctk.CTkLabel(content, text="Nova Senha:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 5))
         txt_nova = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=40, corner_radius=8, show="*")
         txt_nova.pack(fill="x", pady=(0, 15))
 
-        # Input Confirmar Senha
         ctk.CTkLabel(content, text="Confirmar Nova Senha:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 5))
         txt_confirma = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=40, corner_radius=8, show="*")
         txt_confirma.pack(fill="x", pady=(0, 15))
@@ -151,12 +230,10 @@ class EditarPerfilView(ctk.CTkFrame):
                 messagebox.showerror("Erro", "As senhas digitadas não coincidem!")
                 return
                 
-            # Salva na variável da classe para enviar ao salvar o formulário principal
             self.nova_senha_definida = senha
             self.btn_senha_modal.configure(text="✅ Senha Alterada (Pronta)", fg_color="#22c55e", hover_color="#16a34a")
             modal.destroy()
 
-        # Botão Aplicar (Igual ao seu modelo)
         ctk.CTkButton(modal, text="Confirmar Nova Senha", fg_color=AZUL_SENAC, hover_color="#003566", text_color=BRANCO, height=45, font=("Roboto", 14, "bold"),
                       command=validar_e_aplicar).pack(fill="x", padx=40, pady=(0, 25))
 
@@ -165,10 +242,23 @@ class EditarPerfilView(ctk.CTkFrame):
         sobrenome = self.ent_sobrenome.get()
         bio = self.txt_desc.get("0.0", "end").strip()
         
-        # Se alterou a senha pelo modal, envia a nova, se não, envia a senha atual da sessão
-        senha_final = self.nova_senha_definida if self.nova_senha_definida else self.sessao.senha
+        # Busca a senha que veio direto do banco de dados (respeitando maiúsculo/minúsculo do seu Model)
+        senha_atual_banco = self.dados_banco.get('senha') or self.dados_banco.get('Senha')
+
+        # Se o usuário definiu uma nova no modal, usa a nova. Se não, mantém a atual do banco.
+        senha_final = self.nova_senha_definida if self.nova_senha_definida else senha_atual_banco
         
-        self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final)
+        # --- PASSO IMPORTANTE: ---
+        # Enviamos o caminho local do arquivo (self.caminho_nova_foto_local) para o seu Controller.
+        # Caso o usuário não tenha selecionado uma imagem nova, ele passará None.
+        if hasattr(self.controller, 'salvar_alteracoes_perfil_com_foto'):
+            self.controller.salvar_alteracoes_perfil_com_foto(nome, sobrenome, bio, senha_final, self.caminho_nova_foto_local)
+        else:
+            # Fallback seguro caso você opte por adicionar o argumento direto na função antiga
+            try:
+                self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final, self.caminho_nova_foto_local)
+            except TypeError:
+                self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final)
 
         self.sessao.nome = nome
         self.sessao.sobrenome = sobrenome
@@ -177,23 +267,14 @@ class EditarPerfilView(ctk.CTkFrame):
 
         self.voltar_perfil()
 
-    def escolher_imagem(self):
-        filedialog.askopenfilename(filetypes=[("Imagens", "*.jpg;*.png;*.jpeg")])
-
     def voltar_perfil(self):
-        """Limpa as views empilhadas de forma segura e renderiza o UserProfileSystem correto"""
         from views.Aluno_e_Professor.profile_view import UserProfileSystem
     
-        # 1. Varre o frame master buscando qualquer fragmento visual anterior e limpa
         for widget in list(self.janela.winfo_children()):
             if widget.__class__.__name__ in ["EditarPerfilView", "UserProfileSystem"]:
                 widget.pack_forget()
                 widget.destroy()
         
-        # 2. Captura o email direto da sessão ativa
         email_sessao = self.sessao.email
-        print(f"[NAV FIX] Voltando para UserProfileSystem passando o e-mail: {email_sessao}")
-        
-        # 3. Renderiza a tela de perfil passando o EMAIL no segundo parâmetro, exatamente como o __init__ dela pede!
         tela_perfil = UserProfileSystem(master=self.janela, email_usuario=email_sessao)
         tela_perfil.pack(side="right", fill="both", expand=True)
