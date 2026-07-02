@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Text,
   View,
@@ -8,37 +8,39 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/Header';
 import { Feather } from '@expo/vector-icons';
 import BreadcrumbCard from '../components/BreadcrumbCard'; 
 import { COLORS } from "../components/Cores"; 
 import styles from '../styles/Repositorio'; 
-// Novos imports para manipulação e compartilhamento de arquivos nativos
+
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+
+// Importação do Contexto de Tema (Obrigatório para o modo escuro)
+import { ThemeContext } from '../context/ThemeContext';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
 export default function RepositorioScreen({ route, navigation }) {
-  // Captura os dados vindos da tela de Projetos
+  // AQUI ESTÁ A CORREÇÃO! Puxando as configurações visuais do app.
+  const context = useContext(ThemeContext);
+  const theme = context?.theme || { background: '#FFFFFF', card: '#F8FAFC', text: '#000000', border: '#E2E8F0', dark: false };
+  const fontSizeScale = context?.fontSizeScale || 1;
+
   const { projetoId, projetoNome } = route.params || { projetoId: null, projetoNome: "Projeto" };
 
   const [pastas, setPastas] = useState([]);
   const [arquivos, setArquivos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false); // 🌟 Estado para controlar o loading do download
+  const [downloading, setDownloading] = useState(false); 
   
-  // Estados para controlar a navegação profunda
   const [pastaIdAtual, setPastaIdAtual] = useState(null);
   const [historicoPastas, setHistoricoPastas] = useState([]); 
 
-  useEffect(() => {
-    if (projetoId) {
-      carregarConteudo();
-    }
-  }, [projetoId, pastaIdAtual]);
-
-  const carregarConteudo = async () => {
+  // Função convertida para useCallback para rodar perfeitamente com o useFocusEffect
+  const carregarConteudo = useCallback(async () => {
     try {
       setLoading(true);
       let url = `${URL_BASE}/repositorio?projetoId=${projetoId}`;
@@ -48,13 +50,10 @@ export default function RepositorioScreen({ route, navigation }) {
 
       const resposta = await fetch(url);
 
-      // PASSO 1: Verifica se o servidor respondeu com erro (Ex: 404, 500, etc.)
       if (!resposta.ok) {
-        // Se deu erro, lança um erro com o número do Status (Ex: "Erro 404")
         throw new Error(`Servidor respondeu com código ${resposta.status}`);
       }
 
-      // Só tenta ler o JSON se a resposta foi um sucesso (Status 200)
       const dados = await resposta.json();
 
       if (dados.pastas && dados.arquivos) {
@@ -64,7 +63,6 @@ export default function RepositorioScreen({ route, navigation }) {
         Alert.alert("Erro", dados.mensagem || "Não foi possível carregar os dados.");
       }
     } catch (error) {
-      // PASSO 2: Mostra a mensagem real que quebrou o código
       Alert.alert(
         "Erro na Requisição", 
         error.message === "Network request failed" 
@@ -74,9 +72,17 @@ export default function RepositorioScreen({ route, navigation }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projetoId, pastaIdAtual]);
 
-  // Nova função responsável por baixar e disparar o compartilhamento do ZIP
+  // Atualiza as pastas sempre que o usuário voltar para essa tela
+  useFocusEffect(
+    useCallback(() => {
+      if (projetoId) {
+        carregarConteudo();
+      }
+    }, [carregarConteudo, projetoId])
+  );
+
   const baixarRepositorioZip = async () => {
     if (!projetoId) {
       Alert.alert("Erro", "Não foi possível identificar o ID do projeto.");
@@ -89,17 +95,15 @@ export default function RepositorioScreen({ route, navigation }) {
       const urlZip = `${URL_BASE}/repositorio/download-zip?projetoId=${projetoId}`;
       const localDoArquivo = `${FileSystem.documentDirectory}repositorio_${projetoId}.zip`;
 
-      // Executa o download do arquivo gerado pelo backend
       const resultadoDownload = await FileSystem.downloadAsync(urlZip, localDoArquivo);
 
       if (resultadoDownload.status === 200) {
-        // Verifica se o sistema operacional oferece suporte para compartilhar/salvar arquivos
         const disponivel = await Sharing.isAvailableAsync();
         if (disponivel) {
           await Sharing.shareAsync(resultadoDownload.uri, {
             mimeType: 'application/zip',
             dialogTitle: `Baixar Repositório: ${projetoNome}`,
-            UTI: 'public.zip-archive' // Compatibilidade para dispositivos iOS reconhecerem o arquivo ZIP
+            UTI: 'public.zip-archive' 
           });
         } else {
           Alert.alert("Erro", "Seu dispositivo não suporta compartilhamento de arquivos.");
@@ -127,16 +131,15 @@ export default function RepositorioScreen({ route, navigation }) {
     setPastaIdAtual(novoHistorico.length > 0 ? novoHistorico[novoHistorico.length - 1].id : null);
   };
 
-  // Cria a string do caminho atual dinamicamente (Ex: Projeto: Hospital > Web > Src)
   const stringCaminho = historicoPastas.length > 0 
     ? `Projeto: ${projetoNome} > ${historicoPastas.map(p => p.nome).join(' > ')}`
     : `Projeto: ${projetoNome}`;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
 
-      <View style={{ flex: 1, backgroundColor: COLORS.backgroundCard }}>
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
         <BreadcrumbCard 
           titulo="Repositório:" 
           itemSub={stringCaminho}
@@ -145,71 +148,68 @@ export default function RepositorioScreen({ route, navigation }) {
         {loading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={{ marginTop: 10, color: COLORS.primary }}>Carregando arquivos...</Text>
+            <Text style={{ marginTop: 10, color: theme.text }}>Carregando arquivos...</Text>
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            
-            {/* Botão de Voltar de nível (aparece apenas quando estiver dentro de alguma pasta) */}
             {pastaIdAtual && (
-              <TouchableOpacity style={[styles.itemCard, { backgroundColor: '#F8FAFC' }]} onPress={voltarPasta}>
+              <TouchableOpacity style={[styles.itemCard, { backgroundColor: theme.card }]} onPress={voltarPasta}>
                 <View style={styles.itemInfo}>
-                  <Feather name="arrow-left" size={22} color={COLORS.textSecondary} />
-                  <Text style={[styles.itemName, { marginLeft: 12, color: COLORS.textSecondary }]}>.. Voltar para pasta anterior</Text>
+                  <Feather name="arrow-left" size={20 * fontSizeScale} color={theme.text} />
+                  <Text style={{ marginLeft: 12, color: theme.text, fontSize: 14 * fontSizeScale }}>Voltar</Text>
                 </View>
               </TouchableOpacity>
             )}
 
-            {/* SEÇÃO DE PASTAS */}
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Pastas</Text>
-            </View>
-
-            {pastas.length === 0 && (
-              <Text style={[styles.itemSub, { paddingLeft: 16, fontStyle: 'italic' }]}>Nenhuma subpasta aqui.</Text>
-            )}
-
-            {pastas.map((pasta) => (
-              <TouchableOpacity 
-                key={pasta.id} 
-                style={[styles.itemCard, styles.folderBorder]}
-                onPress={() => entrarNaPasta(pasta)}
-              >
-                <View style={styles.itemInfo}>
-                  <Feather name="folder" size={24} color={COLORS.primary} />
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.itemName}>{pasta.nome}</Text>
-                    <Text style={styles.itemSub}>{pasta.itens} itens</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-
-            {/* SEÇÃO DE ARQUIVOS */}
-            <View style={[styles.sectionHeader, { marginTop: 20 }]}>
-              <Text style={styles.sectionTitle}>Arquivos</Text>
-            </View>
-
-            {arquivos.length === 0 && (
-              <Text style={[styles.itemSub, { paddingLeft: 16, fontStyle: 'italic' }]}>Nenhum arquivo nesta pasta.</Text>
-            )}
-
-            {arquivos.map((arquivo) => (
-              <View key={arquivo.id} style={[styles.itemCard, styles.fileBorder]}>
-                <View style={styles.itemInfo}>
-                  <Feather name="file-text" size={24} color={COLORS.textSecondary} />
-                  <View style={{ marginLeft: 12 }}>
-                    <Text style={styles.itemName}>{arquivo.nome}</Text>
-                    <Text style={styles.itemSub}>{arquivo.tamanho}</Text>
-                  </View>
-                </View>
+            {/* VERIFICAÇÃO DE VAZIO: Se não houver pastas nem arquivos */}
+            {pastas.length === 0 && arquivos.length === 0 ? (
+              <View style={{ marginTop: 40, alignItems: 'center', padding: 20 }}>
+                <Feather name="folder-minus" size={48 * fontSizeScale} color={theme.text} style={{ opacity: 0.5 }} />
+                <Text style={{ color: theme.text, fontSize: 16 * fontSizeScale, marginTop: 15, textAlign: 'center', opacity: 0.7 }}>
+                  Nenhuma pasta ou arquivo disponível neste local.
+                </Text>
               </View>
-            ))}
+            ) : (
+              <>
+                {/* Pastas */}
+                {pastas.length > 0 && (
+                  <>
+                    <Text style={[styles.sectionTitle, { color: theme.text, marginVertical: 10, fontSize: 16 * fontSizeScale }]}>Pastas</Text>
+                    {pastas.map((pasta) => (
+                      <TouchableOpacity key={pasta.id} style={[styles.itemCard, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => entrarNaPasta(pasta)}>
+                        <View style={styles.itemInfo}>
+                          <Feather name="folder" size={24 * fontSizeScale} color={COLORS.primary} />
+                          <View style={{ marginLeft: 12 }}>
+                            <Text style={[styles.itemName, { color: theme.text, fontSize: 15 * fontSizeScale }]}>{pasta.nome}</Text>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                )}
+
+                {/* Arquivos */}
+                {arquivos.length > 0 && (
+                  <>
+                    <Text style={[styles.sectionTitle, { color: theme.text, marginVertical: 10, fontSize: 16 * fontSizeScale }]}>Arquivos</Text>
+                    {arquivos.map((arquivo) => (
+                      <View key={arquivo.id} style={[styles.itemCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                        <View style={styles.itemInfo}>
+                          <Feather name="file-text" size={24 * fontSizeScale} color={theme.text} />
+                          <View style={{ marginLeft: 12 }}>
+                            <Text style={[styles.itemName, { color: theme.text, fontSize: 15 * fontSizeScale }]}>{arquivo.nome}</Text>
+                          </View>
+                        </View>
+                      </View>
+                    ))}
+                  </>
+                )}
+              </>
+            )}
           </ScrollView>
         )}
       </View>
 
-      {/* Botão Flutuante atualizado com feedbacks e bloqueio de cliques simultâneos */}
       <TouchableOpacity 
         style={[styles.btnActionMain, downloading && { backgroundColor: '#94A3B8' }]} 
         onPress={baixarRepositorioZip}

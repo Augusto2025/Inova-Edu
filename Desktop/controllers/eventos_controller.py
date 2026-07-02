@@ -1,70 +1,111 @@
 # controllers/eventos_controller.py
 from models.eventos_model import Eventos
+from config.banco import conectar  # Importação correta da função de conexão do seu projeto
 import traceback
 
 class EventosController:
     def __init__(self):
         self.eventos_model = Eventos()
-    
+        
+        # IMPORTAÇÃO LOCAL DA SESSÃO
+        from models.sessao import UsuarioSessao
+        
+        sessao = UsuarioSessao()
+        self.email_logado = str(sessao.email).strip() if (sessao and hasattr(sessao, 'email') and sessao.email) else ""
+        
+        # Valores padrão de segurança (caso não encontre a sessão)
+        self.id_usuario_logado = None
+        self.nome_usuario_logado = "Visitante"
+        self.cargo_usuario_logado = "aluno"
+
+        # SE O EMAIL ESTIVER VAZIO (Ambiente de desenvolvimento local),
+        # forçamos como Professor para você conseguir testar sem barreiras
+        if not self.email_logado or self.email_logado == "None":
+            self.id_usuario_logado = 2  # ID do Alcides
+            self.nome_usuario_logado = "Alcides (Desenvolvimento)"
+            self.cargo_usuario_logado = "professor"
+            print("[EVENTOS SECURITY] Sem sessão ativa. Modo Desenvolvedor: Acesso de Professor Liberado.")
+        else:
+            conn = None
+            try:
+                # Chamando a função do seu projeto para obter a conexão
+                conn = conectar()
+                with conn.cursor() as cursor:
+                    # Buscando exatamente pelos nomes de colunas que vimos no seu Django Model
+                    sql = 'SELECT "idUsuario", "Nome", "Tipo" FROM usuario WHERE "Email" = %s'
+                    cursor.execute(sql, (self.email_logado,))
+                    dados_usuario = cursor.fetchone()
+                    
+                    print(f"[EVENTOS SECURITY] Dados vindos do banco: {dados_usuario}")
+                    
+                    if dados_usuario:
+                        self.id_usuario_logado = dados_usuario[0]
+                        self.nome_usuario_logado = dados_usuario[1]
+                        # Captura a string da coluna 'Tipo' mapeada pelo Django
+                        self.cargo_usuario_logado = str(dados_usuario[2]).strip().lower()
+                        
+            except Exception as e:
+                print(f"[ERRO CRITICAL SECURITY] Falha ao ler a tabela usuario: {e}")
+            finally:
+                if conn:
+                    conn.close()
+
+        print(f"[FINAL ACCESS LEVEL] Usuário: {self.nome_usuario_logado} | Tipo: {self.cargo_usuario_logado}")
+
+    def e_professor(self):
+        """Retorna True se o tipo de usuário for Professor"""
+        if self.cargo_usuario_logado in ["professor", "prof", "docente"]:
+            return True
+        if "professor" in self.email_logado.lower() or "prof" in self.email_logado.lower():
+            return True
+        return False
+
     def obter_todos_eventos(self):
-        """Busca todos os eventos e garante retorno seguro para a View"""
+        """Mapeado com 'r' perfeitamente para corresponder à View"""
         try:
-            print("[CONTROLLER EVENTOS] Obtendo todos os eventos...")
-            eventos = self.eventos_model.obter_todos_eventos()
+            dados = self.eventos_model.obter_todos_eventos()
+            lista_formatada = []
+            usuario_e_professor = self.e_professor()
             
-            # Garante que se o model retornar None por algum motivo, a View receba uma lista
-            return eventos if eventos else []
-            
+            for ev in dados:
+                lista_formatada.append({
+                    "id": ev[0],
+                    "nome": ev[1],
+                    "hora": ev[2],
+                    "data": ev[3],
+                    "descricao": ev[4],
+                    "endereco": ev[5],
+                    "id_usuario": ev[6],
+                    "pode_gerenciar": usuario_e_professor 
+                })
+            return lista_formatada
         except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            # Retorna lista vazia para o calendário não quebrar ao tentar iterar
+            print(f"[ERRO SQL CONTROLLER] {str(e)}")
             return []
-    
-    def obter_evento_por_id(self, id_evento):
-        """Busca um evento específico"""
+
+    def criar_evento(self, nome, hora, data, descricao, endereco):
         try:
-            print(f"[CONTROLLER EVENTOS] Obtendo evento ID {id_evento}...")
-            evento = self.eventos_model.obter_evento_por_id(id_evento)
-            return evento
-        except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            print(f"[CONTROLLER EVENTOS TRACEBACK] {traceback.format_exc()}")
-            raise
-    
-    def obter_eventos_do_usuario(self, id_usuario):
-        """Busca eventos de um usuário"""
+            if not self.e_professor(): return ("Acesso negado", False)
+            sucesso = self.eventos_model.criar_evento(
+                nome.strip()[:50], hora.strip(), data.strip(), 
+                descricao.strip()[:100], endereco.strip()[:30], self.id_usuario_logado
+            )
+            return ("Sucesso", True) if sucesso else ("Erro", False)
+        except Exception as e: return (str(e), False)
+
+    def atualizar_evento(self, id_evento, nome, hora, data, descricao, endereco):
         try:
-            print(f"[CONTROLLER EVENTOS] Obtendo eventos do usuário {id_usuario}...")
-            eventos = self.eventos_model.obter_eventos_por_usuario(id_usuario)
-            return eventos
-        except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            print(f"[CONTROLLER EVENTOS TRACEBACK] {traceback.format_exc()}")
-            raise
-    
-    def criar_evento(self, nome, hora, data, descricao, endereco, id_usuario):
-        """Cria um novo evento com validação de dados"""
-        try:
-            print(f"[CONTROLLER EVENTOS] Criando evento: {nome}")
-            
-            # Validação: CustomTkinter .get() pode retornar string vazia
-            if not nome.strip() or not hora.strip() or not data.strip():
-                return ("Nome, Data e Hora são obrigatórios!", False)
-            
-            self.eventos_model.criar_evento(nome, hora, data, descricao, endereco, id_usuario)
-            return ("Evento criado com sucesso!", True)
-            
-        except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            return (f"Erro ao criar evento: {str(e)}", False)
-    
+            if not self.e_professor(): return ("Acesso negado", False)
+            sucesso = self.eventos_model.editar_evento(
+                id_evento, nome.strip()[:50], hora.strip(), data.strip(), 
+                descricao.strip()[:100], endereco.strip()[:30]
+            )
+            return ("Sucesso", True) if sucesso else ("Erro", False)
+        except Exception as e: return (str(e), False)
+
     def deletar_evento(self, id_evento):
-        """Deleta um evento"""
         try:
-            print(f"[CONTROLLER EVENTOS] Deletando evento {id_evento}...")
+            if not self.e_professor(): return ("Acesso negado", False)
             self.eventos_model.deletar_evento(id_evento)
-            return ("Evento deletado com sucesso!", True)
-        except Exception as e:
-            print(f"[CONTROLLER EVENTOS ERRO] {str(e)}")
-            print(f"[CONTROLLER EVENTOS TRACEBACK] {traceback.format_exc()}")
-            return (f"Erro ao deletar evento: {str(e)}", False)
+            return ("Sucesso", True)
+        except Exception as e: return (str(e), False)

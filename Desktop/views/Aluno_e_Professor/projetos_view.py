@@ -22,19 +22,8 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         self.criar_interface()
 
     def criar_interface(self):
-        # Header simples apenas com o título da turma
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=100, corner_radius=0)
-        header.pack(fill="x", side="top")
-        header.pack_propagate(False)
-
-        ctk.CTkButton(header, text="⬅ Turma", width=100, text_color=Branco, 
-                    fg_color=azulEscuro, hover='transparent', 
-                    border_width=1, border_color=Branco, 
-                    command=self.voltar_turma).pack(side="left", padx=(20, 0)),
-
-        ctk.CTkLabel(header, text=f"Projetos da Turma: {self.nome_turma}",
-                    font=ctk.CTkFont(size=20, weight="bold"),
-                    text_color=Branco).pack(side="left", padx=30)
+        from assets.header import HeaderPadrao
+        header = HeaderPadrao(self, titulo=f"Projetos da Turma: {self.nome_turma}", comando_voltar=self.voltar_turma)
 
         self.main_scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self.main_scroll.pack(fill="both", expand=True, padx=30, pady=20)

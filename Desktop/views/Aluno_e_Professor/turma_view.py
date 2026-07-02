@@ -38,20 +38,9 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
         self.criar_interface()
 
     def criar_interface(self):
-        # 1. HEADER SUPERIOR
-        header = ctk.CTkFrame(self, fg_color=azulEscuro, height=100, corner_radius=0)
-        header.pack(fill="x", side="top")
-        header.pack_propagate(False)
-
-        ctk.CTkButton(header, text="⬅ Home", 
-                        width=100, text_color=Branco, fg_color=azulEscuro, hover='transparent', 
-                        border_width=1, border_color=Branco, 
-                        command=self.voltar_home).pack(side="left", padx=(20, 0)),
-
-        ctk.CTkLabel(header, text="Gestão de Turmas", 
-                     font=ctk.CTkFont(size=24, weight="bold"), 
-                     text_color=Branco).pack(side="left", padx=30)
-
+        from assets.header import HeaderPadrao
+        header = HeaderPadrao(self, titulo=f"Turmas do Curso: {self.nome_curso}", comando_voltar=self.voltar_home)
+        
         # Barra de Pesquisa (Filtro)
         self.entry_busca = ctk.CTkEntry(header, placeholder_text="Pesquisar turma...", width=300, height=35)
         self.entry_busca.pack(side="right", padx=30)

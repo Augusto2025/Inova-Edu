@@ -47,14 +47,8 @@ class UserProfileSystem(ctk.CTkFrame):
             sidebar(self.janela)
 
     def render_header(self):
-        self.header = ctk.CTkFrame(self, fg_color=AZUL_SENAC, height=80, corner_radius=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
-
-        ctk.CTkLabel(
-            self.header, text="Perfil Acadêmico", 
-            font=("Roboto", 22, "bold"), text_color=BRANCO
-        ).pack(side="left", padx=30)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self, titulo="Perfil do Usuário", comando_voltar=None)
 
         # SUBSTITUÍDO: Botão Atualizar -> Botão Editar Perfil
         ctk.CTkButton(

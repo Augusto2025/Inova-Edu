@@ -77,7 +77,6 @@ class Eventos:
             print(f"[MODEL EVENTOS] Criando novo evento: {nome}")
             conn = conectar()
             cursor = conn.cursor()
-            # No INSERT, as colunas também precisam de aspas duplas
             cursor.execute("""
                 INSERT INTO eventos 
                 ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "ID_Usuario")
@@ -87,8 +86,31 @@ class Eventos:
             cursor.close()
             return True
         except Exception as e:
-            if conn: conn.rollback() # Reverte em caso de erro no insert
+            if conn: conn.rollback()
             print(f"[MODEL EVENTOS ERRO] {str(e)}")
+            return False
+        finally:
+            if conn: conn.close()
+
+    def editar_evento(self, id_evento, nome, hora, data, descricao, endereco):
+        """Atualiza os dados de um evento existente"""
+        conn = None
+        try:
+            print(f"[MODEL EVENTOS] Editando evento ID {id_evento}...")
+            conn = conectar()
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE eventos 
+                SET "Nome_do_evento" = %s, "Hora_do_evento" = %s, "Data_do_evento" = %s, 
+                    "Descricao" = %s, "Endereco" = %s
+                WHERE "idEventos" = %s
+            """, (nome, hora, data, descricao, endereco, id_evento))
+            conn.commit()
+            cursor.close()
+            return True
+        except Exception as e:
+            if conn: conn.rollback()
+            print(f"[MODEL EVENTOS ERRO EDITAR] {str(e)}")
             return False
         finally:
             if conn: conn.close()
