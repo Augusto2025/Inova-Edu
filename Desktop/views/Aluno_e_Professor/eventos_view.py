@@ -88,22 +88,25 @@ class CalendarioDesktopApp(ctk.CTkFrame):
         self.conteudo = ctk.CTkFrame(self, fg_color="transparent")
         self.conteudo.pack(fill="both", expand=True, padx=25, pady=20)
 
-        # CALENDÁRIO
-        self.calendar_container = ctk.CTkFrame(self.conteudo, fg_color="#ffffff", corner_radius=15, border_width=1, border_color="#e2e8f0")
-        self.calendar_container.pack(fill="x", side="top")
-        
+        scrollable_container = ctk.CTkScrollableFrame(self.conteudo, fg_color="transparent", border_width=0)
+        scrollable_container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+
+        # CALENDÁRIO (Modificado o master para scrollable_container)
+        self.calendar_container = ctk.CTkFrame(scrollable_container, fg_color="#ffffff", corner_radius=15, border_width=1, border_color="#e2e8f0")
+        self.calendar_container.pack(fill="x", side="top") 
+                
         self.days_frame = ctk.CTkFrame(self.calendar_container, fg_color="transparent")
         self.days_frame.pack(fill="both", expand=True, padx=10, pady=10)
         for i in range(7): self.days_frame.grid_columnconfigure(i, weight=1, uniform="dia")
 
-        # ÁREA DE INFORMAÇÕES
-        self.detalhes_frame = ctk.CTkFrame(self.conteudo, fg_color="#ffffff", corner_radius=15, border_width=1, border_color="#e2e8f0")
-        self.detalhes_frame.pack(fill="both", expand=True, pady=(20, 0))
-
+        # ÁREA DE INFORMAÇÕES (Modificado o master para scrollable_container)
+        self.detalhes_frame = ctk.CTkFrame(scrollable_container, fg_color="#ffffff", corner_radius=15, border_width=1, border_color="#e2e8f0")
+        self.detalhes_frame.pack(fill="x", pady=(20, 0)) 
+        
         self.label_aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
                                         font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
-                                        
-        self.label_aviso.place(relx=0.5, rely=0.5, anchor="center")
+                                                
+        self.label_aviso.pack(padx=20, pady=60)
 
     def exibir_detalhes_embaixo(self, eventos):
         """Recebe uma lista de eventos daquele dia e renderiza todos em formato de cards"""
