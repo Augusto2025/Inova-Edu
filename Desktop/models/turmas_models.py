@@ -9,12 +9,19 @@ class TurmasModel:
             conn = conectar()
             cursor = conn.cursor()
             
-            # Aplicando aspas duplas nas colunas com maiúsculas
-            # Lembre-se: no Postgres, sem aspas ele procura tudo em minúsculo
+            # Adicionado o LEFT JOIN para pegar o nome do professor
+            # Caso a turma não tenha professor, usamos COALESCE para exibir "Sem Professor"
+            # Mude apenas a string da QUERY dentro do seu arquivo turmas_models.py
             query = """
-                SELECT "idTurma", "Codigo_Turma", "Turno", "Ano" 
-                FROM turma 
-                WHERE "ID_Curso" = %s
+                SELECT 
+                    t."idTurma", 
+                    t."Codigo_Turma", 
+                    t."Turno", 
+                    t."Ano",
+                    COALESCE(u."Nome", 'Sem Professor Designado') AS nome_professor
+                FROM turma t
+                LEFT JOIN usuario u ON t.professor_id = u."idUsuario"
+                WHERE t."ID_Curso" = %s
             """
             
             cursor.execute(query, (id_curso,))
@@ -26,7 +33,7 @@ class TurmasModel:
             
         except Exception as e:
             print(f"[MODEL TURMAS ERRO] {str(e)}")
-            # Retornamos uma lista vazia para a interface não quebrar
+            traceback.print_exc() # Ajuda a ver no terminal se o nome da coluna do join estiver errado
             return []
             
         finally:
