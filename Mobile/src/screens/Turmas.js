@@ -36,42 +36,8 @@ export default function TurmasScreen({ route, navigation }) {
   const [turnoSelecionado, setTurnoSelecionado] = useState(null); 
   const [ordemAlfabetica, setOrdemAlfabetica] = useState(false); 
 
-<<<<<<< HEAD
-  // 🌟 FUNÇÃO DE VOLTAR CORRIGIDA: Usa goBack() para evitar o erro JUMP_TO de abas aninhadas
-  const lidarComVoltar = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack(); // Desempilha a tela atual e revela a anterior sem forçar rotas por nome
-    } else {
-      navigation.navigate("Home"); // Fallback seguro
-    }
-  };
-
-  // 🌟 Controla o comportamento do botão físico do Android
-  useEffect(() => {
-    const acaoBotaoVoltar = () => {
-      lidarComVoltar();
-      return true; 
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      acaoBotaoVoltar
-    );
-
-    return () => backHandler.remove(); 
-  }, [navigation]);
-
-  useEffect(() => {
-    if (cursoId) {
-      buscarTurmas();
-    }
-  }, [cursoId]);
-
-  const buscarTurmas = async () => {
-=======
   // 3. Transformando em useCallback para o useFocusEffect
   const buscarTurmas = useCallback(async () => {
->>>>>>> Deploys
     try {
       setCarregando(true);
       const urlCompleta = `${URL_BASE}/turmas?cursoId=${cursoId}`;
