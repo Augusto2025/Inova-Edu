@@ -1,10 +1,12 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from dist.InovaEdu._internal.views.Aluno_e_Professor.editar_view import *
 from controllers.forum_controller import ForumController
 
 class Forum(ctk.CTkFrame):
     def __init__(self, master=None):
         super().__init__(master, fg_color="#f8fafc") 
+        self.janela = master
         self.controller = ForumController()
         
         self.azul = "#004A8D"
@@ -32,7 +34,7 @@ class Forum(ctk.CTkFrame):
         container_corpo.pack(fill="both", expand=True)
 
         # 2. SIDEBAR ESTÁTICA (Esquerda)
-        self.side = ctk.CTkFrame(container_corpo, width=260, fg_color=self.bg_lateral, corner_radius=0)
+        self.side = ctk.CTkFrame(container_corpo, width=300, fg_color=self.bg_lateral, corner_radius=0)
         self.side.pack(side="left", fill="y")
         self.side.pack_propagate(False)
         
@@ -44,6 +46,8 @@ class Forum(ctk.CTkFrame):
         
         # Formulario Inline de Fórum
         self.form_forum_frame = ctk.CTkFrame(self.side, fg_color="#f1f5f9", corner_radius=8)
+        self.form_forum_frame.pack_forget()  # Inicialmente escondido
+        ctk.CTkLabel(self.form_forum_frame, text="Novo Fórum", font=self.f_bold, text_color="#1e293b").pack(anchor="w", padx=10, pady=(10, 5))
         self.entry_forum_nome = ctk.CTkEntry(self.form_forum_frame, placeholder_text="Nome do fórum...", font=self.f_norm, height=35)
         self.entry_forum_nome.pack(fill="x", padx=10, pady=(10, 5))
         
@@ -68,11 +72,13 @@ class Forum(ctk.CTkFrame):
         self.btn_new_t = ctk.CTkButton(self.breadcrumb_frame, text="+ Novo Tópico", height=32, fg_color=self.azul, hover_color=self.azul_hover, font=self.f_bold, corner_radius=8, command=self.toggle_formulario_topico)
 
         # Formulario Inline de Tópico
-        self.form_topico_frame = ctk.CTkFrame(self.main, fg_color="#ffffff", corner_radius=12, border_width=1, border_color="#e2e8f0")
-        self.entry_topico_titulo = ctk.CTkEntry(self.form_topico_frame, placeholder_text="Título do novo tópico...", font=self.f_norm, height=38, fg_color="transparent", border_width=0)
+        self.form_topico_frame = ctk.CTkFrame(self.main, fg_color="#f1f5f9", corner_radius=12,)
+        self.form_topico_frame.pack_forget()  # Inicialmente escondido
+        ctk.CTkLabel(self.form_topico_frame, text="Novo Tópico", font=self.f_bold, text_color="#1e293b").pack(anchor="w", padx=15, pady=(10, 5))
+        self.entry_topico_titulo = ctk.CTkEntry(self.form_topico_frame, placeholder_text="Título do novo tópico...", font=self.f_norm, height=35)
         self.entry_topico_titulo.pack(fill="x", padx=15, pady=(10, 5))
         
-        ctk.CTkFrame(self.form_topico_frame, height=1, fg_color="#e2e8f0").pack(fill="x", padx=15)
+        ctk.CTkFrame(self.form_topico_frame, height=1, fg_color="#e2e8f0").pack(fill="x", padx=20, pady=(10, 10))
         
         btn_sub_t = ctk.CTkFrame(self.form_topico_frame, fg_color="transparent")
         btn_sub_t.pack(fill="x", padx=15, pady=10)
@@ -139,27 +145,104 @@ class Forum(ctk.CTkFrame):
 
     # --- NOVOS MÉTODOS DE GERENCIAMENTO (EDITAR/EXCLUIR) ---
     def editar_item(self, tipo, item_id, valor_atual):
-        prompt_txt = f"Editar nome do fórum:" if tipo == "forum" else (f"Editar título do tópico:" if tipo == "topic" else "Editar mensagem:")
-        dialog = ctk.CTkInputDialog(text=prompt_txt, title="Editar Registro")
-        # Preenche com o valor antigo usando tk internals do componente se aplicável
-        novo_valor = dialog.get_input()
+        # 1. Configuração Básica do Modal (Inspirado no modal de senha)
+        modal = ctk.CTkToplevel(self.janela)
+        modal.title("Editar Registro")
+        modal.geometry("500x280")  # Um pouco menor por ter apenas 1 campo
+        modal.grab_set()
+        modal.configure(fg_color="#f5f7fb")
+        modal.resizable(False, False)
+        modal.after(10, lambda: modal.focus_force())
+
+        # 2. Cabeçalho Customizado
+        m_header = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=60)
+        m_header.pack(fill="x")
         
-        if novo_valor and novo_valor.strip() and novo_valor.strip() != valor_atual:
-            novo_valor = novo_valor.strip()
-            sucesso = False
-            if tipo == "forum":
-                sucesso = self.controller.editar_forum(item_id, novo_valor)
-                if sucesso: self.load_side_menu()
-            elif tipo == "topic":
-                sucesso = self.controller.editar_topico(item_id, novo_valor)
-                if sucesso: self.refresh_ui()
-            elif tipo == "message":
-                sucesso = self.controller.editar_mensagem(item_id, novo_valor)
-                if sucesso: self.refresh_ui()
+        titulo_modal = "📝 Editar Fórum" if tipo == "forum" else ("💬 Editar Tópico" if tipo == "topic" else "✍️ Editar Mensagem")
+        ctk.CTkLabel(m_header, text=titulo_modal, font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
+
+        # 3. Área de Conteúdo
+        content = ctk.CTkFrame(modal, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=40, pady=20)
+
+        prompt_txt = "Novo nome do fórum:" if tipo == "forum" else ("Novo título do tópico:" if tipo == "topic" else "Nova mensagem:")
+        ctk.CTkLabel(content, text=prompt_txt, font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 5))
+        
+        # Campo de entrada de dados
+        txt_input = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=40, corner_radius=8)
+        txt_input.pack(fill="x", pady=(0, 20))
+        
+        # Preenche o input automaticamente com o valor que já estava salvo no banco
+        txt_input.insert(0, valor_atual)
+        txt_input.focus_set()
+
+        # 4. Ação de Salvar (Substitui o antigo fluxo do dialog)
+        def confirmar_edicao():
+            novo_valor = txt_input.get().strip()
+            
+            if novo_valor and novo_valor != valor_atual:
+                sucesso = False
+                if tipo == "forum":
+                    sucesso = self.controller.editar_forum(item_id, novo_valor)
+                    if sucesso: self.load_side_menu()
+                elif tipo == "topic":
+                    sucesso = self.controller.editar_topico(item_id, novo_valor)
+                    if sucesso: self.refresh_ui()
+                elif tipo == "message":
+                    sucesso = self.controller.editar_mensagem(item_id, novo_valor)
+                    if sucesso: self.refresh_ui()
+            
+            modal.destroy() # Fecha a janela após terminar
+
+        # 5. Botões de Ação na Base do Modal
+        btn_container = ctk.CTkFrame(content, fg_color="transparent")
+        btn_container.pack(fill="x", side="bottom")
+
+        ctk.CTkButton(btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
+                      text_color="#475569", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+
+        ctk.CTkButton(btn_container, text="Salvar Alterações", fg_color=AZUL_SENAC, hover_color="#0f172a", 
+                      text_color=BRANCO, height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=confirmar_edicao).pack(side="right", padx=(10, 0), expand=True, fill="x")
 
     def excluir_item(self, tipo, item_id):
-        se_gosta = messagebox.askyesno("Confirmar Exclusão", f"Tem certeza que deseja apagar este {tipo} permanentemente?")
-        if se_gosta:
+        # 1. Configuração do Modal de Alerta
+        modal = ctk.CTkToplevel(self.janela)
+        modal.title("Confirmar Exclusão")
+        modal.geometry("450x240")
+        modal.grab_set()
+        modal.configure(fg_color="#f5f7fb")
+        modal.resizable(False, False)
+        modal.after(10, lambda: modal.focus_force())
+
+        # 2. Cabeçalho de Alerta (Vermelho para indicar ação destrutiva)
+        COR_ALERTA = "#dc2626"  # Vermelho escuro/alerta
+        m_header = ctk.CTkFrame(modal, fg_color=COR_ALERTA, corner_radius=0, height=60)
+        m_header.pack(fill="x")
+        
+        ctk.CTkLabel(m_header, text="⚠️ Atenção: Ação Irreversível", 
+                     font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
+
+        # 3. Área de Conteúdo
+        content = ctk.CTkFrame(modal, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=35, pady=20)
+
+        # Tradução amigável do termo para o usuário
+        termo_traduzido = "este fórum" if tipo == "forum" else ("este tópico" if tipo == "topic" else "esta mensagem")
+
+        lbl_msg = ctk.CTkLabel(
+            content, 
+            text=f"Tem certeza que deseja apagar {termo_traduzido} permanentemente?\nEsta ação não poderá ser desfeita.", 
+            font=ctk.CTkFont(size=13, weight="normal"), 
+            text_color="#1e293b",
+            justify="center",
+            wraplength=380
+        )
+        lbl_msg.pack(pady=(10, 25))
+
+        # 4. Lógica de Execução (O seu fluxo original mantido intacto)
+        def confirmar_exclusao():
             sucesso = False
             if tipo == "forum":
                 sucesso = self.controller.excluir_forum(item_id)
@@ -174,10 +257,28 @@ class Forum(ctk.CTkFrame):
                         self.refresh_ui()
             elif tipo == "topic":
                 sucesso = self.controller.excluir_topico(item_id)
-                if sucesso: self.go_back()
+                if sucesso: 
+                    self.go_back()
             elif tipo == "message":
                 sucesso = self.controller.excluir_mensagem(item_id)
-                if sucesso: self.refresh_ui()
+                if sucesso: 
+                    self.refresh_ui()
+            
+            modal.destroy() # Fecha o modal após a exclusão
+
+        # 5. Botões de Ação na Base
+        btn_container = ctk.CTkFrame(content, fg_color="transparent")
+        btn_container.pack(fill="x", side="bottom")
+
+        # Botão Cancelar (Padrão e seguro)
+        ctk.CTkButton(btn_container, text="Não, Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
+                      text_color="#475569", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+
+        # Botão Deletar (Destaque em Vermelho de Alerta)
+        ctk.CTkButton(btn_container, text="Sim, Apagar", fg_color=COR_ALERTA, hover_color="#b91c1c", 
+                      text_color=BRANCO, height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=confirmar_exclusao).pack(side="right", padx=(10, 0), expand=True, fill="x")
 
     def load_side_menu(self):
         for w in self.scroll_side.winfo_children(): w.destroy()
