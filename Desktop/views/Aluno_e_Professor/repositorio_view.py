@@ -2,6 +2,7 @@ import customtkinter as ctk
 import os
 import sys
 from tkinter import messagebox, filedialog
+import requests
 import zipfile
 
 # Ajuste de caminhos para imports (MVC) para que o EXE localize as pastas
@@ -21,7 +22,7 @@ except ImportError:
 from controllers.repositorio_controller import RepositorioController
 
 class RepositorioDashboard(ctk.CTkFrame):
-    def __init__(self, master, turma_id, pasta_id=None, nome_projeto="Repositório Principal"):
+    def __init__(self, master, turma_id, nome_projeto, pasta_id=None):
         super().__init__(master)
         self.janela = master
         self.turma_id = turma_id
@@ -63,6 +64,9 @@ class RepositorioDashboard(ctk.CTkFrame):
         for widget in self.winfo_children():
             widget.destroy()
 
+        from assets.header import HeaderPadrao
+        header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=None)
+
         # Botão Voltar (aparece apenas se não estiver na raiz)
         if self.pasta_atual_id:
             btn_voltar = ctk.CTkButton(header, text="⬅ Voltar", width=90, height=35,
@@ -70,8 +74,6 @@ class RepositorioDashboard(ctk.CTkFrame):
                                       hover_color=AzulHover, command=self.voltar_raiz)
             btn_voltar.pack(side="left", padx=20)
 
-        from assets.header import HeaderPadrao
-        header = HeaderPadrao(self, titulo=self.nome_projeto, comando_voltar=None)
         
         # Botão de Download Geral
         btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
@@ -177,21 +179,58 @@ class RepositorioDashboard(ctk.CTkFrame):
         self.nome_projeto = "Repositório Principal"
         self.carregar_e_mostrar()
 
-    # --- LÓGICA DE DOWNLOAD ---
+    # --- LÓGICA DE DOWNLOAD REAL INTEGRADA COM A NUVEM ---
     def baixar_arquivo(self, arquivo):
+        """Baixa o conteúdo real do Cloudinary usando a URL fornecida"""
+        url_file = arquivo.get('url') # Modifique para o nome exato da chave do Cloudinary se necessário
+        
+        if not url_file:
+            messagebox.showerror("Erro", "Este arquivo não possui uma URL válida na nuvem.")
+            return
+
         local = filedialog.asksaveasfilename(initialfile=arquivo['nome'], title="Salvar Arquivo")
         if local:
-            messagebox.showinfo("Download", f"O download de '{arquivo['nome']}' foi iniciado.")
+            try:
+                # Faz a requisição http para buscar o binário na nuvem
+                resposta = requests.get(url_file, timeout=20)
+                if resposta.status_code == 200:
+                    with open(local, 'wb') as f:
+                        f.write(resposta.content)
+                    messagebox.showinfo("Sucesso", f"O arquivo '{arquivo['nome']}' foi baixado com sucesso!")
+                else:
+                    messagebox.showerror("Erro de Servidor", f"Não foi possível obter o arquivo da nuvem (Status {resposta.status_code})")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Falha na conexão de download: {e}")
 
     def baixar_tudo_zip(self):
+        """Monta um arquivo .zip unindo downloads da nuvem sob demanda"""
         if not self.arquivos:
-            messagebox.showwarning("Aviso", "Não há arquivos para compactar.")
+            messagebox.showwarning("Aviso", "Não há arquivos para compactar nesta tela.")
             return
         
         local_zip = filedialog.asksaveasfilename(defaultextension=".zip", 
-                                                initialfile=f"projeto_{self.turma_id}.zip")
+                                                initialfile=f"{self.nome_projeto}.zip",
+                                                title="Salvar Repositório Compactado")
         if local_zip:
-            messagebox.showinfo("ZIP", "Arquivo compactado com sucesso!")
+            try:
+                sucesso_downloads = 0
+                with zipfile.ZipFile(local_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                    for arq in self.arquivos:
+                        url_file = arq.get('url')
+                        if url_file:
+                            print(f"[ZIP] Buscando da nuvem: {arq['nome']}")
+                            res = requests.get(url_file, timeout=15)
+                            if res.status_code == 200:
+                                # Escreve os bytes diretamente na estrutura do ZIP local
+                                zip_file.writestr(arq['nome'], res.content)
+                                sucesso_downloads += 1
+                
+                if sucesso_downloads > 0:
+                    messagebox.showinfo("ZIP", f"Compactado com sucesso!\n{sucesso_downloads} arquivos inclusos.")
+                else:
+                    messagebox.showwarning("Aviso", "Nenhum arquivo pôde ser obtido da nuvem para montar o zip.")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Houve um problema ao criar o pacote .zip: {e}")
 
 # --- BLOCO DE EXECUÇÃO (Teste) ---
 if __name__ == "__main__":

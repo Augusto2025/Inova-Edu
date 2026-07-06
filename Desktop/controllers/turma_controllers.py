@@ -8,18 +8,21 @@ class TurmasController:
         if id_curso is None:
             print("ERRO: ID do curso não foi fornecido ao Controller!")
             return {}
+            
         dados_brutos = self.model.buscar_por_curso(id_curso)
         turmas_agrupadas = {}
 
         for linha in dados_brutos:
-            id_t, cod, turno, ano = linha[0], linha[1], linha[2], str(linha[3])
+            # Desestruturando os dados e adicionando o professor (índice 4 da linha)
+            id_t, cod, turno, ano, professor = linha[0], linha[1], linha[2], str(linha[3]), linha[4]
             
-            # Criamos o dicionário que a View já sabe ler
+            # Adicionado a chave "professor" no dicionário que a View lê
             turma_dict = {
                 "id": id_t,
                 "cod": cod,
                 "turno": turno,
-                "alunos": 0, # Se tiver tabela de matrícula, faria um count aqui
+                "professor": professor, # <- O dado novo entra aqui
+                "alunos": 0, 
                 "cor": "#3b82f6"
             }
 
