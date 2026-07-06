@@ -12,7 +12,7 @@ class ProjetoModel:
             # Colunas com maiúsculas protegidas por aspas duplas
             # 'data_de_criacao' e 'projeto' parecem estar em minúsculo, mantemos assim.
             query = """
-                SELECT "idProjeto", "Nome_projeto", data_de_criacao 
+                SELECT "idProjeto", "Imagem","Nome_projeto", data_de_criacao, "Descricao"
                 FROM projeto 
                 WHERE "ID_Turma" = %s
             """
