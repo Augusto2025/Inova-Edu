@@ -82,6 +82,7 @@ class Forum(ctk.CTkFrame):
             self.load_forum(foruns_iniciais[0]["idforum"], foruns_iniciais[0]["nome"])
         else:
             self.load_side_menu()
+            self.refresh_ui()
 
     def setup_placeholder(self):
         ph = "Digite sua mensagem..."
@@ -359,8 +360,28 @@ class Forum(ctk.CTkFrame):
         ctk.CTkButton(btn_container, text="Sim, Apagar", fg_color=COR_ALERTA, hover_color="#b91c1c", text_color="#ffffff", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"), command=confirmar_exclusao).pack(side="right", padx=(10, 0), expand=True, fill="x")
 
     def load_side_menu(self):
-        for w in self.scroll_side.winfo_children(): w.destroy()
-        for f in self.controller.listar_foruns():
+        for w in self.scroll_side.winfo_children(): 
+            w.destroy()
+            
+        foruns = self.controller.listar_foruns()
+        
+        # MENSAGEM AMIGÁVEL: Se não houver nenhum fórum cadastrado no banco
+        if not foruns:
+            msg_frame = ctk.CTkFrame(self.scroll_side, fg_color="transparent")
+            msg_frame.pack(fill="x", pady=30, padx=10)
+            
+            ctk.CTkLabel(msg_frame, text="📭", font=("Segoe UI", 24)).pack(pady=(0, 5))
+            ctk.CTkLabel(
+                msg_frame, 
+                text="Nenhum fórum encontrado.\nCrie um espaço acima para\ncomeçar a interagir!", 
+                font=("Segoe UI", 11, "italic"), 
+                text_color="#64748b", 
+                justify="center"
+            ).pack(fill="x")
+            return  # Corta a execução para não quebrar o loop
+
+        # Loop original caso existam fóruns
+        for f in foruns:
             act = (f["idforum"] == self.current_forum_id)
             linha_f = ctk.CTkFrame(self.scroll_side, fg_color="transparent")
             linha_f.pack(fill="x", pady=3)
@@ -420,25 +441,82 @@ class Forum(ctk.CTkFrame):
             self.load_forum(self.current_forum_id, self.current_forum_name)
 
     def refresh_ui(self):
-        for w in self.content.winfo_children(): w.destroy()
+        # 1. Limpa tudo o que existe na área de conteúdo central
+        for w in self.content.winfo_children(): 
+            w.destroy()
         
+        # --- CASO GLOBAL: Nenhum Fórum Selecionado (ou nenhum fórum existente) ---
+        if self.current_forum_id is None:
+            # Desativa o botão de criar tópicos já que não há fórum pai
+            self.btn_new_t.pack_forget()
+            self.reply_frame.pack_forget()
+            
+            msg_global = ctk.CTkFrame(self.content, fg_color="transparent")
+            msg_global.pack(fill="both", expand=True, pady=80)
+            
+            ctk.CTkLabel(msg_global, text="👋 Welcome!", font=("Segoe UI", 38)).pack(pady=(0, 10))
+            ctk.CTkLabel(
+                msg_global, 
+                text="Nenhum fórum selecionado no momento.\n\nEscolha um canal na barra lateral esquerda para visualizar os tópicos\nou clique em '+ Criar Novo Fórum' se estiver começando agora!", 
+                font=("Segoe UI", 13, "italic"), 
+                text_color="#64748b", 
+                justify="center"
+            ).pack(fill="x")
+            return  # Corta a execução aqui
+
+        # --- MODO VISUALIZAÇÃO: TÓPICOS (Fórum Selecionado) ---
         if self.view == "topics":
-            if self.current_forum_id is not None:
-                for t in self.controller.listar_topicos(self.current_forum_id):
-                    card = ctk.CTkFrame(self.content, fg_color="#ffffff", corner_radius=10, border_width=1, border_color="#f1f5f9")
-                    card.pack(fill="x", pady=6)
-                    ctk.CTkLabel(card, text=t['titulo'], font=self.f_bold, text_color="#1e293b").pack(side="left", padx=20, pady=18)
-                    
-                    btn_ver = ctk.CTkButton(card, text="Abrir Tópico →", width=110, height=32, fg_color="transparent", text_color=self.azul, hover_color="#f0f9ff", font=self.f_bold, corner_radius=6)
-                    btn_ver.configure(command=lambda tid=t['idtopico'], tt=t['titulo']: self.load_topic(tid, tt))
-                    btn_ver.pack(side="right", padx=20)
-                    
-                    if t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado:
-                        ctk.CTkButton(card, text="🗑️", width=30, height=32, fg_color="transparent", hover_color="#fee2e2", text_color="#ef4444", command=lambda tid=t['idtopico']: self.excluir_item("topic", tid)).pack(side="right", padx=5)
-                        ctk.CTkButton(card, text="✏️", width=30, height=32, fg_color="transparent", hover_color="#e2e8f0", command=lambda tid=t['idtopico'], tt=t['titulo']: self.editar_item("topic", tid, tt)).pack(side="right")
+            topicos = self.controller.listar_topicos(self.current_forum_id)
+            
+            # Mensagem amigável caso o fórum exista mas não tenha tópicos
+            if not topicos:
+                msg_main = ctk.CTkFrame(self.content, fg_color="transparent")
+                msg_main.pack(fill="both", expand=True, pady=60)
+                
+                ctk.CTkLabel(msg_main, text="💬", font=("Segoe UI", 36)).pack(pady=(0, 10))
+                ctk.CTkLabel(
+                    msg_main, 
+                    text="Este fórum ainda não possui tópicos de discussão.\nClique em '+ Novo Tópico' ali em cima para iniciar uma conversa!", 
+                    font=("Segoe UI", 13, "italic"), 
+                    text_color="#64748b", 
+                    justify="center"
+                ).pack(fill="x")
+                return
+
+            # Renderização normal dos cartões de tópicos
+            for t in topicos:
+                card = ctk.CTkFrame(self.content, fg_color="#ffffff", corner_radius=10, border_width=1, border_color="#f1f5f9")
+                card.pack(fill="x", pady=6)
+                ctk.CTkLabel(card, text=t['titulo'], font=self.f_bold, text_color="#1e293b").pack(side="left", padx=20, pady=18)
+                
+                btn_ver = ctk.CTkButton(card, text="Abrir Tópico →", width=110, height=32, fg_color="transparent", text_color=self.azul, hover_color="#f0f9ff", font=self.f_bold, corner_radius=6)
+                btn_ver.configure(command=lambda tid=t['idtopico'], tt=t['titulo']: self.load_topic(tid, tt))
+                btn_ver.pack(side="right", padx=20)
+                
+                if t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado:
+                    ctk.CTkButton(card, text="🗑️", width=30, height=32, fg_color="transparent", hover_color="#fee2e2", text_color="#ef4444", command=lambda tid=t['idtopico']: self.excluir_item("topic", tid)).pack(side="right", padx=5)
+                    ctk.CTkButton(card, text="✏️", width=30, height=32, fg_color="transparent", hover_color="#e2e8f0", command=lambda tid=t['idtopico'], tt=t['titulo']: self.editar_item("topic", tid, tt)).pack(side="right")
+        
+        # --- MODO VISUALIZAÇÃO: MENSAGENS (Chat do Tópico Aberto) ---
         else:
             if self.current_topic_id is not None:
-                for m in self.controller.listar_mensagens(self.current_topic_id):
+                mensagens = self.controller.listar_mensagens(self.current_topic_id)
+                
+                if not mensagens:
+                    msg_chat = ctk.CTkFrame(self.content, fg_color="transparent")
+                    msg_chat.pack(fill="both", expand=True, pady=60)
+                    
+                    ctk.CTkLabel(msg_chat, text="✨", font=("Segoe UI", 36)).pack(pady=(0, 10))
+                    ctk.CTkLabel(
+                        msg_chat, 
+                        text="Seja o primeiro a responder!\nDigite sua mensagem na caixa abaixo e clique em Enviar.", 
+                        font=("Segoe UI", 13, "italic"), 
+                        text_color="#64748b", 
+                        justify="center"
+                    ).pack(fill="x")
+                    return
+
+                for m in mensagens:
                     autor = m['autor_nome']
                     is_me = (autor == self.controller.nome_usuario_logado)
                     
@@ -477,7 +555,10 @@ class Forum(ctk.CTkFrame):
         txt = self.reply_entry.get("1.0", "end-1c").strip()
         if txt and txt != "Digite sua mensagem...":
             if self.current_topic_id is not None:
-                if self.controller.enviar_mensagem(self.current_topic_id, txt):
+                sucesso = self.controller.enviar_mensagem(self.current_topic_id, txt)
+                if sucesso:
                     self.reply_entry.delete("1.0", "end")
                     self.setup_placeholder()
                     self.refresh_ui()
+                else:
+                    messagebox.showerror("Erro", "Não foi possível enviar a mensagem. Tente novamente.")
