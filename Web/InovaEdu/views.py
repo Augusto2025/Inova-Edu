@@ -48,7 +48,7 @@ def login(request):
         if usuario.tipo == "Coordenador":
             return redirect("home_Coordenacao")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
-            return redirect("home")
+            return redirect("home_aluno_professor")
     # se ele não for, ele manda um erro e volta pro login
     else:
         return render(
@@ -59,6 +59,21 @@ def login(request):
 
 
 from .tokens import token_generator
+
+def HomeAlunoProfessor(request):
+    return render(request, "AlunoProfessor/HomeAlunoProfessor.html")
+
+
+
+
+
+
+
+
+
+
+
+
 
 # redefinir senha 
 def pedir_email(request):

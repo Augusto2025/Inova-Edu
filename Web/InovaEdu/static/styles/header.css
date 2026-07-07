@@ -1,16 +1,14 @@
-:root{
-    --laranja-senac:#ff8a00;
-
-    --azul-principal:#003b91;
-    --azul-secundario:#0d47b5;
-    --azul-hover:#154dbd;
-
-    --branco:#ffffff;
-
-    --cinza-fundo:#f5f7fb;
-    --cinza-texto:#64748b;
-    --texto-escuro:#0f172a;
+:root {
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
 }
+
+
 
 /* HEADER */
 
@@ -20,8 +18,8 @@
 
     background:linear-gradient(
         90deg,
-        var(--azul-principal),
-        var(--azul-secundario)
+        var(--azul-Senac),
+        var(--azul-Senac-hover)
     );
 
     display:flex;
@@ -45,7 +43,7 @@
 
 .menu a{
     text-decoration:none;
-    color:var(--branco);
+    color:var(--branco-Senac);
 
     font-size:14px;
     font-weight:500;
@@ -62,7 +60,7 @@
 }
 
 .menu .active{
-    background:var(--azul-hover);
+    background:var(--azul-Senac-hover);
     position:relative;
 }
 
@@ -72,7 +70,7 @@
     width:65%;
     height:3px;
 
-    background:var(--laranja-senac);
+    background:var(--laranja-Senac);
 
     position:absolute;
 
@@ -92,7 +90,7 @@
 
 .user-name{
     text-decoration:none;
-    color:var(--branco);
+    color:var(--branco-Senac);
 
     font-size:14px;
     font-weight:500;
@@ -112,7 +110,7 @@
 
     background:rgba(255,255,255,.10);
 
-    color:var(--branco);
+    color:var(--branco-Senac);
     text-decoration:none;
 
     transition:.3s;
@@ -135,7 +133,7 @@
     background:none;
     border:none;
 
-    color:var(--branco);
+    color:var(--branco-Senac);
 
     font-size:28px;
 
@@ -158,7 +156,7 @@
 
         width:100%;
 
-        background:var(--azul-secundario);
+        background:var(--azul-Senac);
 
         flex-direction:column;
 
