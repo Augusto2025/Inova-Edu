@@ -15,13 +15,7 @@
 .navbar{
     width:100%;
     height:70px;
-
-    background:linear-gradient(
-        90deg,
-        var(--azul-Senac),
-        var(--azul-Senac-hover)
-    );
-
+    background-color: var(--azul-Senac);
     display:flex;
     align-items:center;
     justify-content:space-between;
