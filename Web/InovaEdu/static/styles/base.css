@@ -1,0 +1,17 @@
+/* Estrutura da página */
+html,
+body{
+    height:100%;
+    margin:0;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+}
+
+/* Área onde cada página será renderizada */
+.page-content{
+    flex:1;
+}
