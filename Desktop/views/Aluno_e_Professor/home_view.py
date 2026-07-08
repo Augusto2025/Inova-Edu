@@ -48,11 +48,11 @@ class Home(ctk.CTkFrame):
 
         # Entrada de Pesquisa estilizada para o Header
         self.nome_filter = ctk.CTkEntry(search_container, width=300, height=35, 
-                                        placeholder_text="Buscar curso...",
+                                        placeholder_text="🔍 Pesquisar por curso...",
                                         fg_color=Branco, text_color="#1e293b",
                                         border_width=0)
         self.nome_filter.pack(side="left", padx=10)
-        self.nome_filter.bind("<Return>", lambda e: self.aplicar_filtros())
+        self.nome_filter.bind("<KeyRelease>", lambda e: self.filtrar_cursos())
 
         # 2. ÁREA DE CONTEÚDO
         self.conteudo = ctk.CTkFrame(self.container_principal, fg_color="transparent")
@@ -65,6 +65,11 @@ class Home(ctk.CTkFrame):
         self.cards_container = ctk.CTkFrame(self.scroll_area, fg_color="transparent")
         self.cards_container.pack(expand=True, fill="both") 
         self.cards_container.grid_columnconfigure((0, 1, 2), weight=1, uniform="col")
+    
+    def filtrar_cursos(self):
+        termo = self.nome_filter.get().strip().lower()
+        cursos_filtrados = [curso for curso in self.cursos if termo in curso["name"].lower()]
+        self.atualizar_cards(cursos_filtrados)
 
     def atualizar_cards(self, lista=None):
         for w in self.cards_container.winfo_children():

@@ -70,8 +70,19 @@ class TurmasDesktopDashboard(ctk.CTkFrame):
             widget.destroy()
 
         if not dados:
-            ctk.CTkLabel(self.main_scroll, text="Nenhuma turma localizada.", 
-             font=ctk.CTkFont(size=16, weight="medium"), text_color="#94a3b8") # <-- mude para "normal" ou remova o weight
+            # Container centralizado para a mensagem de erro
+            empty_frame = ctk.CTkFrame(self.main_scroll, fg_color="transparent")
+            empty_frame.pack(expand=True, pady=100)
+
+            ctk.CTkLabel(empty_frame, text="🔍", font=ctk.CTkFont(size=50)).pack()
+            ctk.CTkLabel(empty_frame, 
+                         text="Nenhuma turma encontrada.", 
+                         font=ctk.CTkFont(size=18, weight="bold"),
+                         text_color=azulEscuro).pack(pady=10)
+            ctk.CTkLabel(empty_frame, 
+                         text="Tente digitar algo diferente ou verifique os filtros.", 
+                         font=ctk.CTkFont(size=14),
+                         text_color=CinzaTexto).pack()
             return
 
         # Gerar Seções por Ano

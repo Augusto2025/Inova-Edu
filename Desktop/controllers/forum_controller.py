@@ -66,15 +66,15 @@ class ForumController:
     # --- MÉTODOS DE CADASTRO ---
 
     def cadastrar_forum(self, nome):
-        """Cria apenas o fórum no banco usando o ID dinâmico, sem tópicos adicionais automaticos"""
+        """Cria o fórum no banco e retorna o ID gerado (ou False se falhar)"""
         if not nome or not nome.strip():
             return False
         
         id_novo_forum = self.model.criar_forum(nome.strip(), self.id_usuario_logado)
         
-        # Retorna True se o banco inseriu com sucesso e gerou um ID válido
+        # Em vez de retornar True, retorna o ID do fórum que o banco acabou de criar
         if id_novo_forum is not None:
-            return True
+            return id_novo_forum
         return False
 
     def cadastrar_topico(self, id_forum, titulo):

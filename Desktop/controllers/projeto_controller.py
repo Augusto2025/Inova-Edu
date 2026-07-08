@@ -10,11 +10,15 @@ class ProjetoController:
         
         for p in dados_brutos:
             # p[0] = idProjeto
-            # p[1] = Nome_projeto
-            # p[2] = data_de_criacao
+            # p[1] = Imagem
+            # p[2] = Nome_projeto
+            # p[3] = data_de_criacao
+            # p[4] = Descricao
             lista_formatada.append({
                 "idprojeto": p[0],
-                "nome_projeto": p[1],
-                "data": p[2].strftime('%d/%m/%Y') if p[2] else "Sem data"
+                "imagem": p[1],
+                "nome_projeto": p[2],
+                "data": p[3].strftime('%d/%m/%Y') if p[3] else "Sem data",
+                "descricao": p[4]
             })
         return lista_formatada

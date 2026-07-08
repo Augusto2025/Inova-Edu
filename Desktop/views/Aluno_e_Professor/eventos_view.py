@@ -6,6 +6,7 @@ import sys
 # Mantendo sua lógica de caminho
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
+from views.Aluno_e_Professor.editar_view import *
 from assets.cores import *
 from controllers.eventos_controller import EventosController
 
@@ -214,44 +215,59 @@ class CalendarioDesktopApp(ctk.CTkFrame):
             if dt_bloco == hoje_dt:
                 dia_frame.configure(border_color="#3b82f6", border_width=2)
 
-    # --- MÉTODOS DE GERENCIAMENTO (POP-UPS DE FORMULÁRIOS) ---
     def abrir_modal_criar(self):
         if not self.controller.e_professor():
             return
         
+        # 1. Configuração do Modal (Alinhado com o design padrão)
         modal = ctk.CTkToplevel(self)
         modal.title("Criar Novo Evento")
-        modal.geometry("500x550")
-        modal.grab_set() # Foca apenas na janela pop-up
+        modal.geometry("500x635")  # Altura expandida para caber todos os campos de forma elegante
+        modal.grab_set() 
+        modal.configure(fg_color="#f5f7fb")
         modal.resizable(False, False)
+        modal.after(10, lambda: modal.focus_force())
 
-        ctk.CTkLabel(modal, text="Novo Evento", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=15)
+        # 2. Cabeçalho Customizado
+        m_header = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=60)
+        m_header.pack(fill="x")
+        ctk.CTkLabel(m_header, text="📅 Criar Novo Evento", font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
 
-        ctk.CTkLabel(modal, text="Nome do Evento:").pack(anchor="w", padx=40)
-        txt_nome = ctk.CTkEntry(modal, width=420)
-        txt_nome.pack(pady=5)
+        # 3. Área de Conteúdo com Scroll automático para garantir boa usabilidade
+        content = ctk.CTkScrollableFrame(modal, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=35, pady=15)
 
-        ctk.CTkLabel(modal, text="Data (AAAA-MM-DD):").pack(anchor="w", padx=40)
-        txt_data = ctk.CTkEntry(modal, width=420)
+        # --- Campo: Nome ---
+        ctk.CTkLabel(content, text="Nome do Evento:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_nome = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
+        txt_nome.pack(fill="x", pady=(0, 12))
+
+        # --- Campo: Data ---
+        ctk.CTkLabel(content, text="Data (AAAA-MM-DD):", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_data = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_data.insert(0, datetime.now().strftime("%Y-%m-%d"))
-        txt_data.pack(pady=5)
+        txt_data.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Horário (HH:MM):").pack(anchor="w", padx=40)
-        txt_hora = ctk.CTkEntry(modal, width=420)
+        # --- Campo: Horário ---
+        ctk.CTkLabel(content, text="Horário (HH:MM):", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_hora = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_hora.insert(0, "14:00")
-        txt_hora.pack(pady=5)
+        txt_hora.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Local / Endereço:").pack(anchor="w", padx=40)
-        txt_local = ctk.CTkEntry(modal, width=420)
-        txt_local.pack(pady=5)
+        # --- Campo: Local ---
+        ctk.CTkLabel(content, text="Local / Endereço:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_local = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
+        txt_local.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Descrição:").pack(anchor="w", padx=40)
-        txt_desc = ctk.CTkTextbox(modal, width=420, height=100)
-        txt_desc.pack(pady=5)
+        # --- Campo: Descrição ---
+        ctk.CTkLabel(content, text="Descrição:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_desc = ctk.CTkTextbox(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=90, corner_radius=8)
+        txt_desc.pack(fill="x", pady=(0, 20))
 
+        # 4. Lógica de Envio
         def salvar():
             msg, sucesso = self.controller.criar_evento(
-                txt_nome.get(), txt_hora.get(), txt_data.get(), txt_desc.get("0.0", "end"), txt_local.get()
+                txt_nome.get(), txt_hora.get(), txt_data.get(), txt_desc.get("0.0", "end").strip(), txt_local.get()
             )
             if sucesso:
                 modal.destroy()
@@ -259,76 +275,158 @@ class CalendarioDesktopApp(ctk.CTkFrame):
             else:
                 print(f"Erro: {msg}")
 
-        ctk.CTkButton(modal, text="Salvar Evento", fg_color="#22c55e", command=salvar).pack(pady=20)
+        # 5. Botões de Ação na Base (Cancel e Salvar alinhados)
+        btn_container = ctk.CTkFrame(content, fg_color="transparent")
+        btn_container.pack(fill="x", side="bottom", pady=(10, 0))
+
+        ctk.CTkButton(btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
+                      text_color="#475569", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+
+        ctk.CTkButton(btn_container, text="Salvar Evento", fg_color="#22c55e", hover_color="#16a34a", 
+                      text_color=BRANCO, height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=salvar).pack(side="right", padx=(10, 0), expand=True, fill="x")
 
     def abrir_modal_editar(self, evento):
+        # 1. Configuração do Modal de Edição (Gêmeo do modal de criação)
         modal = ctk.CTkToplevel(self)
         modal.title("Editar Evento")
-        modal.geometry("500x550")
+        modal.geometry("500x635")
         modal.grab_set()
+        modal.configure(fg_color="#f5f7fb")
         modal.resizable(False, False)
+        modal.after(10, lambda: modal.focus_force())
 
-        ctk.CTkLabel(modal, text="Editar Evento", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=15)
+        # 2. Cabeçalho Customizado (Padrão Senac)
+        m_header = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=60)
+        m_header.pack(fill="x")
+        ctk.CTkLabel(m_header, text="📝 Editar Evento", font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
 
-        ctk.CTkLabel(modal, text="Nome do Evento:").pack(anchor="w", padx=40)
-        txt_nome = ctk.CTkEntry(modal, width=420)
+        # 3. Área de Conteúdo com Scroll
+        content = ctk.CTkScrollableFrame(modal, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=35, pady=15)
+
+        # --- Campo: Nome ---
+        ctk.CTkLabel(content, text="Nome do Evento:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_nome = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_nome.insert(0, evento["nome"])
-        txt_nome.pack(pady=5)
+        txt_nome.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Data (AAAA-MM-DD):").pack(anchor="w", padx=40)
-        txt_data = ctk.CTkEntry(modal, width=420)
+        # --- Campo: Data ---
+        ctk.CTkLabel(content, text="Data (AAAA-MM-DD):", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_data = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_data.insert(0, str(evento["data"]))
-        txt_data.pack(pady=5)
+        txt_data.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Horário (HH:MM):").pack(anchor="w", padx=40)
-        txt_hora = ctk.CTkEntry(modal, width=420)
+        # --- Campo: Horário ---
+        ctk.CTkLabel(content, text="Horário (HH:MM):", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_hora = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_hora.insert(0, str(evento["hora"]))
-        txt_hora.pack(pady=5)
+        txt_hora.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Local / Endereço:").pack(anchor="w", padx=40)
-        txt_local = ctk.CTkEntry(modal, width=420)
+        # --- Campo: Local ---
+        ctk.CTkLabel(content, text="Local / Endereço:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_local = ctk.CTkEntry(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=38, corner_radius=8)
         txt_local.insert(0, evento["endereco"])
-        txt_local.pack(pady=5)
+        txt_local.pack(fill="x", pady=(0, 12))
 
-        ctk.CTkLabel(modal, text="Descrição:").pack(anchor="w", padx=40)
-        txt_desc = ctk.CTkTextbox(modal, width=420, height=100)
+        # --- Campo: Descrição ---
+        ctk.CTkLabel(content, text="Descrição:", font=ctk.CTkFont(weight="bold"), text_color=AZUL_SENAC).pack(anchor="w", pady=(5, 2))
+        txt_desc = ctk.CTkTextbox(content, fg_color=BRANCO, border_color=CINZA_SENAC, border_width=2, height=90, corner_radius=8)
         txt_desc.insert("0.0", evento["descricao"])
-        txt_desc.pack(pady=5)
+        txt_desc.pack(fill="x", pady=(0, 20))
 
+        # 4. Lógica de Atualização (Com sua proteção de limpeza de UI mantida)
         def salvar_alteracao():
             msg, sucesso = self.controller.atualizar_evento(
-                evento["id"], txt_nome.get(), txt_hora.get(), txt_data.get(), txt_desc.get("0.0", "end"), txt_local.get()
+                evento["id"], txt_nome.get(), txt_hora.get(), txt_data.get(), txt_desc.get("0.0", "end").strip(), txt_local.get()
             )
             if sucesso:
                 modal.destroy()
                 self.atualizar_calendario()
                 
-                # --- CORREÇÃO DO ERRO AQUI ---
-                # Limpa tudo com segurança
+                # Reseta o painel de detalhes lateral de forma limpa e segura
                 for widget in self.detalhes_frame.winfo_children(): 
                     widget.destroy()
                 
-                # Criamos um NOVO label de aviso na hora em vez de tentar usar o antigo que foi destruído
                 aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
                                      font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
                 aviso.place(relx=0.5, rely=0.5, anchor="center")
             else:
                 print(f"Erro: {msg}")
 
-        ctk.CTkButton(modal, text="Atualizar Dados", fg_color="#3b82f6", command=salvar_alteracao).pack(pady=20)
+        # 5. Botões de Rodapé do Modal
+        btn_container = ctk.CTkFrame(content, fg_color="transparent")
+        btn_container.pack(fill="x", side="bottom", pady=(10, 0))
+
+        ctk.CTkButton(btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
+                      text_color="#475569", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+
+        ctk.CTkButton(btn_container, text="Atualizar Dados", fg_color=AZUL_SENAC, hover_color="#0f172a", 
+                      text_color=BRANCO, height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=salvar_alteracao).pack(side="right", padx=(10, 0), expand=True, fill="x")
+
 
     def confirmar_exclusao(self, id_evento):
-        msg, sucesso = self.controller.deletar_evento(id_evento)
-        if sucesso:
-            self.atualizar_calendario()
-            
-            # --- CORREÇÃO DO ERRO NA EXCLUSÃO TAMBÉM ---
-            for widget in self.detalhes_frame.winfo_children(): 
-                widget.destroy()
+        # 1. Configuração do Modal de Alerta Destrutivo (Padrão de Exclusão)
+        modal = ctk.CTkToplevel(self)
+        modal.title("Confirmar Exclusão")
+        modal.geometry("450x240")
+        modal.grab_set()
+        modal.configure(fg_color="#f5f7fb")
+        modal.resizable(False, False)
+        modal.after(10, lambda: modal.focus_force())
+
+        # 2. Cabeçalho de Alerta
+        COR_ALERTA = "#dc2626"
+        m_header = ctk.CTkFrame(modal, fg_color=COR_ALERTA, corner_radius=0, height=60)
+        m_header.pack(fill="x")
+        ctk.CTkLabel(m_header, text="⚠️ Remover Evento do Calendário", 
+                     font=ctk.CTkFont(size=16, weight="bold"), text_color=BRANCO).pack(pady=15)
+
+        # 3. Área de Conteúdo
+        content = ctk.CTkFrame(modal, fg_color="transparent")
+        content.pack(fill="both", expand=True, padx=35, pady=20)
+
+        lbl_msg = ctk.CTkLabel(
+            content, 
+            text="Tem certeza que deseja apagar este evento do sistema?\nAlunos e professores perderão o acesso a este registro.", 
+            font=ctk.CTkFont(size=13), 
+            text_color="#1e293b",
+            justify="center",
+            wraplength=380
+        )
+        lbl_msg.pack(pady=(10, 25))
+
+        # 4. Lógica Real de Exclusão
+        def executar_remocao():
+            msg, sucesso = self.controller.deletar_evento(id_evento)
+            if sucesso:
+                modal.destroy()
+                self.atualizar_calendario()
                 
-            aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
-                                 font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
-            aviso.place(relx=0.5, rely=0.5, anchor="center")
+                # Executa sua rotina de segurança para resetar o painel de detalhes
+                for widget in self.detalhes_frame.winfo_children(): 
+                    widget.destroy()
+                    
+                aviso = ctk.CTkLabel(self.detalhes_frame, text="Selecione um evento para ver a descrição completa.", 
+                                     font=ctk.CTkFont(size=20, slant="italic"), text_color="#94a3b8")
+                aviso.place(relx=0.5, rely=0.5, anchor="center")
+            else:
+                print(f"Erro ao deletar: {msg}")
+
+        # 5. Botões de Ação Inferiores
+        btn_container = ctk.CTkFrame(content, fg_color="transparent")
+        btn_container.pack(fill="x", side="bottom")
+
+        ctk.CTkButton(btn_container, text="Não, Manter", fg_color="#e2e8f0", hover_color="#cbd5e1", 
+                      text_color="#475569", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+
+        ctk.CTkButton(btn_container, text="Sim, Excluir", fg_color=COR_ALERTA, hover_color="#b91c1c", 
+                      text_color=BRANCO, height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
+                      command=executar_remocao).pack(side="right", padx=(10, 0), expand=True, fill="x")
 
     def alterar_mes(self, delta):
         self.mes_atual += delta
