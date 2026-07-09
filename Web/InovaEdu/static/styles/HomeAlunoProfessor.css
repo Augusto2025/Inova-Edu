@@ -152,15 +152,30 @@
     margin:70px auto;
 }
 
+
+
 .titulo-secao{
     text-align:center;
-    margin-bottom:35px;
+    /* margin-bottom:35px; */
 }
 
 .titulo-secao h2{
-    font-size:34px;
-    color:#0D4F9A;
-    margin-bottom:10px;
+    font-size: 34px;
+    color: var(--azul-Senac);
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+}
+
+.titulo-secao h2::after{
+    content: "";
+    position: absolute;
+    left: 35%;
+    bottom: -6px;
+    width: 25%;
+    height: 4px;
+    background: var(--laranja-Senac);
+    border-radius: 2px;
 }
 
 .titulo-secao p{
