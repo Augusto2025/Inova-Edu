@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
     });
   } catch (err) {
     console.error('Erro crítico no login:', err);
-    return res.status(500).json({ sucesso: false, mensagem: 'Erro interno no servidor ao processar o login.' });
+    return res.status(500).json({ sucesso: false, mensagem: err.message });
   }
 });
 
