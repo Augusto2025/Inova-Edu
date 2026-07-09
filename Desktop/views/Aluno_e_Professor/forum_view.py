@@ -520,10 +520,25 @@ class Forum(ctk.CTkFrame):
                     autor = m['autor_nome']
                     is_me = (autor == self.controller.nome_usuario_logado)
                     
+                    # --- FORMATAÇÃO DA DATA E HORA ---
+                    raw_data = m.get('Data_criacao') or m.get('data_criacao')
+                    data_formatada = ""
+                    
+                    if raw_data:
+                        try:
+                            if hasattr(raw_data, 'strftime'):
+                                data_formatada = raw_data.strftime('%d/%m/%Y %H:%M')
+                            else:
+                                data_formatada = str(raw_data)[:16].replace('-', '/')
+                        except:
+                            data_formatada = ""
+
                     if is_me:
                         fg_balao, cor_texto, cor_autor, alinhamento, txt_autor, border_color = self.azul, "#ffffff", "#bae6fd", "e", f"{autor} (Você)", self.azul
+                        cor_hora = "#cbd5e1"  # Cinza bem claro para contrastar no fundo azul
                     else:
                         fg_balao, cor_texto, cor_autor, alinhamento, txt_autor, border_color = "#f1f5f9", "#1e293b", "#64748b", "w", autor, "#f1f5f9"
+                        cor_hora = "#64748b"  # Cinza escuro para o fundo claro
 
                     linha_frame = ctk.CTkFrame(self.content, fg_color="transparent")
                     linha_frame.pack(fill="x", pady=5)
@@ -531,15 +546,26 @@ class Forum(ctk.CTkFrame):
                     balao = ctk.CTkFrame(linha_frame, fg_color=fg_balao, corner_radius=14, border_width=1, border_color=border_color)
                     balao.pack(anchor=alinhamento, padx=10)
                     
+                    # 1. BARRA SUPERIOR (Nome do Autor + Botões de Ação)
                     top_bar = ctk.CTkFrame(balao, fg_color="transparent")
                     top_bar.pack(fill="x", padx=14, pady=(8,0))
+                    
                     ctk.CTkLabel(top_bar, text=txt_autor, font=self.f_small, text_color=cor_autor).pack(side="left")
                     
                     if is_me:
                         ctk.CTkButton(top_bar, text="excluir", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color="#b91c1c", text_color="#fca5a5", command=lambda mid=m['idmensagem']: self.excluir_item("message", mid)).pack(side="right", padx=(5, 0))
                         ctk.CTkButton(top_bar, text="editar", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color=self.azul_hover, text_color="#e0f2fe", command=lambda mid=m['idmensagem'], cont=m['conteudo']: self.editar_item("message", mid, cont)).pack(side="right")
                     
-                    ctk.CTkLabel(balao, text=m['conteudo'], font=self.f_norm, text_color=cor_texto, wraplength=550, justify="left").pack(anchor="w", padx=14, pady=(2,10))
+                    # 2. CONTEÚDO DA MENSAGEM
+                    ctk.CTkLabel(balao, text=m['conteudo'], font=self.f_norm, text_color=cor_texto, wraplength=550, justify="left").pack(anchor="w", padx=14, pady=(2, 2))
+
+                    # 3. BARRA INFERIOR (Data e Hora posicionadas abaixo do texto)
+                    if data_formatada:
+                        bottom_bar = ctk.CTkFrame(balao, fg_color="transparent")
+                        bottom_bar.pack(fill="x", padx=14, pady=(0, 6))
+                        
+                        # Alinha a hora sempre no canto inferior direito do balão para um visual polido
+                        ctk.CTkLabel(bottom_bar, text=data_formatada, font=("Segoe UI", 9, "italic"), text_color=cor_hora).pack(side="right")
 
     def load_topic(self, topic_id, topic_titulo):
         self.current_topic_id = topic_id
