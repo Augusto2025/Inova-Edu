@@ -57,7 +57,7 @@ class RepositorioDashboard(ctk.CTkFrame):
 
         # 1. HEADER FIXO
         from assets.header import HeaderPadrao
-        header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=None)
+        header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=self.voltar_projeto)
 
         # Botão de Download Geral mantido no canto superior direito
         btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
@@ -107,6 +107,21 @@ class RepositorioDashboard(ctk.CTkFrame):
         # RENDERIZAR ARQUIVOS LOGO EM SEGUIDA
         for arquivo in self.arquivos:
             self.criar_linha_tabela(item=arquivo, tipo_item="arquivo")
+            
+    def voltar_projeto(self):
+        """Volta para a tela de projetos da turma"""
+        from controllers.projeto_controller import ProjetoController
+        from views.Aluno_e_Professor.projetos_view import ProjetosDesktopDashboard
+        self.pack_forget()
+        controller_projetos = ProjetoController()
+        tela_projetos = ProjetosDesktopDashboard(
+            master=self.janela, 
+            id_turma=self.turma_id, 
+            nome_turma=self.nome_projeto,
+            tipo_usuario=None,
+            controller=controller_projetos
+        )
+        tela_projetos.pack(side="right", fill="both", expand=True)
 
     def criar_linha_tabela(self, item, tipo_item):
         """Gera uma linha horizontal com colunas alinhadas perfeitamente com o cabeçalho"""
