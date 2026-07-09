@@ -1,119 +1,273 @@
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
-    --azul-Senac: #004A8D;
-    --azul-Senac-hover: #00376a;
-    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-    --text-main: #334155;
-    --text-muted: #64748b;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --azul-Senac-hover: #00376a;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  --text-main: #334155;
+  --text-muted: #64748b;
 }
 
-*{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-.hero{
-    position: relative;
-    width: 100%;
-    height: 500px;
-    overflow: hidden;
+
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
 }
 
 /* CARROSSEL */
 
-.carousel{
-    position: absolute;
-    inset: 0;
+.carousel {
+  position: absolute;
+  inset: 0;
 }
 
-.slides{
-    display: flex;
-    height: 100%;
-    transition: transform 1.2s ease;
+.slides {
+  display: flex;
+  height: 100%;
+  transition: transform 1.2s ease;
 }
 
-.slides img{
-    width: 100vw;
-    height: 100%;
-    object-fit: cover;
-    flex-shrink: 0;
+.slides img {
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
-
 
 /* ÁREA FIXA */
 
-.hero-info{
-    position: absolute;
-    top: 0;
-    left: 0;
+.hero-info {
+  position: absolute;
+  top: 0;
+  left: 0;
 
-    width: 50%;
-    height: 100%;
+  width: 50%;
+  height: 100%;
 
-    z-index: 10;
+  z-index: 10;
 
-    padding: 120px 80px;
+  padding: 120px 80px;
 
-    /* Fundo com degradê */
-    background: linear-gradient(
-        to right,
-        rgba(245,240,232,0.98) 65%,
-        rgba(245,240,232,0.85) 80%,
-        rgba(245,240,232,0.35) 92%,
-        rgba(245,240,232,0) 100%
-    );
+  /* Fundo com degradê */
+  background: linear-gradient(
+    to right,
+    rgba(245, 240, 232, 0.98) 65%,
+    rgba(245, 240, 232, 0.85) 80%,
+    rgba(245, 240, 232, 0.35) 92%,
+    rgba(245, 240, 232, 0) 100%
+  );
 }
 
-.hero-info h1{
-    font-size: 4rem;
-    color: var(--azul-Senac);
+.hero-info h1 {
+  font-size: 4rem;
+  color: var(--azul-Senac);
 }
 
-.hero-info p{
-    margin-top: 30px;
-    max-width: 600px;
-    font-size: 1.3rem;
+.hero-info p {
+  margin-top: 30px;
+  max-width: 600px;
+  font-size: 1.3rem;
 }
-.hero-info h3{
-    
-    font-size: 1.5rem;
-    color: var(--azul-Senac);
+.hero-info h3 {
+  font-size: 1.5rem;
+  color: var(--azul-Senac);
 }
 
 /* HEADER DO MEIO ====== */
 .hearder-meio {
-    width: 100%;
-    background-color: #1459b3;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  background-color: #1459b3;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 .links-meio {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 60px;
-    padding: 25px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  padding: 25px 20px;
 }
 
 .links-meio a {
-    text-decoration: none;
-    color: white;
-    font-size: 22px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: 0.3s ease;
-    padding: 10px 20px;
-    border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+  padding: 10px 20px;
+  border-radius: 8px;
 }
 
 .links-meio a:hover {
-    background-color: #f58220;
-    color: white;
-    transform: scale(1.08);
+  background-color: #f58220;
+  color: white;
+  transform: scale(1.08);
+}
+
+/* FORUNS RECENTES  ====================*/
+
+.foruns-home {
+  margin: 70px auto;
+}
+
+.titulo-secao {
+  text-align: center;
+  /* margin-bottom:35px; */
+}
+
+.titulo-secao h2 {
+  font-size: 34px;
+  color: var(--azul-Senac);
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.titulo-secao h2::after {
+  content: "";
+  position: absolute;
+  left: 35%;
+  bottom: -6px;
+  width: 25%;
+  height: 4px;
+  background: var(--laranja-Senac);
+  border-radius: 2px;
+}
+
+.titulo-secao p {
+  color: #666;
+  font-size: 16px;
+}
+
+.cards-foruns {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: stretch;
+
+  gap: 35px;
+
+  flex-wrap: wrap;
+}
+
+.card-forum {
+  width: 290px;
+
+  height: 260px;
+
+  background: #fff;
+
+  border-radius: 25px;
+
+  text-align: center;
+
+  text-decoration: none;
+
+  padding: 35px 25px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+  transition: 0.3s;
+}
+
+.card-forum:hover {
+  transform: translateY(-8px);
+
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.12);
+}
+
+.icone-card {
+  width: 65px;
+
+  height: 65px;
+
+  border-radius: 50%;
+
+  background: #fff3ea;
+
+  color: #ff8b2c;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 30px;
+
+  margin-bottom: 20px;
+}
+
+.card-forum h3 {
+  color: #0d4f9a;
+
+  font-size: 30px;
+
+  margin-bottom: 15px;
+}
+
+.card-forum p {
+  color: #666;
+
+  font-size: 16px;
+
+  line-height: 1.5;
+
+  margin-bottom: 15px;
+}
+
+.card-forum span {
+  color: #ff8b2c;
+
+  font-weight: 600;
+
+  font-size: 15px;
+}
+
+@media (max-width: 1000px) {
+  .cards-foruns {
+    gap: 20px;
+  }
+
+  .card-forum {
+    width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-foruns {
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+  .card-forum {
+    width: 90%;
+    max-width: 320px;
+  }
 }
 
 
@@ -146,224 +300,289 @@
 
 
 
-/* FORAM RECENTES  ====================*/
 
-.foruns-home{
-    margin:70px auto;
+
+
+
+/* ==========================
+   EVENTOS RECENTES 
+========================== */
+
+.eventos-home {
+  margin: 70px auto;
 }
 
-
-
-.titulo-secao{
-    text-align:center;
-    /* margin-bottom:35px; */
+.titulo-eventos {
+  text-align: center;
+  /* margin-bottom: 35px; */
 }
 
-.titulo-secao h2{
-    font-size: 34px;
-    color: var(--azul-Senac);
-    margin-bottom: 12px;
-    position: relative;
-    display: inline-block;
+.titulo-eventos h2 {
+  font-size: 34px;
+  color: var(--azul-Senac);
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
 }
 
-.titulo-secao h2::after{
-    content: "";
-    position: absolute;
-    left: 35%;
-    bottom: -6px;
-    width: 25%;
-    height: 4px;
-    background: var(--laranja-Senac);
-    border-radius: 2px;
+.titulo-eventos h2::after {
+  content: "";
+  position: absolute;
+  left: 35%;
+  bottom: -6px;
+  width: 25%;
+  height: 4px;
+  background: var(--laranja-Senac);
+  border-radius: 2px;
 }
 
-.titulo-secao p{
-    color:#666;
-    font-size:16px;
+.titulo-eventos p {
+  color: #666;
+  font-size: 16px;
 }
 
-.cards-foruns{
+/* ==========================
+   CARDS
+========================== */
+.cards-eventos{
 
     display:flex;
-
     justify-content:center;
-
-    align-items:stretch;
-
-    gap:35px;
-
+    gap:20px;
     flex-wrap:wrap;
+    margin-top:40px;
+    
 }
 
-.card-forum{
+.card-evento{
 
-    width:290px;
-
-    height:260px;
+    width:360px;
+    min-height:120px;
 
     background:#fff;
 
-    border-radius:25px;
+    border-radius:18px;
 
-    text-align:center;
-
-    text-decoration:none;
-
-    padding:35px 25px;
+    padding:18px 22px;
 
     display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
     align-items:center;
+    gap:20px;
 
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
 
     transition:.3s;
+
+    border-left:6px solid var(--laranja-Senac);
 }
 
-.card-forum:hover{
+.card-evento:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-5px);
 
-    box-shadow:0 18px 35px rgba(0,0,0,.12);
+    box-shadow:0 15px 30px rgba(0,0,0,.12);
 }
 
-.icone-card{
+.data-evento{
 
-    width:65px;
+    width:70px;
+    height:70px;
 
-    height:65px;
+    background:var(--azul-Senac);
 
-    border-radius:50%;
+    color:#fff;
 
-    background:#FFF3EA;
-
-    color:#FF8B2C;
+    border-radius:15px;
 
     display:flex;
-
+    flex-direction:column;
     justify-content:center;
-
     align-items:center;
 
-    font-size:30px;
-
-    margin-bottom:20px;
+    flex-shrink:0;
 }
 
-.card-forum h3{
+.data-evento .dia{
 
-    color:#0D4F9A;
-
-    font-size:30px;
-
-    margin-bottom:15px;
+    font-size:28px;
+    font-weight:bold;
+    line-height:1;
 }
 
-.card-forum p{
+.data-evento .mes{
 
-    color:#666;
-
-    font-size:16px;
-
-    line-height:1.5;
-
-    margin-bottom:15px;
-}
-
-.card-forum span{
-
-    color:#FF8B2C;
-
-    font-weight:600;
-
-    font-size:15px;
-}
-
-@media(max-width:1000px){
-
-    .cards-foruns{
-
-        gap:20px;
-    }
-
-    .card-forum{
-
-        width:260px;
-    }
-
-}
-
-@media(max-width:768px){
-
-    .cards-foruns{
-
-        flex-direction:column;
-
-        align-items:center;
-    }
-
-    .card-forum{
-
-        width:90%;
-        max-width:320px;
-    }
-
+    font-size:12px;
+    text-transform:uppercase;
+    margin-top:4px;
 }
 
 
+.info-evento{
 
+    flex:1;
+}
 
+.info-evento h3{
 
+    color:var(--azul-Senac);
 
+    font-size:19px;
 
+    margin-bottom:10px;
+}
 
+.info-evento p{
 
+    color:var(--cinza-Senac);
 
+    font-size:14px;
 
+    margin:4px 0;
+}
+/* ==========================
+   RESPONSIVO
+========================== */
 
+@media (max-width: 900px) {
+  .cards-eventos {
+    gap: 20px;
+  }
 
+  .card-evento {
+    width: 250px;
+  }
+}
 
+@media (max-width: 768px) {
+  .cards-eventos {
+    flex-direction: column;
+    align-items: center;
+  }
 
+  .card-evento {
+    width: 90%;
+    max-width: 320px;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  .card-vazio {
+    width: 90%;
+  }
+}
 
 /* Responsividade */
-@media (max-width: 768px){
+@media (max-width: 768px) {
+  .links-meio {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 25px;
+    padding: 15px;
+    width: 90%;
+  }
 
-    .links-meio{
-        flex-wrap: wrap;
-        justify-content: center;
-        border-radius: 25px;
-        padding: 15px;
-        width: 90%;
-    }
-
-    .links-meio a{
-        font-size: .95rem;
-        padding: 10px 15px;
-    }
+  .links-meio a {
+    font-size: 0.95rem;
+    padding: 10px 15px;
+  }
 }
 
-/* CARDS CURSOS */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* CARDS CURSOS */
 
 .cursos {
   display: flex;
@@ -380,7 +599,7 @@
   border-radius: 14px;
   padding: 25px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   transition: 0.3s;
   position: relative;
 }

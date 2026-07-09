@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 import resend
+from datetime import date
 from .models import *
 import os
 from datetime import datetime, timedelta
@@ -23,6 +24,7 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
+
 
 from dotenv import load_dotenv
 
@@ -65,17 +67,25 @@ def HomeAlunoProfessor(request):
     foruns_recentes = (
         Forum.objects
         .select_related("usuario")
-        .order_by("-data_criacao", "-idforum")[:3]   # Apenas os 3 últimos
+        .order_by("-data_criacao", "-idforum")[:3]
+    )
+
+    eventos_proximos = (
+        Eventos.objects
+        .filter(data_do_evento__gte=date.today())
+        .order_by("data_do_evento", "hora_do_evento")[:3]
     )
 
     context = {
         "foruns_recentes": foruns_recentes,
+        "eventos_proximos": eventos_proximos,
     }
 
-    return render(request, "AlunoProfessor/HomeAlunoProfessor.html", context)
-
-
-
+    return render(
+        request,
+        "AlunoProfessor/HomeAlunoProfessor.html",
+        context
+    )
 
 
 

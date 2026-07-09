@@ -107,8 +107,66 @@
 
     </section>
 
+    {% comment %} EVENTOS RECENTES {% endcomment %}
 
 
+    <section class="eventos-home">
+
+        <div class="titulo-eventos">
+            <h2>Eventos Próximos</h2>
+            <p>Confira os próximos eventos da comunidade.</p>
+        </div>
+
+        {% if eventos_proximos %}
+
+        <div class="cards-eventos">
+
+            {% for evento in eventos_proximos %}
+
+            <div class="card-evento">
+
+                    <div class="data-evento">
+                        <span class="dia">{{ evento.data_do_evento|date:"d" }}</span>
+                        <span class="mes">{{ evento.data_do_evento|date:"M"|upper }}</span>
+                    </div>
+
+                    <div class="info-evento">
+
+                        <h3>{{ evento.nome_do_evento }}</h3>
+
+                        <p>🕒 {{ evento.hora_do_evento|time:"H:i" }}</p>
+
+                        <p class="endereco">📍 {{ evento.endereco }}</p>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+            {% else %}
+
+            <div class="sem-eventos">
+
+                <div class="card-vazio">
+
+                    <div class="icone">📅</div>
+
+                    <h3>Nenhum evento agendado</h3>
+
+                    <p>Quando houver eventos eles aparecerão aqui.</p>
+
+                </div>
+
+            </div>
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    
 
 
 
