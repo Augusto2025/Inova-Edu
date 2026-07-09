@@ -20,12 +20,12 @@ except ImportError:
 from controllers.repositorio_controller import RepositorioController
 
 class RepositorioDashboard(ctk.CTkFrame):
-    def __init__(self, master, turma_id, nome_projeto="Repositório Principal", pasta_id=None):
+    def __init__(self, master, turma_id, nome_projeto, pasta_id=None):
         super().__init__(master)
         self.janela = master
         self.turma_id = turma_id
         self.pasta_atual_id = pasta_id
-        self.nome_projeto_inicial = nome_projeto
+        self.nome_projeto = nome_projeto
         self.historico_pastas = [] # Guardará tuplas de (id, nome) para navegação por cliques
         
         self.controller = RepositorioController()
@@ -57,7 +57,7 @@ class RepositorioDashboard(ctk.CTkFrame):
 
         # 1. HEADER FIXO
         from assets.header import HeaderPadrao
-        header = HeaderPadrao(self, titulo="Repositório de Arquivos", comando_voltar=None)
+        header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=None)
 
         # Botão de Download Geral mantido no canto superior direito
         btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
@@ -293,7 +293,7 @@ class RepositorioDashboard(ctk.CTkFrame):
             return
         
         local_zip = filedialog.asksaveasfilename(defaultextension=".zip", 
-                                                initialfile="repositorio.zip",
+                                                initialfile=f"{self.nome_projeto}.zip",
                                                 title="Salvar Repositório Compactado")
         if local_zip:
             try:
