@@ -61,7 +61,47 @@ def login(request):
 from .tokens import token_generator
 
 def HomeAlunoProfessor(request):
-    return render(request, "AlunoProfessor/HomeAlunoProfessor.html")
+
+    foruns_recentes = (
+        Forum.objects
+        .select_related("usuario")
+        .order_by("-data_criacao", "-idforum")[:3]   # Apenas os 3 últimos
+    )
+
+    context = {
+        "foruns_recentes": foruns_recentes,
+    }
+
+    return render(request, "AlunoProfessor/HomeAlunoProfessor.html", context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

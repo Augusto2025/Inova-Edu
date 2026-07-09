@@ -47,6 +47,150 @@
         </div>
     </section>
 
+    {% comment %} FORUNS RECENTES {% endcomment %}
+
+
+    <section class="foruns-home">
+
+        <div class="titulo-secao">
+            <h2>Fóruns Recentes</h2>
+            <p>Confira os últimos fóruns criados pela comunidade.</p>
+        </div>
+
+        {% if foruns_recentes %}
+
+        <div class="cards-foruns">
+
+            {% for forum in foruns_recentes %}
+
+            <a href="{% url 'forum' forum.idforum %}" class="card-forum">
+
+                <div class="icone-card">
+                    💬
+                </div>
+
+                <h3>{{ forum.nome }}</h3>
+
+                <p>
+                    {% if forum.usuario %}
+                        {{ forum.usuario }}
+                    {% else %}
+                        Administrador
+                    {% endif %}
+                </p>
+
+                <span>{{ forum.data_criacao|date:"d/m/Y" }}</span>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="cards-foruns">
+
+            <div class="card-forum">
+
+                <div class="icone-card">📭</div>
+
+                <h3>Nenhum Fórum</h3>
+
+                <p>Os fóruns aparecerão aqui quando forem criados.</p>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <section class="cursos">
 
         <div class="card">
