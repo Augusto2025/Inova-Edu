@@ -1,56 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db'); // Puxa a conexão do Postgres protegida pelo .env
+const pool = require('../config/db'); 
 
-// Rota de Login (POST: https://sua-api.onrender.com/login)
-router.post('/', async (req, res) => { // 🌟 Ajustado para '/' para evitar caminhos duplicados
+router.post('/', async (req, res) => {
   const { email, senha } = req.body;
-
-  console.log(`📩 Tentativa de login recebida para o e-mail: ${email}`);
+  if (!email || !senha) {
+    return res.status(400).json({ sucesso: false, mensagem: 'Campos obrigatórios ausentes.' });
+  }
 
   try {
-    // 1. Procura o usuário na tabela do banco de dados pelo e-mail
-    const queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha", "Tipo" FROM usuario WHERE "Email" = $1';
-    const resultado = await pool.query(queryText, [email]);
-
-    // 2. Se o banco não retornar nenhuma linha, o e-mail não existe
-    if (resultado.rows.length === 0) {
-      return res.status(401).json({
-        sucesso: false,
-        mensagem: 'E-mail ou senha incorretos!'
-      });
+    let queryText = 'SELECT idusuario, nome, email, senha, tipo FROM usuario WHERE email = $1';
+    let resultado;
+    
+    try {
+      resultado = await pool.query(queryText, [email.trim()]);
+    } catch (e) {
+      queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha", "Tipo" FROM usuario WHERE "Email" = $1';
+      resultado = await pool.query(queryText, [email.trim()]);
     }
 
-    const usuarioEncontrado = resultado.rows[0];
-
-    // 3. Verifica se a senha digitada bate com a senha do banco
-    if (usuarioEncontrado.Senha !== senha) {
-      return res.status(401).json({
-        sucesso: false,
-        mensagem: 'E-mail ou senha incorretos!'
-      });
+    if (!resultado || resultado.rows.length === 0) {
+      return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos!' });
     }
 
-    // 4. Se passou por tudo, o login deu certo! Retorna os dados para o celular
+    const row = resultado.rows[0];
+    const usuarioSenha = row.senha || row.Senha;
+
+    if (usuarioSenha !== senha) {
+      return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos!' });
+    }
+
     return res.json({
       sucesso: true,
       mensagem: 'Login efetuado com sucesso!',
       usuario: {
-        id: usuarioEncontrado.idUsuario,
-        nome: usuarioEncontrado.Nome,
-        email: usuarioEncontrado.Email,
-        tipo: usuarioEncontrado.Tipo
+        id: row.idusuario || row.idUsuario,
+        nome: row.nome || row.Nome,
+        email: row.email || row.Email,
+        tipo: row.tipo || row.Tipo
       }
     });
-
   } catch (err) {
-    console.error('❌ Erro interno ao tentar fazer login:', err.message);
-    return res.status(500).json({
-      sucesso: false,
-      mensagem: 'Erro interno no servidor ao processar o login.'
-    });
+    console.error('Erro crítico no login:', err);
+    return res.status(500).json({ sucesso: false, mensagem: 'Erro interno no servidor ao processar o login.' });
   }
 });
 
-// Exporta a rota para o server.js
 module.exports = router;
