@@ -76,9 +76,15 @@ def HomeAlunoProfessor(request):
         .order_by("data_do_evento", "hora_do_evento")[:3]
     )
 
+    cursos_recentes = (
+        Curso.objects
+        .order_by("-idcurso")[:4]
+    )
+
     context = {
         "foruns_recentes": foruns_recentes,
         "eventos_proximos": eventos_proximos,
+        "cursos_recentes": cursos_recentes,
     }
 
     return render(

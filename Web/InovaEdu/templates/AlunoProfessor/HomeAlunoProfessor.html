@@ -169,110 +169,170 @@
     
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <section class="cursos">
-
-        <div class="card">
-            <div class="icon">💻</div>
-            <h3>Desenvolvimento Web</h3>
-            <p>Aprenda HTML, CSS, JavaScript e construa sites modernos e responsivos.</p>
-            <button>Acessar Curso</button>
+   <section class="cursos-recentes">
+        <div class="titulo-curso">
+            <h2>Cursos Recentes</h2>
+            <p>Confira os cursos disponíveis na plataforma.</p>
         </div>
 
-        <div class="card active">
-            <div class="icon">💼</div>
-            <h3>Administração</h3>
-            <p>Desenvolva habilidades em gestão, organização e processos administrativos.</p>
-            <button>Acessar Curso</button>
+
+        {% if cursos_recentes %}
+
+        <div class="cards-cursos">
+
+            {% for curso in cursos_recentes %}
+
+            <div class="card-curso">
+
+
+                <div class="imagem-curso">
+
+                    {% if curso.imagem %}
+                        <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}">
+                    {% else %}
+                        <div class="sem-imagem">
+                            📚
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+
+                <div class="conteudo-curso">
+
+
+                    <h3>
+                        {{ curso.nome_curso }}
+                    </h3>
+
+
+                    <p>
+                        {{ curso.descricao_curso|truncatechars:90 }}
+                    </p>
+
+
+
+                    <div class="informacoes-curso">
+
+                        <span>
+                            📅 {{ curso.data_inicio|date:"d/m/Y" }}
+                        </span>
+
+                    </div>
+
+
+
+                    <a href="#" class="btn-entrar">
+
+                        Entrar
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
         </div>
 
-        <div class="card">
-            <div class="icon">🎨</div>
-            <h3>Design Gráfico</h3>
-            <p>Crie identidades visuais, layouts e projetos criativos profissionais.</p>
-            <button>Acessar Curso</button>
-        </div>
+
+        {% else %}
+
+            <div class="sem-cursos">
+                Nenhum curso cadastrado.
+            </div>
+
+
+        {% endif %}
+
 
     </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     <script src="{% static 'scripts/HomeAlunoProfessor.js' %}"></script>
 
