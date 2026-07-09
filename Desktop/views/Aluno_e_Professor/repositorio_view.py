@@ -8,11 +8,9 @@ import zipfile
 # Ajuste de caminhos para imports (MVC) para que o EXE localize as pastas
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-# Tenta importar as cores, com fallback caso o caminho mude no executável
 try:
     from assets.cores import *
 except ImportError:
-    # Cores de fallback caso o arquivo assets/cores.py não seja carregado
     azulEscuro = "#1a237e"
     AzulPrimario = "#2196f3"
     AzulHover = "#1976d2"
@@ -22,168 +20,256 @@ except ImportError:
 from controllers.repositorio_controller import RepositorioController
 
 class RepositorioDashboard(ctk.CTkFrame):
-    def __init__(self, master, turma_id, nome_projeto, pasta_id=None):
+    def __init__(self, master, turma_id, nome_projeto="Repositório Principal", pasta_id=None):
         super().__init__(master)
         self.janela = master
         self.turma_id = turma_id
         self.pasta_atual_id = pasta_id
-        self.nome_projeto = nome_projeto
+        self.nome_projeto_inicial = nome_projeto
+        self.historico_pastas = [] # Guardará tuplas de (id, nome) para navegação por cliques
         
-        # Instancia o controller que conversa com o Model (PostgreSQL)
         self.controller = RepositorioController()
-        
         self.configure(fg_color=CinzaFundo)
         self.pack(side="right", fill="both", expand=True)
         
-        # Inicia a interface e carrega os dados
         self.carregar_e_mostrar()
 
     def carregar_e_mostrar(self):
         """Limpa a interface e recarrega os dados do banco"""
-        # 1. Busca os dados via Controller
         self.carregar_dados()
-        # 2. Desenha os elementos na tela
         self.criar_interface()
 
     def carregar_dados(self):
         """Busca pastas e arquivos filtrados pelo ID atual"""
         try:
-            # Chama o controller passando o ID da Turma/Projeto e a Pasta Atual
             self.pastas, self.arquivos = self.controller.listar_conteudo(
                 self.turma_id, 
                 self.pasta_atual_id
             )
-            print(f"[DEBUG] Dados carregados: {len(self.pastas)} pastas, {len(self.arquivos)} arquivos.")
         except Exception as e:
             print(f"[ERRO VIEW]: Falha ao carregar dados do banco: {e}")
             self.pastas, self.arquivos = [], []
 
     def criar_interface(self):
-        """Renderiza todos os componentes visuais"""
-        # Limpa widgets existentes para evitar duplicidade na navegação
+        """Renderiza os componentes visuais no estilo Tabela/Lista Detalhada do Windows"""
         for widget in self.winfo_children():
             widget.destroy()
 
+        # 1. HEADER FIXO
         from assets.header import HeaderPadrao
-        header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=None)
+        header = HeaderPadrao(self, titulo="Repositório de Arquivos", comando_voltar=None)
 
-        # Botão Voltar (aparece apenas se não estiver na raiz)
-        if self.pasta_atual_id:
-            btn_voltar = ctk.CTkButton(header, text="⬅ Voltar", width=90, height=35,
-                                      fg_color="transparent", border_width=1, border_color=Branco,
-                                      hover_color=AzulHover, command=self.voltar_raiz)
-            btn_voltar.pack(side="left", padx=20)
-
-        
-        # Botão de Download Geral
+        # Botão de Download Geral mantido no canto superior direito
         btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
                                text_color=Branco, width=160, height=35, 
                                font=ctk.CTkFont(weight="bold"),
                                command=self.baixar_tudo_zip)
         btn_zip.pack(side="right", padx=30)
 
-        # --- ÁREA DE SCROLL PRINCIPAL ---
-        self.main_scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
-        self.main_scroll.pack(fill="both", expand=True, padx=30, pady=20)
+        # 2. BARRA DE CAMINHO (Breadcrumb)
+        self.criar_barra_caminho()
 
-        # SEÇÃO: PASTAS
-        self.renderizar_secao_pastas()
+        # 3. ÁREA DE SCROLL PRINCIPAL (Fundo branco para simular a tabela)
+        self.main_scroll = ctk.CTkScrollableFrame(self, fg_color=Branco, corner_radius=8, border_width=1, border_color="#e2e8f0")
+        self.main_scroll.pack(fill="both", expand=True, padx=30, pady=(0, 20))
 
-        # Separador Visual
-        ctk.CTkFrame(self.main_scroll, height=2, fg_color="#e2e8f0").pack(fill="x", pady=25)
+        # --- CABEÇALHO DA TABELA (Colunas Fixas) ---
+        header_tabela = ctk.CTkFrame(self.main_scroll, fg_color="#f1f5f9", height=35, corner_radius=4)
+        header_tabela.pack(fill="x", padx=5, pady=(5, 10))
+        header_tabela.pack_propagate(False)
 
-        # SEÇÃO: ARQUIVOS
-        self.renderizar_secao_arquivos()
+        # Definição das larguras e alinhamentos das colunas usando grid
+        header_tabela.columnconfigure(0, weight=0, minsize=40)
+        header_tabela.columnconfigure(1, weight=3, minsize=250)
+        header_tabela.columnconfigure(2, weight=1, minsize=130)
+        header_tabela.columnconfigure(3, weight=1, minsize=130)
+        header_tabela.columnconfigure(4, weight=1, minsize=150)
 
-    def renderizar_secao_pastas(self):
-        lbl_p = ctk.CTkLabel(self.main_scroll, text="Pastas", font=ctk.CTkFont(size=19, weight="bold"), 
-                             text_color=azulEscuro)
-        lbl_p.pack(anchor="w", pady=(0, 15))
+        # Alterado: Removido o width=20 e adicionado padx igual ao do ícone abaixo
+        ctk.CTkLabel(header_tabela, text="", font=("Arial", 18)).grid(row=0, column=0, sticky="w", padx=(10, 0))
+        
+        # Alinhados com sticky="w" para travar o início do texto na mesma reta
+        ctk.CTkLabel(header_tabela, text="Nome", font=ctk.CTkFont(size=12, weight="bold"), text_color="#475569", anchor="w").grid(row=0, column=1, sticky="w", padx=5, pady=5)
+        ctk.CTkLabel(header_tabela, text="Data de modificação", font=ctk.CTkFont(size=12, weight="bold"), text_color="#475569", anchor="w").grid(row=0, column=2, sticky="w", padx=5, pady=5)
+        ctk.CTkLabel(header_tabela, text="Tipo", font=ctk.CTkFont(size=12, weight="bold"), text_color="#475569", anchor="w").grid(row=0, column=3, sticky="w", padx=5, pady=5)
+        ctk.CTkLabel(header_tabela, text="Quem enviou", font=ctk.CTkFont(size=12, weight="bold"), text_color="#475569", anchor="w").grid(row=0, column=4, sticky="w", padx=5, pady=5)
 
-        grid_pastas = ctk.CTkFrame(self.main_scroll, fg_color="transparent")
-        grid_pastas.pack(fill="x")
+        # Se o diretório estiver totalmente vazio
+        if not self.pastas and not self.arquivos:
+            ctk.CTkLabel(self.main_scroll, text="Esta pasta está vazia.", 
+                         text_color="#64748b", font=("Arial", 14, "italic")).pack(pady=40)
+            return
 
-        if not self.pastas:
-            ctk.CTkLabel(grid_pastas, text="Nenhuma pasta encontrada nesta seção.", 
-                         text_color="#64748b", font=("Arial", 13)).pack(pady=10)
-        else:
-            for i, pasta in enumerate(self.pastas):
-                self.criar_card_pasta(grid_pastas, pasta, i)
+        # RENDERIZAR PASTAS PRIMEIRO
+        for pasta in self.pastas:
+            self.criar_linha_tabela(item=pasta, tipo_item="pasta")
 
-    def renderizar_secao_arquivos(self):
-        lbl_a = ctk.CTkLabel(self.main_scroll, text="Arquivos", font=ctk.CTkFont(size=19, weight="bold"), 
-                             text_color=azulEscuro)
-        lbl_a.pack(anchor="w", pady=(0, 15))
+        # RENDERIZAR ARQUIVOS LOGO EM SEGUIDA
+        for arquivo in self.arquivos:
+            self.criar_linha_tabela(item=arquivo, tipo_item="arquivo")
 
-        if not self.arquivos:
-            ctk.CTkLabel(self.main_scroll, text="Nenhum arquivo disponível aqui.", 
-                         text_color="#64748b", font=("Arial", 13)).pack(pady=10)
-        else:
-            for arq in self.arquivos:
-                self.criar_linha_arquivo(arq)
-
-    def criar_card_pasta(self, parent, pasta, index):
-        """Cria o card visual para cada pasta vinda do Postgres"""
-        card = ctk.CTkFrame(parent, fg_color=Branco, width=280, height=130, 
-                            corner_radius=12, border_width=1, border_color="#cbd5e1")
-        card.grid(row=index//3, column=index%3, padx=10, pady=10)
-        card.pack_propagate(False)
-
-        lbl_icon = ctk.CTkLabel(card, text="📁", font=("Arial", 28))
-        lbl_icon.pack(pady=(15, 0))
-
-        # O RealDictCursor permite acessar por nome: pasta['nome']
-        lbl_nome = ctk.CTkLabel(card, text=pasta['nome'], font=ctk.CTkFont(size=14, weight="bold"), 
-                                text_color=azulEscuro)
-        lbl_nome.pack()
-
-        btn_abrir = ctk.CTkButton(card, text="Abrir Pasta", height=28, width=120,
-                                 fg_color=AzulPrimario, hover_color=AzulHover,
-                                 command=lambda p=pasta: self.entrar_na_pasta(p))
-        btn_abrir.pack(side="bottom", pady=15)
-
-    def criar_linha_arquivo(self, arquivo):
-        """Cria uma linha horizontal para cada arquivo"""
-        linha = ctk.CTkFrame(self.main_scroll, fg_color=Branco, height=65, 
-                             corner_radius=10, border_width=1, border_color="#cbd5e1")
-        linha.pack(fill="x", pady=5)
+    def criar_linha_tabela(self, item, tipo_item):
+        """Gera uma linha horizontal com colunas alinhadas perfeitamente com o cabeçalho"""
+        cor_fundo_inicial = "#fef08a" if tipo_item == "pasta" else "transparent"
+        linha = ctk.CTkFrame(self.main_scroll, fg_color="transparent", height=38, corner_radius=4)
+        linha.pack(fill="x", padx=5, pady=1)
         linha.pack_propagate(False)
 
-        ctk.CTkLabel(linha, text="📄", font=("Arial", 22)).pack(side="left", padx=20)
+        # Espelhamento exato do grid do cabeçalho
+        linha.columnconfigure(0, weight=0, minsize=40)
+        linha.columnconfigure(1, weight=3, minsize=250)
+        linha.columnconfigure(2, weight=1, minsize=130)
+        linha.columnconfigure(3, weight=1, minsize=130)
+        linha.columnconfigure(4, weight=1, minsize=150)
 
-        info = ctk.CTkFrame(linha, fg_color="transparent")
-        info.pack(side="left", fill="both", expand=True, pady=10)
+        # Efeito visual de seleção ao passar o mouse por cima da linha inteira
+        linha.bind("<Enter>", lambda e: linha.configure(fg_color="#f8fafc"))
+        linha.bind("<Leave>", lambda e: linha.configure(fg_color="transparent"))
 
-        ctk.CTkLabel(info, text=arquivo['nome'], font=ctk.CTkFont(size=14, weight="bold"), 
-                     text_color=azulEscuro, anchor="w").pack(fill="x")
+        # Define as variáveis com base no tipo (Pasta ou Arquivo)
+        if tipo_item == "pasta":
+            icone = "📁"
+            cor_texto = azulEscuro
+            data = item.get('data', '--/--/----')
+            tipo_extensao = "Pasta de arquivos"
+            autor = item.get('autor', 'Sistema')
+            linha.bind("<Double-1>", lambda e: self.entrar_na_pasta(item))
+        else:
+            icone = "📄"
+            cor_texto = "#334155"
+            data = item.get('data', '--/--/----')
+            _, ext = os.path.splitext(item['nome'])
+            tipo_extensao = f"Arquivo {ext.upper()}" if ext else "Arquivo"
+            autor = item.get('autor', 'Não informado')
+            linha.bind("<Double-1>", lambda e: self.baixar_arquivo(item))
+
+        # --- INSERÇÃO DOS DADOS MILIMETRICAMENTE ALINHADOS ---
         
-        meta = f"Por: {arquivo['autor']}  •  Data: {arquivo['data']}"
-        ctk.CTkLabel(info, text=meta, font=ctk.CTkFont(size=11), 
-                     text_color="#64748b", anchor="w").pack(fill="x")
+        # Col 0: Ícone (Mesmo padx do cabeçalho)
+        if tipo_item == "pasta":
+            # Usamos o emoji de pasta aberta que costuma ser mais dourado/amarelo nativamente
+            lbl_icon = ctk.CTkLabel(linha, text="📂", font=("Arial", 18), text_color="#eab308") 
+        else:
+            lbl_icon = ctk.CTkLabel(linha, text="📄", font=("Arial", 18))
+            
+        lbl_icon.grid(row=0, column=0, sticky="w", padx=(10, 0))
 
-        btn_dl = ctk.CTkButton(linha, text="📥 Baixar", width=100, height=32,
-                              fg_color="#f1f5f9", text_color=azulEscuro, hover_color="#e2e8f0",
-                              command=lambda a=arquivo: self.baixar_arquivo(a))
-        btn_dl.pack(side="right", padx=20)
+        # Col 1: Nome do Item (Com limitador wraplength para não empurrar a coluna)
+        lbl_nome = ctk.CTkLabel(linha, text=item['nome'], font=ctk.CTkFont(size=13), text_color=cor_texto, anchor="w", wraplength=240, justify="left")
+        lbl_nome.grid(row=0, column=1, sticky="w", padx=5)
 
-    # --- LÓGICA DE NAVEGAÇÃO ---
+        # Col 2: Data de Modificação
+        lbl_data = ctk.CTkLabel(linha, text=data, font=ctk.CTkFont(size=12), text_color="#64748b", anchor="w")
+        lbl_data.grid(row=0, column=2, sticky="w", padx=5)
+
+        # Col 3: Tipo do Elemento
+        lbl_tipo = ctk.CTkLabel(linha, text=tipo_extensao, font=ctk.CTkFont(size=12), text_color="#64748b", anchor="w")
+        lbl_tipo.grid(row=0, column=3, sticky="w", padx=5)
+
+        # Col 4: Autor / Quem Enviou
+        lbl_autor = ctk.CTkLabel(linha, text=autor, font=ctk.CTkFont(size=12), text_color="#64748b", anchor="w")
+        lbl_autor.grid(row=0, column=4, sticky="w", padx=5)
+
+        # Faz com que o clique nos textos repasse o evento de duplo clique para a linha pai
+        for child in linha.winfo_children():
+            if tipo_item == "pasta":
+                child.bind("<Double-1>", lambda e, p=item: self.entrar_na_pasta(p))
+            else:
+                child.bind("<Double-1>", lambda e, a=item: self.baixar_arquivo(a))
+
+    def criar_barra_caminho(self):
+        """Cria uma barra simulando o topo do explorador de arquivos com cliques funcionais"""
+        path_frame = ctk.CTkFrame(self, fg_color="#e2e8f0", height=32, corner_radius=4)
+        path_frame.pack(fill="x", padx=30, pady=15)
+        path_frame.pack_propagate(False)
+
+        # Ícone de computador inicial
+        ctk.CTkLabel(path_frame, text=" 💻 Este Computador ", font=("Arial", 12, "bold"), text_color="#475569").pack(side="left", padx=(5, 2))
+        
+        # Botão interativo para a Raiz
+        btn_raiz = ctk.CTkButton(path_frame, text="Raiz", font=("Arial", 12), text_color=azulEscuro,
+                                 fg_color="transparent", width=40, hover_color="#cbd5e1", command=self.voltar_raiz)
+        btn_raiz.pack(side="left")
+
+        # reconstrói os caminhos baseados no histórico para permitir cliques diretos no meio do caminho
+        for idx, pasta_hist in enumerate(self.historico_pastas):
+            ctk.CTkLabel(path_frame, text=">", text_color="#94a3b8", font=("Arial", 12)).pack(side="left", padx=2)
+            btn_path = ctk.CTkButton(
+                path_frame, 
+                text=pasta_hist['nome'], 
+                font=("Arial", 12),
+                text_color=azulEscuro,
+                fg_color="transparent",
+                width=50,
+                hover_color="#cbd5e1",
+                command=lambda p=pasta_hist, i=idx: self.navegar_historico(p, i)
+            )
+            btn_path.pack(side="left")
+
+    def criar_item_explorer(self, parent, item, tipo, index):
+        """Gera um Card compacto de pasta ou arquivo mesclados no Grid geral"""
+        card = ctk.CTkFrame(parent, fg_color="transparent", width=210, height=85, corner_radius=6)
+        card.grid(row=index // 4, column=index % 4, padx=8, pady=8, sticky="nsew")
+        card.grid_propagate(False)
+
+        # Efeito de hover manual estilo Windows
+        card.bind("<Enter>", lambda e: card.configure(fg_color="#f1f5f9"))
+        card.bind("<Leave>", lambda e: card.configure(fg_color="transparent"))
+
+        # Define visual com base no tipo
+        if tipo == "pasta":
+            icone = "📁"
+            cor_titulo = azulEscuro
+            # Duplo clique abre a pasta
+            card.bind("<Double-1>", lambda e: self.entrar_na_pasta(item))
+        else:
+            icone = "📄"
+            cor_titulo = "#334155"
+            # Duplo clique baixa o arquivo
+            card.bind("<Double-1>", lambda e: self.baixar_arquivo(item))
+
+        # Layout interno do item (Ícone ao lado esquerdo, dados textuais ao lado)
+        lbl_icon = ctk.CTkLabel(card, text=icone, font=("Arial", 28))
+        lbl_icon.pack(side="left", padx=10)
+        lbl_icon.bind("<Double-1>", lambda e: self.entrar_na_pasta(item) if tipo == "pasta" else self.baixar_arquivo(item))
+
+        info_frame = ctk.CTkFrame(card, fg_color="transparent")
+        info_frame.pack(side="left", fill="both", expand=True, pady=12)
+
+        lbl_nome = ctk.CTkLabel(info_frame, text=item['nome'], font=ctk.CTkFont(size=12, weight="bold"), 
+                                text_color=cor_titulo, anchor="w", justify="left")
+        lbl_nome.pack(fill="x")
+        lbl_nome.bind("<Double-1>", lambda e: self.entrar_na_pasta(item) if tipo == "pasta" else self.baixar_arquivo(item))
+
+        # Legenda menor descritiva
+        sub_texto = "Pasta de Arquivos" if tipo == "pasta" else f"Por: {item.get('autor', 'Pref.')}"
+        lbl_sub = ctk.CTkLabel(info_frame, text=sub_texto, font=ctk.CTkFont(size=10), text_color="#64748b", anchor="w")
+        lbl_sub.pack(fill="x")
+
+    # --- LÓGICA DE NAVEGAÇÃO REFEITA ---
     def entrar_na_pasta(self, pasta):
-        """Atualiza o estado e recarrega a tela (evita abrir múltiplas janelas)"""
+        """Atualiza a pasta atual e registra o rastro no histórico de navegação"""
+        if {'id': pasta['id'], 'nome': pasta['nome']} not in self.historico_pastas:
+            self.historico_pastas.append({'id': pasta['id'], 'nome': pasta['nome']})
+        
         self.pasta_atual_id = pasta['id']
-        self.nome_projeto = pasta['nome']
+        self.carregar_e_mostrar()
+
+    def navegar_historico(self, pasta, index):
+        """Permite que o usuário clique em qualquer pasta anterior do caminho do topo"""
+        self.historico_pastas = self.historico_pastas[:index + 1]
+        self.pasta_atual_id = pasta['id']
         self.carregar_e_mostrar()
 
     def voltar_raiz(self):
-        """Reseta para o diretório principal"""
+        """Reseta de volta para o diretório de origem"""
+        self.historico_pastas.clear()
         self.pasta_atual_id = None
-        self.nome_projeto = "Repositório Principal"
         self.carregar_e_mostrar()
 
-    # --- LÓGICA DE DOWNLOAD REAL INTEGRADA COM A NUVEM ---
+    # --- LÓGICA DE DOWNLOADS INTEGRADOS ---
     def baixar_arquivo(self, arquivo):
-        """Baixa o conteúdo real do Cloudinary usando a URL fornecida"""
-        url_file = arquivo.get('url') # Modifique para o nome exato da chave do Cloudinary se necessário
-        
+        url_file = arquivo.get('url')
         if not url_file:
             messagebox.showerror("Erro", "Este arquivo não possui uma URL válida na nuvem.")
             return
@@ -191,58 +277,45 @@ class RepositorioDashboard(ctk.CTkFrame):
         local = filedialog.asksaveasfilename(initialfile=arquivo['nome'], title="Salvar Arquivo")
         if local:
             try:
-                # Faz a requisição http para buscar o binário na nuvem
                 resposta = requests.get(url_file, timeout=20)
                 if resposta.status_code == 200:
                     with open(local, 'wb') as f:
                         f.write(resposta.content)
-                    messagebox.showinfo("Sucesso", f"O arquivo '{arquivo['nome']}' foi baixado com sucesso!")
+                    messagebox.showinfo("Sucesso", f"O arquivo '{arquivo['nome']}' foi baixado!")
                 else:
-                    messagebox.showerror("Erro de Servidor", f"Não foi possível obter o arquivo da nuvem (Status {resposta.status_code})")
+                    messagebox.showerror("Erro", f"Falha no servidor da nuvem (Status {resposta.status_code})")
             except Exception as e:
-                messagebox.showerror("Erro", f"Falha na conexão de download: {e}")
+                messagebox.showerror("Erro", f"Falha de conexão: {e}")
 
     def baixar_tudo_zip(self):
-        """Monta um arquivo .zip unindo downloads da nuvem sob demanda"""
         if not self.arquivos:
-            messagebox.showwarning("Aviso", "Não há arquivos para compactar nesta tela.")
+            messagebox.showwarning("Aviso", "Não há arquivos para compactar nesta pasta.")
             return
         
         local_zip = filedialog.asksaveasfilename(defaultextension=".zip", 
-                                                initialfile=f"{self.nome_projeto}.zip",
+                                                initialfile="repositorio.zip",
                                                 title="Salvar Repositório Compactado")
         if local_zip:
             try:
-                sucesso_downloads = 0
+                sucesso = 0
                 with zipfile.ZipFile(local_zip, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                     for arq in self.arquivos:
                         url_file = arq.get('url')
                         if url_file:
-                            print(f"[ZIP] Buscando da nuvem: {arq['nome']}")
                             res = requests.get(url_file, timeout=15)
                             if res.status_code == 200:
-                                # Escreve os bytes diretamente na estrutura do ZIP local
                                 zip_file.writestr(arq['nome'], res.content)
-                                sucesso_downloads += 1
-                
-                if sucesso_downloads > 0:
-                    messagebox.showinfo("ZIP", f"Compactado com sucesso!\n{sucesso_downloads} arquivos inclusos.")
-                else:
-                    messagebox.showwarning("Aviso", "Nenhum arquivo pôde ser obtido da nuvem para montar o zip.")
+                                sucesso += 1
+                if sucesso > 0:
+                    messagebox.showinfo("ZIP", f"Compactado com sucesso! {sucesso} arquivos salvos.")
             except Exception as e:
-                messagebox.showerror("Erro", f"Houve um problema ao criar o pacote .zip: {e}")
+                messagebox.showerror("Erro", f"Houve um problema ao criar o .zip: {e}")
 
-# --- BLOCO DE EXECUÇÃO (Teste) ---
 if __name__ == "__main__":
     ctk.set_appearance_mode("light")
     root = ctk.CTk()
     root.geometry("1100x800")
-    root.title("Inova Edu - Repositório")
-    
-    # IMPORTANTE: Passe um ID que exista no seu banco para testar!
+    root.title("Inova Edu - Explorer")
     app = RepositorioDashboard(root, turma_id=1) 
-    
-    # Atalho para fechar o fullscreen se necessário
     root.bind("<Escape>", lambda e: root.destroy())
-    
     root.mainloop()

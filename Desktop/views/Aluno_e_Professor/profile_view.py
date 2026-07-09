@@ -169,7 +169,7 @@ class UserProfileSystem(ctk.CTkFrame):
         self.cert_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
         self.cert_container.pack(fill="x", pady=10) 
 
-        self.create_section_title("📊 Projetos Ativos", is_accordion=False)
+        self.create_section_title("📊 Meus Projetos", is_accordion=False)
         self.proj_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
         self.proj_container.pack(fill="x", pady=10)
 
