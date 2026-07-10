@@ -101,15 +101,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
 .main-title {
     color: var(--azul-Senac);
     font-size: 2.2rem;
@@ -132,84 +123,5 @@
 }
 
 
-/* FILTRO DO ANO DA TURMA =========== */
 
-.anos-wrapper {
-    width: fit-content;
-    max-width: 95%;
-    margin: 30px auto;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    /* background: #f8f8f8;
-    border-radius: 20px;
 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); */
-}
-
-.anos-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.anos-container::-webkit-scrollbar {
-    display: none;
-}
-
-.ano {
-    min-width: 75px;
-    height: 42px;
-    border: 1px solid #e2e2e2;
-    border-radius: 14px;
-    background: #fff;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    position: relative;
-    transition: all .3s ease;
-}
-
-.ano:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,.08);
-}
-
-.ano.ativo {
-    color: #ff7a00;
-    border-color: #ff7a00;
-}
-
-.ano.ativo::after {
-    content: "";
-    position: absolute;
-    left: 20%;
-    bottom: -8px;
-    width: 60%;
-    height: 3px;
-    background: #ff7a00;
-    border-radius: 10px;
-}
-
-.scroll-indicator {
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: #fff0e5;
-    color: #ff7a00;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.scroll-indicator:hover {
-    transform: scale(1.08);
-}

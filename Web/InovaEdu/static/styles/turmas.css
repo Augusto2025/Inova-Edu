@@ -34,24 +34,6 @@ body {
    CABEÇALHO, ROTAS E TÍTULOS
    =========================================================== */
 
-/* body{
-    margin: 0;
-    padding: 0;
-} */
-
-/* .titulo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.titulo p {
-    color: var(--azul-Senac);
-    font-size: 26px;
-    font-weight: 600;
-    border-bottom: 4px solid var(--laranja-Senac);
-} */
 
 main {
   justify-content: flex-start;
@@ -64,7 +46,7 @@ section {
   display: flex;
   flex-direction: column;
   padding: 25px;
-  height: 150px;
+  /* height: 150px; */
 }
 
 section p {

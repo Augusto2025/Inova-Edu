@@ -21,27 +21,22 @@
             </div>
         </header>
 
-       <div class="anos-wrapper">
-            <div class="anos-container">
-                <button class="ano ativo">2022</button>
-                <button class="ano">2023</button>
-                <button class="ano">2024</button>
-                <button class="ano">2025</button>
-                <button class="ano">2026</button>
-                <button class="ano">2027</button>
-                <button class="ano">2028</button>
-                <button class="ano">2029</button>
-                <button class="ano">2030</button>
-            </div>
+        <section class="search-container">
+            <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder="Pesquise uma ..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+    </div>
 
-            <div class="scroll-indicator">
-                <i class="fa-solid fa-chevron-right"></i>
-            </div>
-        </div>
+      
 
+    <main class="container">
 
         {% for ano, turmas_do_ano in turmas_por_ano.items %}
-
         <div class="ano-header">
             <h2>Ano {{ ano }}</h2>
 
@@ -91,16 +86,13 @@
         {% endfor %}
 
 
-
-
-
-    </div> 
+    </main> 
 
     
 
    
 {% endblock %}
     
-    {% block footer %}
-        {% include "partials/footer.html" %}
-    {% endblock %}
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}
