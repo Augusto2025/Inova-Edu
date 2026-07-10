@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/global.css' %}"> {% endcomment %}
+    
     <link rel="stylesheet" href="{% static 'styles/turmas.css' %}">
     <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
 
@@ -94,36 +94,13 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    </main> 
+    </div> 
 
     
 
    
-
-
-
-
-
-
-
-
-
-    
-    
-
 {% endblock %}
-
-{% block footer %}
-    {% include "partials/footer.html" %}
-{% endblock %}
+    
+    {% block footer %}
+        {% include "partials/footer.html" %}
+    {% endblock %}
