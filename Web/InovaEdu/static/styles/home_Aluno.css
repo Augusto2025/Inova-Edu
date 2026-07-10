@@ -79,7 +79,7 @@ body {
 }
 
 .card-image {
-    height: 170px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -102,7 +102,7 @@ body {
 }
 
 .card-content {
-    padding: 22px;
+    padding: 9px;
     display: flex;
     flex-direction: column;
     flex: 1;
