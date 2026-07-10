@@ -106,11 +106,16 @@ class ProfileController:
             return
 
         try:
+            estado_foto = "manter"
             imagem_para_banco = None
 
             # SE O USUÁRIO SELECIONOU UMA NOVA FOTO LOCAL
             # SE O USUÁRIO SELECIONOU UMA NOVA FOTO LOCAL
-            if caminho_foto_local and os.path.exists(caminho_foto_local):
+            if caminho_foto_local == "":
+                estado_foto = "remover"
+            elif caminho_foto_local and os.path.exists(caminho_foto_local):
+                estado_foto = "upload"
+
                 import cloudinary
                 import cloudinary.uploader
                 
@@ -146,16 +151,30 @@ class ProfileController:
             # ATUALIZAÇÃO NO BANCO DE DADOS POSTGRES
             conn = conectar()
             with conn.cursor() as cursor:
-                if imagem_para_banco:
-                    # Se trocou a foto, atualiza os dados E a coluna da imagem (com aspas duplas por causa do Postgres)
+                if estado_foto == "upload" and imagem_para_banco:
+                    # CASO A: Fez upload de uma foto nova
                     sql = """
                         UPDATE usuario 
                         SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s, "Senha" = %s, "imagem_usuario" = %s
                         WHERE "Email" = %s
                     """
                     cursor.execute(sql, (nome, sobrenome, bio, senha, imagem_para_banco, self.email))
+                
+                elif estado_foto == "remover":
+                    if hasattr(self, 'sessao'):
+                        # Ajuste 'imagem' para o nome exato que seu objeto de sessão usa
+                        if hasattr(self.sessao, 'imagem'): self.sessao.imagem = None
+                        if hasattr(self.sessao, 'imagem_usuario'): self.sessao.imagem_usuario = None
+                    # CASO B: Solicitou a remoção da foto (Garante o NULL no Postgres)
+                    sql = """
+                        UPDATE usuario 
+                        SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s, "Senha" = %s, "imagem_usuario" = NULL
+                        WHERE "Email" = %s
+                    """
+                    cursor.execute(sql, (nome, sobrenome, bio, senha, self.email))
+                
                 else:
-                    # Se NÃO trocou a foto, mantém a imagem atual e atualiza apenas os textos
+                    # CASO C: Não alterou nada na foto (Mantém o registro atual)
                     sql = """
                         UPDATE usuario 
                         SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s, "Senha" = %s

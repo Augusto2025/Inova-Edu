@@ -95,13 +95,11 @@ class UserProfileSystem(ctk.CTkFrame):
         header_layout = ctk.CTkFrame(profile_card, fg_color="transparent")
         header_layout.pack(fill="x", padx=25, pady=25)
 
-        # MOLDURA DA FOTO (Arredondada fixada em 100x100)
-        self.borda_foto = ctk.CTkFrame(header_layout, width=100, height=100, corner_radius=50, fg_color="#F1F5F9")
-        self.borda_foto.pack(side="left")
+        self.borda_foto = ctk.CTkFrame(header_layout, width=100, height=100, fg_color=AZUL_SENAC)
+        self.borda_foto.pack(side="left", padx=(0, 30))
         self.borda_foto.pack_propagate(False)
-
-        # Label inicial exibindo o emoji padrão enquanto o download não acontece
-        self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 50))
+        
+        self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 40), width=92, height=92, fg_color=BRANCO)
         self.lbl_foto.place(relx=0.5, rely=0.5, anchor="center")
 
         info_frame = ctk.CTkFrame(header_layout, fg_color="transparent")

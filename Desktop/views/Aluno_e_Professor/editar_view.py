@@ -15,6 +15,7 @@ LARANJA_SENAC = "#F7941D"
 BRANCO = "#FFFFFF"
 CINZA_SENAC = "#E9E9E9"
 CINZA_CLARO = "#F5F5F5"
+VERMELHO = "#DC2626"
 
 class EditarPerfilView(ctk.CTkFrame):
     def __init__(self, master, controller):
@@ -27,6 +28,7 @@ class EditarPerfilView(ctk.CTkFrame):
         self.nova_senha_definida = ""
         # Variável temporária para armazenar o caminho local do novo arquivo de foto selecionado
         self.caminho_nova_foto_local = None
+        self.foto_removida = False
 
         try:
             perfil_completo = self.controller.model.obter_dados_perfil(self.sessao.email)
@@ -58,11 +60,11 @@ class EditarPerfilView(ctk.CTkFrame):
         foto_section = ctk.CTkFrame(self.main_content, fg_color="transparent")
         foto_section.pack(fill="x", pady=(0, 40))
         
-        self.borda_foto = ctk.CTkFrame(foto_section, width=180, height=180, corner_radius=90, fg_color=AZUL_SENAC)
+        self.borda_foto = ctk.CTkFrame(foto_section, width=180, height=180, fg_color=AZUL_SENAC)
         self.borda_foto.pack(side="left", padx=(0, 30))
         self.borda_foto.pack_propagate(False)
         
-        self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 75), width=172, height=172, fg_color=CINZA_CLARO, corner_radius=86)
+        self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 75), width=172, height=172, fg_color=CINZA_CLARO)
         self.lbl_foto.place(relx=0.5, rely=0.5, anchor="center")
 
         # Container dos botões do lado da foto
@@ -71,12 +73,18 @@ class EditarPerfilView(ctk.CTkFrame):
         
         ctk.CTkLabel(botoes_foto_frame, text="Foto de Perfil", font=("Roboto", 16, "bold"), text_color=AZUL_SENAC).pack(anchor="w")
         ctk.CTkLabel(botoes_foto_frame, text="Escolha uma imagem quadrada JPG ou PNG.", font=("Roboto", 12), text_color="#64748B").pack(anchor="w", pady=(0, 15))
-        
+
         self.btn_alterar_foto = ctk.CTkButton(
             botoes_foto_frame, text="📁 Selecionar Nova Imagem", fg_color=AZUL_SENAC, hover_color="#003566",
             height=35, font=("Roboto", 13, "bold"), command=self.escolher_imagem
         )
         self.btn_alterar_foto.pack(anchor="w")
+
+        self.btn_remover_foto = ctk.CTkButton(
+            botoes_foto_frame, text="🗑️ Remover Foto Atual", fg_color=VERMELHO, hover_color="#B91C1C",
+            height=35, font=("Roboto", 13, "bold"), command=self.remover_foto
+        )
+        self.btn_remover_foto.pack(anchor="w", pady=(10, 0))
 
         # --- FORMULÁRIO COM DADOS REAIS ---
         form_grid = ctk.CTkFrame(self.main_content, fg_color="transparent")
@@ -194,6 +202,14 @@ class EditarPerfilView(ctk.CTkFrame):
                 self.btn_alterar_foto.configure(text="✅ Foto Selecionada", fg_color="#22c55e")
             except Exception as e:
                 messagebox.showerror("Erro de Imagem", f"Não foi possível abrir o arquivo: {e}")
+    
+    def remover_foto(self):
+        """Reseta os campos locais e ativa a flag de remoção completa da imagem"""
+        self.caminho_nova_foto_local = None
+        self.foto_removida = True # Ativa a flag para o controller saber que deve limpar o banco
+        self.lbl_foto.configure(image=None, text="👤")
+        self.btn_alterar_foto.configure(text="📁 Selecionar Nova Imagem", fg_color=AZUL_SENAC)
+        self.btn_remover_foto.configure(text="🗑️ Removido com sucesso", fg_color="#475569")
 
     def abrir_modal_senha(self):
         modal = ctk.CTkToplevel(self.janela)
@@ -242,23 +258,25 @@ class EditarPerfilView(ctk.CTkFrame):
         sobrenome = self.ent_sobrenome.get()
         bio = self.txt_desc.get("0.0", "end").strip()
         
-        # Busca a senha que veio direto do banco de dados (respeitando maiúsculo/minúsculo do seu Model)
         senha_atual_banco = self.dados_banco.get('senha') or self.dados_banco.get('Senha')
-
-        # Se o usuário definiu uma nova no modal, usa a nova. Se não, mantém a atual do banco.
         senha_final = self.nova_senha_definida if self.nova_senha_definida else senha_atual_banco
         
-        # --- PASSO IMPORTANTE: ---
-        # Enviamos o caminho local do arquivo (self.caminho_nova_foto_local) para o seu Controller.
-        # Caso o usuário não tenha selecionado uma imagem nova, ele passará None.
+        foto_argumento = "" if self.foto_removida else self.caminho_nova_foto_local
+
         if hasattr(self.controller, 'salvar_alteracoes_perfil_com_foto'):
-            self.controller.salvar_alteracoes_perfil_com_foto(nome, sobrenome, bio, senha_final, self.caminho_nova_foto_local)
+            self.controller.salvar_alteracoes_perfil_com_foto(nome, sobrenome, bio, senha_final, foto_argumento)
         else:
-            # Fallback seguro caso você opte por adicionar o argumento direto na função antiga
             try:
-                self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final, self.caminho_nova_foto_local)
+                self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final, foto_argumento)
             except TypeError:
                 self.controller.salvar_alteracoes_perfil(nome, sobrenome, bio, senha_final)
+
+        # --- ADICIONE ESSAS LINHAS PARA GARANTIR QUE A VIEW ZERE A IMAGEM LOCAL ---
+        if self.foto_removida:
+            for chave in ['imagem', 'imagem_usuario', 'Imagem']:
+                if chave in self.dados_banco:
+                    self.dados_banco[chave] = None
+        # ------------------------------------------------------------------------
 
         self.sessao.nome = nome
         self.sessao.sobrenome = sobrenome
