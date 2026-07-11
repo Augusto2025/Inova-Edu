@@ -226,6 +226,14 @@ def home(request):
         curso = curso.order_by("nome_curso")
     elif ordenar == "desc":
         curso = curso.order_by("-nome_curso")
+        
+        print("=" * 30)
+        print("Busca:", query)
+        print("=" * 30)
+
+
+
+
 
     return render(
         request,

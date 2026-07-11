@@ -22,14 +22,7 @@
             </div>
         </header>
 
-        {% if curso|length == 0 %}
-            <div class="no-results">
-                <p>Nenhum resultado encontrado.</p>
-            </div>
-        {% endif %}
-
-       
-
+      
         <section class="search-container">
             <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
                 <div class="search-box">
@@ -39,6 +32,13 @@
                 <button type="submit" class="btn-search">Buscar</button>
             </form>
         </section>
+
+
+        {% if curso|length == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
+            </div>
+        {% endif %}
     </div> 
 
     <main class="container">
@@ -92,7 +92,7 @@
             }
         });
     </script>
-    <script src="{% static 'scripts/buscageral.js' %}"></script>
+   
 {% endblock %}
 
 {% block footer %}
