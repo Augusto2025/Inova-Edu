@@ -471,10 +471,17 @@ def salvar_certificado(request):
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
 
-    # busca turmas do curso e ordena por ano
-    turmas = Turma.objects.filter(curso=curso).order_by("ano")
+    query = request.GET.get("q", "").strip()
 
-    # agrupar por ano
+    turmas = Turma.objects.filter(curso=curso)
+
+    if query:
+        turmas = turmas.filter(codigo_turma__icontains=query)
+
+    total_turmas = turmas.count()
+
+    turmas = turmas.order_by("ano")
+
     turmas_por_ano = {}
     for turma in turmas:
         turmas_por_ano.setdefault(turma.ano, []).append(turma)
@@ -482,7 +489,12 @@ def turmas(request, curso_id):
     return render(
         request,
         "AlunoProfessor/turmas.html",
-        {"curso": curso, "turmas_por_ano": turmas_por_ano},
+        {
+            "curso": curso,
+            "turmas_por_ano": turmas_por_ano,
+            "query": query,
+            "total_turmas": total_turmas,
+        },
     )
 
 
