@@ -142,18 +142,41 @@ router.get('/download-zip', async (req, res) => {
     }
 });
 
-module.exports = router;
-
 // ROTA ADICIONAL: BUSCA DE REPOSITÓRIOS/PROJETOS POR CURSO, TURMA OU NOME DO PROJETO
 router.get('/search', async (req, res) => {
     try {
-        const { q } = req.query;
+        const { q, cursoId, turmaId, page = 1, limit = 20 } = req.query;
+        const params = [];
+        const conditions = [];
 
-        if (!q || q.trim() === '') {
-            return res.status(400).json({ mensagem: 'Parâmetro de busca (q) é obrigatório.' });
+        if (q && q.trim() !== '') {
+            const termo = `%${q.trim()}%`;
+            params.push(termo, termo, termo);
+            conditions.push(
+                '(p."Nome_projeto" ILIKE $' + (params.length - 2) +
+                ' OR t."Codigo_Turma" ILIKE $' + (params.length - 1) +
+                ' OR c."Nome_curso" ILIKE $' + params.length + ')'
+            );
         }
 
-        const termo = `%${q.trim()}%`;
+        if (cursoId) {
+            params.push(cursoId);
+            conditions.push('c."idCurso" = $' + params.length);
+        }
+
+        if (turmaId) {
+            params.push(turmaId);
+            conditions.push('t."idTurma" = $' + params.length);
+        }
+
+        let whereClause = '';
+        if (conditions.length > 0) {
+            whereClause = 'WHERE ' + conditions.join(' AND ');
+        }
+
+        const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+        params.push(limit);
+        params.push(offset);
 
         const query = `
             SELECT
@@ -168,17 +191,22 @@ router.get('/search', async (req, res) => {
             FROM projeto p
             LEFT JOIN turma t ON p."ID_Turma" = t."idTurma"
             LEFT JOIN curso c ON t."ID_Curso" = c."idCurso"
-            WHERE p."Nome_projeto" ILIKE $1
-               OR t."Codigo_Turma" ILIKE $1
-               OR c."Nome_curso" ILIKE $1
+            ${whereClause}
             ORDER BY p."idProjeto" DESC
-            LIMIT 50
+            LIMIT $${params.length - 1}
+            OFFSET $${params.length}
         `;
 
-        const resultado = await db.query(query, [termo]);
-        res.json(resultado.rows);
+        const resultado = await db.query(query, params);
+        res.json({
+            pagina: parseInt(page, 10),
+            limite: parseInt(limit, 10),
+            resultados: resultado.rows
+        });
     } catch (error) {
         console.error('Erro na busca de repositórios:', error);
         res.status(500).json({ mensagem: 'Erro ao buscar repositórios.', detalhe: error.message });
     }
 });
+
+module.exports = router;
