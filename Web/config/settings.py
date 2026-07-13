@@ -70,12 +70,33 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Banco de dados ---
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-    )
-}
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    # Se existir a URL completa, o Django mapeia o Postgres automaticamente
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+    print("[DJANGO DATABASE] Conectado ao PostgreSQL")
+else:
+    # 2. Caso contrário, monta o MySQL usando exatamente as mesmas variáveis separadas do seu .env
+    DATABASES = {
+        "default": {
+            "NAME": os.environ.get("DB_NAME"),       # Nome do banco igual ao Desktop
+            "USER": os.environ.get("DB_USER"),       # Usuário igual ao Desktop
+            "PASSWORD": os.environ.get("DB_PASSWORD"), # Senha igual ao Desktop
+            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("DB_PORT", "3306"),
+            "OPTIONS": {
+                "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+    print("[DJANGO DATABASE] Conectado ao MySQL Local")
 
 # --- Email ---
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
