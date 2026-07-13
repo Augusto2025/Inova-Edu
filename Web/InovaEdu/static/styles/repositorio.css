@@ -41,6 +41,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
+    height: 65px;
 }
 
 /* CAIXAS DE PASTAS E ARQUIVOS */
@@ -50,8 +51,11 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,.1);
     padding: 20px;
-    min-height: 500px;
     border: 1px solid #e5e5e5;
+
+    min-height: 500px;
+    max-height: 650px;
+    overflow-y: auto;
 }
 
 /* TOPO DAS SEÇÕES */
@@ -204,6 +208,18 @@
 .btn-excluir-selecionadas:hover {
     background: #bb2d3b;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* RESPONSIVO */
 @media (max-width: 900px) {
