@@ -62,8 +62,10 @@ export default function HomeScreen({ navigation }) {
     } catch (error) {
       const status = error.response?.status;
 
-      if (status === 404) {
-        console.log("Rota /home não encontrada, usando fallback de endpoints individuais");
+      // Se a rota /home não existe (404), houve erro de servidor (5xx) ou falha de rede,
+      // tenta o fallback para endpoints individuais para manter a Home populada.
+      if (status === 404 || !status || status >= 500) {
+        console.log("Rota /home indisponível (status:", status, ") — usando fallback de endpoints individuais");
 
         try {
           const [eventosRes, cursosRes, forumRes] = await Promise.all([
