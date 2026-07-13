@@ -22,12 +22,16 @@ export default function HomeScreen({ navigation }) {
 
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState("");
+  const [repoSearchResults, setRepoSearchResults] = useState([]);
+  const [repoSearchLoading, setRepoSearchLoading] = useState(false);
+  const [repoSearchError, setRepoSearchError] = useState(null);
   const { totalNovas, markAllAsRead } = useNotifications();
   const [homeData, setHomeData] = useState({
     usuario: { nome: "" },
     eventos: [],
     cursos: [],
-    forum: []
+    forum: [],
+    projetos: []
   });
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -97,6 +101,14 @@ export default function HomeScreen({ navigation }) {
       carregarHome();
     }, []);
 
+    // Recarrega a Home sempre que a tela volta a foco (ex.: após criar um evento)
+    useEffect(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+        carregarHome();
+      });
+      return unsubscribe;
+    }, [navigation]);
+
     function getEventStatusColor(data) {
       if (!data) return "#4CAF50";
       const hoje = new Date();
@@ -107,16 +119,51 @@ export default function HomeScreen({ navigation }) {
       return evento > hoje ? "#4CAF50" : "#F44336";
     }
 
-    // Filtro puramente local (não toca no banco de dados)
-    function filtrarCursos() {
-      if (busca.trim() === "") return [];
-      const termo = busca.toLowerCase().trim();
-      return homeData.cursos.filter((curso) => 
-        (curso.nome_curso || "").toLowerCase().includes(termo)
-      );
+async function buscarRepositorios(termoBusca) {
+    if (!termoBusca || termoBusca.trim() === "") {
+      setRepoSearchResults([]);
+      setRepoSearchLoading(false);
+      setRepoSearchError(null);
+      return;
     }
 
-    const resultadosBusca = filtrarCursos();
+    try {
+      setRepoSearchLoading(true);
+      const resposta = await api.get(API_ENDPOINTS.repositorioSearch, {
+        params: { q: termoBusca, page: 1, limit: 20 }
+      });
+      setRepoSearchResults(resposta.data.resultados || []);
+      setRepoSearchError(null);
+    } catch (error) {
+      const status = error.response?.status;
+      if (status === 404) {
+        setRepoSearchError('endpoint_not_found');
+        console.log('Busca de repositórios: endpoint não encontrado (404)');
+      } else if (status >= 500) {
+        setRepoSearchError('server_error');
+        console.log('Busca de repositórios: erro interno do servidor', error.response?.data || error.message);
+      } else {
+        setRepoSearchError(error.response?.data?.mensagem || error.message || 'Erro desconhecido');
+        console.log('Erro na busca de repositórios:', error.response?.data || error.message);
+      }
+      setRepoSearchResults([]);
+    } finally {
+      setRepoSearchLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (busca.trim() !== "") {
+        buscarRepositorios(busca.trim());
+      } else {
+        setRepoSearchResults([]);
+      }
+    }, 350);
+
+    return () => clearTimeout(timeout);
+  }, [busca]);
+
     const estaBuscando = busca.trim() !== "";
     const forumPrincipal = homeData.forum.length > 0 ? homeData.forum[0] : null;
 
@@ -199,13 +246,13 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.emptyText}>Nenhum evento encontrado.</Text>
           )}
 
-          {/* SEÇÃO: BUSCA DE CURSOS */}
+{/* SEÇÃO: BUSCA DE REPOSITÓRIOS */}
           <View style={styles.searchContainer}>
-            <Text style={styles.searchTitle}>Buscar Cursos</Text>
+            <Text style={styles.searchTitle}>Buscar repositórios</Text>
             <View style={styles.searchBox}>
               <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
               <TextInput
-                placeholder="Buscar curso..."
+                placeholder="Buscar por curso, turma ou projeto..."
                 placeholderTextColor="#888"
                 style={styles.searchInput}
                 value={busca}
@@ -214,23 +261,40 @@ export default function HomeScreen({ navigation }) {
             </View>
 
             {estaBuscando && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 15 }} contentContainerStyle={{ gap: 12 }}>
-                {resultadosBusca.map((curso) => (
-                  <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso })}>
-                    {curso.imagem ? (
-                      <Image source={{ uri: curso.imagem }} style={styles.miniResultImg} />
-                    ) : (
-                      <View style={[styles.miniResultImg, styles.centerContainer, { backgroundColor: "#eee" }]}>
-                        <Feather name="book-open" size={20} color={primaryColor} />
-                      </View>
-                    )}
-                    <Text numberOfLines={1} style={styles.miniResultText}>{curso.nome_curso}</Text>
-                  </TouchableOpacity>
-                ))}
-                {resultadosBusca.length === 0 && (
-                  <Text style={styles.emptyText}>Nenhum curso encontrado.</Text>
+              <View style={{ marginTop: 15 }}>
+                {repoSearchLoading ? (
+                  <Text style={styles.emptyText}>Buscando repositórios...</Text>
+                ) : repoSearchError ? (
+                  <Text style={[styles.emptyText, { color: '#c0392b' }]}>
+                    {repoSearchError === 'endpoint_not_found' ? 'Endpoint de busca indisponível.' : repoSearchError === 'server_error' ? 'Erro interno no servidor ao buscar repositórios.' : `Erro ao buscar repositórios: ${repoSearchError}`}
+                  </Text>
+                ) : repoSearchResults.length > 0 ? (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+                    {repoSearchResults.map((repo) => (
+                      <TouchableOpacity
+                        key={repo.id}
+                        style={styles.repoCard}
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate('Repositorio', { projetoId: repo.id, projetoNome: repo.nome_projeto })}
+                      >
+                        {repo.imagem ? (
+                          <Image source={{ uri: repo.imagem }} style={styles.repoImg} />
+                        ) : (
+                          <View style={[styles.repoImg, styles.centerContainer, { backgroundColor: '#f2f2f2' }]}>
+                            <Feather name="folder" size={24} color={COLORS.primary} />
+                          </View>
+                        )}
+                        <Text numberOfLines={1} style={styles.repoTitle}>{repo.nome_projeto || repo.nome || 'Projeto'}</Text>
+                        <Text numberOfLines={1} style={[styles.emptyText, { marginTop: 4, color: '#555' }]}> 
+                          {repo.nome_turma || repo.nome_curso || 'Sem turma/curso'}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                ) : (
+                  <Text style={styles.emptyText}>Nenhum repositório encontrado.</Text>
                 )}
-              </ScrollView>
+              </View>
             )}
           </View>
 
