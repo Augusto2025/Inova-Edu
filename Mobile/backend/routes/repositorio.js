@@ -143,3 +143,42 @@ router.get('/download-zip', async (req, res) => {
 });
 
 module.exports = router;
+
+// ROTA ADICIONAL: BUSCA DE REPOSITÓRIOS/PROJETOS POR CURSO, TURMA OU NOME DO PROJETO
+router.get('/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        if (!q || q.trim() === '') {
+            return res.status(400).json({ mensagem: 'Parâmetro de busca (q) é obrigatório.' });
+        }
+
+        const termo = `%${q.trim()}%`;
+
+        const query = `
+            SELECT
+                p."idProjeto" AS id,
+                p."Nome_projeto" AS nome_projeto,
+                p."Descricao" AS descricao,
+                p."Imagem" AS imagem,
+                t."idTurma" AS id_turma,
+                COALESCE(t."Codigo_Turma", '') AS nome_turma,
+                c."idCurso" AS id_curso,
+                COALESCE(c."Nome_curso", '') AS nome_curso
+            FROM projeto p
+            LEFT JOIN turma t ON p."ID_Turma" = t."idTurma"
+            LEFT JOIN curso c ON t."ID_Curso" = c."idCurso"
+            WHERE p."Nome_projeto" ILIKE $1
+               OR t."Codigo_Turma" ILIKE $1
+               OR c."Nome_curso" ILIKE $1
+            ORDER BY p."idProjeto" DESC
+            LIMIT 50
+        `;
+
+        const resultado = await db.query(query, [termo]);
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error('Erro na busca de repositórios:', error);
+        res.status(500).json({ mensagem: 'Erro ao buscar repositórios.', detalhe: error.message });
+    }
+});
