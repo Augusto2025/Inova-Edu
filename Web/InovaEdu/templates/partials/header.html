@@ -22,6 +22,11 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
     <!-- MENU -->
     <nav id="site-nav" class="menu">
 
+        <a href="{% url 'home_aluno_professor' %}"
+           class="{% if request.resolver_match.url_name == 'home_aluno_professor' %}active{% endif %}">
+            Home
+        </a>
+
         <a href="{% url 'home' %}"
            class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             Cursos
