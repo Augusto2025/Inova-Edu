@@ -7,9 +7,10 @@ router.get('/', async (req, res) => {
   try {
     // Executa as três consultas em paralelo usando Promise.all de forma limpa
     const [eventosRes, cursosRes, forumRes] = await Promise.all([
-      pool.query('SELECT id, title, date, time, local FROM evento ORDER BY date ASC LIMIT 3'),
-      pool.query('SELECT idcurso, nome_curso, imagem, descricao FROM curso ORDER BY nome_curso ASC'),
-      pool.query('SELECT id, titulo, descricao, mensagens FROM forum ORDER BY id DESC LIMIT 1')
+      // Usa as tabelas existentes: 'eventos', 'cursos' e 'forum'
+      pool.query('SELECT "idEventos" AS id, "Nome_do_evento" AS title, "Data_do_evento" AS date, "Hora_do_evento" AS time, "Endereco" AS local FROM eventos ORDER BY "Data_do_evento" ASC LIMIT 3'),
+      pool.query('SELECT "idcurso", "nome_curso", "imagem", "descricao" FROM cursos ORDER BY "nome_curso" ASC'),
+      pool.query('SELECT "id", "titulo", "descricao", "mensagens" FROM forum ORDER BY "id" DESC LIMIT 1')
     ]);
 
     res.json({
