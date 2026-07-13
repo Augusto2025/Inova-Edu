@@ -69,13 +69,18 @@
 /* ===========================================================
    CABEÇALHO, ROTAS E TÍTULOS
    =========================================================== */
-
-.section-header {
-    margin-bottom: 25px;
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 
 
+.section-header {
+    margin-bottom: 25px;
+}
 
 
 .rota {

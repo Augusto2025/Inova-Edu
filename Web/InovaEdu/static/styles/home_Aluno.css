@@ -151,12 +151,7 @@ body {
     background-color: var(--azul-Senac-hover);
 }
 
-.no-results {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
+
 
 /* ===========================================================
    RESPONSIVIDADE (MOBILE)
