@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -8,86 +8,34 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNotifications } from "../context/NotificationContext";
 
-// Importando o seu Header customizado
-import Header from "../components/Header"; 
+import Header from "../components/Header";
 
 export default function NotificationsScreen() {
   const navigation = useNavigation();
   const [filtroAtivo, setFiltroAtivo] = useState("Todas");
+  const { notifications, totalNovas, markAsRead, loadNotifications } = useNotifications();
 
-  // LISTA DE NOTIFICAÇÕES (O estado inicial define o que aparece ao resetar/iniciar o app)
-  const [notificacoes, setNotificacoes] = useState([
-    {
-      id: "1",
-      tipo: "Forum",
-      titulo: "Carlos respondeu seu tópico",
-      subtitulo: '"Como usar useState?"',
-      tempo: "12 min",
-      isNova: true, // Começa como Novo ao iniciar o app
-      icon: "message-square",
-      iconColor: "#4d5dfb",
-      telaDestino: "Conversa",
-      parametros: { topicoId: "useState-id", titulo: "Como usar useState?" },
-    },
-    {
-      id: "2",
-      tipo: "Eventos",
-      titulo: "Novo evento disponível",
-      subtitulo: "React Native Meetup",
-      tempo: "1 hora",
-      isNova: true, // Começa como Novo ao iniciar o app
-      icon: "calendar",
-      iconColor: "#a855f7",
-      telaDestino: "Eventos",
-      parametros: {},
-    },
-    {
-      id: "3",
-      tipo: "Sistema",
-      titulo: "Conta verificada",
-      subtitulo: "Seu perfil foi atualizado",
-      tempo: "2 dias",
-      isNova: false, 
-      icon: "shield",
-      iconColor: "#f59e0b",
-      telaDestino: "Profile",
-      parametros: {},
-    },
-  ]);
-
-  // REMOVIDO o reset forçado no useFocusEffect para permitir que a tag suma ao clicar!
   useFocusEffect(
     useCallback(() => {
-      // Mantemos o hook aqui caso queira adicionar alguma lógica de foco no futuro,
-      // mas ele não vai mais sobrescrever o clique do usuário.
-    }, [])
+      loadNotifications();
+    }, [loadNotifications])
   );
 
   const filtros = ["Todas", "Forum", "Eventos", "Sistema"];
 
-  // Filtra os itens com base na aba selecionada
-  const notificacoesFiltradas = notificacoes.filter((notif) => {
+  const notificacoesFiltradas = notifications.filter((notif) => {
     if (filtroAtivo === "Todas") return true;
     return notif.tipo === filtroAtivo;
   });
 
-  // Conta quantas notificações ainda têm a tag "NOVO" ativa
-  const totalNovas = notificacoes.filter((notif) => notif.isNova).length;
+  const lidarComCliqueNotificacao = async (item) => {
+    await markAsRead(item.id);
 
-  // CORRIGIDO: Agora marca o item específico como lido e remove o "NOVO" antes de navegar
-  const lidarComCliqueNotificacao = (item) => {
-    // 1. Atualiza o estado para mudar o isNova deste item para false
-    setNotificacoes((listaAntiga) =>
-      listaAntiga.map((notif) =>
-        notif.id === item.id ? { ...notif, isNova: false } : notif
-      )
-    );
-
-    // 2. Navega para a tela de destino correspondente
     if (item.telaDestino) {
       try {
-        navigation.navigate(item.telaDestino, item.parametros);
+        navigation.navigate(item.telaDestino, item.parametros || {});
       } catch (error) {
         console.warn(`Erro ao navegar para a tela ${item.telaDestino}:`, error);
       }
@@ -96,14 +44,13 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.container}>
-      <Header 
-        nomeTela="Notificações" 
-        temGoBack={true} 
-        exibirCurva={false} 
-        quantidadeNotificacoes={totalNovas} // Mostra a contagem real baseada nos "NOVOS" restantes
+      <Header
+        nomeTela="Notificações"
+        temGoBack={true}
+        exibirCurva={false}
+        quantidadeNotificacoes={totalNovas}
       />
 
-      {/* BOTÕES DE FILTRO */}
       <View style={styles.filterWrapper}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterContainer}>
           {filtros.map((filtro) => (
@@ -129,7 +76,6 @@ export default function NotificationsScreen() {
         </ScrollView>
       </View>
 
-      {/* CORPO DE NOTIFICAÇÕES */}
       <ScrollView contentContainerStyle={styles.scrollList} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>Hoje</Text>
 
@@ -138,21 +84,20 @@ export default function NotificationsScreen() {
             <TouchableOpacity
               key={item.id}
               style={styles.card}
-              onPress={() => lidarComCliqueNotificacao(item)} // Dispara a função corrigida
+              onPress={() => lidarComCliqueNotificacao(item)}
               activeOpacity={0.8}
             >
-              <View style={[styles.iconContainer, { backgroundColor: item.iconColor }]}>
-                <Feather name={item.icon} size={22} color="#fff" />
+              <View style={[styles.iconContainer, { backgroundColor: item.iconColor || "#4d5dfb" }]}>
+                <Feather name={item.icon || "bell"} size={22} color="#fff" />
               </View>
 
               <View style={styles.contentContainer}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.cardTitle} numberOfLines={1}>{item.titulo}</Text>
-                  <Text style={styles.cardTime}>{item.tempo}</Text>
+                  <Text style={styles.cardTime}>{item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}</Text>
                 </View>
-                <Text style={styles.cardSubtitle} numberOfLines={1}>{item.subtitulo}</Text>
+                <Text style={styles.cardSubtitle} numberOfLines={2}>{item.subtitulo}</Text>
 
-                {/* Tag "NOVO" controlada dinamicamente */}
                 {item.isNova && (
                   <View style={styles.newBadge}>
                     <Text style={styles.newBadgeText}>NOVO</Text>

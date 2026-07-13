@@ -34,14 +34,37 @@ router.post('/', async (req, res) => {
     const { conteudo, topicoId, usuarioId } = req.body;
 
     try {
-        // Adicionamos "Data_criacao" e o valor NOW() para o Postgres preencher sozinho
         const queryText = `
             INSERT INTO mensagem ("Conteudo", "ID_Topico", "ID_Usuario", "excluida", "Data_criacao") 
             VALUES ($1, $2, $3, false, NOW()) 
             RETURNING "id"
         `;
         const resultado = await pool.query(queryText, [conteudo, topicoId, usuarioId]);
-        
+
+        const topicoRes = await pool.query(
+            'SELECT "usuario_id", "titulo" FROM topico WHERE "idtopico" = $1',
+            [topicoId]
+        );
+
+        if (topicoRes.rows.length > 0) {
+            const donoTopico = topicoRes.rows[0];
+            if (donoTopico.usuario_id !== parseInt(usuarioId, 10)) {
+                await pool.query(
+                    `INSERT INTO notifications (usuario_id, tipo, titulo, subtitulo, tela_destino, parametros, entidade_id)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [
+                        donoTopico.usuario_id,
+                        'Forum',
+                        'Nova resposta no seu tópico',
+                        `Nova mensagem no tópico "${donoTopico.titulo}"`,
+                        'Conversa',
+                        JSON.stringify({ topicoId, titulo: donoTopico.titulo }),
+                        topicoId
+                    ]
+                );
+            }
+        }
+
         return res.status(201).json({
             sucesso: true,
             mensagem: 'Mensagem enviada!',

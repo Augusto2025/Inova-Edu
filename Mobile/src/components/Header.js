@@ -8,7 +8,7 @@ import {
   Animated,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation, TabActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Skeleton from "./Skeleton";
 
 // IMPORTE A SUA FOTO LOCAL AQUI
@@ -21,8 +21,9 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 
 export default function Header({
   nomeTela,
-  temGoBack,
-  telaDestino,
+  temGoBack, 
+  telaDestino, // Mantido para compatibilidade de telas antigas
+  onPressBack, // Permite passar ações customizadas de voltar
   exibirPerfil = false, 
   exibirCurva = true, 
   quantidadeNotificacoes = 0, 
@@ -56,30 +57,35 @@ export default function Header({
     }
   }, [pulseAnim, quantidadeNotificacoes, carregando]);
 
+  // FUNÇÃO DE VOLTAR
   const lidarComVoltar = () => {
-    if (telaDestino) {
-      try {
-        navigation.dispatch(TabActions.jumpTo(telaDestino));
-      } catch (e) {
-        navigation.navigate(telaDestino);
-      }
-    } else {
+    if (onPressBack) {
+      onPressBack();
+      return;
+    }
+    if (navigation.canGoBack()) {
       navigation.goBack();
+    } else {
+      navigation.navigate("Home"); 
     }
   };
 
   return (
-    // Fundo principal adaptável
     <View style={[styles.wrapper, { backgroundColor: headerBgColor }]}>
       <View style={[styles.logoRow, { backgroundColor: headerBgColor }]} />
 
       <View style={[styles.header, { backgroundColor: headerBgColor }]}>
-        <View style={styles.left}>
-          {exibirPerfil ? (
+        
+        {exibirPerfil ? (
+          <View style={styles.left}>
             <View style={styles.profileContainer}>
-              
               {carregando ? (
-                <Skeleton width={52 * fontSizeScale} height={52 * fontSizeScale} borderRadius={(52 * fontSizeScale)/2} style={{ marginRight: 12 }} />
+                <Skeleton 
+                  width={52 * fontSizeScale} 
+                  height={52 * fontSizeScale} 
+                  borderRadius={(52 * fontSizeScale) / 2} 
+                  style={{ marginRight: 12 }} 
+                />
               ) : (
                 <Image source={FotoPerfilLocal} style={[styles.profileImage, { borderColor: headerBgColor }]} />
               )}
@@ -92,7 +98,6 @@ export default function Header({
                   </View>
                 ) : (
                   <>
-                    {/* Textos com escala de fonte e cor adaptável */}
                     <Text style={[styles.title, { color: headerTextColor, fontSize: 22 * fontSizeScale }]} numberOfLines={1}>
                       {nomeTela}
                     </Text>
@@ -103,45 +108,65 @@ export default function Header({
                 )}
               </View>
             </View>
-          ) : (
-            <View style={styles.noProfileContainer}>
+          </View>
+        ) : (
+          <View style={styles.centerContainerRow}>
+            {/* BOTÃO DE VOLTAR - ESQUERDA */}
+            <View style={styles.leftActionArea}>
+              {temGoBack && (
+                <TouchableOpacity 
+                  style={styles.backButton} 
+                  onPress={lidarComVoltar}
+                  activeOpacity={0.7}
+                >
+                  <Feather name="arrow-left" size={26 * fontSizeScale} color={headerTextColor} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* TÍTULO CENTRALIZADO */}
+            <View style={styles.centerTextContainer}>
               {carregando ? (
                 <Skeleton width={140 * fontSizeScale} height={20 * fontSizeScale} borderRadius={4} />
               ) : (
-                <Text style={[styles.title, { color: headerTextColor, fontSize: 22 * fontSizeScale }]} numberOfLines={1}>
+                <Text style={[styles.title, { color: headerTextColor, fontSize: 20 * fontSizeScale }]} numberOfLines={1}>
                   {nomeTela}
                 </Text>
               )}
             </View>
+          </View>
+        )}
+
+        {/* BOTÃO DE NOTIFICAÇÃO - DIREITA */}
+        <View style={styles.rightActionArea}>
+          {carregando ? (
+            <Skeleton width={48 * fontSizeScale} height={48 * fontSizeScale} borderRadius={24 * fontSizeScale} />
+          ) : (
+            <AnimatedTouchableOpacity
+              style={[
+                styles.notification,
+                { backgroundColor: isDarkMode ? theme.border : "rgba(255,255,255,0.15)" },
+                quantidadeNotificacoes > 0 && { transform: [{ scale: pulseAnim }] }
+              ]}
+              onPress={() => {
+                if (aoClicarNoSino) aoClicarNoSino(); 
+                navigation.navigate("Notifications");
+              }}
+              activeOpacity={0.8}
+            >
+              <Feather name="bell" size={24 * fontSizeScale} color={headerTextColor} />
+              {quantidadeNotificacoes > 0 && (
+                <View style={[styles.badge, { width: 18 * fontSizeScale, height: 18 * fontSizeScale, borderRadius: 9 * fontSizeScale }]}>
+                  <Text style={[styles.badgeText, { fontSize: 10 * fontSizeScale }]}>{quantidadeNotificacoes}</Text>
+                </View>
+              )}
+            </AnimatedTouchableOpacity>
           )}
         </View>
 
-        {carregando ? (
-          <Skeleton width={48 * fontSizeScale} height={48 * fontSizeScale} borderRadius={24 * fontSizeScale} style={{ alignSelf: 'center' }} />
-        ) : (
-          <AnimatedTouchableOpacity
-            style={[
-              styles.notification,
-              { backgroundColor: isDarkMode ? theme.border : "rgba(255,255,255,0.15)" }, // Fundo do botão ajustado
-              quantidadeNotificacoes > 0 && { transform: [{ scale: pulseAnim }] }
-            ]}
-            onPress={() => {
-              if (aoClicarNoSino) aoClicarNoSino(); 
-              navigation.navigate("Notifications");
-            }}
-            activeOpacity={0.8}
-          >
-            <Feather name="bell" size={24 * fontSizeScale} color={headerTextColor} />
-            {quantidadeNotificacoes > 0 && (
-              <View style={[styles.badge, { width: 18 * fontSizeScale, height: 18 * fontSizeScale, borderRadius: 9 * fontSizeScale }]}>
-                <Text style={[styles.badgeText, { fontSize: 10 * fontSizeScale }]}>{quantidadeNotificacoes}</Text>
-              </View>
-            )}
-          </AnimatedTouchableOpacity>
-        )}
       </View>
 
-      {/* CURVA DINÂMICA: O fundo de trás assume a cor do header, a curva em si assume a cor da tela */}
+      {/* CURVA DINÂMICA */}
       {exibirCurva && (
         <View style={[styles.curveContainer, { backgroundColor: headerBgColor }]}>
           <View style={[styles.curve, { backgroundColor: theme.background }]} />
@@ -151,22 +176,33 @@ export default function Header({
   );
 }
 
-// Estilos limpos (cores estáticas e dinâmicas tratadas inline no componente)
 const styles = StyleSheet.create({
   wrapper: {}, 
-  logoRow: { paddingTop: 70, height: 60 },
-  header: { paddingTop: 5, paddingBottom: 19, paddingHorizontal: 22, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  logoRow: { paddingTop: 45, height: 50 }, 
+  header: { 
+    paddingBottom: 15, 
+    paddingHorizontal: 22, 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center" 
+  },
   left: { flex: 1, marginRight: 10 },
   profileContainer: { flexDirection: "row", alignItems: "center" },
   profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2 },
-  rightHeaderText: { flex: 1 },
-  noProfileContainer: { flexDirection: "column", justifyContent: "center", height: 52 },
+  rightHeaderText: { flex: 1, justifyContent: 'center' },
   title: { fontWeight: "bold" },
   courseSubtitle: { marginTop: 2, fontWeight: "500" },
-  notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center", alignSelf: "center" },
+  
+  // Alinhamentos estruturais das telas internas
+  centerContainerRow: { flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 10 },
+  leftActionArea: { width: 40, justifyContent: 'center', alignItems: 'flex-start' },
+  centerTextContainer: { flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 5 },
+  backButton: { paddingVertical: 5, paddingRight: 5 },
+  
+  rightActionArea: { justifyContent: 'center', alignItems: 'center' },
+  notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
   badge: { position: "absolute", top: 5, right: 5, backgroundColor: "#ff4d67", justifyContent: "center", alignItems: "center" },
   badgeText: { color: "#fff", fontWeight: "bold" },
   curveContainer: {},
   curve: { height: 45, borderTopLeftRadius: 30, borderTopRightRadius: 30 },
-
 });

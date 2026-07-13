@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
-  Alert
+  Alert,
+  BackHandler // 🌟 Reimportado para controlar o botão físico do Android
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // 1. Hook de recarregamento
 import Header from '../components/Header';
@@ -71,6 +72,10 @@ export default function TurmasScreen({ route, navigation }) {
     navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
   };
 
+  const lidarComVoltar = () => {
+    navigation.goBack();
+  };
+
   let turmasExibidas = turmas.filter(turma => {
     const passaAno = anoSelecionado ? String(turma.ano) === String(anoSelecionado) : true;
     const passaTurno = turnoSelecionado ? turma.turno === turnoSelecionado : true;
@@ -89,12 +94,13 @@ export default function TurmasScreen({ route, navigation }) {
     <View style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
+      {/* 🌟 CORRIGIDO: Removido 'telaDestino' e adicionado 'onPressBack' chamando a função com goBack() */}
       <Header 
         foto={null} 
         escolherImagem={null} 
         nomeTela={"Turmas"} 
         temGoBack={true} 
-        telaDestino={"Cursos"} 
+        onPressBack={lidarComVoltar}
       />
 
       {/* Container de Filtros com cores dinâmicas */}

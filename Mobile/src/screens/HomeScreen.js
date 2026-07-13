@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import Header from "../components/Header";
-import Skeleton from "../components/Skeleton"; 
 import {
   View,
   Text,
@@ -11,318 +9,248 @@ import {
   Image,
   Animated,
 } from "react-native";
+import Header from "../components/Header";
+import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
+import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o API_ENDPOINTS
+import { useNotifications } from "../context/NotificationContext";
+
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
-  const alertColor = COLORS.alert;
 
-  const [quantidadeNotif, setQuantidadeNotif] = useState(3);
-  const [busca, setBusca] = useState("");
-  const [totalMensagensForum, setTotalMensagensForum] = useState(3);
-  
-  // Estado inicializado como array vazio para evitar erros de undefined antes do map
-  const [recentesAcessados, setRecentesAcessados] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [busca, setBusca] = useState("");
+  const { totalNovas, markAllAsRead } = useNotifications();
+  const [homeData, setHomeData] = useState({
+    usuario: { nome: "" },
+    eventos: [],
+    cursos: [],
+    forum: []
+  });
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.15,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
+        Animated.timing(pulseAnim, { toValue: 1.05, duration: 1000, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true })
       ])
     ).start();
   }, [pulseAnim]);
 
-  // Simulação limpa do carregamento inicial (sem quebrar propriedades)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Alimenta os recentes com itens seguros baseados na sua lista real de projetos
-      setRecentesAcessados([
-        { id: "p5", titulo: "My App - RN", imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" },
-        { id: "p1", titulo: "Sistema de Gestão", imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400" }
-      ]);
-      setCarregando(false);
-    }, 4000);
+  // Função que busca os dados em tempo real da API na nuvem
+  async function carregarHome() {
+    try {
+      setCarregando(true);
 
-    return () => clearTimeout(timer);
+      // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home)
+      const resposta = await api.get(API_ENDPOINTS.home || "/home");
+
+      if (resposta.data) {
+        const dados = resposta.data.sucesso ? resposta.data : resposta.data;
+
+        setHomeData({
+          usuario: dados.usuario || { nome: "Estudante" },
+          eventos: Array.isArray(dados.eventos) ? dados.eventos : [],
+          cursos: Array.isArray(dados.cursos) ? dados.cursos : [],
+          forum: Array.isArray(dados.forum) ? dados.forum : []
+        });
+      }
+    } catch (error) {
+      const status = error.response?.status;
+
+      if (status === 404) {
+        console.log("Rota /home não encontrada, usando fallback de endpoints individuais");
+
+        try {
+          const [eventosRes, cursosRes, forumRes] = await Promise.all([
+            api.get(API_ENDPOINTS.eventos || "/eventos"),
+            api.get(API_ENDPOINTS.cursos || "/cursos"),
+            api.get(API_ENDPOINTS.forum || "/forum"),
+          ]);
+
+          setHomeData({
+            usuario: { nome: "Estudante" },
+            eventos: Array.isArray(eventosRes.data) ? eventosRes.data : [],
+            cursos: Array.isArray(cursosRes.data) ? cursosRes.data : [],
+            forum: Array.isArray(forumRes.data) ? forumRes.data : []
+          });
+        } catch (fallbackError) {
+          console.log("Erro no fallback da Home:", fallbackError.message, fallbackError.response?.status);
+        }
+      } else {
+        console.log("Erro ao carregar dados da Home:", error.message, status, error.response?.data);
+      }
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  useEffect(() => {
+    carregarHome();
   }, []);
 
-  const events = [
-    { id: 1, title: 'Reunião de Pais', date: '2026-04-01', day: '01', month: 'ABR', time: '08:30', local: 'Sala 05', description: 'Alinhamento semestral com os responsáveis sobre o desempenho dos alunos.' },
-    { id: 2, title: 'Palestra: Inovação', date: '2026-04-10', day: '10', month: 'ABR', time: '19:00', local: 'Auditório Central', description: 'Uma palestra incrível sobre as novas tecnologias no setor educacional.' },
-    { id: 3, title: 'Entrega de Notas', date: '2026-03-25', day: '25', month: 'MAR', time: '14:00', local: 'Online', description: 'Publicação oficial das notas no portal do aluno.' },
-  ];
+  function getEventStatusColor(data) {
+    if (!data) return "#4CAF50";
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const evento = new Date(data);
+    evento.setHours(0, 0, 0, 0);
+    if (evento.getTime() === hoje.getTime()) return "#FFD700";
+    return evento > hoje ? "#4CAF50" : "#F44336";
+  }
 
-  const categoriasCursos = [
-    {
-      id: "1",
-      nomeCurso: "Informática Básica",
-      turma: "Turma A",
-      projetos: [
-        { id: "p1", titulo: "Sistema de Gestão", imagem: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400" },
-        { id: "p2", titulo: "Planilha de Controle", imagem: "https://images.unsplash.com/photo-1627398242454-45a1465c2020?q=80&w=400" },
-      ],
-    },
-    {
-      id: "2",
-      nomeCurso: "Excel Avançado",
-      turma: "Turma B",
-      projetos: [
-        { id: "p3", titulo: "Dashboard Automatizado", imagem: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400" },
-        { id: "p4", titulo: "Análise de Dados Macro", imagem: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400" },
-      ],
-    },
-    {
-      id: "3",
-      nomeCurso: "Desenvolvimento Web Full Stack",
-      turma: "Turma C",
-      projetos: [
-        { id: "p5", titulo: "My App - RN", imagem: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=400" },
-        { id: "p6", titulo: "Web Portal E-commerce", imagem: "https://images.unsplash.com/photo-161474111887-7a4ee193a5fa?q=80&w=400" },
-        { id: "p7", titulo: "API Restful Node", imagem: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=400" },
-      ],
-    },
-  ];
+  // Filtro puramente local (não toca no banco de dados)
+  function filtrarCursos() {
+    if (busca.trim() === "") return [];
+    const termo = busca.toLowerCase().trim();
+    return homeData.cursos.filter((curso) => 
+      (curso.nome_curso || "").toLowerCase().includes(termo)
+    );
+  }
 
-  const getEventStatusColor = (eventDate) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const evDate = new Date(eventDate);
-    evDate.setHours(0, 0, 0, 0);
-
-    if (evDate.getTime() === today.getTime()) return '#FFD700';
-    return evDate > today ? '#4CAF50' : '#F44336';
-  };
-
-  const irParaRepositorio = (projeto) => {
-    setRecentesAcessados((listaAntiga) => {
-      const listaFiltrada = listaAntiga.filter((item) => item.id !== projeto.id);
-      return [projeto, ...listaFiltrada];
-    });
-    navigation.navigate("Repositorio", { projetoId: projeto.id });
-  };
-
-  const removerDosRecentes = (id) => {
-    setRecentesAcessados((listaAntiga) => listaAntiga.filter((item) => item.id !== id));
-  };
-
-  const filtrarResultados = () => {
-    if (!busca) return [];
-    let resultados = [];
-    const termo = busca.toLowerCase();
-
-    categoriasCursos.forEach(curso => {
-      const combinaCursoOuTurma = 
-        curso.nomeCurso.toLowerCase().includes(termo) || 
-        curso.turma.toLowerCase().includes(termo);
-
-      if (combinaCursoOuTurma) {
-        resultados.push(...curso.projetos.map(p => ({ ...p, origem: curso.nomeCurso })));
-      } else {
-        const projetosMatch = curso.projetos.filter(p => 
-          p.titulo.toLowerCase().includes(termo)
-        );
-        resultados.push(...projetosMatch.map(p => ({ ...p, origem: "Repositório" })));
-      }
-    });
-
-    return Array.from(new Set(resultados.map(a => a.id))).map(id => resultados.find(a => a.id === id));
-  };
-
-  const resultadosDaBusca = filtrarResultados();
+  const resultadosBusca = filtrarCursos();
+  const estaBuscando = busca.trim() !== "";
+  const forumPrincipal = homeData.forum.length > 0 ? homeData.forum[0] : null;
 
   return (
     <View style={styles.safe}>
-      {/* O Header foi integrado de forma limpa e puxará o subtítulo interno */}
-      <Header 
-        nomeTela="Olá, Alcides 👋" 
-        exibirPerfil={true} 
-        quantidadeNotificacoes={quantidadeNotif}
-        aoClicarNoSino={() => setQuantidadeNotif(0)}
+      <Header
+        nomeTela={carregando ? "Carregando..." : `Olá, ${homeData.usuario?.nome || "Estudante"} 👋`}
+        exibirPerfil={true}
+        quantidadeNotificacoes={totalNovas}
+        aoClicarNoSino={markAllAsRead}
+        carregando={carregando}
       />
 
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* 1. PRÓXIMOS EVENTOS */}
+        {/* SEÇÃO: EVENTOS */}
         <Text style={styles.sectionTitle}>Próximos eventos</Text>
-        
+
         {carregando ? (
-          [1, 2, 3].map((key) => (
-            <View key={key} style={[styles.eventCard, { gap: 14 }]}>
+          [1, 2].map((item) => (
+            <View key={item} style={[styles.eventCard, { gap: 14 }]}>
               <Skeleton width={52} height={56} borderRadius={10} />
               <View style={{ flex: 1, gap: 8 }}>
-                <Skeleton width="75%" height={16} borderRadius={4} />
-                <Skeleton width="45%" height={12} borderRadius={4} />
+                <Skeleton width="70%" height={16} borderRadius={4} />
+                <Skeleton width="40%" height={12} borderRadius={4} />
               </View>
             </View>
           ))
-        ) : (
-          events.map((event) => {
-            const statusColor = getEventStatusColor(event.date);
+        ) : homeData.eventos.length > 0 ? (
+          homeData.eventos.map((event) => {
+            const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+            let dia = "•";
+            let mes = "EVT";
+
+            // Mapeia tanto propriedades em inglês (antigas) quanto as colunas do PostgreSQL
+            const dataOriginal = event.date || event.data_evento || event.data;
+            const tituloEvento = event.title || event.titulo || "Sem título";
+            const horarioEvento = event.time || event.horario || "Dia todo";
+            const localEvento = event.local || event.local_evento || "InovaEdu";
+
+            if (dataOriginal) {
+              const dataObj = new Date(dataOriginal);
+              dia = dataObj.getUTCDate();
+              mes = meses[dataObj.getUTCMonth()];
+            }
+
+            const statusColor = getEventStatusColor(dataOriginal);
+
             return (
-              <TouchableOpacity 
-                key={event.id} 
-                style={styles.eventCard} 
+              <TouchableOpacity
+                key={event.id || event.idevento}
+                style={styles.eventCard}
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate("Eventos", { selectedDate: event.date })}
+                onPress={() => navigation.navigate("Eventos", { selectedDate: dataOriginal })}
               >
                 <View style={[styles.dateBadge, { borderColor: statusColor }]}>
-                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}><Text style={styles.monthText}>{event.month}</Text></View>
-                  <View style={styles.dateBadgeBottom}><Text style={[styles.dayText, { color: '#333' }]}>{event.day}</Text></View>
+                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
+                    <Text style={styles.monthText}>{mes}</Text>
+                  </View>
+                  <View style={styles.dateBadgeBottom}>
+                    <Text style={styles.dayText}>{dia}</Text>
+                  </View>
                 </View>
+
                 <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
-                  <Text style={styles.eventTimeInfo}>
-                    <Ionicons name="time-outline" size={13} color="#777" /> {event.time} • {event.local}
+                  <Text style={styles.eventTitle} numberOfLines={1}>
+                    {tituloEvento}
+                  </Text>
+                  <Text style={styles.eventTimeInfo} numberOfLines={1}>
+                    <Ionicons name="time-outline" size={13} color="#777" />{" "}
+                    {horarioEvento}{" • "}{localEvento}
                   </Text>
                 </View>
+
                 <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
               </TouchableOpacity>
             );
           })
+        ) : (
+          <Text style={styles.emptyText}>Nenhum evento encontrado.</Text>
         )}
 
-        {/* 2. MEUS REPOSITÓRIOS COM BUSCADOR */}
-        {carregando ? (
-          <View style={styles.searchContainer}>
-            <Skeleton width={160} height={22} borderRadius={4} style={{ marginBottom: 15 }} />
-            <Skeleton width="100%" height={50} borderRadius={18} />
+        {/* SEÇÃO: BUSCA DE CURSOS */}
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchTitle}>Buscar Cursos</Text>
+          <View style={styles.searchBox}>
+            <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
+            <TextInput
+              placeholder="Buscar curso..."
+              placeholderTextColor="#888"
+              style={styles.searchInput}
+              value={busca}
+              onChangeText={setBusca}
+            />
           </View>
-        ) : (
-          <View style={styles.searchContainer}>
-            <Text style={styles.searchTitle}>Meus Repositórios</Text>
-            <View style={styles.searchBox}>
-              <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
-              <TextInput
-                placeholder="Buscar por curso, turma ou repositório..."
-                placeholderTextColor="#888"
-                style={styles.searchInput}
-                value={busca}
-                onChangeText={setBusca}
-              />
-              {busca !== "" && (
-                <TouchableOpacity onPress={() => setBusca("")}>
-                  <Ionicons name="close-circle" size={18} color="#999" />
-                </TouchableOpacity>
-              )}
-            </View>
 
-            {busca !== "" && (
-              <View style={{ marginTop: 15 }}>
-                <Text style={{ fontSize: 12, color: '#888', marginBottom: 5 }}>{resultadosDaBusca.length} encontrados:</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-                  {resultadosDaBusca.length > 0 ? (
-                    resultadosDaBusca.map((item) => (
-                      <TouchableOpacity 
-                        key={item.id} 
-                        style={styles.miniResultCard}
-                        onPress={() => irParaRepositorio(item)}
-                      >
-                        <Image source={{ uri: item.imagem }} style={styles.miniResultImg} />
-                        <Text numberOfLines={1} style={styles.miniResultText}>{item.titulo}</Text>
-                        <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{item.origem}</Text></View>
-                      </TouchableOpacity>
-                    ))
+          {estaBuscando && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 15 }} contentContainerStyle={{ gap: 12 }}>
+              {resultadosBusca.map((curso) => (
+                <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso })}>
+                  {curso.imagem ? (
+                    <Image source={{ uri: curso.imagem }} style={styles.miniResultImg} />
                   ) : (
-                    <Text style={{ color: '#999', fontSize: 13, fontStyle: 'italic' }}>Nenhum resultado para "{busca}"</Text>
+                    <View style={[styles.miniResultImg, styles.centerContainer, { backgroundColor: "#eee" }]}>
+                      <Feather name="book-open" size={20} color={primaryColor} />
+                    </View>
                   )}
-                </ScrollView>
-              </View>
-            )}
-          </View>
-        )}
+                  <Text numberOfLines={1} style={styles.miniResultText}>{curso.nome_curso}</Text>
+                </TouchableOpacity>
+              ))}
+              {resultadosBusca.length === 0 && (
+                <Text style={styles.emptyText}>Nenhum curso encontrado.</Text>
+              )}
+            </ScrollView>
+          )}
+        </View>
 
-        {/* 3. FÓRUM ATIVO */}
+        {/* SEÇÃO: FÓRUM */}
         <Text style={styles.sectionTitle}>Fórum ativo</Text>
-        
-        {carregando ? (
-          <View style={[styles.forumContainerCard, { gap: 12 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Skeleton width={44} height={44} borderRadius={22} />
-              <View style={{ flex: 1, gap: 6 }}>
-                <Skeleton width="55%" height={16} borderRadius={4} />
-                <Skeleton width="25%" height={12} borderRadius={4} />
-              </View>
-            </View>
-            <View style={{ marginLeft: 56, gap: 6 }}>
-              <Skeleton width="90%" height={14} borderRadius={4} />
-              <Skeleton width="65%" height={14} borderRadius={4} />
-            </View>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Fórum")}>
+
+        {forumPrincipal ? (
+          <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Forum")}>
             <View style={styles.forumHeaderRow}>
-              <View style={styles.forumIconCircle}><MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" /></View>
-              <View style={styles.forumTitleBlock}>
-                <Text style={styles.forumMainTitle}>Meu primeiro tópico</Text>
-                <Text style={styles.forumTimeAgo}>há 2 min</Text>
+              <View style={styles.forumIconCircle}>
+                <MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" />
               </View>
-              <Animated.View style={[
-                styles.forumBadgeCount, 
-                { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }
-              ]}>
-                <Text style={styles.forumBadgeText}>{totalMensagensForum}</Text>
+              <View style={styles.forumTitleBlock}>
+                <Text style={styles.forumMainTitle} numberOfLines={1}>{forumPrincipal.titulo}</Text>
+                <Text style={styles.forumTimeAgo}>tópico recente</Text>
+              </View>
+              <Animated.View style={[styles.forumBadgeCount, { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }]}>
+                <Text style={styles.forumBadgeText}>{forumPrincipal.mensagens || 0}</Text>
               </Animated.View>
             </View>
-            <Text style={styles.forumPublishDate}>Publicado em 10/05/2024</Text>
-            <Text style={styles.forumBodyText} numberOfLines={2}>Estou tendo dificuldade para entender o useEffect no React Native...</Text>
+            <Text style={styles.forumBodyText} numberOfLines={2}>{forumPrincipal.descricao || forumPrincipal.conteudo}</Text>
           </TouchableOpacity>
-        )}
-
-        {/* 4. REPOSITÓRIOS RECENTES */}
-        <Text style={styles.sectionTitle}>Repositórios Recentes</Text>
-        
-        {carregando ? (
-          <View style={{ flexDirection: 'row', gap: 14, paddingBottom: 15 }}>
-            {[1, 2].map((key) => (
-              <View key={key} style={{ gap: 8 }}>
-                <Skeleton width={140} height={100} borderRadius={20} />
-                <Skeleton width={100} height={14} borderRadius={4} style={{ alignSelf: 'center' }} />
-              </View>
-            ))}
-          </View>
-        ) : recentesAcessados && recentesAcessados.length > 0 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRepoContainer}>
-            {recentesAcessados.map((projeto) => (
-              <TouchableOpacity 
-                key={projeto.id}
-                style={styles.repoSquareCard} 
-                activeOpacity={0.8}
-                onPress={() => irParaRepositorio(projeto)} 
-              >
-                <View style={styles.imageWrapper}>
-                  <Image source={{ uri: projeto?.imagem }} style={styles.repoCoverImage} />
-                  <TouchableOpacity 
-                    style={styles.removeButton} 
-                    activeOpacity={0.7}
-                    onPress={() => removerDosRecentes(projeto.id)}
-                  >
-                    <Ionicons name="close" size={14} color="#FFF" />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.repoContentArea}>
-                  <Text style={styles.repoMainTitle} numberOfLines={2}>{projeto.titulo}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
         ) : (
-          <View style={styles.emptyRecentsBox}>
-            <MaterialCommunityIcons name="folder-clock-outline" size={24} color="#aaa" />
-            <Text style={styles.emptyRecentsText}>Os repositórios que você visitar aparecerão aqui.</Text>
-          </View>
+          <Text style={styles.emptyText}>Nenhum fórum ativo.</Text>
         )}
       </ScrollView>
     </View>
@@ -331,45 +259,35 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor: '#FFFFFF', },
-  scrollContent: { paddingHorizontal: 18, paddingBottom: 40, paddingTop: 5 },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 15, color: "#111" },
-  eventCard: { backgroundColor: "#fff", borderRadius: 18, padding: 14, marginBottom: 12, flexDirection: "row", alignItems: "center", elevation: 3 },
-  dateBadge: { width: 52, height: 56, borderRadius: 10, borderWidth: 1, overflow: "hidden", alignItems: "center" },
-  dateBadgeTop: { width: "100%", height: 20, justifyContent: "center", alignItems: "center" },
-  monthText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
-  dateBadgeBottom: { flex: 1, width: "100%", backgroundColor: "#fff", justifyContent: "center", alignItems: "center" },
-  dayText: { fontSize: 18, fontWeight: "bold" },
-  eventInfo: { flex: 1, paddingHorizontal: 14 },
-  eventTitle: { fontSize: 16, fontWeight: "bold", color: "#111", marginBottom: 4 },
-  eventTimeInfo: { fontSize: 13, color: "#666" },
-  statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
-  searchContainer: { backgroundColor: "#fff", borderRadius: 24, padding: 18, marginTop: 10, marginBottom: 25, elevation: 4 },
-  searchTitle: { fontWeight: "bold", fontSize: 22, marginBottom: 15, color: "#111" },
-  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: "#f1f1f1", borderRadius: 18, paddingHorizontal: 15 },
-  searchInput: { height: 50, fontSize: 15, color: "#111", flex: 1 },
-  miniResultCard: { width: 115, alignItems: 'center', backgroundColor: '#fdfdfd', padding: 8, borderRadius: 14, borderWidth: 1, borderColor: '#eee' },
-  miniResultImg: { width: 98, height: 62, borderRadius: 8, resizeMode: 'cover' },
-  miniResultText: { fontSize: 11, fontWeight: 'bold', color: '#222', marginTop: 5, textAlign: 'center' },
-  miniBadge: { backgroundColor: '#5360f0', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 },
-  miniBadgeText: { color: '#fff', fontSize: 8, fontWeight: 'bold' },
-  forumContainerCard: { backgroundColor: '#FFFFFF', borderRadius: 20, padding: 16, marginBottom: 25, elevation: 3 },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 5 },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", color: "#111", marginTop: 20, marginBottom: 12 },
+  centerContainer: { justifyContent: "center", alignItems: "center" },
+  eventCard: { backgroundColor: "#fff", borderRadius: 16, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", elevation: 2 },
+  dateBadge: { width: 50, height: 54, borderRadius: 8, borderWidth: 1, overflow: "hidden" },
+  dateBadgeTop: { height: 18, justifyContent: "center", alignItems: "center" },
+  monthText: { color: "#fff", fontSize: 9, fontWeight: "bold" },
+  dateBadgeBottom: { flex: 1, justifyContent: "center", alignItems: "center" },
+  dayText: { fontSize: 16, fontWeight: "bold" },
+  eventInfo: { flex: 1, paddingHorizontal: 12 },
+  eventTitle: { fontSize: 15, fontWeight: "bold", color: "#222" },
+  eventTimeInfo: { fontSize: 12, color: "#666", marginTop: 2 },
+  statusDot: { width: 8, height: 8, borderRadius: 4 },
+  searchContainer: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginTop: 15, elevation: 3 },
+  searchTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+  searchBox: { flexDirection: "row", alignItems: "center", backgroundColor: "#f2f2f2", borderRadius: 14, paddingHorizontal: 12, height: 46 },
+  searchInput: { flex: 1, color: "#111" },
+  miniResultCard: { width: 110, alignItems: "center", backgroundColor: "#fff", padding: 6, borderRadius: 12, borderWidth: 1, borderColor: "#f0f0f0" },
+  miniResultImg: { width: 95, height: 60, borderRadius: 6 },
+  miniResultText: { fontSize: 11, marginTop: 4, color: "#333", fontWeight: "600" },
+  forumContainerCard: { backgroundColor: "#fff", borderRadius: 16, padding: 14, elevation: 2, marginTop: 5 },
   forumHeaderRow: { flexDirection: "row", alignItems: "center" },
-  forumIconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 12 },
+  forumIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 10 },
   forumTitleBlock: { flex: 1 },
-  forumMainTitle: { fontSize: 16, fontWeight: "bold", color: "#111" },
-  forumTimeAgo: { fontSize: 12, color: "#888", position: "absolute", right: 35, top: 2 },
-  forumBadgeCount: { width: 22, height: 22, borderRadius: 11, justifyContent: "center", alignItems: "center" },
-  forumBadgeText: { color: "#fff", fontSize: 12, fontWeight: "bold" },
-  forumPublishDate: { fontSize: 13, color: "#999", marginLeft: 56, marginTop: -4, marginBottom: 10 },
-  forumBodyText: { fontSize: 14, color: "#555", marginLeft: 56, marginBottom: 15, lineHeight: 20 },
-  horizontalRepoContainer: { paddingBottom: 15, flexDirection: "row", gap: 14 },
-  repoSquareCard: { backgroundColor: "#fff", borderRadius: 20, overflow: "hidden", elevation: 3, width: 140, position: 'relative' },
-  imageWrapper: { width: "100%", height: 100, backgroundColor: "#ececec", position: 'relative' },
-  repoCoverImage: { width: "100%", height: "100%", resizeMode: "cover" },
-  repoContentArea: { padding: 12, justifyContent: "center", minHeight: 45 },
-  repoMainTitle: { fontSize: 14, fontWeight: "bold", color: "#111", textAlign: "center" },
-  removeButton: { position: 'absolute', top: 6, right: 6, backgroundColor: 'rgba(0, 0, 0, 0.6)', width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
-  emptyRecentsBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', padding: 15, borderRadius: 16, gap: 10, justifyContent: 'center' },
-  emptyRecentsText: { color: '#888', fontSize: 12, fontWeight: '500' }
+  forumMainTitle: { fontWeight: "bold", fontSize: 15, color: "#111" },
+  forumTimeAgo: { fontSize: 11, color: "#888" },
+  forumBadgeCount: { width: 20, height: 20, borderRadius: 10, justifyContent: "center", alignItems: "center" },
+  forumBadgeText: { color: "#fff", fontSize: 11, fontWeight: "bold" },
+  forumBodyText: { marginLeft: 50, marginTop: 8, color: "#555", fontSize: 13, lineHeight: 18 },
+  emptyText: { textAlign: "center", color: "#999", marginVertical: 10, fontSize: 13 }
 });
