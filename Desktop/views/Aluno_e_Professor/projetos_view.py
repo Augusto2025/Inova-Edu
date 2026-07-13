@@ -17,6 +17,7 @@ class ProjetosDesktopDashboard(ctk.CTkFrame):
         self.janela = master
         self.id_turma = id_turma
         self.nome_turma = nome_turma
+        self.tipo_usuario = tipo_usuario
         self.controller = controller
         
         self.configure(fg_color="#f8fafc") # Slate 50 clean
