@@ -370,6 +370,16 @@ body {
   }
 }
 
+#year-display {
+    border: none;
+    background: transparent;
+    font-size: 32px;
+    font-weight: bold;
+    color: #003f8a;
+    cursor: pointer;
+    outline: none;
+}
+
 /* ---------- Telas muito pequenas (menos de 480px) ---------- */
 @media (max-width: 480px) {
 
