@@ -1050,11 +1050,18 @@ def excluir_evento(request, evento_id):
 
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
+
+    query = request.GET.get("q", "").strip()
+
     topicos = Topico.objects.filter(forum=forum)
+
+    if query:
+        topicos = topicos.filter(titulo__icontains=query)
 
     context = {
         "forum": forum,
         "topicos": topicos,
+        "query": query,
     }
 
     return render(request, "AlunoProfessor/forum_topicos.html", context)
