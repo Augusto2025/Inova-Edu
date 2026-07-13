@@ -32,264 +32,294 @@ export default function HomeScreen({ navigation }) {
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.05, duration: 1000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true })
-      ])
-    ).start();
-  }, [pulseAnim]);
+    useEffect(() => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.05, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true })
+        ])
+      ).start();
+    }, [pulseAnim]);
 
-  // Função que busca os dados em tempo real da API na nuvem
-  async function carregarHome() {
-    try {
-      setCarregando(true);
+    // Função que busca os dados em tempo real da API na nuvem
+    async function carregarHome() {
+      try {
+        setCarregando(true);
 
-      // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home)
-      const resposta = await api.get(API_ENDPOINTS.home || "/home");
+        // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home)
+        const resposta = await api.get(API_ENDPOINTS.home || "/home");
 
-      if (resposta.data) {
-        const dados = resposta.data.sucesso ? resposta.data : resposta.data;
-
-        setHomeData({
-          usuario: dados.usuario || { nome: "Estudante" },
-          eventos: Array.isArray(dados.eventos) ? dados.eventos : [],
-          cursos: Array.isArray(dados.cursos) ? dados.cursos : [],
-          forum: Array.isArray(dados.forum) ? dados.forum : []
-        });
-      }
-    } catch (error) {
-      const status = error.response?.status;
-
-      // Se a rota /home não existe (404), houve erro de servidor (5xx) ou falha de rede,
-      // tenta o fallback para endpoints individuais para manter a Home populada.
-      if (status === 404 || !status || status >= 500) {
-        console.log("Rota /home indisponível (status:", status, ") — usando fallback de endpoints individuais");
-
-        try {
-          const [eventosRes, cursosRes, forumRes] = await Promise.all([
-            api.get(API_ENDPOINTS.eventos || "/eventos"),
-            api.get(API_ENDPOINTS.cursos || "/cursos"),
-            api.get(API_ENDPOINTS.forum || "/forum"),
-          ]);
+        if (resposta.data) {
+          const dados = resposta.data.sucesso ? resposta.data : resposta.data;
 
           setHomeData({
-            usuario: { nome: "Estudante" },
-            eventos: Array.isArray(eventosRes.data) ? eventosRes.data : [],
-            cursos: Array.isArray(cursosRes.data) ? cursosRes.data : [],
-            forum: Array.isArray(forumRes.data) ? forumRes.data : []
+            usuario: dados.usuario || { nome: "Estudante" },
+            eventos: Array.isArray(dados.eventos) ? dados.eventos : [],
+            cursos: Array.isArray(dados.cursos) ? dados.cursos : [],
+            forum: Array.isArray(dados.forum) ? dados.forum : [],
+            projetos: Array.isArray(dados.projetos) ? dados.projetos : []
           });
-        } catch (fallbackError) {
-          console.log("Erro no fallback da Home:", fallbackError.message, fallbackError.response?.status);
         }
-      } else {
-        console.log("Erro ao carregar dados da Home:", error.message, status, error.response?.data);
+      } catch (error) {
+        const status = error.response?.status;
+
+        // Se a rota /home não existe (404), houve erro de servidor (5xx) ou falha de rede,
+        // tenta o fallback para endpoints individuais para manter a Home populada.
+        if (status === 404 || !status || status >= 500) {
+          console.log("Rota /home indisponível (status:", status, ") — usando fallback de endpoints individuais");
+
+          try {
+            const [eventosRes, cursosRes, forumRes] = await Promise.all([
+              api.get(API_ENDPOINTS.eventos || "/eventos"),
+              api.get(API_ENDPOINTS.cursos || "/cursos"),
+              api.get(API_ENDPOINTS.forum || "/forum"),
+            ]);
+
+            setHomeData({
+              usuario: { nome: "Estudante" },
+              eventos: Array.isArray(eventosRes.data) ? eventosRes.data : [],
+              cursos: Array.isArray(cursosRes.data) ? cursosRes.data : [],
+              forum: Array.isArray(forumRes.data) ? forumRes.data : [],
+              projetos: []
+            });
+          } catch (fallbackError) {
+            console.log("Erro no fallback da Home:", fallbackError.message, fallbackError.response?.status);
+          }
+        } else {
+          console.log("Erro ao carregar dados da Home:", error.message, status, error.response?.data);
+        }
+      } finally {
+        setCarregando(false);
       }
-    } finally {
-      setCarregando(false);
     }
-  }
 
-  useEffect(() => {
-    carregarHome();
-  }, []);
+    useEffect(() => {
+      carregarHome();
+    }, []);
 
-  function getEventStatusColor(data) {
-    if (!data) return "#4CAF50";
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const evento = new Date(data);
-    evento.setHours(0, 0, 0, 0);
-    if (evento.getTime() === hoje.getTime()) return "#FFD700";
-    return evento > hoje ? "#4CAF50" : "#F44336";
-  }
+    function getEventStatusColor(data) {
+      if (!data) return "#4CAF50";
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const evento = new Date(data);
+      evento.setHours(0, 0, 0, 0);
+      if (evento.getTime() === hoje.getTime()) return "#FFD700";
+      return evento > hoje ? "#4CAF50" : "#F44336";
+    }
 
-  // Filtro puramente local (não toca no banco de dados)
-  function filtrarCursos() {
-    if (busca.trim() === "") return [];
-    const termo = busca.toLowerCase().trim();
-    return homeData.cursos.filter((curso) => 
-      (curso.nome_curso || "").toLowerCase().includes(termo)
-    );
-  }
+    // Filtro puramente local (não toca no banco de dados)
+    function filtrarCursos() {
+      if (busca.trim() === "") return [];
+      const termo = busca.toLowerCase().trim();
+      return homeData.cursos.filter((curso) => 
+        (curso.nome_curso || "").toLowerCase().includes(termo)
+      );
+    }
 
-  const resultadosBusca = filtrarCursos();
-  const estaBuscando = busca.trim() !== "";
-  const forumPrincipal = homeData.forum.length > 0 ? homeData.forum[0] : null;
+    const resultadosBusca = filtrarCursos();
+    const estaBuscando = busca.trim() !== "";
+    const forumPrincipal = homeData.forum.length > 0 ? homeData.forum[0] : null;
 
-  return (
-    <View style={styles.safe}>
-      <Header
-        nomeTela={carregando ? "Carregando..." : `Olá, ${homeData.usuario?.nome || "Estudante"} 👋`}
-        exibirPerfil={true}
-        quantidadeNotificacoes={totalNovas}
-        aoClicarNoSino={markAllAsRead}
-        carregando={carregando}
-      />
+    return (
+      <View style={styles.safe}>
+        <Header
+          nomeTela={carregando ? "Carregando..." : `Olá, ${homeData.usuario?.nome || "Estudante"} 👋`}
+          exibirPerfil={true}
+          quantidadeNotificacoes={totalNovas}
+          aoClicarNoSino={markAllAsRead}
+          carregando={carregando}
+        />
 
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* SEÇÃO: EVENTOS */}
-        <Text style={styles.sectionTitle}>Próximos eventos</Text>
+          {/* SEÇÃO: EVENTOS */}
+          <Text style={styles.sectionTitle}>Próximos eventos</Text>
 
-        {carregando ? (
-          [1, 2].map((item) => (
-            <View key={item} style={[styles.eventCard, { gap: 14 }]}>
-              <Skeleton width={52} height={56} borderRadius={10} />
-              <View style={{ flex: 1, gap: 8 }}>
-                <Skeleton width="70%" height={16} borderRadius={4} />
-                <Skeleton width="40%" height={12} borderRadius={4} />
+          {carregando ? (
+            [1, 2].map((item) => (
+              <View key={item} style={[styles.eventCard, { gap: 14 }]}>
+                <Skeleton width={52} height={56} borderRadius={10} />
+                <View style={{ flex: 1, gap: 8 }}>
+                  <Skeleton width="70%" height={16} borderRadius={4} />
+                  <Skeleton width="40%" height={12} borderRadius={4} />
+                </View>
               </View>
+            ))
+          ) : homeData.eventos.length > 0 ? (
+            homeData.eventos.map((event) => {
+              const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+              let dia = "•";
+              let mes = "EVT";
+
+              // Mapeia tanto propriedades em inglês (antigas) quanto as colunas do PostgreSQL
+              const dataOriginal = event.date || event.data_evento || event.data;
+              const tituloEvento = event.title || event.titulo || "Sem título";
+              const horarioEvento = event.time || event.horario || "Dia todo";
+              const localEvento = event.local || event.local_evento || "InovaEdu";
+
+              if (dataOriginal) {
+                const dataObj = new Date(dataOriginal);
+                dia = dataObj.getUTCDate();
+                mes = meses[dataObj.getUTCMonth()];
+              }
+
+              const statusColor = getEventStatusColor(dataOriginal);
+
+              return (
+                <TouchableOpacity
+                  key={event.id || event.idevento}
+                  style={styles.eventCard}
+                  activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Eventos", { selectedDate: dataOriginal })}
+                >
+                  <View style={[styles.dateBadge, { borderColor: statusColor }]}>
+                    <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
+                      <Text style={styles.monthText}>{mes}</Text>
+                    </View>
+                    <View style={styles.dateBadgeBottom}>
+                      <Text style={styles.dayText}>{dia}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.eventInfo}>
+                    <Text style={styles.eventTitle} numberOfLines={1}>
+                      {tituloEvento}
+                    </Text>
+                    <Text style={styles.eventTimeInfo} numberOfLines={1}>
+                      <Ionicons name="time-outline" size={13} color="#777" />{" "}
+                      {horarioEvento}{" • "}{localEvento}
+                    </Text>
+                  </View>
+
+                  <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+                </TouchableOpacity>
+              );
+            })
+          ) : (
+            <Text style={styles.emptyText}>Nenhum evento encontrado.</Text>
+          )}
+
+          {/* SEÇÃO: BUSCA DE CURSOS */}
+          <View style={styles.searchContainer}>
+            <Text style={styles.searchTitle}>Buscar Cursos</Text>
+            <View style={styles.searchBox}>
+              <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
+              <TextInput
+                placeholder="Buscar curso..."
+                placeholderTextColor="#888"
+                style={styles.searchInput}
+                value={busca}
+                onChangeText={setBusca}
+              />
             </View>
-          ))
-        ) : homeData.eventos.length > 0 ? (
-          homeData.eventos.map((event) => {
-            const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
-            let dia = "•";
-            let mes = "EVT";
 
-            // Mapeia tanto propriedades em inglês (antigas) quanto as colunas do PostgreSQL
-            const dataOriginal = event.date || event.data_evento || event.data;
-            const tituloEvento = event.title || event.titulo || "Sem título";
-            const horarioEvento = event.time || event.horario || "Dia todo";
-            const localEvento = event.local || event.local_evento || "InovaEdu";
-
-            if (dataOriginal) {
-              const dataObj = new Date(dataOriginal);
-              dia = dataObj.getUTCDate();
-              mes = meses[dataObj.getUTCMonth()];
-            }
-
-            const statusColor = getEventStatusColor(dataOriginal);
-
-            return (
-              <TouchableOpacity
-                key={event.id || event.idevento}
-                style={styles.eventCard}
-                activeOpacity={0.8}
-                onPress={() => navigation.navigate("Eventos", { selectedDate: dataOriginal })}
-              >
-                <View style={[styles.dateBadge, { borderColor: statusColor }]}>
-                  <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
-                    <Text style={styles.monthText}>{mes}</Text>
-                  </View>
-                  <View style={styles.dateBadgeBottom}>
-                    <Text style={styles.dayText}>{dia}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle} numberOfLines={1}>
-                    {tituloEvento}
-                  </Text>
-                  <Text style={styles.eventTimeInfo} numberOfLines={1}>
-                    <Ionicons name="time-outline" size={13} color="#777" />{" "}
-                    {horarioEvento}{" • "}{localEvento}
-                  </Text>
-                </View>
-
-                <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              </TouchableOpacity>
-            );
-          })
-        ) : (
-          <Text style={styles.emptyText}>Nenhum evento encontrado.</Text>
-        )}
-
-        {/* SEÇÃO: BUSCA DE CURSOS */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchTitle}>Buscar Cursos</Text>
-          <View style={styles.searchBox}>
-            <Feather name="search" size={18} color="#888" style={{ marginRight: 10 }} />
-            <TextInput
-              placeholder="Buscar curso..."
-              placeholderTextColor="#888"
-              style={styles.searchInput}
-              value={busca}
-              onChangeText={setBusca}
-            />
+            {estaBuscando && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 15 }} contentContainerStyle={{ gap: 12 }}>
+                {resultadosBusca.map((curso) => (
+                  <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso })}>
+                    {curso.imagem ? (
+                      <Image source={{ uri: curso.imagem }} style={styles.miniResultImg} />
+                    ) : (
+                      <View style={[styles.miniResultImg, styles.centerContainer, { backgroundColor: "#eee" }]}>
+                        <Feather name="book-open" size={20} color={primaryColor} />
+                      </View>
+                    )}
+                    <Text numberOfLines={1} style={styles.miniResultText}>{curso.nome_curso}</Text>
+                  </TouchableOpacity>
+                ))}
+                {resultadosBusca.length === 0 && (
+                  <Text style={styles.emptyText}>Nenhum curso encontrado.</Text>
+                )}
+              </ScrollView>
+            )}
           </View>
 
-          {estaBuscando && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 15 }} contentContainerStyle={{ gap: 12 }}>
-              {resultadosBusca.map((curso) => (
-                <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso })}>
-                  {curso.imagem ? (
-                    <Image source={{ uri: curso.imagem }} style={styles.miniResultImg} />
+          {/* SEÇÃO: REPOSITÓRIOS RECENTES */}
+          <Text style={styles.sectionTitle}>Repositórios recentes</Text>
+          {carregando ? (
+            [1,2].map(i => (
+              <View key={i} style={{height:100, marginBottom:12, borderRadius:12, backgroundColor:'#fff', elevation:2}} />
+            ))
+          ) : homeData.projetos && homeData.projetos.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8, marginBottom: 6 }} contentContainerStyle={{ gap: 12 }}>
+              {homeData.projetos.map(proj => (
+                <TouchableOpacity key={proj.id} style={styles.repoCard} activeOpacity={0.8} onPress={() => navigation.navigate('Projetos', { projetoId: proj.id })}>
+                  {proj.imagem ? (
+                    <Image source={{ uri: proj.imagem }} style={styles.repoImg} />
                   ) : (
-                    <View style={[styles.miniResultImg, styles.centerContainer, { backgroundColor: "#eee" }]}>
-                      <Feather name="book-open" size={20} color={primaryColor} />
+                    <View style={[styles.repoImg, styles.centerContainer, { backgroundColor: '#f2f2f2' }]}>
+                      <Feather name="folder" size={24} color={COLORS.primary} />
                     </View>
                   )}
-                  <Text numberOfLines={1} style={styles.miniResultText}>{curso.nome_curso}</Text>
+                  <Text numberOfLines={1} style={styles.repoTitle}>{proj.nome || proj.Nome_projeto || 'Projeto'}</Text>
                 </TouchableOpacity>
               ))}
-              {resultadosBusca.length === 0 && (
-                <Text style={styles.emptyText}>Nenhum curso encontrado.</Text>
-              )}
             </ScrollView>
+          ) : (
+            <Text style={styles.emptyText}>Nenhum repositório recente.</Text>
           )}
+
+          {/* SEÇÃO: FÓRUM */}
+          <Text style={styles.sectionTitle}>Fórum ativo</Text>
+
+          {forumPrincipal ? (
+            <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Forum") }>
+              <View style={styles.forumHeaderRow}>
+                <View style={styles.forumIconCircle}>
+                  <MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" />
+                </View>
+                <View style={styles.forumTitleBlock}>
+                  <Text style={styles.forumMainTitle} numberOfLines={1}>{forumPrincipal.titulo}</Text>
+                  <Text style={styles.forumTimeAgo}>tópico recente</Text>
+                </View>
+                <Animated.View style={[styles.forumBadgeCount, { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }]}>
+                  <Text style={styles.forumBadgeText}>{forumPrincipal.mensagens || 0}</Text>
+                </Animated.View>
+              </View>
+              <Text style={styles.forumBodyText} numberOfLines={2}>{forumPrincipal.descricao || forumPrincipal.conteudo}</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={styles.emptyText}>Nenhum fórum ativo.</Text>
+            )}
+          </ScrollView>
         </View>
-
-        {/* SEÇÃO: FÓRUM */}
-        <Text style={styles.sectionTitle}>Fórum ativo</Text>
-
-        {forumPrincipal ? (
-          <TouchableOpacity style={styles.forumContainerCard} activeOpacity={0.8} onPress={() => navigation.navigate("Forum")}>
-            <View style={styles.forumHeaderRow}>
-              <View style={styles.forumIconCircle}>
-                <MaterialCommunityIcons name="comment-text-multiple" size={20} color="#fff" />
-              </View>
-              <View style={styles.forumTitleBlock}>
-                <Text style={styles.forumMainTitle} numberOfLines={1}>{forumPrincipal.titulo}</Text>
-                <Text style={styles.forumTimeAgo}>tópico recente</Text>
-              </View>
-              <Animated.View style={[styles.forumBadgeCount, { backgroundColor: primaryColor, transform: [{ scale: pulseAnim }] }]}>
-                <Text style={styles.forumBadgeText}>{forumPrincipal.mensagens || 0}</Text>
-              </Animated.View>
-            </View>
-            <Text style={styles.forumBodyText} numberOfLines={2}>{forumPrincipal.descricao || forumPrincipal.conteudo}</Text>
-          </TouchableOpacity>
-        ) : (
-          <Text style={styles.emptyText}>Nenhum fórum ativo.</Text>
-        )}
-      </ScrollView>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor: "#fff" },
-  scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 5 },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", color: "#111", marginTop: 20, marginBottom: 12 },
-  centerContainer: { justifyContent: "center", alignItems: "center" },
-  eventCard: { backgroundColor: "#fff", borderRadius: 16, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", elevation: 2 },
-  dateBadge: { width: 50, height: 54, borderRadius: 8, borderWidth: 1, overflow: "hidden" },
-  dateBadgeTop: { height: 18, justifyContent: "center", alignItems: "center" },
-  monthText: { color: "#fff", fontSize: 9, fontWeight: "bold" },
-  dateBadgeBottom: { flex: 1, justifyContent: "center", alignItems: "center" },
-  dayText: { fontSize: 16, fontWeight: "bold" },
-  eventInfo: { flex: 1, paddingHorizontal: 12 },
-  eventTitle: { fontSize: 15, fontWeight: "bold", color: "#222" },
-  eventTimeInfo: { fontSize: 12, color: "#666", marginTop: 2 },
-  statusDot: { width: 8, height: 8, borderRadius: 4 },
-  searchContainer: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginTop: 15, elevation: 3 },
-  searchTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
-  searchBox: { flexDirection: "row", alignItems: "center", backgroundColor: "#f2f2f2", borderRadius: 14, paddingHorizontal: 12, height: 46 },
-  searchInput: { flex: 1, color: "#111" },
-  miniResultCard: { width: 110, alignItems: "center", backgroundColor: "#fff", padding: 6, borderRadius: 12, borderWidth: 1, borderColor: "#f0f0f0" },
-  miniResultImg: { width: 95, height: 60, borderRadius: 6 },
-  miniResultText: { fontSize: 11, marginTop: 4, color: "#333", fontWeight: "600" },
-  forumContainerCard: { backgroundColor: "#fff", borderRadius: 16, padding: 14, elevation: 2, marginTop: 5 },
-  forumHeaderRow: { flexDirection: "row", alignItems: "center" },
-  forumIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 10 },
-  forumTitleBlock: { flex: 1 },
-  forumMainTitle: { fontWeight: "bold", fontSize: 15, color: "#111" },
-  forumTimeAgo: { fontSize: 11, color: "#888" },
-  forumBadgeCount: { width: 20, height: 20, borderRadius: 10, justifyContent: "center", alignItems: "center" },
-  forumBadgeText: { color: "#fff", fontSize: 11, fontWeight: "bold" },
-  forumBodyText: { marginLeft: 50, marginTop: 8, color: "#555", fontSize: 13, lineHeight: 18 },
-  emptyText: { textAlign: "center", color: "#999", marginVertical: 10, fontSize: 13 }
-});
+      );
+  }
+  
+  const styles = StyleSheet.create({
+    safe: { flex: 1, backgroundColor: "#1459b3" },
+    container: { flex: 1, backgroundColor: "#fff" },
+    scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 5 },
+    sectionTitle: { fontSize: 20, fontWeight: "bold", color: "#111", marginTop: 20, marginBottom: 12 },
+    centerContainer: { justifyContent: "center", alignItems: "center" },
+    eventCard: { backgroundColor: "#fff", borderRadius: 16, padding: 12, marginBottom: 10, flexDirection: "row", alignItems: "center", elevation: 2 },
+    dateBadge: { width: 50, height: 54, borderRadius: 8, borderWidth: 1, overflow: "hidden" },
+    dateBadgeTop: { height: 18, justifyContent: "center", alignItems: "center" },
+    monthText: { color: "#fff", fontSize: 9, fontWeight: "bold" },
+    dateBadgeBottom: { flex: 1, justifyContent: "center", alignItems: "center" },
+    dayText: { fontSize: 16, fontWeight: "bold" },
+    eventInfo: { flex: 1, paddingHorizontal: 12 },
+    eventTitle: { fontSize: 15, fontWeight: "bold", color: "#222" },
+    eventTimeInfo: { fontSize: 12, color: "#666", marginTop: 2 },
+    statusDot: { width: 8, height: 8, borderRadius: 4 },
+    searchContainer: { backgroundColor: "#fff", borderRadius: 20, padding: 16, marginTop: 15, elevation: 3 },
+    searchTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+    searchBox: { flexDirection: "row", alignItems: "center", backgroundColor: "#f2f2f2", borderRadius: 14, paddingHorizontal: 12, height: 46 },
+    searchInput: { flex: 1, color: "#111" },
+    miniResultCard: { width: 110, alignItems: "center", backgroundColor: "#fff", padding: 6, borderRadius: 12, borderWidth: 1, borderColor: "#f0f0f0" },
+    miniResultImg: { width: 95, height: 60, borderRadius: 6 },
+    miniResultText: { fontSize: 11, marginTop: 4, color: "#333", fontWeight: "600" },
+    forumContainerCard: { backgroundColor: "#fff", borderRadius: 16, padding: 14, elevation: 2, marginTop: 5 },
+    forumHeaderRow: { flexDirection: "row", alignItems: "center" },
+    forumIconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#5360f0", justifyContent: "center", alignItems: "center", marginRight: 10 },
+    forumTitleBlock: { flex: 1 },
+    forumMainTitle: { fontWeight: "bold", fontSize: 15, color: "#111" },
+    forumTimeAgo: { fontSize: 11, color: "#888" },
+    forumBadgeCount: { width: 20, height: 20, borderRadius: 10, justifyContent: "center", alignItems: "center" },
+    forumBadgeText: { color: "#fff", fontSize: 11, fontWeight: "bold" },
+    forumBodyText: { marginLeft: 50, marginTop: 8, color: "#555", fontSize: 13, lineHeight: 18 },
+    emptyText: { textAlign: "center", color: "#999", marginVertical: 10, fontSize: 13 },
+    repoCard: { width: 140, backgroundColor: '#fff', borderRadius: 12, padding: 8, alignItems: 'center', elevation: 2 },
+    repoImg: { width: 120, height: 68, borderRadius: 8, marginBottom: 8 },
+    repoTitle: { fontSize: 13, fontWeight: '600', color: '#222' }
+  });
