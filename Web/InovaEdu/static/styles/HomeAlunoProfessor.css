@@ -155,14 +155,11 @@
 
 .cards-foruns {
   display: flex;
-
   justify-content: center;
-
   align-items: stretch;
-
   gap: 35px;
-
   flex-wrap: wrap;
+  margin: 13px;
 }
 
 .card-forum {
@@ -246,6 +243,90 @@
 
   font-size: 15px;
 }
+
+
+/* EVENTOS VAZIOS ================================== */
+
+.sem-eventos {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 35px;
+    flex-wrap: wrap;
+    margin: 13px;
+}
+
+.card-vazio {
+    width: 290px;
+    height: 260px;
+
+    background: #fff;
+    border-radius: 25px;
+
+    text-align: center;
+
+    padding: 35px 25px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+    transition: 0.3s;
+}
+
+.card-vazio:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.12);
+}
+
+.card-vazio .icone {
+    width: 65px;
+    height: 65px;
+
+    border-radius: 50%;
+
+    background: #fff3ea;
+    color: #ff8b2c;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 30px;
+
+    margin-bottom: 20px;
+}
+
+.card-vazio h3 {
+    color: #0d4f9a;
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+.card-vazio p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (max-width: 1000px) {
   .cards-foruns {
@@ -350,7 +431,7 @@
     justify-content:center;
     gap:20px;
     flex-wrap:wrap;
-    margin-top:40px;
+    margin-top:50px;
     
 }
 
@@ -439,6 +520,11 @@
 
     margin:4px 0;
 }
+
+
+
+
+
 /* ==========================
    RESPONSIVO
 ========================== */
