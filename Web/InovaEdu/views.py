@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 import resend
+from datetime import date
 from .models import *
 import os
 from datetime import datetime, timedelta
@@ -23,6 +24,7 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
+
 
 from dotenv import load_dotenv
 
@@ -48,7 +50,7 @@ def login(request):
         if usuario.tipo == "Coordenador":
             return redirect("home_Coordenacao")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
-            return redirect("home")
+            return redirect("home_aluno_professor")
     # se ele não for, ele manda um erro e volta pro login
     else:
         return render(
@@ -59,6 +61,75 @@ def login(request):
 
 
 from .tokens import token_generator
+
+def HomeAlunoProfessor(request):
+
+    foruns_recentes = (
+        Forum.objects
+        .select_related("usuario")
+        .order_by("-data_criacao", "-idforum")[:3]
+    )
+
+    eventos_proximos = (
+        Eventos.objects
+        .filter(data_do_evento__gte=date.today())
+        .order_by("data_do_evento", "hora_do_evento")[:3]
+    )
+
+    cursos_recentes = (
+        Curso.objects
+        .order_by("-idcurso")[:4]
+    )
+
+    context = {
+        "foruns_recentes": foruns_recentes,
+        "eventos_proximos": eventos_proximos,
+        "cursos_recentes": cursos_recentes,
+    }
+
+    return render(
+        request,
+        "AlunoProfessor/HomeAlunoProfessor.html",
+        context
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # redefinir senha 
 def pedir_email(request):
@@ -155,6 +226,14 @@ def home(request):
         curso = curso.order_by("nome_curso")
     elif ordenar == "desc":
         curso = curso.order_by("-nome_curso")
+        
+        print("=" * 30)
+        print("Busca:", query)
+        print("=" * 30)
+
+
+
+
 
     return render(
         request,
@@ -392,10 +471,17 @@ def salvar_certificado(request):
 def turmas(request, curso_id):
     curso = get_object_or_404(Curso, idcurso=curso_id)
 
-    # busca turmas do curso e ordena por ano
-    turmas = Turma.objects.filter(curso=curso).order_by("ano")
+    query = request.GET.get("q", "").strip()
 
-    # agrupar por ano
+    turmas = Turma.objects.filter(curso=curso)
+
+    if query:
+        turmas = turmas.filter(codigo_turma__icontains=query)
+
+    total_turmas = turmas.count()
+
+    turmas = turmas.order_by("ano")
+
     turmas_por_ano = {}
     for turma in turmas:
         turmas_por_ano.setdefault(turma.ano, []).append(turma)
@@ -403,7 +489,12 @@ def turmas(request, curso_id):
     return render(
         request,
         "AlunoProfessor/turmas.html",
-        {"curso": curso, "turmas_por_ano": turmas_por_ano},
+        {
+            "curso": curso,
+            "turmas_por_ano": turmas_por_ano,
+            "query": query,
+            "total_turmas": total_turmas,
+        },
     )
 
 
@@ -959,11 +1050,18 @@ def excluir_evento(request, evento_id):
 
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
+
+    query = request.GET.get("q", "").strip()
+
     topicos = Topico.objects.filter(forum=forum)
+
+    if query:
+        topicos = topicos.filter(titulo__icontains=query)
 
     context = {
         "forum": forum,
         "topicos": topicos,
+        "query": query,
     }
 
     return render(request, "AlunoProfessor/forum_topicos.html", context)

@@ -1,473 +1,173 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-/* -------------------- VARIÁVEIS -------------------- */
 :root {
-    --laranja-Senac:#F7941D;
-    --branco-Senac:#FFF;
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
     --azul-Senac: #004A8D;
-    --cinza-Senac: #D9D9D9;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
 }
 
-/* -------------------- RESET -------------------- */
-body{
-    margin: 0;
-    padding: 0;
-    font-family: "Roboto", sans-serif;
-}
 
-/* -------------------- HEADER -------------------- */
-header{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: auto;
-    height: 80px;
-    padding: 0px 10px;
+
+/* HEADER */
+
+.navbar{
+    width:100%;
+    height:70px;
     background-color: var(--azul-Senac);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 35px;
 }
 
-/* Área com logo + texto */
-.logo_e_texto{
-    align-items: center;
-    display: flex;
+.logo img{
+    width: 55px;
 }
 
-header a {
-    display: flex;           /* Apenas links do HEADER usam display:flex */
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
+/* MENU */
 
-.logo {
-    width: 50px;
-    height: 50px;
-    margin: 10px;
-    flex-shrink: 0;
-}
-
-/* Nome InovaEdu */
-.texto_InovaEdu{
-    margin: 10px;
-    color: var(--branco-Senac);
-    font-size: 20px;
-    font-weight: 400;
-    width: 140px;
-}
-
-.Nome_Usu{
-    color: var(--branco-Senac);
-}
-
-/* -------------------- NAV SUPERIOR -------------------- */
-.Paginas {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    font-size: 16px;
-    gap: 50px;
-}
-
-/* Apenas links do NAV usam estilo próprio */
-.Paginas a{
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
-
-.Paginas a:hover{
-    border-bottom: solid;
-    border-bottom-color: #F7941D;
-}
-
-a{
-    text-decoration: none;
-}
-
-.sair{
-    color: var(--branco-Senac);
-    margin-left: 10px;
-}
-
-/* -------------------- TÍTULO DAS PÁGINAS -------------------- */
-.titulo{
-    display: flex;
-    justify-content: space-between;
-    justify-self: center;
-    width: 50%;
-}
-
-.titulo p{
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-    color: var(--azul-Senac);
-    margin: 0%;
-    font-size: 20px;
-}
-
-/* -------------------- PESQUISA -------------------- */
-.filtro_icone{
-    width: 30px;
-    flex-shrink: 0;
-}
-
-.campo_pesq{
-    display: flex;
-    justify-self: center;
-    justify-content: center;
-}
-  
-.pesquisa{
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    height: 30px;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 2px solid var(--azul-Senac);
-}
-
-/* -------------------- IMPORTANTE: remover conflito global -------------------- */
-/* Esse main afetava TODAS as páginas, inclusive o calendário */
-main{
-    max-width: 1022px;
-    min-height: calc(70vh - 80px);
-}
-
-/* -------------------- RESPONSIVIDADE -------------------- */
-@media (max-width: 1024px) {
+.menu{
+    display:flex;
+    align-items:center;
+    gap:14px;
     
-    #site-nav a{
-        margin: 5%;
+}
+
+.menu a{
+    text-decoration:none;
+    color:var(--branco-Senac);
+
+    font-size:14px;
+    font-weight:500;
+
+    padding:10px 18px;
+
+    border-radius:14px;
+
+    transition:.3s;
+}
+
+.menu a:hover{
+    background:rgba(255,255,255,.08);
+}
+
+.menu .active{
+    background:var(--azul-Senac-hover);
+    position:relative;
+}
+
+.menu .active::after{
+    content:"";
+
+    width:65%;
+    height:3px;
+
+    background:var(--laranja-Senac);
+
+    position:absolute;
+
+    bottom:0;
+    left:17%;
+
+    border-radius:20px;
+}
+
+/* USUÁRIO */
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.user-name{
+    text-decoration:none;
+    color:var(--branco-Senac);
+
+    font-size:14px;
+    font-weight:500;
+}
+
+/* BOTÃO SAIR */
+
+.logout{
+    width:38px;
+    height:38px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:rgba(255,255,255,.10);
+
+    color:var(--branco-Senac);
+    text-decoration:none;
+
+    transition:.3s;
+}
+
+/* .logout:hover{
+    background:rgba(255,255,255,.18);
+    color:var(--laranja-senac);
+} */
+
+.logout i{
+    font-size:18px;
+}
+
+/* MENU MOBILE */
+
+.hamburger{
+    display:none;
+
+    background:none;
+    border:none;
+
+    color:var(--branco-Senac);
+
+    font-size:28px;
+
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+    .hamburger{
+        display:block;
     }
-    
-    .titulo{
-        width: 90%;
+
+    .menu{
+        display:none;
+
+        position:absolute;
+
+        top:70px;
+        left:0;
+
+        width:100%;
+
+        background:var(--azul-Senac);
+
+        flex-direction:column;
+
+        padding:20px 0;
+
+        z-index:999;
     }
-    
-    .pesquisa{
-        width: 60%;
+
+    .navbar.nav-open .menu{
+        display:flex;
     }
-}
 
-/* RESPONSIVIDADE: menu colapsável e ajustes mobile */
-
-/* estilo do botão hamburger (hidden por desktop) */
-.hamburger {
-  display: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  margin-left: 8px;
-  align-items: center;
-  justify-content: center;
-  color: var(--branco-Senac);
-}
-.hamburger .bar {
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: var(--branco-Senac);
-  position: relative;
-}
-.hamburger .bar::before,
-.hamburger .bar::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 20px;
-  height: 2px;
-  background: var(--branco-Senac);
-}
-.hamburger .bar::before { top: -6px; }
-.hamburger .bar::after  { top: 6px; }
-
-
-/* transformar nav em painel colapsável abaixo do header em telas pequenas */
-@media (max-width: 768px) {
-
-  /* mostrar hamburger */
-  .hamburger { display: inline-flex; }
-
-  /* esconder nav por padrão e posicionar abaixo do header quando aberto */
-  #site-nav.Paginas {
-    display: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 60px; /* coloca abaixo do header */
-    background: var(--azul-Senac);
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 0;
-    align-items: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    z-index: 900;
-    width: 100%;
-  }
-
-  /* quando header recebe a classe nav-open, mostra o nav */
-  header.nav-open #site-nav.Paginas {
-    display: flex;
-  }
-
-  /* ajustar alguns elementos do header em mobile */
-  header {
-    height: 60px;
-    padding: 0px;
-  }
-  
-  .logo { width: 40px; height: 40px; margin: 8px 6px; }
-  .texto_InovaEdu { display: none; }
-  .Paginas { gap: 12px; font-size: 15px; }
-}
-
-/* canvas do header (estrelas cadentes) */
-/* canvas ocupa todo o header atrás do conteúdo */
-#header-stars {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-/* -------------------- VARIÁVEIS -------------------- */
-:root {
-    --laranja-Senac:#F7941D;
-    --branco-Senac:#FFF;
-    --azul-Senac: #004A8D;
-    --cinza-Senac: #D9D9D9;
-}
-
-/* -------------------- RESET -------------------- */
-body{
-    margin: 0;
-    padding: 0;
-    font-family: "Roboto", sans-serif;
-}
-
-/* -------------------- HEADER -------------------- */
-header{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%; /* Ajustado para 100% para o canvas ocupar tudo */
-    height: 80px;
-    padding: 0px 10px;
-    background-color: var(--azul-Senac);
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-/* Área com logo + texto */
-.logo_e_texto{
-    align-items: center;
-    display: flex;
-}
-
-header a {
-    display: flex;
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-    margin: 10px;
-    flex-shrink: 0;
-}
-
-.texto_InovaEdu{
-    margin: 10px;
-    color: var(--branco-Senac);
-    font-size: 20px;
-    font-weight: 400;
-    width: 140px;
-}
-
-.Nome_Usu{
-    color: var(--branco-Senac);
-}
-
-/* -------------------- NAV SUPERIOR -------------------- */
-.Paginas {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto; /* Deixei auto para os links aparecerem corretamente */
-    font-size: 16px;
-    gap: 50px;
-}
-
-.Paginas a{
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
-
-.Paginas a:hover{
-    border-bottom: solid;
-    border-bottom-color: #F7941D;
-}
-
-a{
-    text-decoration: none;
-}
-
-.sair{
-    color: var(--branco-Senac);
-    margin-left: 10px;
-}
-
-/* -------------------- TÍTULO DAS PÁGINAS -------------------- */
-.titulo{
-    display: flex;
-    justify-content: space-between;
-    justify-self: center;
-    width: 50%;
-}
-
-.titulo p{
-    border-bottom: solid;
-    border-color: var(--laranja-Senac);
-    color: var(--azul-Senac);
-    margin: 0%;
-    font-size: 20px;
-}
-
-/* -------------------- PESQUISA -------------------- */
-.filtro_icone{
-    width: 30px;
-    flex-shrink: 0;
-}
-
-.campo_pesq{
-    display: flex;
-    justify-self: center;
-    justify-content: center;
-}
-  
-.pesquisa{
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    height: 30px;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 2px solid var(--azul-Senac);
-}
-
-main{
-    max-width: 1022px;
-    min-height: calc(70vh - 80px);
-}
-
-/* -------------------- RESPONSIVIDADE -------------------- */
-@media (max-width: 1024px) {
-    #site-nav a{
-        margin: 5%;
+    .logo img{
+        width:55px;
     }
-    .titulo{
-        width: 90%;
+
+    .user-name{
+        font-size:12px;
     }
-    .pesquisa{
-        width: 60%;
-    }
-}
-
-/* Estilo do botão hamburger */
-.hamburger {
-  display: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  margin-left: 8px;
-  align-items: center;
-  justify-content: center;
-  color: var(--branco-Senac);
-}
-.hamburger .bar {
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: var(--branco-Senac);
-  position: relative;
-}
-.hamburger .bar::before,
-.hamburger .bar::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 20px;
-  height: 2px;
-  background: var(--branco-Senac);
-}
-.hamburger .bar::before { top: -6px; }
-.hamburger .bar::after  { top: 6px; }
-
-@media (max-width: 768px) {
-  .hamburger { display: inline-flex; }
-
-  #site-nav.Paginas {
-    display: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 60px;
-    background: var(--azul-Senac);
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 0;
-    align-items: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    z-index: 900;
-    width: 100%;
-  }
-
-  header.nav-open #site-nav.Paginas {
-    display: flex;
-  }
-
-  header {
-    height: 60px;
-    padding: 0px;
-  }
-  
-  .logo { width: 40px; height: 40px; margin: 8px 6px; }
-  .texto_InovaEdu { display: none; }
-  .Paginas { gap: 12px; font-size: 15px; }
-}
-
-/* canvas do header */
-#header-stars {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* garantir que o conteúdo do header fique acima do canvas */
-header > .hamburger,
-header > .logo_e_texto,
-header > #site-nav,
-header > div {
-  position: relative;
-  z-index: 2;
-}
-  display: block;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* garantir que o conteúdo do header fique acima do canvas */
-header > .hamburger,
-header > .logo_e_texto,
-header > #site-nav,
-header > div {
-  position: relative;
-  z-index: 2;
 }

@@ -1,504 +1,420 @@
+:root {
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
+}
+
+
 /* RESET */
-* {
-    box-sizing: border-box;
-}
-.messages {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 0.95em;
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.messages p {
-    margin: 0;
-}
 
-.messages .error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
 
-.messages .success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.messages .warning {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
-}
-
-.messages .info {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
-}
-
-/* CONTAINER PRINCIPAL */
-.turma-repositorio {
-    width: 70%;
-    max-width: 1000px;
-    background: #ffffff;
-    margin: 0 auto 40px;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    min-height: calc(66vh - 90px);
-}
-
-/* TÍTULO DO CURSO */
-.turma-repositorio h3 {
-    font-size: 1.5em;
-    color: #2c3e50;
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 10px;
-}
-
-/* LINK DE VOLTAR */
-.turma-repositorio a[href*="repositorio"] {
-    display: inline-block;
-    padding: 8px 16px;
-    background: #2980b9;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9em;
-    transition: background 0.25s ease;
-}
-
-.turma-repositorio a[href*="repositorio"]:hover {
-    background: #21618c;
-}
-
-/* AÇÕES (CRIAR E UPLOAD) */
-.acoes-repositorio {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.acao-btn {
-    padding: 12px 24px;
-    background: #2980b9;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.25s ease;
-}
-
-.acao-btn:hover {
-    background: #21618c;
-}
-
-/* MODAL */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
+.container {
+    max-width: 1200px;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease-in-out;
-    backdrop-filter: blur(4px);
+    margin: 0 auto;
+    padding: 15px 20px;
 }
-
-.modal-content {
-    background-color: #ffffff;
-    /* padding: 20px; */
-    border-radius: 12px;
-    width: 90%;
-    max-width: 480px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
-}
-
-#fecharExcluirBtn{
-    background-color: red;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.modal h4 {
-    margin-top: 0;
-    color: #34495e;
-}
-
-.modal form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal input {
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 6px;
-}
-
-.modal button {
-    padding: 10px;
-    background: #2980b9;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.modal button:hover {
-    background: #21618c;
-}
-
-/* AÇÕES DA PASTA */
-.pasta-actions {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-.pasta-actions button,
-.arquivo-item button {
-    background: transparent;
-    border: none;
-    color: #7f8c8d;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: color 0.2s ease, background 0.2s ease;
-}
-
-.pasta-actions button:hover,
-.arquivo-item button:hover {
-    color: #2980b9;
-    background: rgba(41, 128, 185, 0.1);
-}
-
-/* SEÇÕES */
-.pastas, .arquivos {
-    background: #f9fafc;
-    border-radius: 12px;
+/* ==========================
+  ARQUIVOS DO REPOSITORIO 
+========================== */
+/* CONTAINER PRINCIPAL */
+.container_repositorio {
+    max-width: 1400px;
+    margin: 30px auto;
     padding: 20px;
 }
 
-.pastas h4, .arquivos h4 {
-    font-size: 1.2em;
-    color: #34495e;
-    margin-bottom: 15px;
+/* ÁREA DAS DUAS COLUNAS */
+.turma-repositorio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: 65px;
 }
 
-.section-header {
+/* CAIXAS DE PASTAS E ARQUIVOS */
+.pastas,
+.arquivos {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    padding: 20px;
+    border: 1px solid #e5e5e5;
+
+    min-height: 500px;
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+/* TOPO DAS SEÇÕES */
+.section-header1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-header1 h4 {
+    margin: 0;
+    color: #0f2b52;
+    font-size: 1.3rem;
+}
+
+/* BOTÕES */
+.acao-btn {
+    background: var(--azul-Senac);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: .3s;
     margin-bottom: 15px;
 }
 
+.acao-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.acao-btn.baixar {
+    margin-left: auto;
+    background: var(--azul-Senac);
+}
+
+/* BOTÃO SELECIONAR */
 .btn-selecionar {
-    padding: 8px 16px;
-    background: #f39c12;
-    color: #ffffff;
     border: none;
-    border-radius: 6px;
-    font-size: 0.9em;
+    background: var(--azul-Senac-hover);
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background 0.25s ease;
+    font-size: .85rem;
+    font-weight: bold;
 }
 
 .btn-selecionar:hover {
-    background: #e67e22;
+    background: var(--azul-Senac-hover);
 }
 
-.btn-excluir-selecionadas {
-    padding: 10px 20px;
-    background: #e74c3c;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.25s ease;
-}
 
-.btn-excluir-selecionadas:hover {
-    background: #c0392b;
-}
-
-.btn-excluir-todas {
-    padding: 10px 20px;
-    background: #e74c3c;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.25s ease;
-}
-
-.btn-excluir-todas:hover {
-    background: #c0392b;
-}
 
 /* LISTAS */
-.lista-pastas, .lista-arquivos {
+.lista-pastas,
+.lista-arquivos {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
 /* ITENS */
-.pasta-item, .arquivo-item {
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 15px 18px;
-    margin-bottom: 12px;
+.pasta-item,
+.arquivo-item {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 15px;
-    border-left: 5px solid transparent;
-    transition: all 0.25s ease;
+    padding: 14px 10px;
+    border-bottom: 1px solid #ececec;
+    transition: .3s;
 }
 
-.pasta-item {
-    border-left-color: #2980b9;
-}
-
-.arquivo-item {
-    border-left-color: #3498db;
-}
-
-.pasta-item:hover, .arquivo-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* INFO DA PASTA */
-.pasta-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-    word-wrap: break-word;
-    overflow: hidden;
-}
-
-.pasta-info img {
-    width: 36px;
-}
-
-/* INFO DO ARQUIVO */
-.arquivo-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-    word-wrap: break-word;
-    overflow: hidden;
+.pasta-item:hover,
+.arquivo-item:hover {
+    background:#a9cdf0; ;
 }
 
 /* LINKS */
-.pasta-link,
-.arquivo-item a {
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #2980b9;
+.pasta-info a,
+.arquivo-info a {
     text-decoration: none;
-    word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.arquivo-item a {
-    color: #3498db;
-}
-
-.pasta-link:hover,
-.arquivo-item a:hover {
-    text-decoration: underline;
-}
-
-/* METADADOS */
-.pasta-info p,
-.arquivo-item p {
-    font-size: 0.85em;
-    color: #7f8c8d;
-}
-
-.pasta-info p strong,
-.arquivo-item p strong {
     color: #2c3e50;
+    font-size: .95rem;
+    font-weight: 500;
 }
 
-/* VAZIO */
-.sem-pasta,
-.sem-arquivo {
-    padding: 15px;
-    text-align: center;
-    font-style: italic;
-    color: #95a5a6;
-    background: #ffffff;
-    border-radius: 10px;
+.pasta-info a:hover,
+.arquivo-info a:hover {
+    color: var(--azul-Senac-hover);
 }
+
+/* AÇÕES */
+.pasta-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.pasta-actions button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: .3s;
+}
+
+.pasta-actions button:hover {
+    transform: scale(1.2);
+}
+
+/* CHECKBOX */
+.checkbox-pastas,
+.checkbox-arquivos {
+    margin-right: 10px;
+}
+
+/* SEM ITENS */
+.sem-itens {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+    font-style: italic;
+}
+
+/* BOTÕES EXCLUIR */
+#botoes-excluir-pastas,
+#botoes-excluir-arquivos {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-excluir-selecionadas {
+    border: none;
+    background: #dc3545;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.btn-excluir-selecionadas:hover {
+    background: #bb2d3b;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* RESPONSIVO */
 @media (max-width: 900px) {
     .turma-repositorio {
-        width: 95%;
-        padding: 15px;
-        gap: 20px;
+        grid-template-columns: 1fr;
     }
 
-    .turma-repositorio h3 {
-        font-size: 1.2em;
-    }
-
-    .acoes-repositorio {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .acao-btn {
-        padding: 10px 20px;
-        font-size: 0.9em;
-        width: 160px;
-    }
-
-    .modal-content {
-        width: 95%;
-        max-width: 350px;
-    }
-
-    .pasta-item, .arquivo-item {
-        gap: 10px;
-        padding: 12px 15px;
-    }
-
-    .section-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-
-    .section-header h4 {
-        font-size: 1.1em;
-    }
-
-    .btn-selecionar {
-        padding: 6px 12px;
-        font-size: 0.85em;
-    }
-
-    .btn-excluir-selecionadas {
-        padding: 8px 16px;
-        font-size: 0.9em;
-    }
-
-    .btn-excluir-todas {
-        padding: 8px 16px;
-        font-size: 0.9em;
-    }
-
-    .pasta-actions {
-        align-self: flex-end;
-        margin-top: 10px;
-    }
-
-    .messages {
-        padding: 10px;
-        font-size: 0.9em;
+    .pastas,
+    .arquivos {
+        min-height: auto;
     }
 }
 
-@media (max-width: 600px) {
-    .turma-repositorio {
-        width: 98%;
-        padding: 10px;
+
+
+
+
+/* ==========================
+   MODAL
+========================== */
+/* FUNDO ESCURO */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+
+    justify-content: center;
+    align-items: center;
+}
+
+/* CAIXA DO MODAL */
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    animation: modalEntrada .3s ease;
+    box-shadow: 0 10px 35px rgba(0,0,0,.25);
+}
+
+/* ANIMAÇÃO */
+@keyframes modalEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* CABEÇALHO */
+.modal-header {
+    background: #004A98; /* Azul Senac */
+    color: white;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 85px;
+}
+
+.header-text h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.header-text p {
+    margin-top: 8px;
+    opacity: .9;
+    font-size: .9rem;
+}
+
+/* BOTÃO FECHAR */
+.fechar {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    position: relative;
+}
+
+.fechar::before,
+.fechar::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 20px;
+    height: 2px;
+    background: white;
+}
+
+.fechar::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.fechar::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.fechar:hover {
+    transform: scale(1.1);
+}
+
+/* CORPO */
+.modal-body {
+    padding: 15px;
+}
+
+/* CAMPOS */
+.modal-body input[type="text"],
+.modal-body input[type="file"],
+.modal-body textarea {
+    width: 100%;
+    padding: 15px 18px;
+    border: 1px solid #d7dce2;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: .95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: .3s;
+}
+
+.modal-body input:focus,
+.modal-body textarea:focus {
+    border-color: #004A98;
+    box-shadow: 0 0 0 3px rgba(0, 74, 152, .1);
+}
+
+/* BOTÕES */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    /* margin-top: 20px; */
+}
+
+/* CANCELAR */
+.btn-cancel {
+    border: none;
+    background: #e9ecef;
+    color: #495057;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn-cancel:hover {
+    background: #d8dde2;
+}
+
+/* SALVAR */
+.btn-save,
+#fecharExcluirBtn {
+    border: none;
+    background: #004A98;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn-save:hover,
+#fecharExcluirBtn:hover {
+    background: #003875;
+}
+
+/* RESPONSIVO */
+@media(max-width:600px){
+
+    .modal-content{
+        width:95%;
     }
 
-    .rota {
-        font-size: 0.8em;
+    .modal-header,
+    .modal-body{
+        padding:20px;
     }
 
-    .titulo p {
-        font-size: 1.5em;
+    .modal-actions{
+        flex-direction: column;
     }
 
-    .turma-repositorio h3 {
-        font-size: 1.1em;
-    }
-
-    .acoes-repositorio {
-        gap: 10px;
-    }
-
-    .acao-btn {
-        padding: 8px 16px;
-        justify-content: center;
-        font-size: 0.85em;
-        width: 178px;
-        /* margin-right: 10px; */
-    }
-
-    .pasta-item, .arquivo-item {
-        padding: 10px 12px;
-        margin-bottom: 8px;
-    }
-
-    .pasta-info, .arquivo-info {
-        font-size: 0.9em;
-    }
-
-    .pasta-link, .arquivo-item a {
-        font-size: 1em;
-        white-space: normal;
-        text-overflow: clip;
-    }
-
-    .pasta-info p, .arquivo-item p {
-        font-size: 0.8em;
-    }
-
-    .modal-content {
-        padding: 15px;
-    }
-
-    .modal h4 {
-        font-size: 1.1em;
-    }
-
-    .modal input {
-        padding: 8px;
-    }
-
-    .modal button {
-        padding: 8px;
+    .modal-actions button{
+        width:100%;
     }
 }

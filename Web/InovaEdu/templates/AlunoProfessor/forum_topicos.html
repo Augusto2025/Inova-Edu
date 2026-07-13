@@ -2,68 +2,96 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     {% include "partials/header.html" %}
 
-    <div class="barra-topo">
-        <div class="rota" style="display: flex; justify-content: space-between; align-items: center;">
-            <p>
-                Página:
-                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a> >
-                {{ forum.nome }}
-            </p>
-            <div class="acoes-topo">
-                <button id="abrirModalTopico" class="botao-criar-forum" type="button">
-                    + Criar Tópico
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="titulo">
-        <p>Tópicos do fórum</p>
-    </div>
-
-    <div class="grid-topicos">
-        {% if topicos %}
-            {% for topico in topicos %}
-                <div class="card-topico">
-                    <div class="card-content">
-                        <h3 class="titulo-topico">{{ topico.titulo }}</h3>
-                        {% if topico.descricao %}
-                            <p class="resumo-topico">{{ topico.descricao }}</p>
-                        {% endif %}
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; justify-content: center;"> 
-                        <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
-                            Entrar na Conversa
-                        </a>
+    <div class="container">
         
-                        {% if request.session.usuario_email == topico.usuario.email %}
-                            <div class="acoes-forum">
-                                <button class="btn-editar-topico"
-                                        data-topico-id="{{ topico.idtopico }}"
-                                        data-topico-titulo="{{ topico.titulo }}"
-                                        data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button class="btn-excluir-topico"
-                                        data-topico-id="{{ topico.idtopico }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        {% endif %}
-                    </div>
+        <header class="section-header">
+            <div class="rota">
+                <span>Página:</span>
+                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a>
+                <span>></span>
+                <span>{{ forum.nome }}</span>
+            </div>
+            <div class="titulo">
+                <p class="main-title">Tópicos do fórum</p>
+            </div>
+        </header>
+
+   
+        <section class="search-container">
+            <form method="get" action="{% url 'forum_topicos' forum.idforum %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder="Digite o nome do Tópico..." value="{{ query }}">
                 </div>
-            {% endfor %}
-        {% else %}
-            <p class="sem-topicos">Nenhum tópico encontrado neste fórum.</p>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+
+        {% if topicos|length == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
+            </div>
         {% endif %}
-    </div>
+
+
+    </div> 
+
+
+    <main class="container">
+        <div class="grid-topicos">
+            <!-- CARD CRIAR TÓPICO -->
+            <article class="forum-card create-card">
+                <button id="abrirModalTopico" class="botao-criar-forum" type="button">
+                    <div class="plus-circle">+</div>
+                    <span>Novo Tópico</span>
+                    <small>Clique para criar um novo tópico</small>
+                </button>
+            </article>
+
+            {% if topicos %}
+                {% for topico in topicos %}
+                    <div class="card-topico">
+                        <div class="card-content">
+                            <h3 class="titulo-topico">{{ topico.titulo }}</h3>
+                            {% if topico.descricao %}
+                                <p class="resumo-topico">{{ topico.descricao }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; justify-content: center;"> 
+                            <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                                Entrar na Conversa
+                            </a>
+            
+                            {% if request.session.usuario_email == topico.usuario.email %}
+                                <div class="acoes-forum">
+                                    <button class="btn-editar-topico"
+                                            data-topico-id="{{ topico.idtopico }}"
+                                            data-topico-titulo="{{ topico.titulo }}"
+                                            data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="btn-excluir-topico"
+                                            data-topico-id="{{ topico.idtopico }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                
+            {% endif %}
+        </div>
+    </main>
+
 
     <!-- MODAL CRIAR TÓPICO -->
     <div id="modalCriarTopico" class="modal-overlay">

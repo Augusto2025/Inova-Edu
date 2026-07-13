@@ -3,16 +3,49 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/forum.css' %}">
-<link rel="stylesheet" href="{% static 'styles/global.css' %}">
+<link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
 
 {% include "partials/header.html" %}
 
-<div class="rota" style="justify-content: start;">
-  Página: 
-  <a href="{% url 'forum_blocos' %}"> Todos os fóruns </a> >
-  <a href="{% url 'forum_topicos' forum.idforum %}"> Tópicos do fórum </a> 
-  > {{ forum.nome }}
+<div class="forum-header">
+
+    <header class="section-header">
+        <div class="rota">
+            <span>Página:</span>
+
+            <a href="{% url 'forum_blocos' %}">
+                Todos os fóruns
+            </a>
+
+            <span>></span>
+
+            <a href="{% url 'forum_topicos' forum.idforum %}">
+                Tópicos do fórum
+            </a>
+
+            <span>></span>
+
+            <span>{{ forum.nome }}</span>
+        </div>
+
+     
+    </header>
+
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!-- Forum Header: título + tópico atual -->
@@ -36,20 +69,32 @@
     <div class="mensagens">
         {% for msg in mensagens %}
             <div class="msg-wrapper {% if msg.autor.email == request.session.usuario_email %}right{% else %}left{% endif %}" id="msg-{{ msg.id }}">
+                
                 <div class="msg {% if msg.autor.email == request.session.usuario_email %}minha-msg{% else %}outra-msg{% endif %}">
+                    
                     <div class="msg-header">
                         <strong style="margin-right: 20px;">{{ msg.autor.nome }}</strong>
-                        
+
                         {% if msg.autor.email == request.session.usuario_email and not msg.excluida %}
                             <div class="msg-menu-container">
                                 <small>{{ msg.criado_em|date:"H:i d/m/Y" }}</small>
-                                <button class="btn-opcoes" onclick="toggleMenu('menu-{{ msg.id }}')">⋮</button>
+
+                                <button class="btn-opcoes"
+                                        onclick="toggleMenu('menu-{{ msg.id }}')">
+                                    ⋮
+                                </button>
+
                                 <div id="menu-{{ msg.id }}" class="msg-menu shadow-sm hidden">
-                                    {% if msg.pode_editar %}
-                                        <button onclick="prepararEdicao('{{ msg.id }}', '{{ msg.conteudo|escapejs }}')">Editar</button>
-                                    {% endif %}
-                                    
-                                    <a style="color: red;" href="{% url 'excluir_mensagem' msg.id %}">Excluir</a>
+
+                                    <button onclick="prepararEdicao('{{ msg.id }}', '{{ msg.conteudo|escapejs }}')">
+                                        Editar
+                                    </button>
+
+                                    <a style="color: red;"
+                                    href="{% url 'excluir_mensagem' msg.id %}">
+                                        Excluir
+                                    </a>
+
                                 </div>
                             </div>
                         {% endif %}
@@ -62,10 +107,14 @@
                             {{ msg.conteudo }}
                         {% endif %}
                     </div>
+
                 </div>
             </div>
+
         {% empty %}
-            <p class="empty">Nenhuma mensagem ainda. Seja o primeiro a enviar!</p>
+            <p class="empty">
+                Nenhuma mensagem ainda. Seja o primeiro a enviar!
+            </p>
         {% endfor %}
     </div>
 
@@ -73,6 +122,9 @@
         {% csrf_token %}
         <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off" required>
         
+        
+
+
         <button type="button" id="btn-cancelar" class="btn-secondary hidden" onclick="cancelarEdicao()" style="background: #6c757d; margin-right: 5px;">
             Cancelar
         </button>

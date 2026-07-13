@@ -2,263 +2,457 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    
     <link rel="stylesheet" href="{% static 'styles/projetos.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
 
     {% block header %}
     {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="rota">
-        Página:
-        {{ turma.curso.nome_curso }} >
-        {{ turma.codigo_turma }} >
-        Projetos
-
-        {% if can_modify %}
-            <button id="abrirModalCadastro" class="btn-primary">+ Cadastrar Projeto</button>
-        {% endif %}
-    </div>
-
-    <div class="titulo">
-        <p>Projetos da Turma {{ turma.codigo_turma }}</p>
-    </div>
-
     <div class="container">
-        {% if projetos %}
-            <div class="cards-container">
-                {% for projeto in projetos %}
-                    <div class="card" data-projeto-id="{{ projeto.idprojeto }}">
-                        {% if projeto.imagem %}
-                            <div class="card-image">
-                                <img src="{{ projeto.imagem.url }}" alt="{{ projeto.nome_projeto }}">
-                            </div>
-                        {% endif %}
-                        <div class="card-content">
-                            <h2 class="card-title">{{ projeto.nome_projeto }}</h2>
-                            <p class="card-description">
-                                {{ projeto.descricao|default:"Sem descrição disponível" }}
-                            </p>
-                            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="btn-repositorio">
-                                Ver Repositório
-                            </a>
-                            {% if can_modify %}
-                                <button class="btn btn-warning btn-gerenciar" data-modal="modalAlunos{{ projeto.idprojeto }}">
-                                    Permissões do repositório
-                                </button>
-                            {% endif %}
-                        </div>
-                        <div class="card-action">
-                            {% if can_modify %}
-                                <button class="btn btn-secondary editarBtn"
-                                        data-id="{{ projeto.idprojeto }}"
-                                        data-nome="{{ projeto.nome_projeto|escapejs }}"
-                                        data-descricao="{{ projeto.descricao|default:''|escapejs }}">
-                                    ✏️
-                                </button>
 
-                                <button class="btn btn-danger btn-excluir" 
-                                        data-id="{{ projeto.idprojeto }}" 
-                                        data-nome="{{ projeto.nome_projeto|escapejs }}">
-                                    🗑️
-                                </button>
-                            {% endif %}
-                        </div>
+        <header class="section-header">
+
+            <div class="rota">
+                Página:
+                {{ turma.curso.nome_curso }}
+                >
+                {{ turma.codigo_turma }}
+                >
+                Projetos
+            </div>
+
+            <div class="titulo">
+                <p class="main-title">
+                    Projetos da Turma {{ turma.codigo_turma }}
+                </p>
+            </div>
+
+        </header>
+
+    </div>
+
+
+
+
+
+    {% comment %} CADASTRO DE PROJETOS E PROJETOS {% endcomment %}
+    
+   <main class="container">
+        <div class="projetos-grid">
+
+            <!-- CADASTRO DE NOVOS PROJETOS -->
+             {% if can_modify %}
+            <div class="card novo-projeto">
+                <div class="icone-plus">
+                    +
+                </div>
+
+                <h3>Novo Projeto</h3>
+
+                <p>
+                    Clique para cadastrar um novo projeto para esta turma
+                </p>
+                    <button id="abrirModalCadastro" class="btn-primary">
+                        + Cadastrar Projeto
+                    </button>
+            </div>
+            {% endif %}
+
+
+
+            <!--CADASTRO DE PROJETOS -->
+            <div id="modalProjeto" class="modal">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h2 id="modalTitle">Cadastrar Projeto</h2>
+                        <span class="fechar">&times;</span>
                     </div>
+
+                    <form id="formProjeto" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="action" id="actionInput" value="cadastrar_projeto">
+                        <input type="hidden" name="projeto_id" id="projetoIdInput">
+
+                        <div class="campo">
+                            <label for="nomeProjetoInput">
+                                Nome do Projeto
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nomeProjetoInput"
+                                name="nome_projeto"
+                                placeholder="Digite o nome do projeto"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="descricaoInput">
+                                Descrição do Projeto
+                            </label>
+
+                            <textarea
+                                id="descricaoInput"
+                                name="descricao"
+                                placeholder="Digite uma descrição"
+                                rows="4"></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label>
+                                Foto do Projeto
+                            </label>
+
+                            <input
+                                type="file"
+                                name="imagem"
+                                accept="image/*">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit">
+                                Salvar
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- PROJETOS -->
+            {% for projeto in projetos %}
+            <div class="card projeto">
+
+                <div class="card-top">
+                    <span class="codigo">
+                        {{ turma.codigo_turma }}
+                    </span>
+
+                    <span class="turno">
+                        {{ turma.turno }}
+                    </span>
+                </div>
+
+                <h3>{{ projeto.nome_projeto }}</h3>
+
+                <p>
+                    {{ projeto.descricao|default:"Sem descrição disponível" }}
+                </p>
+
+                <div class="acoes">
+
+                    <a href="{% url 'repositorio_projeto' projeto.idprojeto %}"
+                    class="btn-azul">
+                        Ver Repositório
+                    </a>
 
                     {% if can_modify %}
-                        <!-- Modal Gerenciar Alunos -->
-                        <div id="modalAlunos{{ projeto.idprojeto }}" class="modal">
-                            <div class="modal-moderno">
-                                <div class="modal-header">
-                                    <div class="header-text">
-                                        <h2>Membros do Projeto</h2>
-                                        <p>Quem pode editar o repositório <strong>{{ projeto.nome_projeto }}</strong>?</p>
-                                    </div>
-                                    <span class="fechar">&times;</span>
-                                </div>
+                    <button
+                        class="btn-verde btn-gerenciar"
+                        data-modal="modalAlunos{{ projeto.idprojeto }}">
+                        Permissões
+                    </button>
 
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="salvar_alunos_repositorio">
-                                    <input type="hidden" name="projeto_id" value="{{ projeto.idprojeto }}">
+                    <button
+                        class="btn btn-secondary editarBtn"
+                        data-id="{{ projeto.idprojeto }}"
+                        data-nome="{{ projeto.nome_projeto|escapejs }}"
+                        data-descricao="{{ projeto.descricao|default:''|escapejs }}">
+                        ✏️
+                    </button>
 
-                                    <div class="lista-alunos-scroll">
-                                        {% for aluno in turma.usuariodaturma_set.all %}
-                                        <label class="aluno-row">
-                                            <input type="checkbox" name="alunos_edicao" value="{{ aluno.id_usuario.idusuario }}"
-                                            {% if aluno.id_usuario in projeto.alunos_edicao.all %}checked{% endif %}>
-                                            
-                                            <div class="aluno-content">
-                                                <div class="avatar-circle">
-                                                    {{ aluno.id_usuario.nome|slice:":1" }}{{ aluno.id_usuario.sobrenome|slice:":1" }}
-                                                </div>
-                                                <span class="nome-completo">
-                                                    {{ aluno.id_usuario.nome }} {{ aluno.id_usuario.sobrenome }}
-                                                </span>
-                                            </div>
-                                            
-                                            <div class="custom-check">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                                </svg>
-                                            </div>
-                                        </label>
-                                        {% empty %}
-                                        <div class="empty-state">Nenhum aluno cadastrado nesta turma.</div>
-                                        {% endfor %}
-                                    </div>
-
-                                    <div class="modal-actions">
-                                        <button type="submit" class="btn-save">Salvar Permissões</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                    <button
+                        class="btn btn-danger btn-excluir"
+                        data-id="{{ projeto.idprojeto }}"
+                        data-nome="{{ projeto.nome_projeto|escapejs }}">
+                        🗑️
+                    </button>
                     {% endif %}
 
-                {% endfor %}
-            </div>
-        {% else %}
-            <p style="min-height: calc(75vh - 90px); justify-self: center;"> 
-                Não há projetos cadastrados para esta turma.
-            </p>
-        {% endif %}
-    </div>
-
-    <!-- Modal Cadastrar / Editar Projeto -->
-    {% if can_modify %}
-        <div id="modalProjeto" class="modal">
-            <div class="modal-content">
-                <!-- X para fechar -->
-                <div class="modal-header">
-                    <span class="fechar">&times;</span>
-                    <h2 id="modalTitle">Cadastrar Projeto</h2>
                 </div>
-                <form id="formProjeto" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" id="actionInput" value="cadastrar_projeto">
-                    <input type="hidden" name="projeto_id" id="projetoIdInput">
 
-                    <div class="mb-3">
-                        <label class="form-label">Nome do Projeto</label>
-                        <input type="text" name="nome_projeto" id="nomeProjetoInput" class="form-control" placeholder="Digite o nome do projeto" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Descrição do Projeto</label>
-                        <textarea name="descricao" id="descricaoInput" class="form-control" placeholder="Digite uma descrição" rows="3"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Foto do Projeto</label>
-                        <input type="file" name="imagem" id="imagemInput" class="form-control" accept="image/*">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="salvarBtn">Salvar</button>
-                    </div>
-                </form>
             </div>
-        </div>
 
-        <!-- Modal Excluir Projeto -->
-        <div id="modalExcluir" class="modal">
-            <div class="modal-content" style="padding: 16px;">
-                <span class="fechar">&times;</span>
-                <h2>⚠️ Confirmar Exclusão</h2>
-                <p>Tem certeza que deseja excluir o projeto <strong id="nomeProjetoExcluir"></strong>?</p>
-                <p style="color: red; font-size: 0.9em;">Esta ação não pode ser desfeita.</p>
-                
-                <form id="formExcluir" method="post" style="margin-top: 20px; text-align: right;">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="excluir_projeto">
-                    <input type="hidden" name="projeto_id" id="projetoIdExcluir">
-                    
-                    <button type="submit" id="fecharExcluirBtn" class="btn btn-danger">Excluir</button>
-                    <button type="button" style="position: static" class="btn btn-secondary fechar" style="margin-left: 10px;">Cancelar</button>
-                </form>
+
+
+
+
+            <!-- Modal Permissões -->
+            {% if can_modify %}
+            <div id="modalExcluir" class="modal">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h2>Confirmar Exclusão</h2>
+                        <span class="fechar">&times;</span>
+                    </div>
+
+                    <div style="padding:20px;">
+                        <p>
+                            Tem certeza que deseja excluir o projeto
+                            <strong id="nomeProjetoExcluir"></strong>?
+                        </p>
+
+                        <form id="formExcluir" method="post">
+                            {% csrf_token %}
+
+                            <input type="hidden"
+                                name="action"
+                                value="excluir_projeto">
+
+                            <input type="hidden"
+                                id="projetoIdExcluir"
+                                name="projeto_id">
+
+                            <div class="acoes-modal-excluir">
+
+                                <button type="button"
+                                        class="btn-cancelar-excluir fechar">
+                                    Cancelar
+                                </button>
+
+                                <button type="submit"
+                                        class="btn-confirmar-excluir">
+                                    Excluir
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
             </div>
+
+
+
+
+
+
+
+
+
+            <div id="modalAlunos{{ projeto.idprojeto }}" class="modal">
+                <div class="modal-moderno">
+                    <div class="modal-header">
+                        <div class="header-text">
+                            <h2>Membros do Projeto</h2>
+                            <p>
+                                Quem pode editar o repositório
+                                <strong>{{ projeto.nome_projeto }}</strong>?
+                            </p>
+                        </div>
+
+                        <span class="fechar">&times;</span>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <input type="hidden"
+                            name="action"
+                            value="salvar_alunos_repositorio">
+
+                        <input type="hidden"
+                            name="projeto_id"
+                            value="{{ projeto.idprojeto }}">
+
+                        <div class="lista-alunos-scroll">
+
+                            {% for aluno in turma.usuariodaturma_set.all %}
+                            <label class="aluno-row">
+
+                                <input
+                                    type="checkbox"
+                                    name="alunos_edicao"
+                                    value="{{ aluno.id_usuario.idusuario }}"
+                                    {% if aluno.id_usuario in projeto.alunos_edicao.all %}
+                                    checked
+                                    {% endif %}
+                                >
+
+                                <div class="aluno-content">
+
+                                    <div class="avatar-circle">
+                                        {{ aluno.id_usuario.nome|slice:":1" }}{{ aluno.id_usuario.sobrenome|slice:":1" }}
+                                    </div>
+
+                                    <span class="nome-completo">
+                                        {{ aluno.id_usuario.nome }}
+                                        {{ aluno.id_usuario.sobrenome }}
+                                    </span>
+
+                                </div>
+
+                                <div class="custom-check">
+                                    <svg viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+
+                            </label>
+                            {% empty %}
+                                <div class="empty-state">
+                                    Nenhum aluno cadastrado nesta turma.
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn-save">
+                                Salvar Permissões
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% endfor %}
+
         </div>
-    {% endif %}
+    </main>
+       
 
 
     <!-- ================= JS ================= -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Funções globais para modais
-        window.abrirModal = function(id) {
-            const modal = document.getElementById(id);
-            if(modal) modal.style.display = 'flex';
-        }
-        window.fecharModal = function(id) {
-            const modal = document.getElementById(id);
-            if(modal) modal.style.display = 'none';
-        }
+    document.addEventListener('DOMContentLoaded', function () {
 
-        {% if can_modify %}
-        // Abrir modal cadastro
-        const btnCadastro = document.getElementById('abrirModalCadastro');
-        if(btnCadastro) {
-            btnCadastro.addEventListener('click', () => {
-                document.getElementById('modalTitle').textContent = 'Cadastrar Projeto';
-                document.getElementById('actionInput').value = 'cadastrar_projeto';
-                document.getElementById('projetoIdInput').value = '';
-                document.getElementById('nomeProjetoInput').value = '';
-                document.getElementById('descricaoInput').value = '';
-                abrirModal('modalProjeto');
+        const modalProjeto = document.getElementById('modalProjeto');
+        const modalExcluir = document.getElementById('modalExcluir');
+
+        // Cadastro de Projeto
+        const btnNovoProjeto = document.getElementById('abrirModalCadastro');
+
+        if (btnNovoProjeto) {
+            btnNovoProjeto.addEventListener('click', () => {
+
+                document.getElementById('modalTitle').innerText =
+                    'Cadastrar Projeto';
+
+                document.getElementById('actionInput').value =
+                    'cadastrar_projeto';
+
+                document.getElementById('formProjeto').reset();
+
+                modalProjeto.style.display = 'flex';
             });
         }
 
-        // Abrir modal edição
-        document.querySelectorAll('.editarBtn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('modalTitle').textContent = 'Editar Projeto';
-                document.getElementById('actionInput').value = 'editar_projeto';
-                document.getElementById('projetoIdInput').value = btn.dataset.id;
-                document.getElementById('nomeProjetoInput').value = btn.dataset.nome;
-                document.getElementById('descricaoInput').value = btn.dataset.descricao;
-                abrirModal('modalProjeto');
-            });
-        });
-
-        // Abrir modal gerenciar alunos
+        // Permissões
         document.querySelectorAll('.btn-gerenciar').forEach(btn => {
-            btn.addEventListener('click', () => {
-                abrirModal(btn.dataset.modal);
+
+            btn.addEventListener('click', function () {
+
+                const modalId = this.dataset.modal;
+                const modal = document.getElementById(modalId);
+
+                if (modal) {
+                    modal.style.display = 'flex';
+                }
             });
+
         });
 
-        // Abrir modal excluir projeto
+        // Editar Projeto
+        document.querySelectorAll('.editarBtn').forEach(btn => {
+
+            btn.addEventListener('click', function () {
+
+                document.getElementById('modalTitle').innerText =
+                    'Editar Projeto';
+
+                document.getElementById('actionInput').value =
+                    'editar_projeto';
+
+                document.getElementById('projetoIdInput').value =
+                    this.dataset.id;
+
+                document.getElementById('nomeProjetoInput').value =
+                    this.dataset.nome;
+
+                document.getElementById('descricaoInput').value =
+                    this.dataset.descricao;
+
+                modalProjeto.style.display = 'flex';
+            });
+
+        });
+
+        // Excluir Projeto
         document.querySelectorAll('.btn-excluir').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
-                const nome = btn.dataset.nome;
 
-                // Preenche os campos do modal de exclusão
-                document.getElementById('projetoIdExcluir').value = id;
-                document.getElementById('nomeProjetoExcluir').textContent = nome;
+            btn.addEventListener('click', function () {
 
-                // Abre o modal
-                abrirModal('modalExcluir');
+                document.getElementById('projetoIdExcluir').value =
+                    this.dataset.id;
+
+                document.getElementById('nomeProjetoExcluir').textContent =
+                    this.dataset.nome;
+
+                document.getElementById('modalExcluir').style.display = 'flex';
+
             });
+
         });
 
-        // Fechar todos os modais pelo X
+        // Fechar modais
         document.querySelectorAll('.fechar').forEach(btn => {
-            btn.addEventListener('click', () => {
-                let modal = btn.closest('.modal');
-                if(modal) modal.style.display = 'none';
+
+            btn.addEventListener('click', function () {
+
+                this.closest('.modal').style.display = 'none';
+
             });
+
         });
 
-        // Fechar clicando fora do modal
-        window.addEventListener('click', e => {
-            if(e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
-            }
+        // Clique fora
+        window.addEventListener('click', function (e) {
+
+            document.querySelectorAll('.modal').forEach(modal => {
+
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+
+            });
+
         });
-        {% endif %}
+
     });
     </script>
 
