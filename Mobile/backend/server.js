@@ -17,6 +17,7 @@ const homeRoutes = require('./routes/home'); // 💻 Corrigido: alterado de 'hom
 const topicoRoutes = require('./routes/topico');
 const conversaRoutes = require('./routes/conversa');
 const perfilRoutes = require('./routes/perfil');
+const notificationsRoutes = require('./routes/notifications');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -33,6 +34,7 @@ app.use('/home', homeRoutes); // 💻 Agora a variável existe e aponta corretam
 app.use('/topico', topicoRoutes);
 app.use('/conversa', conversaRoutes);
 app.use('/perfil', perfilRoutes);
+app.use('/notifications', notificationsRoutes);
 
 // Alterado para 3000 para alinhar com o padrão do seu frontend
 const PORT = process.env.PORT || 3000; 

@@ -13,14 +13,16 @@ import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
-import api from "../services/api";
+import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o API_ENDPOINTS
+import { useNotifications } from "../context/NotificationContext";
+
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
 
   const [carregando, setCarregando] = useState(true);
-  const [quantidadeNotif, setQuantidadeNotif] = useState(3);
   const [busca, setBusca] = useState("");
+  const { totalNovas, markAllAsRead } = useNotifications();
   const [homeData, setHomeData] = useState({
     usuario: { nome: "" },
     eventos: [],
@@ -39,22 +41,49 @@ export default function HomeScreen({ navigation }) {
     ).start();
   }, [pulseAnim]);
 
-  // Função que busca os dados em tempo real
+  // Função que busca os dados em tempo real da API na nuvem
   async function carregarHome() {
     try {
       setCarregando(true);
-      const resposta = await api.get("/home");
 
-      if (resposta.data && resposta.data.sucesso) {
+      // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home)
+      const resposta = await api.get(API_ENDPOINTS.home || "/home");
+
+      if (resposta.data) {
+        const dados = resposta.data.sucesso ? resposta.data : resposta.data;
+
         setHomeData({
-          usuario: resposta.data.usuario || { nome: "Estudante" },
-          eventos: Array.isArray(resposta.data.eventos) ? resposta.data.eventos : [],
-          cursos: Array.isArray(resposta.data.cursos) ? resposta.data.cursos : [],
-          forum: Array.isArray(resposta.data.forum) ? resposta.data.forum : []
+          usuario: dados.usuario || { nome: "Estudante" },
+          eventos: Array.isArray(dados.eventos) ? dados.eventos : [],
+          cursos: Array.isArray(dados.cursos) ? dados.cursos : [],
+          forum: Array.isArray(dados.forum) ? dados.forum : []
         });
       }
     } catch (error) {
-      console.log("Erro ao carregar dados da Home:", error.message);
+      const status = error.response?.status;
+
+      if (status === 404) {
+        console.log("Rota /home não encontrada, usando fallback de endpoints individuais");
+
+        try {
+          const [eventosRes, cursosRes, forumRes] = await Promise.all([
+            api.get(API_ENDPOINTS.eventos || "/eventos"),
+            api.get(API_ENDPOINTS.cursos || "/cursos"),
+            api.get(API_ENDPOINTS.forum || "/forum"),
+          ]);
+
+          setHomeData({
+            usuario: { nome: "Estudante" },
+            eventos: Array.isArray(eventosRes.data) ? eventosRes.data : [],
+            cursos: Array.isArray(cursosRes.data) ? cursosRes.data : [],
+            forum: Array.isArray(forumRes.data) ? forumRes.data : []
+          });
+        } catch (fallbackError) {
+          console.log("Erro no fallback da Home:", fallbackError.message, fallbackError.response?.status);
+        }
+      } else {
+        console.log("Erro ao carregar dados da Home:", error.message, status, error.response?.data);
+      }
     } finally {
       setCarregando(false);
     }
@@ -92,8 +121,8 @@ export default function HomeScreen({ navigation }) {
       <Header
         nomeTela={carregando ? "Carregando..." : `Olá, ${homeData.usuario?.nome || "Estudante"} 👋`}
         exibirPerfil={true}
-        quantidadeNotificacoes={quantidadeNotif}
-        aoClicarNoSino={() => setQuantidadeNotif(0)}
+        quantidadeNotificacoes={totalNovas}
+        aoClicarNoSino={markAllAsRead}
         carregando={carregando}
       />
 
@@ -118,20 +147,26 @@ export default function HomeScreen({ navigation }) {
             let dia = "•";
             let mes = "EVT";
 
-            if (event.date) {
-              const dataObj = new Date(event.date);
+            // Mapeia tanto propriedades em inglês (antigas) quanto as colunas do PostgreSQL
+            const dataOriginal = event.date || event.data_evento || event.data;
+            const tituloEvento = event.title || event.titulo || "Sem título";
+            const horarioEvento = event.time || event.horario || "Dia todo";
+            const localEvento = event.local || event.local_evento || "InovaEdu";
+
+            if (dataOriginal) {
+              const dataObj = new Date(dataOriginal);
               dia = dataObj.getUTCDate();
               mes = meses[dataObj.getUTCMonth()];
             }
 
-            const statusColor = getEventStatusColor(event.date);
+            const statusColor = getEventStatusColor(dataOriginal);
 
             return (
               <TouchableOpacity
-                key={event.id}
+                key={event.id || event.idevento}
                 style={styles.eventCard}
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate("Eventos", { selectedDate: event.date })}
+                onPress={() => navigation.navigate("Eventos", { selectedDate: dataOriginal })}
               >
                 <View style={[styles.dateBadge, { borderColor: statusColor }]}>
                   <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
@@ -144,11 +179,11 @@ export default function HomeScreen({ navigation }) {
 
                 <View style={styles.eventInfo}>
                   <Text style={styles.eventTitle} numberOfLines={1}>
-                    {event.title || "Sem título"}
+                    {tituloEvento}
                   </Text>
                   <Text style={styles.eventTimeInfo} numberOfLines={1}>
                     <Ionicons name="time-outline" size={13} color="#777" />{" "}
-                    {event.time || "Dia todo"}{" • "}{event.local || "InovaEdu"}
+                    {horarioEvento}{" • "}{localEvento}
                   </Text>
                 </View>
 
@@ -177,7 +212,7 @@ export default function HomeScreen({ navigation }) {
           {estaBuscando && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 15 }} contentContainerStyle={{ gap: 12 }}>
               {resultadosBusca.map((curso) => (
-                <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("CursoDetalhes", { cursoId: curso.idcurso, cursoNome: curso.nome_curso })}>
+                <TouchableOpacity key={curso.idcurso} style={styles.miniResultCard} onPress={() => navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso })}>
                   {curso.imagem ? (
                     <Image source={{ uri: curso.imagem }} style={styles.miniResultImg} />
                   ) : (
@@ -212,7 +247,7 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.forumBadgeText}>{forumPrincipal.mensagens || 0}</Text>
               </Animated.View>
             </View>
-            <Text style={styles.forumBodyText} numberOfLines={2}>{forumPrincipal.descricao}</Text>
+            <Text style={styles.forumBodyText} numberOfLines={2}>{forumPrincipal.descricao || forumPrincipal.conteudo}</Text>
           </TouchableOpacity>
         ) : (
           <Text style={styles.emptyText}>Nenhum fórum ativo.</Text>

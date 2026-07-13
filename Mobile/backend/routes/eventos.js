@@ -52,8 +52,27 @@ router.post('/', async (req, res) => {
             RETURNING *
         `;
         
-        await db.query(query, [title, time, date, description, local, usuario_id]);
-        
+        const resultado = await db.query(query, [title, time, date, description, local, usuario_id]);
+        const eventoCriado = resultado.rows[0];
+
+        // Cria notificações para todos os usuários, exceto quem criou o evento
+        await db.query(
+            `INSERT INTO notifications (usuario_id, tipo, titulo, subtitulo, tela_destino, parametros, entidade_id)
+             SELECT "idUsuario", $1, $2, $3, $4, $5, $6
+             FROM usuario
+             WHERE "idUsuario" <> $7
+            `,
+            [
+                'Eventos',
+                `Novo evento: ${title}`,
+                `${date} ${time}`,
+                'Eventos',
+                JSON.stringify({ eventoId: eventoCriado.idEventos }),
+                eventoCriado.idEventos,
+                usuario_id
+            ]
+        );
+
         res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
     } catch (error) {
         console.error("Erro ao salvar:", error);

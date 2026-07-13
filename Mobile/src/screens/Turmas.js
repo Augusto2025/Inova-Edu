@@ -72,6 +72,10 @@ export default function TurmasScreen({ route, navigation }) {
     navigation.navigate("Projetos", { turmaId: turma.idturma, codigoTurma: turma.codigo_turma });
   };
 
+  const lidarComVoltar = () => {
+    navigation.goBack();
+  };
+
   let turmasExibidas = turmas.filter(turma => {
     const passaAno = anoSelecionado ? String(turma.ano) === String(anoSelecionado) : true;
     const passaTurno = turnoSelecionado ? turma.turno === turnoSelecionado : true;

@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { ThemeProvider } from './src/context/ThemeContext';
+import { NotificationProvider } from './src/context/NotificationContext';
 
 // TELAS
 import LoginScreen from './src/screens/Login';
@@ -25,8 +26,9 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <ThemeProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <NotificationProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen}/>
           <Stack.Screen name="Main" component={TabRoutes}/>
           <Stack.Screen name="Profile" component={ProfilePage}/>
@@ -41,7 +43,8 @@ export default function App() {
           <Stack.Screen name="Conversa" component={ConversaScreen} />
           <Stack.Screen name="Eventos" component={CalendarScreen}/>
         </Stack.Navigator>
-      </NavigationContainer>
+        </NavigationContainer>
+      </NotificationProvider>
     </ThemeProvider>
   );
 }

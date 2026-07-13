@@ -1,48 +1,67 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pool = require('../config/db'); 
+const pool = require("../config/db");
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { email, senha } = req.body;
-  if (!email || !senha) {
-    return res.status(400).json({ sucesso: false, mensagem: 'Campos obrigatórios ausentes.' });
-  }
+
+  console.log("==================================");
+  console.log("LOGIN RECEBIDO");
+  console.log(req.body);
 
   try {
-    let queryText = 'SELECT idusuario, nome, email, senha, tipo FROM usuario WHERE email = $1';
-    let resultado;
-    
-    try {
-      resultado = await pool.query(queryText, [email.trim()]);
-    } catch (e) {
-      queryText = 'SELECT "idUsuario", "Nome", "Email", "Senha", "Tipo" FROM usuario WHERE "Email" = $1';
-      resultado = await pool.query(queryText, [email.trim()]);
+
+    const resultado = await pool.query(
+      'SELECT "idUsuario","Nome","Email","Senha","Tipo" FROM usuario WHERE "Email"=$1',
+      [email]
+    );
+
+    console.log("Quantidade encontrada:", resultado.rows.length);
+
+    if (resultado.rows.length > 0) {
+      console.log("Usuário retornado:");
+      console.log(resultado.rows[0]);
     }
 
-    if (!resultado || resultado.rows.length === 0) {
-      return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos!' });
+    if (resultado.rows.length === 0) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não encontrado"
+      });
     }
 
-    const row = resultado.rows[0];
-    const usuarioSenha = row.senha || row.Senha;
+    const usuario = resultado.rows[0];
 
-    if (usuarioSenha !== senha) {
-      return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos!' });
+    console.log("Senha banco:", usuario.Senha);
+    console.log("Senha enviada:", senha);
+
+    if (usuario.Senha !== senha) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Senha incorreta"
+      });
     }
 
     return res.json({
       sucesso: true,
-      mensagem: 'Login efetuado com sucesso!',
       usuario: {
-        id: row.idusuario || row.idUsuario,
-        nome: row.nome || row.Nome,
-        email: row.email || row.Email,
-        tipo: row.tipo || row.Tipo
+        id: usuario.idUsuario,
+        nome: usuario.Nome,
+        email: usuario.Email,
+        tipo: usuario.Tipo
       }
     });
+
   } catch (err) {
-    console.error('Erro crítico no login:', err);
-    return res.status(500).json({ sucesso: false, mensagem: err.message });
+
+    console.log("ERRO COMPLETO");
+    console.log(err);
+
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: err.message
+    });
+
   }
 });
 

@@ -5,7 +5,7 @@ const pool = require('../config/db');
 // Rota que alimenta a HomeScreen em tempo real
 router.get('/', async (req, res) => {
   try {
-    // Executa apenas as três consultas originais, sem mexer com repositórios
+    // Executa as três consultas em paralelo usando Promise.all de forma limpa
     const [eventosRes, cursosRes, forumRes] = await Promise.all([
       pool.query('SELECT id, title, date, time, local FROM evento ORDER BY date ASC LIMIT 3'),
       pool.query('SELECT idcurso, nome_curso, imagem, descricao FROM curso ORDER BY nome_curso ASC'),
@@ -15,9 +15,9 @@ router.get('/', async (req, res) => {
     res.json({
       sucesso: true,
       usuario: { nome: "Estudante" }, 
-      eventos: eventosRes.rows,
-      cursos: cursosRes.rows,
-      forum: forumRes.rows
+      eventos: eventosRes.rows || [],
+      cursos: cursosRes.rows || [],
+      forum: forumRes.rows || []
     });
   } catch (err) {
     console.error('Erro na rota home.js original:', err.message);
