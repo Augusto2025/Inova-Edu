@@ -94,43 +94,6 @@ def HomeAlunoProfessor(request):
     )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # redefinir senha 
 def pedir_email(request):
     if request.method == "POST":
@@ -226,14 +189,6 @@ def home(request):
         curso = curso.order_by("nome_curso")
     elif ordenar == "desc":
         curso = curso.order_by("-nome_curso")
-        
-        print("=" * 30)
-        print("Busca:", query)
-        print("=" * 30)
-
-
-
-
 
     return render(
         request,
@@ -1369,6 +1324,9 @@ def home_Coordenacao(request):
     cursos = Curso.objects.all()
     turmas = Turma.objects.select_related('curso').all()
     
+    professores = Usuario.objects.filter(tipo__iexact="Professor")
+    
+  
     #dashoard total de usuários, cursos e turmas
     
     total_usuarios = usuarios.count()
@@ -1415,6 +1373,7 @@ def home_Coordenacao(request):
 
     return render(request, 'Coordenacao/home_Coordenacao.html', {
         'usuarios': usuarios,
+        'professores': professores,
         'cursos': cursos,
         'turmas': turmas,
         'usuario_logado': usuario_logado,

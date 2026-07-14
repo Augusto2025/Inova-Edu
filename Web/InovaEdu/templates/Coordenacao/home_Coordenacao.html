@@ -626,6 +626,25 @@
                             {% endfor %}
                         </select>
 
+                        
+                        <label>Professor</label>
+                        <select name="professor_id" required>
+                            <option value="">Selecione</option>
+
+                            {% for professor in professores %}
+                                <option value="{{ professor.idusuario }}">
+                                    {{ professor.nome }} {{ professor.sobrenome }}
+                                </option>
+                            {% empty %}
+                                <option disabled>Nenhum professor cadastrado</option>
+                            {% endfor %}
+                        </select>
+
+
+
+
+
+
                         <div style="margin-top:15px;">
                             <button type="submitsalvar">Salvar</button>
                             <button type="buttoncancelar" id="cancelarModalTurma">Cancelar</button>
@@ -662,6 +681,20 @@
                             <option value="{{ curso.idcurso }}">{{ curso.nome_curso }}</option>
                             {% endfor %}
                         </select>
+
+                        <label>Professor</label>
+                        <select name="professor_id" required>
+                            <option value="">Selecione</option>
+
+                            {% for professor in professores %}
+                                <option value="{{ professor.idusuario }}"
+                                    {% if turma.professor_id == professor.idusuario %}selected{% endif %}>
+                                    {{ professor.nome }} {{ professor.sobrenome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        
 
                         <button type="submitsalvar">Salvar</button>
                         <button type="buttoncancelar" id="cancelarEditarTurma">Cancelar</button>
