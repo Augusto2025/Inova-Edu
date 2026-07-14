@@ -54,8 +54,9 @@ export default function HomeScreen({ navigation }) {
         const resposta = await api.get(API_ENDPOINTS.home || "/home");
 
         if (resposta.data) {
-          const dados = resposta.data.sucesso ? resposta.data : resposta.data;
+          const dados = resposta.data;
 
+          // Mesmo que sucesso=false, pode ter dados parciais
           setHomeData({
             usuario: dados.usuario || { nome: "Estudante" },
             eventos: Array.isArray(dados.eventos) ? dados.eventos : [],
@@ -63,6 +64,11 @@ export default function HomeScreen({ navigation }) {
             forum: Array.isArray(dados.forum) ? dados.forum : [],
             projetos: Array.isArray(dados.projetos) ? dados.projetos : []
           });
+
+          // Se retornou com dados parciais, loga o aviso
+          if (dados.aviso) {
+            console.warn("⚠️ Dados parciais carregados:", dados.aviso);
+          }
         }
       } catch (error) {
         const status = error.response?.status;
@@ -73,21 +79,57 @@ export default function HomeScreen({ navigation }) {
           console.log("Rota /home indisponível (status:", status, ") — usando fallback de endpoints individuais");
 
           try {
-            const [eventosRes, cursosRes, forumRes] = await Promise.all([
-              api.get(API_ENDPOINTS.eventos || "/eventos"),
-              api.get(API_ENDPOINTS.cursos || "/cursos"),
-              api.get(API_ENDPOINTS.forum || "/forum"),
-            ]);
+            // Faz as requisições uma por uma para identificar qual falha
+            let eventosData = [];
+            let cursosData = [];
+            let forumData = [];
+            let projetosData = [];
+
+            try {
+              const eventosRes = await api.get(API_ENDPOINTS.eventos || "/eventos");
+              eventosData = Array.isArray(eventosRes.data) ? eventosRes.data : [];
+              console.log("✅ Eventos carregados:", eventosData.length);
+            } catch (e) {
+              console.warn("⚠️ Erro ao carregar eventos (fallback):", e.response?.status, e.message);
+            }
+
+            try {
+              const cursosRes = await api.get(API_ENDPOINTS.cursos || "/cursos");
+              cursosData = Array.isArray(cursosRes.data) ? cursosRes.data : [];
+              console.log("✅ Cursos carregados:", cursosData.length);
+            } catch (e) {
+              console.warn("⚠️ Erro ao carregar cursos (fallback):", e.response?.status, e.message);
+            }
+
+            try {
+              const forumRes = await api.get(API_ENDPOINTS.forum || "/forum");
+              forumData = Array.isArray(forumRes.data) ? forumRes.data : [];
+              console.log("✅ Forum carregado:", forumData.length);
+            } catch (e) {
+              console.warn("⚠️ Erro ao carregar forum (fallback):", e.response?.status, e.message);
+            }
+
+            try {
+              const projetosRes = await api.get(API_ENDPOINTS.projetos || "/projetos");
+              projetosData = Array.isArray(projetosRes.data) ? projetosRes.data : [];
+              console.log("✅ Projetos carregados:", projetosData.length);
+            } catch (e) {
+              console.warn("⚠️ Erro ao carregar projetos (fallback):", e.response?.status, e.message);
+            }
 
             setHomeData({
               usuario: { nome: "Estudante" },
-              eventos: Array.isArray(eventosRes.data) ? eventosRes.data : [],
-              cursos: Array.isArray(cursosRes.data) ? cursosRes.data : [],
-              forum: Array.isArray(forumRes.data) ? forumRes.data : [],
-              projetos: []
+              eventos: eventosData,
+              cursos: cursosData,
+              forum: forumData,
+              projetos: projetosData
             });
+
+            console.log("✅ Fallback completado com dados parciais");
           } catch (fallbackError) {
-            console.log("Erro no fallback da Home:", fallbackError.message, fallbackError.response?.status);
+            console.error("❌ Erro crítico no fallback da Home:", fallbackError.message);
+            console.error("Status:", fallbackError.response?.status);
+            console.error("Dados:", fallbackError.response?.data);
           }
         } else {
           console.log("Erro ao carregar dados da Home:", error.message, status, error.response?.data);

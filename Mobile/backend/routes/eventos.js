@@ -36,8 +36,9 @@ router.get('/', async (req, res) => {
 
         res.json(eventos_Formatados);
     } catch (error) {
-        console.error("Erro na busca de eventos:", error);
-        res.status(500).json({ mensagem: 'Erro ao buscar eventos.', detalhe: error.message });
+        console.error("⚠️ Erro na busca de eventos:", error.message);
+        // Retorna array vazio em vez de erro 500 para permitir fallback no frontend
+        res.json([]);
     }
 });
 

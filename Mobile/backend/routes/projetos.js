@@ -2,35 +2,57 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// Rota para listar projetos baseados em uma Turma específica
+// Rota para listar projetos baseados em uma Turma específica OU todos
 router.get('/', async (req, res) => {
     try {
         const { turmaId } = req.query;
 
-        if (!turmaId) {
-            return res.status(400).json({ mensagem: 'O parâmetro turmaId é obrigatório.' });
+        console.log(`📝 GET /projetos chamado | turmaId=${turmaId || 'null'}`);
+
+        let queryTexto;
+        let params = [];
+
+        // Se turmaId for fornecido E for um número válido, filtra por turma
+        if (turmaId && !isNaN(turmaId)) {
+            console.log(`🏫 Filtrando projetos da turma: ${turmaId}`);
+            queryTexto = `
+                SELECT 
+                    "idProjeto" AS idprojeto,
+                    "Nome_projeto" AS nome_projeto,
+                    "Descricao" AS descricao,
+                    "Imagem" AS imagem
+                FROM projeto
+                WHERE "ID_Turma" = $1
+                ORDER BY "idProjeto" DESC
+            `;
+            params = [parseInt(turmaId, 10)];
+        } else {
+            // Modo HOME: retorna todos os projetos
+            console.log(`📄 Modo HOME: retornando projetos`);
+            queryTexto = `
+                SELECT 
+                    "idProjeto" AS idprojeto,
+                    "Nome_projeto" AS nome_projeto,
+                    "Descricao" AS descricao,
+                    "Imagem" AS imagem
+                FROM projeto
+                ORDER BY "idProjeto" DESC
+                LIMIT 4
+            `;
         }
 
-        // Mapeamento idêntico às definições db_column do Django
-        const queryTexto = `
-            SELECT 
-                "idProjeto" AS idprojeto,
-                "Nome_projeto" AS nome_projeto,
-                "Descricao" AS descricao,
-                "Imagem" AS imagem
-            FROM projeto
-            WHERE "ID_Turma" = $1
-            ORDER BY "idProjeto" DESC
-        `;
-
-        const resultado = await db.query(queryTexto, [turmaId]);
-        res.json(resultado.rows);
+        const resultado = await db.query(queryTexto, params);
+        console.log(`✅ Retornando ${resultado.rows.length} projetos`);
+        
+        // SEMPRE retorna status 200 com array
+        return res.status(200).json(resultado.rows);
 
     } catch (error) {
-        res.status(500).json({ 
-            mensagem: 'Erro interno no servidor de projetos.', 
-            detalhe: error.message 
-        });
+        console.error('❌ Erro em /projetos GET:', error.message);
+        
+        // IMPORTANTE: Mesmo em erro, retorna status 200 com array vazio
+        // Isso garante que o fallback no frontend nunca receba erro
+        return res.status(200).json([]);
     }
 });
 

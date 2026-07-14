@@ -36,8 +36,9 @@ router.get('/', async (req, res) => {
         res.json(topicosFormatados);
 
     } catch (error) {
-        console.error("Erro ao listar tópicos do fórum:", error);
-        res.status(500).json({ mensagem: 'Erro ao carregar dados do fórum.', detalhe: error.message });
+        console.error("⚠️ Erro ao listar tópicos do fórum:", error.message);
+        // Retorna array vazio em vez de erro 500 para permitir fallback no frontend
+        res.json([]);
     }
 });
 

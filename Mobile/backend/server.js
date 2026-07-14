@@ -36,6 +36,18 @@ app.use('/conversa', conversaRoutes);
 app.use('/perfil', perfilRoutes);
 app.use('/notifications', notificationsRoutes);
 
+// Middleware global de erro para garantir que nenhuma rota retorna erro sem tratamento
+app.use((err, req, res, next) => {
+    console.error('❌ Erro não tratado:', err.message);
+    console.error('   Rota:', req.method, req.path);
+    
+    // Retorna sempre 500 com mensagem genérica, nunca deixa erro sem tratamento chegar ao frontend
+    res.status(500).json({ 
+        mensagem: 'Erro interno do servidor',
+        erro: err.message 
+    });
+});
+
 // Alterado para 3000 para alinhar com o padrão do seu frontend
 const PORT = process.env.PORT || 3000; 
 app.listen(PORT, () => {
