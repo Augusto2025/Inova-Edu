@@ -188,9 +188,9 @@ CARD NOVO PROJETO
 }
 
 /* Efeito no ícone */
-.novo-projeto:hover .icone-plus{
+/* .novo-projeto:hover .icone-plus{
     transform: rotate(90deg) scale(1.08);
-}
+} */
 
 .novo-projeto h3{
     color: #003b8e;
@@ -454,9 +454,9 @@ CARD NOVO PROJETO
     transition: .3s;
 }
 
-#modalProjeto .fechar:hover {
+/* #modalProjeto .fechar:hover {
     transform: rotate(90deg);
-}
+} */
 
 /* FORM */
 

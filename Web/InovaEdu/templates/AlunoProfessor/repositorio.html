@@ -55,9 +55,9 @@
 
     
 
-    {% comment %} <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">
+    {% comment %} {% comment %} <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn">
         ⬇️ Baixar Repositório
-    </a> {% endcomment %}
+    </a> {% endcomment %} 
 </div>
 
 <div id="modal-criar-pasta" class="modal">
@@ -198,7 +198,7 @@
                     <button type="button" id="btn-selecionar-pastas" class="btn-selecionar" onclick="toggleSelecao('pastas')">Selecionar</button>
                 {% endif %}
             </div>
-
+            <a href="{% url 'download_repositorio_projeto' projeto.idprojeto %}" class="acao-btn baixar">⬇️ Baixar Repositório </a>
             <ul class="lista-pastas">
                 {% if pastas %}
                     {% for pasta in pastas %}
