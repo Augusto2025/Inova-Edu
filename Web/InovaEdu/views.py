@@ -1551,12 +1551,19 @@ def criar_turma(request):
 
 def editar_turma(request):
     if request.method == "POST":
-        turma = get_object_or_404(Turma, idturma=request.POST.get("idturma"))
+
+        turma = get_object_or_404(
+            Turma,
+            idturma=request.POST.get("idturma")
+        )
 
         turma.codigo_turma = request.POST.get("codigo_turma")
         turma.turno = request.POST.get("turno")
         turma.ano = request.POST.get("ano")
         turma.curso_id = request.POST.get("curso")
+
+        # salvar professor
+        turma.professor_id = request.POST.get("professor_id")
 
         turma.save()
 
