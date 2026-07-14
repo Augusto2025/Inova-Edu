@@ -22,8 +22,9 @@ router.get('/', async (req, res) => {
         res.json(resultado.rows);
         
     } catch (error) {
-        console.error('Erro ao buscar cursos no banco:', error);
-        res.status(500).json({ sucesso: false, mensagem: 'Erro interno no servidor de cursos.' });
+        console.error('⚠️ Erro ao buscar cursos no banco:', error.message);
+        // Retorna array vazio em vez de erro 500 para permitir fallback no frontend
+        res.json([]);
     }
 });
 
