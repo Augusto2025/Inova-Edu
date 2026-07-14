@@ -347,24 +347,56 @@ async function buscarRepositorios(termoBusca) {
             )}
           </View>
 
-          {/* SEÇÃO: REPOSITÓRIOS RECENTES */}
-          <Text style={styles.sectionTitle}>Repositórios recentes</Text>
+         {/* SEÇÃO: REPOSITÓRIOS RECENTES */}
+          <View style={styles.repoHeaderRow}>
+            <Text style={styles.sectionTitle}>Repositórios recentes</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Repositório')}>
+              <Text style={{ color: COLORS.primary, fontWeight: '600', marginTop: 20 }}>Ver todos</Text>
+            </TouchableOpacity>
+          </View>
+
           {carregando ? (
-            [1,2].map(i => (
-              <View key={i} style={{height:100, marginBottom:12, borderRadius:12, backgroundColor:'#fff', elevation:2}} />
-            ))
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 5 }}>
+              {[1, 2].map(i => (
+                <View key={i} style={[styles.newRepoCard, { width: 220, opacity: 0.6 }]} />
+              ))}
+            </ScrollView>
           ) : homeData.projetos && homeData.projetos.length > 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8, marginBottom: 6 }} contentContainerStyle={{ gap: 12 }}>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              style={{ marginTop: 4, marginBottom: 6 }} 
+              contentContainerStyle={{ gap: 12, paddingBottom: 5 }}
+            >
               {homeData.projetos.map(proj => (
-                <TouchableOpacity key={proj.id} style={styles.repoCard} activeOpacity={0.8} onPress={() => navigation.navigate('Projetos', { projetoId: proj.id })}>
-                  {proj.imagem ? (
-                    <Image source={{ uri: proj.imagem }} style={styles.repoImg} />
-                  ) : (
-                    <View style={[styles.repoImg, styles.centerContainer, { backgroundColor: '#f2f2f2' }]}>
-                      <Feather name="folder" size={24} color={COLORS.primary} />
-                    </View>
-                  )}
-                  <Text numberOfLines={1} style={styles.repoTitle}>{proj.nome || proj.Nome_projeto || 'Projeto'}</Text>
+                <TouchableOpacity
+                  key={proj.id}
+                  style={styles.newRepoCard}
+                  activeOpacity={0.85}
+                  onPress={() => navigation.navigate('Repositorio', { projetoId: proj.id, projetoNome: proj.nome || proj.Nome_projeto })}
+                >
+                  <View style={styles.repoLeftIconContainer}>
+                    {proj.imagem ? (
+                      <Image source={{ uri: proj.imagem }} style={{ width: 40, height: 40, borderRadius: 8 }} />
+                    ) : (
+                      <Feather name="folder" size={20} color={COLORS.primary} />
+                    )}
+                  </View>
+
+                  <View style={styles.repoTextContainer}>
+                    <Text numberOfLines={1} style={styles.newRepoTitle}>
+                      {proj.nome || proj.Nome_projeto || 'Projeto'}
+                    </Text>
+                    { (proj.descricao || proj.nome_curso || proj.nome_turma) ? (
+                      <Text numberOfLines={1} style={{ color: '#6b7280', fontSize: 12, marginTop: 6 }}>
+                        {proj.descricao || proj.nome_turma || proj.nome_curso}
+                      </Text>
+                    ) : (
+                      <View style={styles.repoTag}>
+                        <Text style={styles.repoTagText}>Git Repository</Text>
+                      </View>
+                    )}
+                  </View>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -435,4 +467,37 @@ async function buscarRepositorios(termoBusca) {
     repoCard: { width: 140, backgroundColor: '#fff', borderRadius: 12, padding: 8, alignItems: 'center', elevation: 2 },
     repoImg: { width: 120, height: 68, borderRadius: 8, marginBottom: 8 },
     repoTitle: { fontSize: 13, fontWeight: '600', color: '#222' }
+    ,
+    /* Estilos novos / melhorados para Repositórios Recentes */
+    newRepoCard: {
+      width: 220,
+      backgroundColor: '#fff',
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+      elevation: 3,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      borderWidth: 1,
+      borderColor: '#F1F5F9',
+    },
+    repoLeftIconContainer: {
+      width: 44,
+      height: 44,
+      borderRadius: 10,
+      backgroundColor: '#F8FAFC',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    repoTextContainer: {
+      marginLeft: 12,
+      flex: 1,
+      justifyContent: 'center'
+    },
+    newRepoTitle: { fontSize: 14, fontWeight: '700', color: '#111' },
+    repoTag: { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#EEF2FF', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+    repoTagText: { fontSize: 11, fontWeight: '700', color: '#5B21B6' }
   });

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,16 @@ import {
   Switch,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import { COLORS } from "../components/Cores"; 
 import { ThemeContext } from "../context/ThemeContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 
 // Importando o motor de voz do Expo
 import * as Speech from 'expo-speech';
@@ -25,10 +29,77 @@ export default function ConfiguracoesScreen({ navigation }) {
   const [email, setEmail] = useState(false);
   const [mensagens, setMensagens] = useState(false);
   const [eventos, setEventos] = useState(false);
+  const [usuario, setUsuario] = useState(null);
 
   const irParaPerfil = () => {
     navigation.navigate("Perfil");
   };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sair',
+      'Deseja realmente sair do aplicativo?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: () => doLogout()
+        }
+      ]
+    );
+  };
+
+  const doLogout = async () => {
+    try {
+      console.log('Iniciando logout: limpando AsyncStorage');
+      // tenta limpar chaves específicas e como fallback limpa tudo
+      try {
+        await AsyncStorage.multiRemove(['idUsuario', 'tipo']);
+      } catch (e) {
+        console.warn('multiRemove falhou, tentando clear():', e);
+        await AsyncStorage.clear();
+      }
+
+      console.log('Logout: navegação para Login');
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+      Alert.alert('Desconectado', 'Você saiu do aplicativo.');
+    } catch (err) {
+      console.error('Erro durante logout:', err);
+      Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+    }
+  };
+
+  useEffect(() => {
+    const carregarUsuario = async () => {
+      try {
+        const idSalvo = await AsyncStorage.getItem('idUsuario');
+        if (!idSalvo) return;
+        const resp = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
+        if (!resp.ok) return;
+        const texto = await resp.text();
+        const dados = JSON.parse(texto);
+        if (dados.sucesso && dados.usuario) {
+          // Normaliza URL da imagem como em Perfil.js
+          let urlCompleta = dados.usuario.imagem;
+          if (urlCompleta && !urlCompleta.startsWith('http')) {
+            urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
+          }
+          setUsuario({
+            nome: dados.usuario.nome || '',
+            sobrenome: dados.usuario.sobrenome || '',
+            descricao: dados.usuario.descricao || '',
+            imagem: urlCompleta || null,
+            turma: dados.usuario.turma || ''
+          });
+        }
+      } catch (err) {
+        console.warn('Não foi possível carregar usuário:', err.message || err);
+      }
+    };
+
+    carregarUsuario();
+  }, []);
 
   // Função que lê o resumo da tela em voz alta
   const executarTextoEmVozAlta = () => {
@@ -85,9 +156,12 @@ export default function ConfiguracoesScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
         <View style={styles.perfil}>
-          <Image source={require("../../assets/pascal.jpg")} style={styles.avatar} />
-          <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>Piaba Frita</Text>
-          <Text style={[styles.email, { color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }]}>piabafrita@email.com</Text>
+          <Image
+            source={usuario && usuario.imagem ? { uri: usuario.imagem } : require("../../assets/pascal.jpg")}
+            style={styles.avatar}
+          />
+          <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>{usuario ? `${usuario.nome} ${usuario.sobrenome}`.trim() : 'Usuário'}</Text>
+          <Text style={[styles.email, { color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }]}>{usuario ? usuario.turma || usuario.descricao || '' : ''}</Text>
 
           <TouchableOpacity style={styles.perfilBtn} onPress={irParaPerfil}>
             <Text style={[styles.perfilBtnText, { fontSize: 14 * fontSizeScale }]}>Visualizar Perfil</Text>
@@ -132,7 +206,7 @@ export default function ConfiguracoesScreen({ navigation }) {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.logout}>
+        <TouchableOpacity style={styles.logout} onPress={handleLogout}>
           <Ionicons name="log-out" size={24} color="#fff" />
           <Text style={[styles.logoutText, { fontSize: 18 * fontSizeScale }]}>Sair do app</Text>
         </TouchableOpacity>
