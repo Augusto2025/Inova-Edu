@@ -9,6 +9,7 @@ import {
   Image,
   Animated,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
@@ -50,8 +51,13 @@ export default function HomeScreen({ navigation }) {
       try {
         setCarregando(true);
 
-        // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home)
-        const resposta = await api.get(API_ENDPOINTS.home || "/home");
+        // 🔑 Pega o ID do usuário logado, salvo no AsyncStorage durante o login
+        const idSalvo = await AsyncStorage.getItem('idUsuario');
+
+        // Usa o endpoint mapeado (EXPO_PUBLIC_URL_BACKEND/home), agora enviando o usuarioId
+        const resposta = await api.get(API_ENDPOINTS.home || "/home", {
+          params: { usuarioId: idSalvo }
+        });
 
         if (resposta.data) {
           const dados = resposta.data;
@@ -117,13 +123,14 @@ export default function HomeScreen({ navigation }) {
               console.warn("⚠️ Erro ao carregar projetos (fallback):", e.response?.status, e.message);
             }
 
-            setHomeData({
-              usuario: { nome: "Estudante" },
+            // Mesmo no fallback, tenta manter o nome real do usuário se já tivermos algum salvo
+            setHomeData((prev) => ({
+              usuario: prev.usuario?.nome ? prev.usuario : { nome: "Estudante" },
               eventos: eventosData,
               cursos: cursosData,
               forum: forumData,
               projetos: projetosData
-            });
+            }));
 
             console.log("✅ Fallback completado com dados parciais");
           } catch (fallbackError) {

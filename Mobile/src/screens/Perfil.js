@@ -337,7 +337,7 @@ export default function ProfileScreen() {
 
           <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{user.nome} {user.sobrenome}</Text>
           
-          <View style={styles.turmaBadge, [{ backgroundColor: theme.card, borderColor: theme.border }]}>
+          <View style={[styles.turmaBadge, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <Ionicons name="school-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
             <Text style={[styles.turmaText, { color: theme.text, fontSize: 13 * fontSizeScale }]}>{user.turma}</Text>
           </View>

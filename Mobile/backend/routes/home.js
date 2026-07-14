@@ -16,6 +16,28 @@ async function executeQuery(query, label) {
 // Rota que alimenta a HomeScreen em tempo real com fallback para dados parciais
 router.get('/', async (req, res) => {
   try {
+    const { usuarioId } = req.query;
+
+    // Busca o nome real do usuário logado, se o ID foi enviado pelo app
+    let usuarioData = { nome: "Estudante" };
+    if (usuarioId) {
+      try {
+        const userRes = await pool.query(
+          'SELECT "Nome" as nome, "Sobrenome" as sobrenome FROM usuario WHERE "idUsuario" = $1',
+          [usuarioId]
+        );
+        if (userRes.rows.length > 0) {
+          usuarioData = userRes.rows[0];
+        } else {
+          console.warn(`⚠️ Nenhum usuário encontrado para o ID: ${usuarioId}`);
+        }
+      } catch (e) {
+        console.warn('⚠️ Erro ao buscar usuário da home:', e.message);
+      }
+    } else {
+      console.warn('⚠️ /home chamado sem usuarioId — usando nome padrão.');
+    }
+
     // Executa todas as consultas em paralelo com tratamento individual de erros
     const results = await Promise.all([
       // Eventos (usa colunas do DB)
@@ -53,7 +75,7 @@ router.get('/', async (req, res) => {
     // Monta a resposta com dados parciais mesmo se alguma query falhar
     const response = {
       sucesso: allSuccess,
-      usuario: { nome: "Estudante" },
+      usuario: usuarioData,
       eventos: results[0].data || [],
       cursos: results[1].data || [],
       forum: results[2].data || [],
