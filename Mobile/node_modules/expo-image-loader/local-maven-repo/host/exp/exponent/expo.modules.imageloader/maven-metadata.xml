@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo.modules.imageloader</artifactId>
+  <versioning>
+    <latest>56.0.3</latest>
+    <release>56.0.3</release>
+    <versions>
+      <version>56.0.3</version>
+    </versions>
+    <lastUpdated>20260506211911</lastUpdated>
+  </versioning>
+</metadata>
