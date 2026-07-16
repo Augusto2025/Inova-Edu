@@ -54,11 +54,30 @@ router.get('/', async (req, res) => {
          FROM curso ORDER BY "Nome_curso" ASC`,
         'CURSOS'
       ),
-      // Fórum: junta com usuário para retornar título/autor
+      // Fórum: junta com usuário, CONTA as mensagens de verdade, e ordena
+      // pelo fórum com atividade mais recente (não só o mais recém-criado).
       executeQuery(
-        `SELECT f.idforum AS id, f.nome AS titulo, f.data_criacao, f.usuario_id, u."Nome" AS autor
-         FROM forum f LEFT JOIN usuario u ON f.usuario_id = u."idUsuario" 
-         ORDER BY f.idforum DESC LIMIT 1`,
+        `SELECT 
+            f.idforum AS id, 
+            f.nome AS titulo, 
+            f.data_criacao, 
+            f.usuario_id, 
+            u."Nome" AS autor,
+            COALESCE(msg.total, 0) AS mensagens,
+            COALESCE(msg.ultima_mensagem, f.data_criacao) AS ultima_atividade
+         FROM forum f
+         LEFT JOIN usuario u ON f.usuario_id = u."idUsuario"
+         LEFT JOIN (
+            SELECT 
+                t.forum_id,
+                COUNT(m.id) AS total,
+                MAX(m."Data_criacao") AS ultima_mensagem
+            FROM topico t
+            LEFT JOIN mensagem m ON m."ID_Topico" = t.idtopico AND m.excluida = false
+            GROUP BY t.forum_id
+         ) msg ON msg.forum_id = f.idforum
+         ORDER BY ultima_atividade DESC
+         LIMIT 1`,
         'FORUM'
       ),
       // Projetos/repositórios
