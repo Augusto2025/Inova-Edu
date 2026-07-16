@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { Image } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
@@ -18,6 +19,8 @@ export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
+    // 🆕 Tipo escolhido na tela: 'Aluno' ou 'Professor'
+    const [tipoSelecionado, setTipoSelecionado] = useState(null);
     const Logo = require('../../assets/LOGOBRANCO.png');
 
     // 🌟 Transformada em async para poder realizar a requisição HTTP
@@ -32,6 +35,12 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
+        // 🆕 Exige que a pessoa escolha se é Aluno ou Professor antes de entrar
+        if (!tipoSelecionado) {
+            Alert.alert('Erro', 'Selecione se você é Aluno ou Professor.');
+            return;
+        }
+
     
         try {
             // Envia os dados para o seu servidor
@@ -43,6 +52,7 @@ export default function LoginScreen({ navigation }) {
                 body: JSON.stringify({
                     email: email.trim(), // Remove espaços em branco bobos
                     senha: senha,
+                    tipo: tipoSelecionado, // 🆕 Envia o tipo escolhido pra validação no backend
                 }),
             });
 
@@ -63,6 +73,7 @@ export default function LoginScreen({ navigation }) {
                 }, 1200); 
             } else {
                 // Alerta com a mensagem de erro vinda do seu banco de dados
+                // (inclui o caso de tipo selecionado não bater com o cadastrado)
                 Alert.alert('Erro de Login', dados.mensagem);
             }
 
@@ -86,6 +97,46 @@ export default function LoginScreen({ navigation }) {
                     </View>
                     <View style={styles.containerCenter}>
                         <Text style={styles.titulo}>Login</Text>
+
+                        {/* 🆕 Seletor Aluno / Professor */}
+                        <Text style={styles.labelTipo}>Você é:</Text>
+                        <View style={styles.tipoContainer}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.tipoBtn,
+                                    tipoSelecionado === 'Aluno' && styles.tipoBtnAtivo,
+                                ]}
+                                activeOpacity={0.8}
+                                onPress={() => setTipoSelecionado('Aluno')}
+                            >
+                                <Text
+                                    style={[
+                                        styles.tipoBtnText,
+                                        tipoSelecionado === 'Aluno' && styles.tipoBtnTextAtivo,
+                                    ]}
+                                >
+                                    Aluno
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.tipoBtn,
+                                    tipoSelecionado === 'Professor' && styles.tipoBtnAtivo,
+                                ]}
+                                activeOpacity={0.8}
+                                onPress={() => setTipoSelecionado('Professor')}
+                            >
+                                <Text
+                                    style={[
+                                        styles.tipoBtnText,
+                                        tipoSelecionado === 'Professor' && styles.tipoBtnTextAtivo,
+                                    ]}
+                                >
+                                    Professor
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <CustomInput
                             placeholder="Email"
@@ -143,5 +194,40 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+    },
+    // 🆕 Estilos do seletor Aluno / Professor
+    labelTipo: {
+        color: '#64748B',
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 8,
+    },
+    tipoContainer: {
+        flexDirection: 'row',
+        gap: 10,
+        marginBottom: 18,
+        paddingRight: '10%',
+        width: '100%',
+    },
+    tipoBtn: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 14,
+        borderWidth: 1.5,
+        borderColor: '#CBD5E1',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    tipoBtnAtivo: {
+        backgroundColor: '#1459b3',
+        borderColor: '#1459b3',
+    },
+    tipoBtnText: {
+        color: '#64748B',
+        fontWeight: '700',
+        fontSize: 14,
+    },
+    tipoBtnTextAtivo: {
+        color: '#fff',
     },
 });

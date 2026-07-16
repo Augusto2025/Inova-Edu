@@ -14,7 +14,7 @@ export default function ConversaScreen({ navigation, route }) {
   const { theme, fontSizeScale } = useTheme();
   const forumNome = route.params?.forum || "Fórum";
   // Agora recebemos o objeto completo do tópico vindo da tela anterior
-  const topico = route.params?.topico; 
+  const topico = route.params?.topico;
 
   const scrollViewRef = useRef();
 
@@ -34,7 +34,7 @@ export default function ConversaScreen({ navigation, route }) {
   const carregarDados = async () => {
     try {
       setCarregando(true);
-      
+
       const idSalvo = await AsyncStorage.getItem('idUsuario');
       const idUser = idSalvo ? parseInt(idSalvo) : null;
       setUsuarioLogadoId(idUser);
@@ -42,13 +42,13 @@ export default function ConversaScreen({ navigation, route }) {
       if (topico?.id) {
         console.log("📡 Buscando mensagens na URL:", `${URL_MENSAGEM}/topico/${topico.id}`);
         const response = await fetch(`${URL_MENSAGEM}/topico/${topico.id}`);
-        
+
         // MODIFICAÇÃO AQUI: Captura o erro real do servidor
         if (!response.ok) {
           const textoErro = await response.text();
           throw new Error(`Status ${response.status}: ${textoErro || "Sem detalhes"}`);
         }
-        
+
         const dados = await response.json();
 
         const formatadas = dados.map(msg => ({
@@ -199,19 +199,19 @@ export default function ConversaScreen({ navigation, route }) {
           <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
-        <ScrollView 
+        <ScrollView
           ref={scrollViewRef}
-          showsVerticalScrollIndicator={false} 
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 10 }}
           onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
         >
           {mensagens.map((item) => (
-            <View 
-                key={item.id.toString()} 
-                style={[
-                    styles.messageCard, 
-                    item.meu ? styles.myMessageCard : [styles.otherMessageCard, { backgroundColor: theme.card }]
-                ]}
+            <View
+              key={item.id.toString()}
+              style={[
+                styles.messageCard,
+                item.meu ? styles.myMessageCard : [styles.otherMessageCard, { backgroundColor: theme.card }]
+              ]}
             >
               <View style={styles.topRow}>
                 {!item.meu && (
@@ -223,23 +223,58 @@ export default function ConversaScreen({ navigation, route }) {
                 <View style={styles.userInfo}>
                   {!item.meu && (
                     <View style={styles.nameRow}>
-                      <Text style={[styles.name, { color: theme.text, fontSize: 12 * fontSizeScale }]}>{item.nome}</Text>
+                      <Text
+                        style={[
+                          styles.message,
+                          {
+                            color: item.meu ? '#fff' : theme.text,
+                            fontSize: 15 * fontSizeScale
+                          }
+                        ]}
+                      ></Text>
                     </View>
                   )}
-                  <Text style={[styles.message, { color: item.meu ? '#fff' : theme.text, fontSize: 15 * fontSizeScale }]}>
-                    {item.texto}
-                  </Text>
+                  <Text
+  style={[
+    styles.message,
+    {
+      color: item.meu ? "#FFFFFF" : theme.text,
+      fontSize: 15 * fontSizeScale,
+      lineHeight: 22,
+    },
+  ]}
+>
+  {item.texto}
+</Text>
                 </View>
               </View>
 
               <View style={styles.footer}>
-                <Text style={[styles.time, { color: item.meu ? '#e0e0e0' : '#777', fontSize: 10 * fontSizeScale }]}>{item.hora}</Text>
-                {item.meu && (
-                  <TouchableOpacity onPress={() => abrirMenu(item)} style={styles.moreButton}>
-                    <Feather name="more-vertical" size={14} color={item.meu ? '#ddd' : theme.text} />
-                  </TouchableOpacity>
-                )}
-              </View>
+  <Text
+    style={[
+      styles.time,
+      {
+        color: item.meu ? "rgba(255,255,255,0.75)" : "#888",
+        fontSize: 10 * fontSizeScale,
+      },
+    ]}
+  >
+    {item.hora}
+  </Text>
+
+  {item.meu && (
+    <TouchableOpacity
+      style={styles.moreButton}
+      onPress={() => abrirMenu(item)}
+    >
+      <Feather
+        name="more-vertical"
+        size={15}
+        color="#FFFFFF"
+      />
+    </TouchableOpacity>
+  )}
+</View>
             </View>
           ))}
         </ScrollView>
@@ -247,34 +282,34 @@ export default function ConversaScreen({ navigation, route }) {
 
       {/* INPUT BARRA INFERIOR */}
       <View style={[styles.inputContainer, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
-        <TextInput 
-          placeholder="Escreva sua mensagem..." 
+        <TextInput
+          placeholder="Escreva sua mensagem..."
           placeholderTextColor={theme.text + '80'}
-          style={[styles.input, { color: theme.text, fontSize: 16 * fontSizeScale }]} 
+          style={[styles.input, { color: theme.text, fontSize: 16 * fontSizeScale }]}
           value={novaMensagem}
           onChangeText={setNovaMensagem}
         />
         <TouchableOpacity style={[styles.sendButton, { backgroundColor: theme.primary }]} onPress={enviarMensagem}>
-            <Ionicons name="send" size={18} color="#fff" />
+          <Ionicons name="send" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
 
       {/* MODAL MENU OPÇÕES */}
       <Modal visible={menuVisible} transparent animationType="fade">
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setMenuVisible(false)}>
-            <View style={[styles.menuContainer, { backgroundColor: theme.card }]}>
-              <TouchableOpacity style={styles.menuItem} onPress={abrirEditar}>
-                <Feather name="edit-2" size={18} color="#2563EB" />
-                <Text style={[styles.menuText, { color: theme.text }]}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem} onPress={excluirMensagem}>
-                <MaterialIcons name="delete-outline" size={20} color="#EF4444" />
-                <Text style={[styles.menuText, { color: "#EF4444" }]}>Excluir</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={[styles.menuContainer, { backgroundColor: theme.card }]}>
+            <TouchableOpacity style={styles.menuItem} onPress={abrirEditar}>
+              <Feather name="edit-2" size={18} color="#2563EB" />
+              <Text style={[styles.menuText, { color: theme.text }]}>Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={excluirMensagem}>
+              <MaterialIcons name="delete-outline" size={20} color="#EF4444" />
+              <Text style={[styles.menuText, { color: "#EF4444" }]}>Excluir</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       </Modal>
-      
+
       {/* ... (Repita a lógica de temas no Modal de Edição também) */}
     </View>
   );
@@ -287,11 +322,45 @@ const styles = StyleSheet.create({
   pathText: { color: "#777", fontSize: 13, marginRight: 4, maxWidth: 100 },
   pathActive: { color: "#2563EB", fontSize: 13, fontWeight: "700", marginLeft: 4 },
   messageCard: { marginBottom: 10, borderRadius: 16, padding: 12, maxWidth: "80%", elevation: 1 },
-  myMessageCard: { backgroundColor: "#EEF2FF", alignSelf: "flex-end" }, 
-  otherMessageCard: { backgroundColor: "#fff", alignSelf: "flex-start" }, 
+  myMessageCard: {
+    backgroundColor: COLORS.primary,
+    alignSelf: "flex-end",
+    borderTopRightRadius: 6,
+    borderTopLeftRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 3,
+  },
+  otherMessageCard: {
+    backgroundColor: "#FFFFFF",
+    alignSelf: "flex-start",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+  },
   topRow: { flexDirection: "row", alignItems: "flex-start" },
   avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.primary, justifyContent: "center", alignItems: "center", marginRight: 10, marginTop: 2 },
-  userInfo: { justifyContent: "center", flexShrink: 1 }, 
+  userInfo: { justifyContent: "center", flexShrink: 1 },
   nameRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
   name: { fontSize: 13, fontWeight: "700", color: "#222" },
   message: { fontSize: 13, color: "#333", lineHeight: 18 },
