@@ -1539,15 +1539,20 @@ def criar_turma(request):
         turno = request.POST.get("turno")
         ano = request.POST.get("ano")
         curso_id = request.POST.get("curso_id")
+        professor_id = request.POST.get("professor_id")
 
         curso = get_object_or_404(Curso, idcurso=curso_id)
+        professor = get_object_or_404(Usuario, idusuario=professor_id)
 
         Turma.objects.create(
-            codigo_turma=codigo_turma, turno=turno, ano=ano, curso=curso
+            codigo_turma=codigo_turma,
+            turno=turno,
+            ano=ano,
+            curso=curso,
+            professor=professor,
         )
 
-        return redirect("home_Coordenacao")  # permanece na página
-
+        return redirect("home_Coordenacao")
 
 def editar_turma(request):
     if request.method == "POST":
