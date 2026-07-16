@@ -682,13 +682,13 @@
 
                         <label>Professor</label>
                         <select name="professor_id" required>
-                            <option value="">Selecione</option>
-
+                            {% if turma.professor_id == professor.idusuario %}selected{% endif %}
                             {% for professor in professores %}
-                                <option value="{{ professor.idusuario }}"
-                                    {% if turma.professor_id == professor.idusuario %}selected{% endif %}>
+                                <option value="{{ professor.idusuario }}">
                                     {{ professor.nome }} {{ professor.sobrenome }}
                                 </option>
+                            {% empty %}
+                                <option disabled>Nenhum professor cadastrado</option>
                             {% endfor %}
                         </select>
 
