@@ -142,7 +142,12 @@ router.get('/download-zip', async (req, res) => {
     }
 });
 
-// ROTA ADICIONAL: BUSCA DE REPOSITÓRIOS/PROJETOS POR CURSO, TURMA OU NOME DO PROJETO
+// ==========================================
+// 3. ROTA DE BUSCA: por CURSO, TURMA ou PROJETO
+// ==========================================
+// 🌟 Ajustada para começar em CURSO -> TURMA -> PROJETO
+// Assim, mesmo sem nenhum projeto criado ainda, buscar pelo nome
+// do curso ou da turma já retorna resultado (com o projeto vindo vazio/null).
 router.get('/search', async (req, res) => {
     try {
         const { q, cursoId, turmaId, page = 1, limit = 20 } = req.query;
@@ -153,9 +158,9 @@ router.get('/search', async (req, res) => {
             const termo = `%${q.trim()}%`;
             params.push(termo, termo, termo);
             conditions.push(
-                '(p."Nome_projeto" ILIKE $' + (params.length - 2) +
+                '(c."Nome_curso" ILIKE $' + (params.length - 2) +
                 ' OR t."Codigo_Turma" ILIKE $' + (params.length - 1) +
-                ' OR c."Nome_curso" ILIKE $' + params.length + ')'
+                ' OR p."Nome_projeto" ILIKE $' + params.length + ')'
             );
         }
 
@@ -178,6 +183,8 @@ router.get('/search', async (req, res) => {
         params.push(limit);
         params.push(offset);
 
+        // Começa em CURSO, desce pra TURMA, e só depois (se existir) pra PROJETO.
+        // LEFT JOIN garante que curso/turma aparecem mesmo sem projeto cadastrado.
         const query = `
             SELECT
                 p."idProjeto" AS id,
@@ -187,12 +194,18 @@ router.get('/search', async (req, res) => {
                 t."idTurma" AS id_turma,
                 COALESCE(t."Codigo_Turma", '') AS nome_turma,
                 c."idCurso" AS id_curso,
-                COALESCE(c."Nome_curso", '') AS nome_curso
-            FROM projeto p
-            LEFT JOIN turma t ON p."ID_Turma" = t."idTurma"
-            LEFT JOIN curso c ON t."ID_Curso" = c."idCurso"
+                COALESCE(c."Nome_curso", '') AS nome_curso,
+                CASE
+                    WHEN p."idProjeto" IS NOT NULL THEN 'projeto'
+                    WHEN t."idTurma" IS NOT NULL THEN 'turma'
+                    ELSE 'curso'
+                END AS tipo_resultado,
+                CONCAT_WS('-', c."idCurso", t."idTurma", p."idProjeto") AS chave_unica
+            FROM curso c
+            LEFT JOIN turma t ON t."ID_Curso" = c."idCurso"
+            LEFT JOIN projeto p ON p."ID_Turma" = t."idTurma"
             ${whereClause}
-            ORDER BY p."idProjeto" DESC
+            ORDER BY p."idProjeto" DESC NULLS LAST, c."idCurso" ASC
             LIMIT $${params.length - 1}
             OFFSET $${params.length}
         `;

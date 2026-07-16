@@ -27,11 +27,11 @@
       "expo-status-bar",
       "expo-sharing"
     ],
+    "owner": "alcides1212",
     "extra": {
       "eas": {
-        "projectId": "e1e554f5-dd1b-4f88-af86-c52f5e9ea79d"
+        "projectId": "6b88b1f2-8f50-4c04-8f33-fd58937e4ccc"
       }
-    },
-    "owner": "augusto25"
+    }
   }
 }

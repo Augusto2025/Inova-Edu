@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Animated,
+  Alert,
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from "../components/Header";
@@ -17,6 +18,9 @@ import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o API_ENDPOINTS
 import { useNotifications } from "../context/NotificationContext";
 
+// Chave usada para guardar o histórico de repositórios recentes no celular,
+// separado por usuário (pra não misturar histórico entre contas diferentes no mesmo aparelho).
+const RECENTES_KEY_PREFIX = '@InovaEdu:repositoriosRecentes:';
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
@@ -34,6 +38,10 @@ export default function HomeScreen({ navigation }) {
     forum: [],
     projetos: []
   });
+
+  // 🆕 Histórico local de repositórios que o usuário realmente entrou
+  const [recentRepos, setRecentRepos] = useState([]);
+  const [recentReposCarregado, setRecentReposCarregado] = useState(false);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -146,14 +154,74 @@ export default function HomeScreen({ navigation }) {
       }
     }
 
+    // 🆕 Carrega o histórico local de repositórios recentes (por usuário)
+    async function carregarRepositoriosRecentes() {
+      try {
+        const idSalvo = await AsyncStorage.getItem('idUsuario');
+        if (!idSalvo) {
+          setRecentRepos([]);
+          return;
+        }
+        const raw = await AsyncStorage.getItem(RECENTES_KEY_PREFIX + idSalvo);
+        setRecentRepos(raw ? JSON.parse(raw) : []);
+      } catch (e) {
+        console.warn('⚠️ Erro ao carregar repositórios recentes:', e.message);
+      } finally {
+        setRecentReposCarregado(true);
+      }
+    }
+
+    async function salvarRepositoriosRecentes(lista) {
+      try {
+        const idSalvo = await AsyncStorage.getItem('idUsuario');
+        if (!idSalvo) return;
+        await AsyncStorage.setItem(RECENTES_KEY_PREFIX + idSalvo, JSON.stringify(lista));
+      } catch (e) {
+        console.warn('⚠️ Erro ao salvar repositórios recentes:', e.message);
+      }
+    }
+
+    // 🆕 Adiciona (ou traz pro topo, se já existia) um repositório no histórico —
+    // chamado sempre que o usuário efetivamente entra em um repositório pela busca.
+    function adicionarRepositorioRecente(repo) {
+      setRecentRepos((atual) => {
+        const semDuplicado = atual.filter((item) => item.id !== repo.id);
+        const novaLista = [repo, ...semDuplicado].slice(0, 10); // guarda só os 10 mais recentes
+        salvarRepositoriosRecentes(novaLista);
+        return novaLista;
+      });
+    }
+
+    // 🆕 Remove um item do histórico (não apaga o projeto de verdade, só tira da lista local)
+    function removerRepositorioRecente(id) {
+      setRecentRepos((atual) => {
+        const novaLista = atual.filter((item) => item.id !== id);
+        salvarRepositoriosRecentes(novaLista);
+        return novaLista;
+      });
+    }
+
+    function confirmarRemoverRecente(repo) {
+      Alert.alert(
+        "Remover dos recentes",
+        `Tirar "${repo.nome}" da lista de repositórios recentes?`,
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Remover", style: "destructive", onPress: () => removerRepositorioRecente(repo.id) }
+        ]
+      );
+    }
+
     useEffect(() => {
       carregarHome();
+      carregarRepositoriosRecentes();
     }, []);
 
     // Recarrega a Home sempre que a tela volta a foco (ex.: após criar um evento)
     useEffect(() => {
       const unsubscribe = navigation.addListener('focus', () => {
         carregarHome();
+        carregarRepositoriosRecentes();
       });
       return unsubscribe;
     }, [navigation]);
@@ -319,26 +387,51 @@ async function buscarRepositorios(termoBusca) {
                   </Text>
                 ) : repoSearchResults.length > 0 ? (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-                    {repoSearchResults.map((repo) => (
-                      <TouchableOpacity
-                        key={repo.id}
-                        style={styles.repoCard}
-                        activeOpacity={0.8}
-                        onPress={() => navigation.navigate('Repositorio', { projetoId: repo.id, projetoNome: repo.nome_projeto })}
-                      >
-                        {repo.imagem ? (
-                          <Image source={{ uri: repo.imagem }} style={styles.repoImg} />
-                        ) : (
-                          <View style={[styles.repoImg, styles.centerContainer, { backgroundColor: '#f2f2f2' }]}>
-                            <Feather name="folder" size={24} color={COLORS.primary} />
-                          </View>
-                        )}
-                        <Text numberOfLines={1} style={styles.repoTitle}>{repo.nome_projeto || repo.nome || 'Projeto'}</Text>
-                        <Text numberOfLines={1} style={[styles.emptyText, { marginTop: 4, color: '#555' }]}> 
-                          {repo.nome_turma || repo.nome_curso || 'Sem turma/curso'}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                    {repoSearchResults.map((repo) => {
+                      // Resultado pode ser um projeto de verdade, ou só uma turma/curso
+                      // que ainda não tem nenhum projeto cadastrado (repo.id vem null nesse caso)
+                      const temProjeto = repo.tipo_resultado === 'projeto' && repo.id;
+
+                      return (
+                        <TouchableOpacity
+                          key={repo.chave_unica || repo.id}
+                          style={styles.repoCard}
+                          activeOpacity={0.8}
+                          onPress={() => {
+                            if (temProjeto) {
+                              // 🆕 Só entra no histórico de "recentes" quando o usuário
+                              // realmente clica pra entrar em um repositório de verdade.
+                              adicionarRepositorioRecente({
+                                id: repo.id,
+                                nome: repo.nome_projeto,
+                                imagem: repo.imagem,
+                                subtitulo: repo.nome_turma || repo.nome_curso,
+                              });
+                              navigation.navigate('Repositorio', { projetoId: repo.id, projetoNome: repo.nome_projeto });
+                            } else {
+                              Alert.alert(
+                                'Nenhum projeto ainda',
+                                `Ainda não existe projeto cadastrado em "${repo.nome_turma || repo.nome_curso}".`
+                              );
+                            }
+                          }}
+                        >
+                          {repo.imagem ? (
+                            <Image source={{ uri: repo.imagem }} style={styles.repoImg} />
+                          ) : (
+                            <View style={[styles.repoImg, styles.centerContainer, { backgroundColor: '#f2f2f2' }]}>
+                              <Feather name={temProjeto ? "folder" : "folder-minus"} size={24} color={temProjeto ? COLORS.primary : '#aaa'} />
+                            </View>
+                          )}
+                          <Text numberOfLines={1} style={styles.repoTitle}>
+                            {repo.nome_projeto || (repo.tipo_resultado === 'turma' ? repo.nome_turma : repo.nome_curso) || 'Sem projeto'}
+                          </Text>
+                          <Text numberOfLines={1} style={[styles.emptyText, { marginTop: 4, color: '#555' }]}> 
+                            {repo.nome_turma || repo.nome_curso || 'Sem turma/curso'}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </ScrollView>
                 ) : (
                   <Text style={styles.emptyText}>Nenhum repositório encontrado.</Text>
@@ -347,61 +440,74 @@ async function buscarRepositorios(termoBusca) {
             )}
           </View>
 
-         {/* SEÇÃO: REPOSITÓRIOS RECENTES */}
+         {/* SEÇÃO: REPOSITÓRIOS RECENTES — agora vem do histórico local (AsyncStorage),
+              só populado quando o usuário busca e entra em um repositório de verdade. */}
           <View style={styles.repoHeaderRow}>
             <Text style={styles.sectionTitle}>Repositórios recentes</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Repositório')}>
-              <Text style={{ color: COLORS.primary, fontWeight: '600', marginTop: 20 }}>Ver todos</Text>
-            </TouchableOpacity>
+            {recentRepos.length > 0 && (
+              <TouchableOpacity onPress={() => navigation.navigate('Repositório')}>
+                <Text style={{ color: COLORS.primary, fontWeight: '600', marginTop: 20 }}>Ver todos</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          {carregando ? (
+          {!recentReposCarregado ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 5 }}>
               {[1, 2].map(i => (
                 <View key={i} style={[styles.newRepoCard, { width: 220, opacity: 0.6 }]} />
               ))}
             </ScrollView>
-          ) : homeData.projetos && homeData.projetos.length > 0 ? (
+          ) : recentRepos.length > 0 ? (
             <ScrollView 
               horizontal 
               showsHorizontalScrollIndicator={false} 
               style={{ marginTop: 4, marginBottom: 6 }} 
               contentContainerStyle={{ gap: 12, paddingBottom: 5 }}
             >
-              {homeData.projetos.map(proj => (
-                <TouchableOpacity
-                  key={proj.id}
-                  style={styles.newRepoCard}
-                  activeOpacity={0.85}
-                  onPress={() => navigation.navigate('Repositorio', { projetoId: proj.id, projetoNome: proj.nome || proj.Nome_projeto })}
-                >
-                  <View style={styles.repoLeftIconContainer}>
-                    {proj.imagem ? (
-                      <Image source={{ uri: proj.imagem }} style={{ width: 40, height: 40, borderRadius: 8 }} />
-                    ) : (
-                      <Feather name="folder" size={20} color={COLORS.primary} />
-                    )}
-                  </View>
+              {recentRepos.map(repo => (
+                <View key={repo.id} style={styles.newRepoCard}>
+                  <TouchableOpacity
+                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+                    activeOpacity={0.85}
+                    onPress={() => navigation.navigate('Repositorio', { projetoId: repo.id, projetoNome: repo.nome })}
+                  >
+                    <View style={styles.repoLeftIconContainer}>
+                      {repo.imagem ? (
+                        <Image source={{ uri: repo.imagem }} style={{ width: 40, height: 40, borderRadius: 8 }} />
+                      ) : (
+                        <Feather name="folder" size={20} color={COLORS.primary} />
+                      )}
+                    </View>
 
-                  <View style={styles.repoTextContainer}>
-                    <Text numberOfLines={1} style={styles.newRepoTitle}>
-                      {proj.nome || proj.Nome_projeto || 'Projeto'}
-                    </Text>
-                    { (proj.descricao || proj.nome_curso || proj.nome_turma) ? (
-                      <Text numberOfLines={1} style={{ color: '#6b7280', fontSize: 12, marginTop: 6 }}>
-                        {proj.descricao || proj.nome_turma || proj.nome_curso}
+                    <View style={styles.repoTextContainer}>
+                      <Text numberOfLines={1} style={styles.newRepoTitle}>
+                        {repo.nome || 'Projeto'}
                       </Text>
-                    ) : (
-                      <View style={styles.repoTag}>
-                        <Text style={styles.repoTagText}>Git Repository</Text>
-                      </View>
-                    )}
-                  </View>
-                </TouchableOpacity>
+                      {repo.subtitulo ? (
+                        <Text numberOfLines={1} style={{ color: '#6b7280', fontSize: 12, marginTop: 6 }}>
+                          {repo.subtitulo}
+                        </Text>
+                      ) : (
+                        <View style={styles.repoTag}>
+                          <Text style={styles.repoTagText}>Git Repository</Text>
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+
+                  {/* 🆕 Botão de remover este item da lista de recentes */}
+                  <TouchableOpacity
+                    style={styles.removeRecentBtn}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    onPress={() => confirmarRemoverRecente(repo)}
+                  >
+                    <Feather name="x" size={14} color="#94A3B8" />
+                  </TouchableOpacity>
+                </View>
               ))}
             </ScrollView>
           ) : (
-            <Text style={styles.emptyText}>Nenhum repositório recente.</Text>
+            <Text style={styles.emptyText}>Busque e entre em um repositório para ele aparecer aqui.</Text>
           )}
 
           {/* SEÇÃO: FÓRUM */}
@@ -469,6 +575,7 @@ async function buscarRepositorios(termoBusca) {
     repoTitle: { fontSize: 13, fontWeight: '600', color: '#222' }
     ,
     /* Estilos novos / melhorados para Repositórios Recentes */
+    repoHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     newRepoCard: {
       width: 220,
       backgroundColor: '#fff',
@@ -483,6 +590,7 @@ async function buscarRepositorios(termoBusca) {
       shadowRadius: 6,
       borderWidth: 1,
       borderColor: '#F1F5F9',
+      position: 'relative',
     },
     repoLeftIconContainer: {
       width: 44,
@@ -499,5 +607,16 @@ async function buscarRepositorios(termoBusca) {
     },
     newRepoTitle: { fontSize: 14, fontWeight: '700', color: '#111' },
     repoTag: { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#EEF2FF', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
-    repoTagText: { fontSize: 11, fontWeight: '700', color: '#5B21B6' }
+    repoTagText: { fontSize: 11, fontWeight: '700', color: '#5B21B6' },
+    removeRecentBtn: {
+      position: 'absolute',
+      top: 6,
+      right: 6,
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      backgroundColor: '#F1F5F9',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }
   });

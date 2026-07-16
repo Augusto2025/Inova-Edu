@@ -235,7 +235,7 @@ export default function TopicosScreen({ navigation, route }) {
       <Modal visible={modal.visible} transparent animationType="fade" onRequestClose={fecharModal}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={fecharModal}>
           <TouchableWithoutFeedback>
-    renderItem        <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+           <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={styles.modalHeader}>
                 <Text style={[styles.modalTitle, { fontSize: 18 * fontSizeScale }]}>{modal.modo === "Criar" ? "Criar Tópico" : "Editar Tópico"}</Text>
                 <TouchableOpacity onPress={fecharModal} style={{ position: 'absolute', right: 20 }}>
