@@ -97,6 +97,34 @@ router.patch('/:id/read', async (req, res) => {
   }
 });
 
+// 🆕 Marca como lidas TODAS as notificações de um tópico específico para o usuário.
+// Usado quando o usuário abre a tela de Conversa de um tópico — assim a contagem
+// de "não lidas" daquele tópico zera automaticamente.
+// URL: /notifications/topico/:topicoId/read
+router.patch('/topico/:topicoId/read', async (req, res) => {
+  const { topicoId } = req.params;
+  const { usuarioId } = req.body;
+
+  if (!usuarioId) {
+    return res.status(400).json({ sucesso: false, mensagem: 'O parâmetro usuarioId é obrigatório.' });
+  }
+
+  try {
+    const resultado = await pool.query(
+      `UPDATE notifications 
+       SET lida = true 
+       WHERE entidade_id = $1 AND usuario_id = $2 AND tipo = 'Forum' AND lida = false
+       RETURNING id`,
+      [topicoId, usuarioId]
+    );
+
+    return res.json({ sucesso: true, marcadas: resultado.rowCount });
+  } catch (error) {
+    console.error('❌ Erro ao marcar notificações do tópico como lidas:', error.message);
+    return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao marcar notificações do tópico como lidas.' });
+  }
+});
+
 router.patch('/mark-all-read', async (req, res) => {
   const { usuarioId } = req.body;
 
