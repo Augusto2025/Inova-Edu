@@ -1310,6 +1310,10 @@ def criar_evento(request):
 
 
 # ================ TELAS COORDENAÇÃO ====================
+def HomeCoord(request):
+    print("ENTROU NA VIEW HomeCoord")
+    return render(request, "Coordenacao/HomeCoord.html")
+
 
 
 def home_Coordenacao(request):

@@ -1,0 +1,165 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordenação</title>
+
+    <link rel="stylesheet" href="{% static 'styles/HomeCoord.css' %}?=V1">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Banner -->
+    <section class="banner">
+        <h1>Bem-Vindo a Coordenação</h1>
+
+        <p>
+            Central de gerenciamento acadêmico e operacional.
+            Monitore usuários, organize cursos e otimize o fluxo
+            de turmas em uma única interface eficiente.
+        </p>
+    </section>
+
+
+    <!-- Cards Estatísticas -->
+    <section class="estatisticas">
+
+        <div class="card-info azul">
+            <div class="icone">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <span>PLATAFORMA</span>
+
+            <h3>Total de Usuários:</h3>
+
+            <div class="barra"></div>
+        </div>
+
+
+        <div class="card-info laranja">
+            <div class="icone">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <span>ACADÊMICO</span>
+
+            <h3>Total de Cursos: </h3>
+
+            <div class="barra"></div>
+        </div>
+
+
+        <div class="card-info cinza">
+            <div class="icone">
+                <i class="fa-solid fa-book"></i>
+            </div>
+
+            <span>GESTÃO</span>
+
+            <h3>Total de Turmas: </h3>
+
+            <div class="barra"></div>
+        </div>
+
+    </section>
+
+
+    <!-- Título -->
+    <div class="titulo">
+        <div class="linha"></div>
+        <h2>Ações Rápidas</h2>
+    </div>
+
+
+    <!-- Cards -->
+    <section class="acoes">
+
+        <div class="card">
+
+            <img src="" alt="">
+
+            <div class="overlay">
+                <h3>Gerenciar Usuários</h3>
+            </div>
+
+            <div class="conteudo">
+
+                <p>
+                    Adicione novos colaboradores,
+                    edite permissões e acompanhe
+                    a atividade recente.
+                </p>
+
+                <a href="">
+                    Acessar Painel
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <img src="" alt="">
+
+            <div class="overlay">
+                <h3>Catálogo de Cursos</h3>
+            </div>
+
+            <div class="conteudo">
+
+                <p>
+                    Visualize e edite a grade curricular,
+                    organize módulos e publique conteúdos.
+                </p>
+
+                <a href="">
+                    Ver Catálogo
+                    <i class="fa-solid fa-book-open"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <img src="" alt="">
+
+            <div class="overlay">
+                <h3>Calendário de Turmas</h3>
+            </div>
+
+            <div class="conteudo">
+
+                <p>
+                    Planeje horários, acompanhe eventos
+                    e organize as turmas.
+                </p>
+
+                <a href="">
+                    Abrir Agenda
+                    <i class="fa-regular fa-calendar"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+</body>
+</html>

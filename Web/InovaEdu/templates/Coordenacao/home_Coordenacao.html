@@ -24,6 +24,8 @@
     
 
 
+
+
     {% comment %} modal de exclusão geral {% endcomment %}
    <div id="modalExcluir" class="modal-excluir-bg">
         <div class="modal-box-excluir">
@@ -48,10 +50,22 @@
 
         <!-- LOGO -->
         <div class="logo-header">
-            <a href="{% url 'home_Coordenacao' %}">
+            <a href="{% url 'HomeCoord' %}">
                 <img src="{% static 'img/LOGOBRANCO.png' %}" alt="Logo" class="logo-img">
             </a>
         </div>
+
+
+    
+
+
+
+
+
+
+
+
+
 
         <!-- AÇÕES À DIREITA -->
         <div class="acoes-header">
@@ -75,6 +89,14 @@
 
 
     <!-- SEÇÃO PRINCIPAL -->
+
+    <button onclick="window.location.href='{% url 'HomeCoord' %}'">
+        Ir para HomeCoord
+    </button>
+
+
+
+
     <main class="maincontainer">
 
         <aside class="menu-lateral">

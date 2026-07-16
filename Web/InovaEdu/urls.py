@@ -38,6 +38,11 @@ urlpatterns = [
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
     path('repositorio/<int:projeto_id>/download/', views.download_repositorio_projeto, name='download_repositorio_projeto'),
     # Coordenação
+    
+    path("coordenacao/", views.HomeCoord, name="HomeCoord"),
+    
+    
+    
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
