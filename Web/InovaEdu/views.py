@@ -1392,7 +1392,6 @@ def home_Coordenacao(request):
 
 
 
-
 def listar_alunos(request):
     alunos = Usuario.objects.filter(tipo__in=['Aluno', 'Professor'])
 
@@ -1591,3 +1590,28 @@ def excluir_turma(request, idturma):
 def lista_curso(request):
     cursos = Curso.objects.all()
     return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
+
+
+
+
+
+
+
+
+
+
+# NOVO VISUAL DA COORDENAÇÃO=================
+
+def HomeCoord(request):
+
+    total_usuarios = Usuario.objects.count()
+    total_cursos = Curso.objects.count()
+    total_turmas = Turma.objects.count()
+
+    context = {
+        "total_usuarios": total_usuarios,
+        "total_cursos": total_cursos,
+        "total_turmas": total_turmas,
+    }
+
+    return render(request, "Coordenacao/HomeCoord.html", context)

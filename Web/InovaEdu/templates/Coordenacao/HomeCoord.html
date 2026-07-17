@@ -40,10 +40,9 @@
             <div class="icone">
                 <i class="fa-solid fa-users"></i>
             </div>
-
             <span>PLATAFORMA</span>
-
             <h3>Total de Usuários:</h3>
+            <h3>{{ total_usuarios }}</h3>
 
             <div class="barra"></div>
         </div>
@@ -55,8 +54,8 @@
             </div>
 
             <span>ACADÊMICO</span>
-
             <h3>Total de Cursos: </h3>
+            <h3>{{ total_cursos }}</h3>
 
             <div class="barra"></div>
         </div>
@@ -68,8 +67,8 @@
             </div>
 
             <span>GESTÃO</span>
-
             <h3>Total de Turmas: </h3>
+            <h3>{{ total_turmas }}</h3>
 
             <div class="barra"></div>
         </div>
@@ -85,14 +84,16 @@
 
 
     <!-- Cards -->
+    
     <section class="acoes">
-
         <div class="card">
 
-            <img src="" alt="">
+            <div class="card-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
 
             <div class="overlay">
-                <h3>Gerenciar Usuários</h3>
+                <h3>Usuários</h3>
             </div>
 
             <div class="conteudo">
@@ -109,59 +110,62 @@
                 </a>
 
             </div>
-
         </div>
 
-
+        {% comment %} Curso {% endcomment %}
         <div class="card">
 
-            <img src="" alt="">
+            <div class="card-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
 
             <div class="overlay">
-                <h3>Catálogo de Cursos</h3>
+                <h3>Cursos</h3>
             </div>
 
             <div class="conteudo">
 
                 <p>
-                    Visualize e edite a grade curricular,
-                    organize módulos e publique conteúdos.
+                    Adicione novos colaboradores,
+                    edite permissões e acompanhe
+                    a atividade recente.
                 </p>
 
                 <a href="">
-                    Ver Catálogo
-                    <i class="fa-solid fa-book-open"></i>
+                    Acessar Painel
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
 
             </div>
-
         </div>
 
-
+        {% comment %} Turma {% endcomment %}
         <div class="card">
 
-            <img src="" alt="">
-
+          <div class="card-icon">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
             <div class="overlay">
-                <h3>Calendário de Turmas</h3>
+                <h3>Turmas</h3>
             </div>
 
             <div class="conteudo">
 
                 <p>
-                    Planeje horários, acompanhe eventos
-                    e organize as turmas.
+                    Adicione novos colaboradores,
+                    edite permissões e acompanhe
+                    a atividade recente.
                 </p>
 
                 <a href="">
-                    Abrir Agenda
-                    <i class="fa-regular fa-calendar"></i>
+                    Acessar Painel
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
 
             </div>
-
         </div>
 
+        
     </section>
 
 </div>

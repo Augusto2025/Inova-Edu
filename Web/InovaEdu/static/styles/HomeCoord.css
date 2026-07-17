@@ -103,61 +103,24 @@ body {
 .card-info h3 {
   margin-top: 10px;
   font-size: 28px;
-
   color: #333;
+  display: inline;
 }
 
 .barra {
-  width: 60%;
+  width: 25%;
   height: 4px;
 
-  background: #ddd;
+  background: var(--laranja-Senac);
 
-  margin: 20px auto 0;
+  margin: 10px auto 0;
 
   border-radius: 50px;
 
   position: relative;
 }
 
-.azul .barra::before {
-  content: "";
 
-  width: 50%;
-  height: 100%;
-
-  background: #214f80;
-
-  position: absolute;
-
-  border-radius: 50px;
-}
-
-.laranja .barra::before {
-  content: "";
-
-  width: 50%;
-  height: 100%;
-
-  background: #c86d2f;
-
-  position: absolute;
-
-  border-radius: 50px;
-}
-
-.cinza .barra::before {
-  content: "";
-
-  width: 50%;
-  height: 100%;
-
-  background: #5d6770;
-
-  position: absolute;
-
-  border-radius: 50px;
-}
 
 /*========================*/
 
@@ -183,89 +146,158 @@ body {
 }
 
 /*========================*/
+/* ========================= */
+/* AÇÕES RÁPIDAS */
+/* ========================= */
 
-.acoes {
-  width: 95%;
-  margin: auto auto 50px;
+.acoes{
+    width:95%;
+    max-width:1400px;
+    margin:40px auto 60px;
 
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:30px;
 }
 
-.card {
-  background: #fff;
-  border-radius: 12px;
+.card{
+    background:#fff;
+    border-radius:15px;
+    overflow:hidden;
 
-  overflow: hidden;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
 
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition:.3s;
 
-  transition: 0.3s;
+    display:flex;
+    flex-direction:column;
 }
 
-.card:hover {
-  transform: translateY(-6px);
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
 }
 
-.card img {
-  width: 100%;
-  height: 210px;
+/* Ícone */
 
-  object-fit: cover;
+.card-icon{
+    height:180px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(
+        135deg,
+        var(--azul-Senac),
+        var(--azul_Claro-Senac)
+    );
 }
 
-.overlay {
-  margin-top: -55px;
-
-  padding: 20px;
-
-  color: #fff;
-
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
-
-  position: relative;
+.card-icon i{
+    font-size:75px;
+    color:#fff;
 }
 
-.overlay h3 {
-  font-size: 24px;
+/* Título */
+
+.overlay{
+    background:var(--laranja-Senac);
+    color:#fff;
+
+    text-align:center;
+
+    padding:18px;
 }
 
-.conteudo {
-  padding: 25px;
+.overlay h3{
+    font-size:24px;
+    font-weight:bold;
 }
 
-.conteudo p {
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 25px;
+/* Conteúdo */
+
+.conteudo{
+    padding:25px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    flex:1;
 }
 
-.conteudo a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
+.conteudo p{
+    color:#666;
+    line-height:1.7;
+    text-align:center;
 
-  text-decoration: none;
-
-  background: #b45d1f;
-
-  color: #fff;
-
-  padding: 14px;
-
-  border-radius: 8px;
-
-  font-weight: bold;
-
-  transition: 0.3s;
+    margin-bottom:25px;
 }
 
-.conteudo a:hover {
-  background: #944a15;
+/* Botão */
+
+.conteudo a{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+
+    text-decoration:none;
+
+    background:var(--laranja-Senac);
+    color:#fff;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    transition:.3s;
 }
 
+.conteudo a:hover{
+    background:#d97706;
+}
+
+/* ========================= */
+/* RESPONSIVO */
+/* ========================= */
+
+@media (max-width:1000px){
+
+    .acoes{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media (max-width:768px){
+
+    .acoes{
+        grid-template-columns:1fr;
+    }
+
+    .card-icon{
+        height:150px;
+    }
+
+    .card-icon i{
+        font-size:60px;
+    }
+
+    .overlay h3{
+        font-size:22px;
+    }
+
+}
+
+
+
+
+
+/*========================*/
 .menu-toggle{
     display:none;
     background:none;
