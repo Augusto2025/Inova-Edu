@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    
+    <link rel="stylesheet" href="{% static 'styles/cursos.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="container">
+        
+        <header class="section-header">
+            <div class="rota">
+                Página: Cursos
+            </div>
+            <div class="titulo">
+                <p class="main-title">Cursos</p>
+            </div>
+        </header>
+
+      
+        <section class="search-container">
+            <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder=" Digite o nome do curso..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+
+
+        {% if curso|length == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
+            </div>
+        {% endif %}
+    </div> 
+
+    <main class="container">
+
+        <section class="cards-grid">
+            {% for Curso in curso %}
+                <article class="card">
+                    
+                    {% if Curso.imagem %}
+                        <div class="card-image" style="background-image: url('{{ Curso.imagem.url }}'); background-size: cover; background-position: center;">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% else %}
+                        <div class="card-image img-fallback-gradient">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-content">
+                        
+                        <h3>{{ Curso.nome_curso }}</h3>
+                        <p>Clique no botão abaixo para conferir os detalhes.</p>
+                        <div class="borda"></div>
+                        <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+                    </div>
+
+                </article>
+            {% endfor %}
+        </section>
+    </main>
+
+      
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filtroBtn = document.getElementById('filtroBtn');
+            const sidebar = document.getElementById('sidebarFiltro');
+
+            if (filtroBtn && sidebar) {
+                filtroBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('open');
+                });
+
+                // Fecha o painel de filtros se o usuário clicar fora dele
+                document.addEventListener('click', (e) => {
+                    if (!sidebar.contains(e.target) && e.target !== filtroBtn) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
+   
+{% endblock %}
+
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}

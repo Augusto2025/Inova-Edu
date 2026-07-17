@@ -9,11 +9,11 @@ urlpatterns = [
     path('', views.homePage),
     path('homePage/', views.homePage, name='homePage'),
     path('login/', views.login, name='login'),
-    path('home-aluno-professor/', views.HomeAlunoProfessor, name='home_aluno_professor'),
+    path('home/', views.HomeAlunoProfessor, name='home'),
     path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
     path("pedir_email/", views.pedir_email, name="pedir_email"),
     # Aluno e Professor
-    path('home/', views.home, name='home'),
+    path('cursos/', views.cursos, name='cursos'),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
     path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
     path('forum/<int:idforum>/topico/criar/', views.criar_topico, name='criar_topico'),

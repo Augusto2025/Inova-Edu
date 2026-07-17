@@ -67,7 +67,7 @@ def HomeAlunoProfessor(request):
     foruns_recentes = (
         Forum.objects
         .select_related("usuario")
-        .order_by("-data_criacao", "-idforum")[:3]
+        .order_by("-data_criacao", "-idforum")[:4]
     )
 
     eventos_proximos = (
@@ -78,7 +78,7 @@ def HomeAlunoProfessor(request):
 
     cursos_recentes = (
         Curso.objects
-        .order_by("-idcurso")[:4]
+        .order_by("-idcurso")[:3]
     )
 
     context = {
@@ -89,7 +89,7 @@ def HomeAlunoProfessor(request):
 
     return render(
         request,
-        "AlunoProfessor/HomeAlunoProfessor.html",
+        "AlunoProfessor/home.html",
         context
     )
 
@@ -155,7 +155,7 @@ def redefinir_senha(request, uidb64, token):
 # --------------- Telas aluno e professor ---------------
 
 
-def home(request):
+def cursos(request):
     query = request.GET.get("q", "").strip()
     inicio = request.GET.get("inicio")
     fim = request.GET.get("fim")
@@ -192,7 +192,7 @@ def home(request):
 
     return render(
         request,
-        "AlunoProfessor/home.html",
+        "AlunoProfessor/cursos.html",
         {
             "curso": curso,
             "query": query,

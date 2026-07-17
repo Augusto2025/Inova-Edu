@@ -9,7 +9,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
 
     <!-- LOGO -->
     <div class="logo">
-        <a href="{% url 'home_aluno_professor' %}">
+        <a href="{% url 'home' %}">
             <img src="{% static 'img/Logo_branco_icone.png' %}" alt="Logo">
         </a>
     </div>
@@ -22,13 +22,13 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
     <!-- MENU -->
     <nav id="site-nav" class="menu">
 
-        <a href="{% url 'home_aluno_professor' %}"
-           class="{% if request.resolver_match.url_name == 'home_aluno_professor' %}active{% endif %}">
+        <a href="{% url 'home' %}"
+           class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             Home
         </a>
 
-        <a href="{% url 'home' %}"
-           class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        <a href="{% url 'cursos' %}"
+           class="{% if request.resolver_match.url_name == 'cursos' %}active{% endif %}">
             Cursos
         </a>
 

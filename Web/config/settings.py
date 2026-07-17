@@ -86,6 +86,7 @@ else:
     # 2. Caso contrário, monta o MySQL usando exatamente as mesmas variáveis separadas do seu .env
     DATABASES = {
         "default": {
+            "ENGINE": "django.db.backends.mysql",
             "NAME": os.environ.get("DB_NAME"),       # Nome do banco igual ao Desktop
             "USER": os.environ.get("DB_USER"),       # Usuário igual ao Desktop
             "PASSWORD": os.environ.get("DB_PASSWORD"), # Senha igual ao Desktop
