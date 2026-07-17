@@ -50,7 +50,7 @@ def login(request):
         if usuario.tipo == "Coordenador":
             return redirect("home_Coordenacao")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
-            return redirect("home_aluno_professor")
+            return redirect("home")
     # se ele não for, ele manda um erro e volta pro login
     else:
         return render(

@@ -110,6 +110,7 @@ body {
   padding: 25px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  width: 675px;
 }
 
 .calendar-header{
@@ -197,6 +198,7 @@ body {
   text-align: left;
   background-color: white;
   color: #004A8D;
+  width: 90%;
 }
 
 .legend-row {
