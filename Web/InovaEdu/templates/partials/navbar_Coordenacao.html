@@ -1,0 +1,28 @@
+{% load static %}
+
+<nav class="navbar">
+    <div class="nav-logo">
+        <a href="{% url 'HomeCoord' %}">
+            <img src="{% static 'img/Logo_branco_icone.png' %}" alt="Logo Senac">
+        </a>
+    </div>
+
+    <ul class="nav-menu">
+        <li><a href="">Home</a></li>
+        <li><a href="">Usuários</a></li>
+        <li><a href="">Cursos</a></li>
+        <li><a href="">Turmas</a></li> 
+    </ul>
+
+    <div class="nav-actions">
+        <a href="" class="btn-perfil">
+            <i class="fa-solid fa-user"></i>
+            Perfil
+        </a>
+
+        <a href="" class="btn-sair">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sair
+        </a>
+    </div>
+</nav>
