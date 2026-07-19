@@ -1,91 +1,280 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 :root {
-    --laranja-Senac:#F7941D;
-    --branco-Senac:#FFF;
-    --azul-Senac: #004A8D;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --azul-deep: #002d58;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
 }
 
-
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    /* font-family: Arial, Helvetica, sans-serif; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: "Roboto", sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-image: url("../img/Imagemdesfocada.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+
+  /* Configuração do fundo azul com ondas diagonais brancas animadas */
+  background-color: #004a8d; /* O azul Senac de fundo */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    rgba(255, 255, 255, 0.04) 40px,
+    rgba(255, 255, 255, 0.04) 80px
+  );
+  background-size: 200% 200%;
+  animation: moverOndas 12s linear infinite;
 }
 
-.card_login {
-    background: var(--branco-Senac);
-    padding: 60px 50px; /* ainda maior */
-    border-radius: 16px;
-    box-shadow: 0px 15px 18px rgba(0,0,0,0.15);
-    display: flex;
+/* Animação que faz as ondas diagonais se moverem suavemente ao fundo */
+@keyframes moverOndas {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Container Principal do Card */
+.glass-login-card {
+  display: flex;
+  width: 100%;
+  max-width: 960px;
+  min-height: 560px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   PAINEL ESQUERDO: AZUL TRANSPARENTE (GLASSMORPHISM)
+   ========================================================================== */
+.panel-left-glass {
+  flex: 1;
+  padding: 50px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  /* Efeito Vidro Fosco Azul */
+  background: rgba(0, 74, 141, 0.65); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-content {
+  color: white;
+  position: relative;
+  z-index: 2;
+}
+
+.logo-img {
+  width: 90px;
+  margin-bottom: 20px;
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+
+.brand-title span {
+  color: var(--laranja-Senac);
+}
+
+.brand-tagline {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+  margin-bottom: 40px;
+}
+
+.feature-list {
+  list-style: none;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.feature-list li i {
+  color: var(--laranja-Senac);
+}
+
+/* ==========================================================================
+   PAINEL DIREITO: BRANCO SEMI-TRANSPARENTE
+   ========================================================================== */
+.panel-right-white {
+  flex: 1.2;
+  background: rgba(255, 255, 255, 0.95); /* Branco suave para contraste perfeito */
+  padding: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.form-content-wrapper {
+  width: 100%;
+}
+
+.form-header {
+  margin-bottom: 35px;
+}
+
+.form-header h2 {
+  font-size: 1.8rem;
+  color: var(--azul-Senac);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.form-header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Estrutura dos Campos de Entrada */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 16px 14px 46px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: var(--text-main);
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: var(--azul-Senac);
+  background-color: var(--branco-Senac);
+  box-shadow: 0 0 0 4px rgba(0, 74, 141, 0.1);
+}
+
+/* Erro Customizado Dinâmico */
+.error-message {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Injeta bordas vermelhas nos inputs se a classe de erro do Django for acionada */
+.input-error-state .input-wrapper input {
+  border-color: #ef4444 !important;
+  background-color: #fff;
+}
+
+/* Botão de Login Estilizado */
+.btn-login {
+  width: 100%;
+  padding: 15px;
+  background: var(--azul-Senac);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 74, 141, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn-login:hover {
+  background: var(--laranja-Senac);
+  box-shadow: 0 6px 20px rgba(247, 148, 29, 0.3);
+  transform: translateY(-1px);
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.forgot-password a {
+  color: var(--azul-Senac);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+  color: var(--laranja-Senac);
+}
+
+/* Responsividade Adaptativa (Colapsa em telas de celulares) */
+@media (max-width: 768px) {
+  .glass-login-card {
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 550px; /* aumentei bem */
-}
-
-.logo {
-    width: 120px; /* logo maior */
-}
-
-h1 {
-    margin-bottom: 30px;
-    color: #333;
-    font-size: 32px; /* título maior */
-}
-
-input {
-    /* font-family: kadwa; */
-    width: 100%;
-    padding: 18px; /* campos maiores */
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 18px; /* fonte maior */
-}
-
-button {
-    width: 100%;
-    padding: 18px; /* botão maior */
-    background: var(--azul-Senac);
-    color: var(--branco-Senac);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 19px; /* texto maior */
-    font-weight: bold;
-}
-
-button:hover {
-    background: #658db6;
-}
-
-.senha {
-    margin-top: 22px;
-    font-size: 16px;
-    text-align: center;
-}
-
-.senha a {
-    color: #4A90E2;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.senha a:hover {
-    text-decoration: underline;
+    min-height: auto;
+  }
+  
+  .panel-left-glass {
+    padding: 40px 30px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .panel-right-white {
+    padding: 40px 30px;
+  }
 }

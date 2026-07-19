@@ -303,19 +303,14 @@ section .Botao_entrar_curso {
     width:100%;
     height:46px;
 
-    background:#fff;
+    background:#004A8D;
 
     border:2px solid #004A8D;
     border-radius:10px;
 
-    color:#004A8D;
+    color:#fff;
     text-decoration:none;
     font-weight:600;
 
     transition:.3s ease;
-}
-
-.btn-detalhes:hover{
-    background:#004A8D;
-    color:#fff;
 }
