@@ -261,20 +261,77 @@ body {
   color: var(--laranja-Senac);
 }
 
+/* Esconde a logo mobile por padrão em telas grandes */
+.logo-mobile {
+  display: none;
+}
+
 /* Responsividade Adaptativa (Colapsa em telas de celulares) */
 @media (max-width: 768px) {
+  body {
+    padding: 12px;
+    overflow: auto; /* Permite rolagem se a tela do celular for muito pequena */
+    align-items: center; /* Evita que o card corte no topo em telas baixinhas */
+  }
+
   .glass-login-card {
     flex-direction: column;
     min-height: auto;
+    border-radius: 16px; /* Bordas um pouco menores para combinar com telas mobile */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
   }
   
+  /* Oculta o painel institucional no celular para poupar espaço e foco */
   .panel-left-glass {
-    padding: 40px 30px;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: none; 
   }
   
+  /* Faz o formulário ocupar o card inteiro com espaçamentos confortáveis */
   .panel-right-white {
-    padding: 40px 30px;
+    flex: 1;
+    padding: 40px 24px;
+    background: #ffffff; /* Fundo totalmente opaco para melhor leitura no mobile */
+  }
+
+  .form-header {
+    margin-bottom: 25px;
+    text-align: center; /* Centraliza o título no mobile para harmonizar o layout */
+  }
+
+  .form-header h2 {
+    font-size: 1.6rem;
+  }
+
+  /* Ajustes finos nos botões e inputs para facilitar o toque na tela (Touch Target) */
+  .input-wrapper input {
+    padding: 15px 16px 15px 46px; /* Leve aumento para facilitar o clique */
+    font-size: 16px; /* Evita que o iOS dê zoom automático indesejado no input */
+  }
+
+  .btn-login {
+    padding: 16px;
+    font-size: 16px;
+  }
+
+  .logo-mobile {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .logo-mobile img {
+    width: 130px; /* Tamanho ajustado e equilibrado para a tela do celular */
+    height: auto;
+  }
+}
+
+/* Ajuste extra para celulares muito antigos ou muito pequenos (como iPhone SE) */
+@media (max-width: 360px) {
+  .panel-right-white {
+    padding: 30px 16px;
+  }
+  
+  .form-header h2 {
+    font-size: 1.4rem;
   }
 }
