@@ -25,7 +25,7 @@ body {
   overflow: hidden;
 
   /* Configuração do fundo azul com ondas diagonais brancas animadas */
-  background-color: #004a8d; /* O azul Senac de fundo */
+  background-color: #045dad; /* O azul Senac de fundo */
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
@@ -38,14 +38,14 @@ body {
 }
 
 /* Animação que faz as ondas diagonais se moverem suavemente ao fundo */
-@keyframes moverOndas {
+/* @keyframes moverOndas {
   0% {
     background-position: 0% 0%;
   }
   100% {
     background-position: 100% 100%;
   }
-}
+} */
 
 /* Container Principal do Card */
 .glass-login-card {
