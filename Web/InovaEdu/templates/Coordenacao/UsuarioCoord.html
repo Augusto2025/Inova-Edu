@@ -8,6 +8,7 @@
     <title>painel dos Usuarios</title>
 
     <link rel="stylesheet" href="{% static 'styles/navbar_coordenacao.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/UsuarioCoord.css' %}">
 
 
     <link rel="stylesheet"
@@ -17,4 +18,83 @@
 
 
 
-{% include 'partials/navbar_Coordenacao.html' %}
+    {% include 'partials/navbar_Coordenacao.html' %}
+
+    <div class="filtros-usuarios">
+
+        <div class="filtro-card ativo" data-filtro="todos">
+            <div class="icone azul">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div class="info">
+                <span>Total de Usuários</span>
+                <h2>8</h2>
+            </div>
+        </div>
+
+        <div class="filtro-card" data-filtro="professor">
+            <div class="icone cinza">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+
+            <div class="info">
+                <span>Professores</span>
+                <h2>4</h2>
+            </div>
+        </div>
+
+        <div class="filtro-card" data-filtro="aluno">
+            <div class="icone laranja">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="info">
+                <span>Alunos</span>
+                <h2>4</h2>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

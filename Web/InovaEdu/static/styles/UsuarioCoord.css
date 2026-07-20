@@ -1,0 +1,152 @@
+/* ========================= */
+/* FILTROS */
+/* ========================= */
+
+.filtros-usuarios{
+    width:95%;
+    max-width:40px;
+    margin:126px auto;
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.filtro-card{
+
+    display:flex;
+    align-items:center;
+    gap:16px;
+
+    background:#fff;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    border:1px solid #dce5f2;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.filtro-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.filtro-card.ativo{
+    border:2px solid var(--azul-Senac);
+    box-shadow:0 8px 20px rgba(0,74,141,.15);
+}
+
+.icone{
+
+    width:48px;
+    height:48px;
+
+    border-radius:8px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:18px;
+}
+
+.icone.azul{
+    background:#dfe9ff;
+    color:#004a8d;
+}
+
+.icone.cinza{
+    background:#ececec;
+    color:#374151;
+}
+
+.icone.laranja{
+    background:#ffe2d3;
+    color:#d97706;
+}
+
+.info span{
+
+    display:block;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    color:#666;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+}
+
+.info h2{
+
+    margin-top:4px;
+
+    font-size:28px;
+
+    color:#1f2d3d;
+}
+
+/* ========================= */
+/* RESPONSIVO */
+/* ========================= */
+
+@media(max-width:992px){
+
+    .filtros-usuarios{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:768px){
+
+    .filtros-usuarios{
+        grid-template-columns:1fr;
+    }
+
+    .filtro-card{
+        padding:16px;
+    }
+
+    .icone{
+        width:44px;
+        height:44px;
+        font-size:17px;
+    }
+
+    .info h2{
+        font-size:24px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .filtro-card{
+        gap:12px;
+        padding:14px;
+    }
+
+    .icone{
+        width:40px;
+        height:40px;
+        font-size:16px;
+    }
+
+    .info span{
+        font-size:10px;
+    }
+
+    .info h2{
+        font-size:20px;
+    }
+
+}
