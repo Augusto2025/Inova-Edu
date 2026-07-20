@@ -1,420 +1,548 @@
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
-    --azul-Senac: #004A8D;
+    --laranja-Senac: #f7941d;
+    --azul-Senac: #004a8d;
     --azul-Senac-hover: #00376a;
-    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-    --text-main: #334155;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-main: #1e293b;
     --text-muted: #64748b;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
 }
 
-
-/* RESET */
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
-
-.container {
+/* CONTAINER PRINCIPAL COM MARGEM 0 E AUTO */
+.container-repositorio-main {
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
     padding: 15px 20px;
 }
-/* ==========================
-  ARQUIVOS DO REPOSITORIO 
-========================== */
-/* CONTAINER PRINCIPAL */
-.container_repositorio {
-    max-width: 1400px;
-    margin: 30px auto;
-    padding: 20px;
-}
 
-/* ÁREA DAS DUAS COLUNAS */
-.turma-repositorio {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    height: 65px;
-}
-
-/* CAIXAS DE PASTAS E ARQUIVOS */
-.pastas,
-.arquivos {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.1);
-    padding: 20px;
-    border: 1px solid #e5e5e5;
-
-    min-height: 500px;
-    max-height: 650px;
-    overflow-y: auto;
-}
-
-/* TOPO DAS SEÇÕES */
-.section-header1 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f0f0f0;
-}
-
-.section-header1 h4 {
-    margin: 0;
-    color: #0f2b52;
-    font-size: 1.3rem;
-}
-
-/* BOTÕES */
-.acao-btn {
-    background: var(--azul-Senac);
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: .9rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: .3s;
+/* ==========================================================================
+   ROTA 1: PÁGINA DO SISTEMA (SEM ÍCONE)
+   ========================================================================== */
+.page-location-header {
     margin-bottom: 15px;
 }
 
-.acao-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+.site-breadcrumb {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    word-break: break-word;
 }
 
-.acao-btn.baixar {
-    margin-left: auto;
-    background: var(--azul-Senac);
+.main-title {
+    font-size: 1.8rem;
+    color: var(--azul-Senac);
+    font-weight: 700;
 }
 
-/* BOTÃO SELECIONAR */
-.btn-selecionar {
-    border: none;
-    background: var(--azul-Senac-hover);
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: .85rem;
+/* ==========================================================================
+   ROTA 2: NAVEGAÇÃO DE PASTAS INTERNAS
+   ========================================================================== */
+.folder-navigation-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.folder-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-label {
+    font-weight: 600;
+    color: var(--azul-Senac);
+    margin-right: 4px;
+}
+
+.crumb-link {
+    color: var(--azul-Senac);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.crumb-link:hover {
+    color: var(--laranja-Senac);
+    text-decoration: underline;
+}
+
+.crumb-separator {
+    color: var(--text-muted);
     font-weight: bold;
+}
+
+.crumb-active {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.top-actions-bar {
+    margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   ÁREA CENTRAL UNIFICADA (ESTILO EXPLORADOR DE ARQUIVOS)
+   ========================================================================== */
+.turma-repositorio-unified {
+    display: flex;
+    flex-direction: column;
+}
+
+.repo-box-unified {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.box-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--azul-Senac);
+}
+
+.box-title i {
+    font-size: 1.4rem;
+}
+
+.box-title h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.box-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+/* BOTÕES GERAIS */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--azul-Senac);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: var(--azul-Senac-hover);
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+.btn-download {
+    background: var(--laranja-Senac);
+    color: #ffffff;
+}
+
+.btn-download:hover {
+    background: #e08313;
+}
+
+.btn-back {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-selecionar {
+    background: var(--azul-Senac);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
 }
 
 .btn-selecionar:hover {
     background: var(--azul-Senac-hover);
 }
 
-
-
-/* LISTAS */
-.lista-pastas,
-.lista-arquivos {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+/* LISTAGEM UNIFICADA */
+.unified-items-container {
+    flex-grow: 1;
 }
 
-/* ITENS */
-.pasta-item,
-.arquivo-item {
+.lista-itens-unified {
+    list-style: none;
+}
+
+.item-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 10px;
-    border-bottom: 1px solid #ececec;
-    transition: .3s;
-}
-
-.pasta-item:hover,
-.arquivo-item:hover {
-    background:#a9cdf0; ;
-}
-
-/* LINKS */
-.pasta-info a,
-.arquivo-info a {
-    text-decoration: none;
-    color: #2c3e50;
-    font-size: .95rem;
-    font-weight: 500;
-}
-
-.pasta-info a:hover,
-.arquivo-info a:hover {
-    color: var(--azul-Senac-hover);
-}
-
-/* AÇÕES */
-.pasta-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.pasta-actions button {
-    border: none;
-    background: transparent;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
     cursor: pointer;
-    font-size: 1.1rem;
-    transition: .3s;
-}
-
-.pasta-actions button:hover {
-    transform: scale(1.2);
-}
-
-/* CHECKBOX */
-.checkbox-pastas,
-.checkbox-arquivos {
-    margin-right: 10px;
-}
-
-/* SEM ITENS */
-.sem-itens {
-    text-align: center;
-    padding: 40px 0;
-    color: #999;
-    font-style: italic;
-}
-
-/* BOTÕES EXCLUIR */
-#botoes-excluir-pastas,
-#botoes-excluir-arquivos {
-    margin-top: 20px;
-    display: flex;
     gap: 10px;
 }
 
-.btn-excluir-selecionadas {
+.item-row:hover {
+    background: #f1f5f9;
+}
+
+/* Evita que nomes gigantes de arquivos/pastas estourem a largura no celular */
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+}
+
+.item-link {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-link:hover {
+    color: var(--azul-Senac);
+}
+
+.folder-icon {
+    color: var(--laranja-Senac);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.file-icon {
+    color: var(--azul-Senac);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.item-type-badge {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.item-actions button {
     border: none;
-    background: #dc3545;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 8px;
+    background: transparent;
     cursor: pointer;
-    transition: .3s;
+    font-size: 1rem;
+    color: var(--text-muted);
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
 }
 
-.btn-excluir-selecionadas:hover {
-    background: #bb2d3b;
+.item-actions button:hover {
+    color: var(--azul-Senac);
+    background: #e2e8f0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-/* RESPONSIVO */
-@media (max-width: 900px) {
-    .turma-repositorio {
-        grid-template-columns: 1fr;
-    }
-
-    .pastas,
-    .arquivos {
-        min-height: auto;
-    }
+.item-actions button.btn-del:hover {
+    color: var(--danger-color);
+    background: #fee2e2;
 }
 
+.sem-itens {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
 
+/* BARRA DE AÇÕES EM MASSA */
+.mass-actions-bar {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
 
+.btn-danger:hover {
+    background: var(--danger-hover);
+}
 
-/* ==========================
-   MODAL
-========================== */
-/* FUNDO ESCURO */
+.btn-danger-dark {
+    background: #991b1b;
+    color: white;
+}
+
+.btn-danger-dark:hover {
+    background: #7f1d1d;
+}
+
+/* ==========================================================================
+   MODAIS
+   ========================================================================== */
 .modal {
     display: none;
     position: fixed;
     z-index: 9999;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(3px);
-
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
     justify-content: center;
     align-items: center;
+    padding: 15px;
 }
 
-/* CAIXA DO MODAL */
 .modal-content {
-    width: 90%;
+    width: 100%;
     max-width: 500px;
-    background: #fff;
-    border-radius: 15px;
+    background: #ffffff;
+    border-radius: 12px;
     overflow: hidden;
-    animation: modalEntrada .3s ease;
-    box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* ANIMAÇÃO */
-@keyframes modalEntrada {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* CABEÇALHO */
 .modal-header {
-    background: #004A98; /* Azul Senac */
+    background: var(--azul-Senac);
     color: white;
-    padding: 25px 30px;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    height: 85px;
+    align-items: flex-start;
 }
 
 .header-text h2 {
-    margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 4px;
 }
 
 .header-text p {
-    margin-top: 8px;
-    opacity: .9;
-    font-size: .9rem;
+    font-size: 0.85rem;
+    opacity: 0.9;
 }
 
-/* BOTÃO FECHAR */
 .fechar {
     cursor: pointer;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     position: relative;
 }
 
-.fechar::before,
-.fechar::after {
+.fechar::before, .fechar::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-
-    width: 20px;
+    width: 16px;
     height: 2px;
     background: white;
 }
 
-.fechar::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-}
+.fechar::before { transform: translate(-50%, -50%) rotate(45deg); }
+.fechar::after { transform: translate(-50%, -50%) rotate(-45deg); }
 
-.fechar::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.fechar:hover {
-    transform: scale(1.1);
-}
-
-/* CORPO */
 .modal-body {
-    padding: 15px;
+    padding: 20px;
 }
 
-/* CAMPOS */
 .modal-body input[type="text"],
-.modal-body input[type="file"],
-.modal-body textarea {
+.modal-body input[type="file"] {
     width: 100%;
-    padding: 15px 18px;
-    border: 1px solid #d7dce2;
-    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     margin-bottom: 20px;
-    font-size: .95rem;
-    outline: none;
-    box-sizing: border-box;
-    transition: .3s;
+    font-size: 0.95rem;
 }
 
-.modal-body input:focus,
-.modal-body textarea:focus {
-    border-color: #004A98;
-    box-shadow: 0 0 0 3px rgba(0, 74, 152, .1);
-}
-
-/* BOTÕES */
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    /* margin-top: 20px; */
+    gap: 10px;
 }
 
-/* CANCELAR */
 .btn-cancel {
+    background: #f1f5f9;
     border: none;
-    background: #e9ecef;
-    color: #495057;
-    padding: 12px 22px;
-    border-radius: 10px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: .3s;
 }
 
-.btn-cancel:hover {
-    background: #d8dde2;
-}
-
-/* SALVAR */
-.btn-save,
-#fecharExcluirBtn {
-    border: none;
-    background: #004A98;
+.btn-save {
+    background: var(--azul-Senac);
     color: white;
-    padding: 12px 25px;
-    border-radius: 10px;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: .3s;
 }
 
-.btn-save:hover,
-#fecharExcluirBtn:hover {
-    background: #003875;
+.btn-danger-confirm {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-/* RESPONSIVO */
-@media(max-width:600px){
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVIDADE PARA TABLETS E CELULARES)
+   ========================================================================== */
 
-    .modal-content{
-        width:95%;
+/* Tablets (até 768px) */
+@media (max-width: 768px) {
+    .container-repositorio-main {
+        width: 100%;
+        padding: 15px 12px;
     }
 
-    .modal-header,
-    .modal-body{
-        padding:20px;
+    .folder-navigation-bar {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .modal-actions{
+    .btn-download {
+        width: 100%;
+    }
+
+    .box-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 8px;
+        width: 100%;
+    }
+
+    .box-toolbar .btn-action {
+        width: 100%;
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+
+    .item-type-badge {
+        display: none; /* Esconde a tag "Pasta de arquivos" / "Arquivo" em telas menores para dar espaço ao nome */
+    }
+
+    .mass-actions-bar {
         flex-direction: column;
     }
 
-    .modal-actions button{
-        width:100%;
+    .mass-actions-bar .btn-action {
+        width: 100%;
+    }
+}
+
+/* Celulares pequenos (até 480px) */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 1.4rem;
+    }
+
+    .box-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-selecionar {
+        align-self: flex-start;
+    }
+
+    .box-toolbar {
+        grid-template-columns: 1fr; /* Empilha botões de upload um abaixo do outro */
+    }
+
+    .repo-box-unified {
+        padding: 16px 12px;
+    }
+
+    .item-row {
+        padding: 12px 6px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
     }
 }
