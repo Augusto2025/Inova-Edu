@@ -29,7 +29,7 @@
 
             <div class="info">
                 <span>Total de Usuários</span>
-                <h2>8</h2>
+                <h2>{{ total_usuarios }}</h2>
             </div>
         </div>
 
@@ -40,7 +40,7 @@
 
             <div class="info">
                 <span>Professores</span>
-                <h2>4</h2>
+                <h2>{{ total_professores }}</h2>
             </div>
         </div>
 
@@ -51,11 +51,132 @@
 
             <div class="info">
                 <span>Alunos</span>
-                <h2>4</h2>
+                <h2>{{ total_alunos }}</h2>
             </div>
         </div>
 
     </div>
+
+
+    {% comment %} Topo da Lista de Usuários {% endcomment %}
+    <section class="usuarios-container">
+        <div class="topo-lista-usuarios">
+
+            <div class="filtros-lista">
+
+                <div class="campo-pesquisa">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text"
+                        id="pesquisarUsuario"
+                        placeholder="Buscar por nome ou e-mail...">
+                </div>
+
+                <select id="filtroTipo" class="select-tipo">
+                    <option value="">Tipo de Usuário: Todos</option>
+                    <option value="Aluno">Aluno</option>
+                    <option value="Professor">Professor</option>
+                    <option value="Coordenador">Coordenador</option>
+                </select>
+
+            </div>
+
+            <a href="#" class="btn-novo-usuario" id="abrirModal">
+                <i class="fa-solid fa-user-plus"></i>
+                Novo Usuário
+            </a>
+
+        </div>
+
+        {% comment %} Lista de Usuários {% endcomment %}
+
+        <section class="lista-usuario-conteudo">
+            <table class="tabela-usuarios">
+
+                <thead>
+                    <tr>
+                        <th>Avatar</th>
+                        <th>Nome Completo</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for usuario in usuarios %}
+                    <tr>
+
+                        <td class="avatar">
+
+                            {% if usuario.imagem %}
+                                <img src="{{ usuario.imagem.url }}" alt="{{ usuario.nome }}">
+                            {% else %}
+                                <div class="avatar-padrao">
+                                    {{ usuario.nome|first }}{{ usuario.sobrenome|first }}
+                                </div>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            <strong>{{ usuario.nome }} {{ usuario.sobrenome }}</strong>
+                        </td>
+
+                        <td>{{ usuario.email }}</td>
+
+                        <td>
+                            <span class="tipo {{ usuario.tipo|lower }}">
+                                {{ usuario.tipo }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <div class="acoes-geral_usuario">
+
+                                <button class="btn-editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+
+                                <button class="btn-descricao icon-descricao"
+                                        data-descricao="{{ usuario.descricao|escapejs }}">
+                                    <i class="fa-solid fa-align-center"></i>
+                                </button>
+
+                                <form method="POST"
+                                    action="{% url 'excluir_usuario' usuario.idusuario %}">
+                                    {% csrf_token %}
+
+                                    <button class="btn-excluir abrir-modal-excluir">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="vazio">
+                            Nenhum usuário cadastrado.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </section>
+    </section>
 
 
 

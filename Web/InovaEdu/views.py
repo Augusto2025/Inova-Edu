@@ -1316,7 +1316,26 @@ def HomeCoord(request):
 
 
 def UsuarioCoord(request):
-    return render(request, 'Coordenacao/UsuarioCoord.html')
+
+    filtro = request.GET.get("tipo", "todos")
+
+    usuarios = Usuario.objects.all()
+
+    if filtro == "professor":
+        usuarios = usuarios.filter(tipo__iexact="Professor")
+
+    elif filtro == "aluno":
+        usuarios = usuarios.filter(tipo__iexact="Aluno")
+
+    context = {
+        "usuarios": usuarios,
+        "total_usuarios": Usuario.objects.count(),
+        "total_professores": Usuario.objects.filter(tipo__iexact="Professor").count(),
+        "total_alunos": Usuario.objects.filter(tipo__iexact="Aluno").count(),
+        "filtro": filtro,
+    }
+
+    return render(request, "Coordenacao/UsuarioCoord.html", context)
 
 def CursoCoord(request):
     return render(request, 'Coordenacao/CursoCoord.html')

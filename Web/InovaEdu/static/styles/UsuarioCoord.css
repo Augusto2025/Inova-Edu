@@ -1,10 +1,27 @@
+:root {
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
+}
+
+*{
+    
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:var(--fonte-principal);
+}
+
 /* ========================= */
 /* FILTROS */
 /* ========================= */
 
 .filtros-usuarios{
     width:95%;
-    max-width:40px;
+    max-width:50%;
     margin:126px auto;
 
     display:grid;
@@ -148,5 +165,349 @@
     .info h2{
         font-size:20px;
     }
+
+}
+
+/* Container geral */
+
+.usuarios-container{
+
+    width:95%;
+    max-width:90%;
+
+    margin:35px auto;
+
+    background:#fff;
+
+    border:1px solid #dce5f2;
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+
+
+/* TOPO DA LISTA */
+.topo-lista-usuarios{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:18px 20px;
+
+    background:#fff;
+
+    border:1px solid #dce5f2;
+    border-bottom:none;
+
+    border-radius:12px 12px 0 0;
+
+}
+
+.filtros-lista{
+
+    display:flex;
+    gap:15px;
+    align-items:center;
+
+}
+
+.campo-pesquisa{
+
+    width:330px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+
+    border:1px solid #d7dce5;
+    border-radius:8px;
+
+    padding:0 12px;
+
+    background:#f8fafc;
+
+}
+
+.campo-pesquisa i{
+
+    color:#8b97a7;
+    margin-right:10px;
+
+}
+
+.campo-pesquisa input{
+
+    width:100%;
+
+    border:none;
+    outline:none;
+
+    background:none;
+
+}
+
+.select-tipo{
+
+    height:42px;
+
+    padding:0 14px;
+
+    border:1px solid #d7dce5;
+
+    border-radius:8px;
+
+    background:#fff;
+
+    cursor:pointer;
+
+}
+
+.btn-novo-usuario{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:12px 18px;
+
+    background:#ff914d;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    border-radius:8px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.btn-novo-usuario:hover{
+
+    background:#ea7d38;
+
+}
+
+@media(max-width:768px){
+
+    .topo-lista-usuarios{
+
+        flex-direction:column;
+        gap:15px;
+
+        align-items:stretch;
+
+    }
+
+    .filtros-lista{
+
+        flex-direction:column;
+
+    }
+
+    .campo-pesquisa{
+
+        width:100%;
+
+    }
+
+    .select-tipo{
+
+        width:100%;
+
+    }
+
+    .btn-novo-usuario{
+
+        justify-content:center;
+
+    }
+
+}
+
+
+/* LISTA DO USUARIO */
+
+.lista-usuario-conteudo{
+
+    overflow-x:auto;
+
+}
+
+.tabela-usuarios{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:#fff;
+
+}
+
+.tabela-usuarios thead{
+
+    background:#003b73;
+    color:#fff;
+
+}
+
+.tabela-usuarios th{
+
+    padding:18px;
+
+    text-align:left;
+
+    font-size:13px;
+
+    text-transform:uppercase;
+
+}
+
+.tabela-usuarios td{
+
+    padding:18px;
+
+    border-bottom:1px solid #edf2f7;
+
+    vertical-align:middle;
+
+}
+
+.tabela-usuarios tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+/* Avatar */
+
+.avatar img{
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+.avatar-padrao{
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:var(--azul-Senac);
+
+    color:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-weight:bold;
+
+}
+
+/* Tipo */
+
+.tipo{
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.tipo.professor{
+
+    background:#eaf3ff;
+    color:#0d6efd;
+
+}
+
+.tipo.aluno{
+
+    background:#fff3e8;
+    color:#ff7b00;
+
+}
+
+.tipo.coordenador{
+
+    background:#eaf9ef;
+    color:#198754;
+
+}
+
+/* Ações */
+
+.acoes-geral_usuario{
+
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+
+}
+
+.acoes-geral_usuario button{
+
+    width:36px;
+    height:36px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.btn-editar{
+
+    background:#dbeafe;
+    color:#2563eb;
+
+}
+
+.btn-descricao{
+
+    background:#eef2ff;
+    color:#4f46e5;
+
+}
+
+.btn-excluir{
+
+    background:#fee2e2;
+    color:#dc2626;
+
+}
+
+.acoes-geral_usuario button:hover{
+
+    transform:scale(1.05);
+
+}
+
+.vazio{
+
+    text-align:center;
+    padding:40px;
 
 }
