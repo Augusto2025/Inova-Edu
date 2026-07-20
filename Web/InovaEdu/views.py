@@ -1315,6 +1315,117 @@ def HomeCoord(request):
     return render(request, "Coordenacao/HomeCoord.html")
 
 
+def UsuarioCoord(request):
+    return render(request, 'Coordenacao/UsuarioCoord.html')
+
+def CursoCoord(request):
+    return render(request, 'Coordenacao/CursoCoord.html')
+
+def TurmaCoord(request):
+    return render(request, 'Coordenacao/TurmaCoord.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def home_Coordenacao(request):
     email_sessao = request.session.get("usuario_email")

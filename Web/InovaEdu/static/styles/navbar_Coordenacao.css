@@ -25,7 +25,7 @@
   max-width: 1450px;
   height: 80px;
 
-  background:var(--azul-Senac);
+  background: var(--azul-Senac);
 
   display: flex;
   justify-content: space-between;

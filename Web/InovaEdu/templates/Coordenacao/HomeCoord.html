@@ -44,7 +44,13 @@
             <h3>Total de Usuários:</h3>
             <h3>{{ total_usuarios }}</h3>
 
-            <div class="barra"></div>
+            <div class="barra"></div> 
+
+            <div class="btn-container">
+                <a href="{% url 'UsuariosCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
         </div>
 
 
@@ -58,6 +64,12 @@
             <h3>{{ total_cursos }}</h3>
 
             <div class="barra"></div>
+
+            <div class="btn-container">
+                <a href="{% url 'CursoCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
         </div>
 
 
@@ -71,102 +83,19 @@
             <h3>{{ total_turmas }}</h3>
 
             <div class="barra"></div>
+
+            <div class="btn-container">
+                <a href="{% url 'TurmaCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
+
         </div>
 
     </section>
 
 
-    <!-- Título -->
-    <div class="titulo">
-        <div class="linha"></div>
-        <h2>Ações Rápidas</h2>
-    </div>
-
-
-    <!-- Cards -->
     
-    <section class="acoes">
-        <div class="card">
-
-            <div class="card-icon">
-                <i class="fa-solid fa-users"></i>
-            </div>
-
-            <div class="overlay">
-                <h3>Usuários</h3>
-            </div>
-
-            <div class="conteudo">
-
-                <p>
-                    Adicione novos colaboradores,
-                    edite permissões e acompanhe
-                    a atividade recente.
-                </p>
-
-                <a href="">
-                    Acessar Painel
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-
-            </div>
-        </div>
-
-        {% comment %} Curso {% endcomment %}
-        <div class="card">
-
-            <div class="card-icon">
-                <i class="fa-solid fa-graduation-cap"></i>
-            </div>
-
-            <div class="overlay">
-                <h3>Cursos</h3>
-            </div>
-
-            <div class="conteudo">
-
-                <p>
-                    Adicione novos colaboradores,
-                    edite permissões e acompanhe
-                    a atividade recente.
-                </p>
-
-                <a href="">
-                    Acessar Painel
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-
-            </div>
-        </div>
-
-        {% comment %} Turma {% endcomment %}
-        <div class="card">
-
-          <div class="card-icon">
-                <i class="fa-solid fa-chalkboard-user"></i>
-            </div>
-            <div class="overlay">
-                <h3>Turmas</h3>
-            </div>
-
-            <div class="conteudo">
-
-                <p>
-                    Adicione novos colaboradores,
-                    edite permissões e acompanhe
-                    a atividade recente.
-                </p>
-
-                <a href="">
-                    Acessar Painel
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-
-            </div>
-        </div>
-
-        
-    </section>
 
 </div>
 
