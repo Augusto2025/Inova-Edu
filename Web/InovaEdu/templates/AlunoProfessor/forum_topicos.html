@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
     {% include "partials/header.html" %}
 
@@ -17,12 +18,19 @@
                 <span>></span>
                 <span>{{ forum.nome }}</span>
             </div>
-            <div class="titulo">
-                <p class="main-title">Tópicos do fórum</p>
+            
+            <div class="header-top-bar">
+                <div class="titulo">
+                    <h1 class="main-title">Tópicos: {{ forum.nome }}</h1>
+                </div>
+                <!-- BOTÃO DE NOVO TÓPICO DESTACADO NO CABEÇALHO -->
+                <button id="abrirModalTopico" class="btn-criar-topico" type="button">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Novo Tópico</span>
+                </button>
             </div>
         </header>
 
-   
         <section class="search-container">
             <form method="get" action="{% url 'forum_topicos' forum.idforum %}" class="search-form-wrapper">
                 <div class="search-box">
@@ -35,80 +43,77 @@
 
         {% if topicos|length == 0 %}
             <div class="no-results">
-                <p>Nenhum resultado encontrado.</p>
+                <i class="fa-regular fa-folder-open no-results-icon"></i>
+                <p>Nenhum tópico encontrado neste fórum.</p>
             </div>
         {% endif %}
 
-
     </div> 
 
-
     <main class="container">
-        <div class="grid-topicos">
-            <!-- CARD CRIAR TÓPICO -->
-            <article class="forum-card create-card">
-                <button id="abrirModalTopico" class="botao-criar-forum" type="button">
-                    <div class="plus-circle">+</div>
-                    <span>Novo Tópico</span>
-                    <small>Clique para criar um novo tópico</small>
-                </button>
-            </article>
-
+        <!-- ESTRUTURA EM LISTA DE TÓPICOS -->
+        <div class="lista-topicos">
             {% if topicos %}
                 {% for topico in topicos %}
-                    <div class="card-topico">
-                        <div class="card-content">
-                            <h3 class="titulo-topico">{{ topico.titulo }}</h3>
-                            {% if topico.descricao %}
-                                <p class="resumo-topico">{{ topico.descricao }}</p>
-                            {% endif %}
+                    <article class="item-topico">
+                        <div class="topico-info">
+                            <div class="topico-icon">
+                                <i class="fa-regular fa-comments"></i>
+                            </div>
+                            <div class="topico-detalhes">
+                                <h3 class="titulo-topico">
+                                    <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}">
+                                        {{ topico.titulo }}
+                                    </a>
+                                </h3>
+                                {% if topico.descricao %}
+                                    <p class="resumo-topico">{{ topico.descricao }}</p>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; justify-content: center;"> 
+                        <div class="topico-acoes-wrapper">
                             <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
-                                Entrar na Conversa
+                                Entrar na Conversa <i class="fa-solid fa-chevron-right"></i>
                             </a>
-            
+
                             {% if request.session.usuario_email == topico.usuario.email %}
                                 <div class="acoes-forum">
                                     <button class="btn-editar-topico"
                                             data-topico-id="{{ topico.idtopico }}"
                                             data-topico-titulo="{{ topico.titulo }}"
-                                            data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
+                                            data-topico-descricao="{{ topico.descricao|default_if_none:'' }}"
+                                            title="Editar Tópico">
                                         <i class="fas fa-pen"></i>
                                     </button>
                                     <button class="btn-excluir-topico"
-                                            data-topico-id="{{ topico.idtopico }}">
+                                            data-topico-id="{{ topico.idtopico }}"
+                                            title="Excluir Tópico">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             {% endif %}
                         </div>
-                    </div>
+                    </article>
                 {% endfor %}
-            {% else %}
-                
             {% endif %}
         </div>
     </main>
-
 
     <!-- MODAL CRIAR TÓPICO -->
     <div id="modalCriarTopico" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Criar novo tópico</h2>
-                {% comment %} <button id="fecharModalTopico" class="close-button">&times;</button> {% endcomment %}
             </div>
             <div class="modal-body">
                 <form id="formCriarTopico" method="POST" action="{% url 'criar_topico' forum.idforum %}">
                     {% csrf_token %}
                     <label>Título do tópico</label>
-                    <input name="titulo" required maxlength="100">
+                    <input name="titulo" required maxlength="100" placeholder="Ex: Dúvidas sobre o projeto">
 
                     <label>Descrição</label>
-                    <textarea name="descricao" maxlength="500" placeholder="Opcional"></textarea>
-
+                    <textarea name="descricao" maxlength="500" placeholder="Descreva brevemente o assunto (opcional)"></textarea>
                 </form>
             </div>
             <div class="modal-footer">
@@ -123,7 +128,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Editar Tópico</h2>
-                {% comment %} <button id="fecharModalEditarTopico" class="close-button">&times;</button> {% endcomment %}
             </div>
             <div class="modal-body">
                 <form method="POST" id="formEditarTopico">
@@ -133,7 +137,6 @@
 
                     <label>Descrição</label>
                     <textarea name="descricao" id="inputDescricaoTopico" maxlength="500"></textarea>
-
                 </form>
             </div>
             <div class="modal-footer">
@@ -148,7 +151,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Confirmar Exclusão</h2>
-                {% comment %} <button id="fecharModalExcluirTopico" class="close-button">&times;</button> {% endcomment %}
             </div>
             <p class="modal-body">Tem certeza que deseja excluir este tópico?</p>
             <form method="POST" id="formExcluirTopico">

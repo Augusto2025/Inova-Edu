@@ -22,9 +22,10 @@ body {
 
 /* HEADER INTERNO DO FÓRUM */
 .forum-header {
-    max-width: 900px;
-    margin: 40px auto 10px auto;
-    width: 95%;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 20px;
 }
 
 .forum-info {
@@ -60,9 +61,10 @@ body {
 
 /* CONTAINER PRINCIPAL */
 .chat-container {
-    max-width: 900px;
-    width: 95%;
-    margin: 0 auto 40px auto;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 20px;
 }
 
 /* LISTA DE MENSAGENS */

@@ -6,103 +6,116 @@
     <link rel="stylesheet" href="{% static 'styles/forum_blocos.css' %}">
     <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="{% static 'styles/global.css' %}">
-    
 
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="container">
+    <div class="glass-bg-wrapper">
+        <div class="container">
 
-        <header class="section-header">
-            <div class="rota">
-                Página: Todos os fóruns
-            </div>
-            <div class="titulo">
-                <p class="main-title">Temas dos fóruns</p>
-            </div>
-        </header>
-        
-        
-        <section class="search-container">
-            <form method="get" action="{% url 'forum_blocos' %}" class="search-form-wrapper">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="search" name="q" placeholder="Pesquise um fórum..." value="{{ query }}">
+            <header class="section-header">
+                <div class="rota">
+                    Página: Todos os fóruns
                 </div>
-                <button type="submit" class="btn-search">Buscar</button>
-            </form>
-        </section>
-
-        {% if foruns|length == 0 %}
-            <div class="no-results">
-                <p>Nenhum resultado encontrado.</p>
-            </div>
-        {% endif %}
-
-    </div>
-   
-
-
-    <main class="container">
-
-       <section class="forum-grid">
-
-            <!-- CARD CRIAR FÓRUM -->
-            <article class="forum-card create-card">
-                <button id="abrirModalForum" class="botao-criar-forum" type="button">
-                    <div class="plus-circle">+</div>
-                    <span>Novo Fórum</span>
-                    <small>Clique para criar um novo fórum</small>
-                </button>
-            </article>
-
-            {% for Forum in foruns %}
-            <article class="forum-card">
-
-                <div class="card-top-content">
-                    <h2 class="forum-card-title">{{ Forum.nome }}</h2>
-                    <div class="orange-divider"></div>
+                <div class="titulo">
+                    <h1 class="main-title">Fóruns de Discussão</h1>
+                    <p class="subtitle">Explore os temas ativos ou crie uma nova comunidade</p>
                 </div>
+            </header>
 
-                <div class="forum-card-meta">
-                    <span class="meta-label">DATA DE CRIAÇÃO</span>
-                    <span class="meta-value">{{ Forum.data_criacao }}</span>
-                </div>
-
-                <div class="card-footer-actions">
-                    <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
-                        Entrar
-                    </a>
-
-                    {% if request.session.usuario_email == Forum.usuario.email %}
-                    <div class="acoes-forum">
-                        <button class="btn-editar"
-                            data-forum-id="{{ Forum.idforum }}">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        <button class="btn-excluir" data-forum-id="{{ Forum.idforum }}">
-                            <i class="fas fa-trash"></i>
-                        </button>
+            <section class="search-container">
+                <form method="get" action="{% url 'forum_blocos' %}" class="search-form-wrapper">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="search" name="q" placeholder="Pesquise por palavra-chave ou tema..." value="{{ query }}">
                     </div>
-                    {% endif %}
+                    <button type="submit" class="btn-search">
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </button>
+                </form>
+            </section>
+
+            {% if foruns|length == 0 %}
+                <div class="no-results glass-card">
+                    <i class="fa-solid fa-folder-open no-results-icon"></i>
+                    <p>Nenhum fórum encontrado.</p>
+                    <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
                 </div>
+            {% endif %}
 
-            </article>
-            {% endfor %}
+        </div>
 
-        </section>
-    </main>
+        <main class="container">
+            <section class="forum-grid">
 
+                <!-- CARD CRIAR FÓRUM (GLASS DASHED) -->
+                <article class="forum-card create-card" id="abrirModalForum">
+                    <div class="create-card-content">
+                        <div class="plus-circle">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <span class="create-title">Criar Novo Fórum</span>
+                        <p class="create-subtitle">Inicie um novo tema para debate</p>
+                    </div>
+                </article>
 
+                <!-- LISTA DE CARDS GLASS -->
+                {% for Forum in foruns %}
+                <article class="forum-card glass-card">
+                    <div class="card-header-glass">
+                        <span class="category-badge">
+                            <i class="fa-solid fa-hashtag"></i> COMUNIDADE
+                        </span>
 
+                        {% if request.session.usuario_email == Forum.usuario.email %}
+                        <div class="owner-menu">
+                            <span class="owner-tag">Seu Fórum</span>
+                            <div class="acoes-forum">
+                                <button class="btn-icon btn-editar" title="Editar" data-forum-id="{{ Forum.idforum }}">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="btn-icon btn-excluir" title="Excluir" data-forum-id="{{ Forum.idforum }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
 
+                    <div class="card-body-glass">
+                        <h2 class="forum-card-title">{{ Forum.nome }}</h2>
+                    </div>
 
-    
+                    <div class="card-metrics-pills">
+                        <div class="metric-pill">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>{{ Forum.data_criacao }}</span>
+                        </div>
+                        <div class="metric-pill">
+                            <i class="fa-solid fa-comments"></i>
+                            <span>Ativo</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer-glass">
+                        <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
+                            <span>Acessar Fórum</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAIS INTATOS -->
     <div id="modalCriarForum" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Criar Fórum</h2>
+                <h2><i class="fa-solid fa-comments"></i> Criar Fórum</h2>
             </div>
             <div class="modal-body">
                 <form id="formCriarForum" method="POST" action="{% url 'criar_forum' %}">
@@ -127,7 +140,7 @@
     <div id="modalEditarForum" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Editar Fórum</h2>
+                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Fórum</h2>
             </div>
             <div class="modal-body">
                 <form method="POST" id="formEditarForum">
@@ -151,17 +164,17 @@
 
     <div id="modalExcluirForum" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Excluir Fórum</h2>
+            <div class="modal-header header-danger">
+                <h2><i class="fa-solid fa-triangle-exclamation"></i> Excluir Fórum</h2>
             </div>
-            <p style="padding: 15px 20px 0 20px;">Tem certeza que deseja excluir este fórum?</p>
+            <p style="padding: 15px 20px 0 20px; color: #555;">Tem certeza que deseja excluir este fórum?</p>
             <div class="modal-body">
                 <form method="POST" id="formExcluirForum">
                     {% csrf_token %}
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn-primary" form="formExcluirForum">Sim, excluir</button>
+                <button type="submit" class="btn-danger" form="formExcluirForum">Sim, excluir</button>
                 <button type="button" id="fecharModalExcluir" class="btn-secondary">Cancelar</button>
             </div>
         </div>
@@ -169,7 +182,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Modal Criar Fórum
             const abrirModal = document.getElementById('abrirModalForum');
             const fecharModal = document.getElementById('fecharModalForum');
             const modalCriar = document.getElementById('modalCriarForum');
@@ -181,7 +193,6 @@
                 fecharModal.addEventListener('click', () => modalCriar.classList.remove('open'));
             }
 
-            // Modais de Edição e Exclusão
             const modalEditar = document.getElementById('modalEditarForum');
             const modalExcluir = document.getElementById('modalExcluirForum');
             const formEditar = document.getElementById('formEditarForum');
@@ -191,9 +202,9 @@
             const inputTitulo = document.getElementById('inputTituloTopico');
             const inputDescricao = document.getElementById('inputDescricaoTopico');
         
-            // Configuração dinâmica do botão Editar
             document.querySelectorAll('.btn-editar').forEach(btn => {
-                btn.addEventListener('click', () => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     inputNome.value = btn.dataset.forumNome || '';
                     inputTitulo.value = btn.dataset.topicoTitulo || '';
                     inputDescricao.value = btn.dataset.topicoDescricao || '';
@@ -202,22 +213,20 @@
                 });
             });
         
-            // Configuração dinâmica do botão Excluir
             document.querySelectorAll('.btn-excluir').forEach(btn => {
-                btn.addEventListener('click', () => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     formExcluir.action = `/forum/excluir/${btn.dataset.forumId}/`;
                     modalExcluir.classList.add('open');
                 });
             });
         
-            // Fechar botões canceladores dos Modais
             const fecharEditar = document.getElementById('fecharModalEditar');
             const fecharExcluir = document.getElementById('fecharModalExcluir');
         
             if(fecharEditar) fecharEditar.addEventListener('click', () => modalEditar.classList.remove('open'));
             if(fecharExcluir) fecharExcluir.addEventListener('click', () => modalExcluir.classList.remove('open'));
         
-            // Fechar clicando nas overlays escuras de fundo
             [modalCriar, modalEditar, modalExcluir].forEach(modal => {
                 if (modal) {
                     modal.addEventListener('click', e => {
