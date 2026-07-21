@@ -1317,6 +1317,25 @@ def HomeCoord(request):
 
 def UsuarioCoord(request):
 
+    if request.method == "POST":
+
+        acao = request.POST.get("acao")
+
+        if acao == "cadastrar_usuario":
+
+            Usuario.objects.create(
+                nome=request.POST.get("nome"),
+                sobrenome=request.POST.get("sobrenome"),
+                email=request.POST.get("email"),
+                senha=request.POST.get("senha"),
+                descricao=request.POST.get("descricao"),
+                tipo=request.POST.get("tipoCadastro"),
+                imagem=request.FILES.get("imagem"),
+            )
+
+            messages.success(request, "Usuário cadastrado com sucesso!")
+            return redirect("UsuariosCoord")
+
     filtro = request.GET.get("tipo", "todos")
 
     usuarios = Usuario.objects.all()

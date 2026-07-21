@@ -171,39 +171,30 @@
 /* Container geral */
 
 .usuarios-container{
-
     width:95%;
-    max-width:90%;
-
+    max-width:85%;
     margin:35px auto;
-
     background:#fff;
-
     border:1px solid #dce5f2;
     border-radius:12px;
-
     overflow:hidden;
-
     box-shadow:0 5px 18px rgba(0,0,0,.08);
-
+    position: relative;
+    top: -100px; /* sobe */
+    
 }
 
 
 
 /* TOPO DA LISTA */
 .topo-lista-usuarios{
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:18px 20px;
-
     background:#fff;
-
     border:1px solid #dce5f2;
     border-bottom:none;
-
     border-radius:12px 12px 0 0;
 
 }
@@ -336,8 +327,9 @@
 /* LISTA DO USUARIO */
 
 .lista-usuario-conteudo{
-
-    overflow-x:auto;
+    height: 550px;
+    overflow-x:auto;  /* barra vertical quando necessário */
+    
 
 }
 
@@ -460,6 +452,8 @@
     display:flex;
     justify-content:flex-end;
     gap:10px;
+    position: relative;
+    left: -50px;
 
 }
 
@@ -509,5 +503,148 @@
 
     text-align:center;
     padding:40px;
+
+}
+
+/* MODAL DO CADASTRO DE USUARIO */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.modal-conteudo{
+    width:700px;
+    max-width:95%;
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 25px;
+    border-bottom:1px solid #ececec;
+}
+
+.modal-header h2{
+    margin:0;
+    color:#0d4c8b;
+    font-size:24px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.fechar{
+    font-size:30px;
+    cursor:pointer;
+    color:#7b8794;
+}
+
+.modal form{
+    padding:30px;
+}
+
+.linha{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.campo{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:20px;
+}
+
+.campo label{
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#6b7280;
+    margin-bottom:8px;
+}
+
+.campo input,
+.campo textarea,
+.campo select{
+    width:100%;
+    padding:13px 15px;
+    border:1px solid #d8dde6;
+    border-radius:8px;
+    background:#f5f7fa;
+    font-size:15px;
+    outline:none;
+    transition:.3s;
+    box-sizing:border-box;
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus{
+    border-color:#f7941d;
+    background:#fff;
+}
+
+.campo textarea{
+    min-height:90px;
+    resize:none;
+}
+
+.modal-footer{
+    margin-top:25px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+    border-top:1px solid #ececec;
+    padding-top:20px;
+}
+
+.btn-cancelar{
+    padding:12px 28px;
+    border:none;
+    border-radius:8px;
+    background:#f3f4f6;
+    color:#6b7280;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-cancelar:hover{
+    background:#e5e7eb;
+}
+
+.btn-salvar{
+    padding:12px 28px;
+    border:none;
+    border-radius:8px;
+    background:#b75a17;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-salvar:hover{
+    background:#9c4c14;
+}
+
+@media(max-width:700px){
+
+    .linha{
+        grid-template-columns:1fr;
+    }
+
+    .modal-conteudo{
+        width:95%;
+    }
 
 }
