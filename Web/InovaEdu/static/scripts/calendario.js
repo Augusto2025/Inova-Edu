@@ -122,48 +122,80 @@ function renderCalendar() {
 }
 
 // ====================================================================
-// 📝 Renderizar eventos do mês
+// 📝 Renderizar eventos do mês (Ícone de Calendário + Status de Cor)
 // ====================================================================
+const nomesMesesAbrev = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
 function renderEventsOfMonth() {
     eventList.innerHTML = "";
 
     const eventosDoMes = eventos.filter(ev => {
-        const dataEv = new Date(ev.data);
-        return dataEv.getMonth() === selectedMonth && dataEv.getFullYear() === selectedYear;
+        const partesData = ev.data.split('-');
+        const anoEv = parseInt(partesData[0], 10);
+        const mesEv = parseInt(partesData[1], 10) - 1;
+
+        return mesEv === selectedMonth && anoEv === selectedYear;
     });
 
     if (eventosDoMes.length === 0) {
-        eventList.innerHTML = "<p>Nenhum evento neste mês.</p>";
+        eventList.innerHTML = `
+            <div class="card-vazio estado-vazio-animado">
+                <div class="icone animar-esvaziado">📅</div>
+                <p>Nenhum evento agendado para este mês.</p>
+            </div>
+        `;
         return;
     }
 
+    // Data atual sem horário
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
     eventosDoMes.forEach(ev => {
-        const div = document.createElement("div");
-        div.classList.add("event-item");
+        const partesData = ev.data.split('-'); // ["AAAA", "MM", "DD"]
+        const ano = parseInt(partesData[0], 10);
+        const mes = parseInt(partesData[1], 10) - 1;
+        const dia = parseInt(partesData[2], 10);
 
-        if (ev.nome) {
-            div.innerHTML += `<p><strong>${ev.nome}</strong></p>`;
-        } else {
-            div.innerHTML += `<p><strong>Evento sem nome</strong></p>`;
+        const dataEvento = new Date(ano, mes, dia);
+        dataEvento.setHours(0, 0, 0, 0);
+
+        // Lógica de cores por status
+        let statusClass = "status-green"; // Verde: Agendado
+
+        if (dataEvento.getTime() === hoje.getTime()) {
+            statusClass = "status-yellow"; // Amarelo: Hoje
+        } else if (dataEvento < hoje) {
+            statusClass = "status-red"; // Vermelho: Passou
         }
 
-        if (ev.descricao) {
-            div.innerHTML += `<p>${ev.descricao}</p>`;
-        } else {
-            div.innerHTML += `<p>Sem descrição</p>`;
-        }
+        const diaFormatado = partesData[2];
+        const mesAbrev = nomesMesesAbrev[mes];
+        const dataExibicao = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+        const horaFormatada = ev.hora ? ev.hora.substring(0, 5) : "--:--";
 
-        if (ev.hora) {
-            div.innerHTML += `<p>${ev.hora}</p>`;
-        } else {
-            div.innerHTML += `<p>Hora não definida</p>`;
-        }
-        
-        div.innerHTML += `<hr>`;
+        const card = document.createElement("div");
+        card.classList.add("card-evento", statusClass);
 
-        div.addEventListener("click", () => openModal(ev));
+        card.innerHTML = `
+            <div class="data-evento-icone">
+                <div class="topo-calendario">
+                    <span class="mes">${mesAbrev}</span>
+                </div>
+                <div class="corpo-calendario">
+                    <span class="dia">${diaFormatado}</span>
+                </div>
+            </div>
+            <div class="info-evento">
+                <h3>${ev.nome || 'Evento sem nome'}</h3>
+                <p>📅 ${dataExibicao}</p>
+                <p>🕒 ${horaFormatada}</p>
+                <p class="endereco">📍 ${ev.endereco || 'Local não informado'}</p>
+            </div>
+        `;
 
-        eventList.appendChild(div);
+        card.addEventListener("click", () => openModal(ev));
+        eventList.appendChild(card);
     });
 }
 

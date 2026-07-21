@@ -36,14 +36,14 @@
                 <!-- BADGES CERTIFICADOS -->
                 <div class="course-badges">
                     {% if turma %}
-<span class="course-badge">
-    Turma {{ turma.codigo_turma }} - {{ turma.ano }} ({{ turma.turno }})
-</span>
-{% else %}
-<span class="course-badge">
-    Turma não informada
-</span>
-{% endif %}
+                        <span class="course-badge">
+                            Turma {{ turma.codigo_turma }} - {{ turma.ano }} ({{ turma.turno }})
+                        </span>
+                    {% else %}
+                        <span class="course-badge">
+                            Turma não informada
+                        </span>
+                    {% endif %}
                 </div>
 
                 <p class="profile-bio" id="profile-bio">
@@ -57,110 +57,120 @@
         </div>
     </div>
 
-    <!-- CERTIFICADOS -->
-    <div class="certificates-section">
-        <div class="section-header">
-            <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
+    <!-- ESTRUTURA EM 2 COLUNAS (PROJETOS | CERTIFICADOS) -->
+    <div class="dashboard-grid">
 
-            <button class="add-btn" onclick="openCertificadoModal()">
-                <i class="fas fa-plus"></i> Adicionar Certificado
-            </button>
-        </div>
-
-        <div class="certificates-grid" id="certificados-grid">
-            {% for certificado in certificados %}
-            <div class="certificate-card" data-id="{{ certificado.idcertificado }}">
-                <div class="certificate-icon">
-                    <i class="fas fa-certificate"></i>
-                </div>
-
-                <h3>{{ certificado.nome }}</h3>
-
-                <p><strong>Descrição:</strong>
-                    {{ certificado.descricao|default:"Sem descrição" }}
-                </p>
-
-                {% if certificado.data_inicio %}
-                    <p>
-                        <i class="far fa-calendar-alt"></i>
-                        <strong>Início:</strong>
-                        {{ certificado.data_inicio|date:"d/m/Y" }}
-                    </p>
-                {% endif %}
-
-                {% if certificado.data_final %}
-                    <p>
-                        <i class="far fa-calendar-check"></i>
-                        <strong>Término:</strong>
-                        {{ certificado.data_final|date:"d/m/Y" }}
-                    </p>
-                {% endif %}
-
-                <div class="certificate-actions">
-                    <button class="cert-btn edit-cert"
-                        onclick='openEditCertificadoModal(
-                            {{ certificado.idcertificado }},
-                            "{{ certificado.nome|escapejs }}",
-                            "{{ certificado.descricao|escapejs }}",
-                            "{{ certificado.data_inicio|date:'Y-m-d' }}",
-                            "{{ certificado.data_final|date:'Y-m-d' }}"
-                        )'>
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-
-                    <button class="cert-btn delete-cert"
-                    onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome }}')">
-                        <i class="fas fa-trash"></i> Excluir
-                        </button>
-                </div>
+        <!-- BLANCO DE PROJETOS (1 COLUNA INTERNA) -->
+        <div class="repos-section">
+            <div class="section-header">
+                <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
             </div>
-            {% empty %}
-            <div class="no-items">
-                <i class="fas fa-book-open"></i>
-                <p>Nenhum certificado cadastrado ainda.</p>
+
+            <div class="repos-grid" id="projetos-grid">
+                {% for projeto in projetos %}
+                    <div class="repo-card">
+                        <h3>{{ projeto.nome_projeto }}</h3>
+
+                        <p class="repo-turma">
+                            <i class="fas fa-users"></i>
+                            {% if projeto.turma %}
+                                Turma: {{ projeto.turma.codigo_turma }} -
+                                {{ projeto.turma.curso.nome_curso }} -
+                                {{ projeto.turma.ano }}
+                                ({{ projeto.turma.turno }})
+                            {% else %}
+                                Turma não informada
+                            {% endif %}
+                        </p>
+
+                        <p class="repo-date">
+                            <i class="far fa-calendar-alt"></i>
+                            Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                        </p>
+
+                        <div class="repo-actions">
+                            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="repo-link">
+                                <button class="entrar-projeto">
+                                    <i class="fas fa-folder-open"></i> Entrar
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="no-items">
+                        <i class="fas fa-folder-open"></i>
+                        <p>Nenhum projeto cadastrado ainda.</p>
+                    </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- PROJETOS -->
-    <div class="repos-section">
-        <div class="section-header">
-            <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
         </div>
 
-        <div class="repos-grid" id="projetos-grid">
-            {% for projeto in projetos %}
-                <div class="repo-card">
+        <!-- BLOCO DE CERTIFICADOS (2 COLUNAS INTERNAS) -->
+        <div class="certificates-section">
+            <div class="section-header">
+                <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
 
-                    <h3>{{ projeto.nome_projeto }}</h3>
+                <button class="add-btn" onclick="openCertificadoModal()">
+                    <i class="fas fa-plus"></i> Adicionar Certificado
+                </button>
+            </div>
 
-                    <p class="repo-turma">
-                        <i class="fas fa-users"></i>
-                        {% if projeto.turma %}
-                            Turma: {{ projeto.turma.codigo_turma }} -
-                            {{ projeto.turma.curso.nome_curso }} -
-                            {{ projeto.turma.ano }}
-                            ({{ projeto.turma.turno }})
-                        {% else %}
-                            Turma não informada
-                        {% endif %}
+            <div class="certificates-grid" id="certificados-grid">
+                {% for certificado in certificados %}
+                <div class="certificate-card" data-id="{{ certificado.idcertificado }}">
+                    <div class="certificate-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+
+                    <h3>{{ certificado.nome }}</h3>
+
+                    <p><strong>Descrição:</strong>
+                        {{ certificado.descricao|default:"Sem descrição" }}
                     </p>
 
-                    <p class="repo-date">
-                        <i class="far fa-calendar-alt"></i>
-                        Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
-                    </p>
+                    {% if certificado.data_inicio %}
+                        <p>
+                            <i class="far fa-calendar-alt"></i>
+                            <strong>Início:</strong>
+                            {{ certificado.data_inicio|date:"d/m/Y" }}
+                        </p>
+                    {% endif %}
 
-                    <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
-                        <button class="entrar-projeto">
-                            <i class="fas fa-folder-open"></i> Entrar
+                    {% if certificado.data_final %}
+                        <p>
+                            <i class="far fa-calendar-check"></i>
+                            <strong>Término:</strong>
+                            {{ certificado.data_final|date:"d/m/Y" }}
+                        </p>
+                    {% endif %}
+
+                    <div class="certificate-actions">
+                        <button class="cert-btn edit-cert"
+                            onclick='openEditCertificadoModal(
+                                {{ certificado.idcertificado }},
+                                "{{ certificado.nome|escapejs }}",
+                                "{{ certificado.descricao|escapejs }}",
+                                "{{ certificado.data_inicio|date:'Y-m-d' }}",
+                                "{{ certificado.data_final|date:'Y-m-d' }}"
+                            )'>
+                            <i class="fas fa-edit"></i> Editar
                         </button>
-                    </a>
 
+                        <button class="cert-btn delete-cert"
+                        onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome }}')">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
                 </div>
-            {% endfor %}
+                {% empty %}
+                <div class="no-items">
+                    <i class="fas fa-book-open"></i>
+                    <p>Nenhum certificado cadastrado ainda.</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+
     </div>
 
 </div>

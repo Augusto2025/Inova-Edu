@@ -10,7 +10,6 @@
 }
 
 /* -------------------- RESET -------------------- */
-
 * {
     margin: 0;
     padding: 0;
@@ -23,159 +22,30 @@ body {
     color: var(--text-main);
 }
 
-/* -------------------- HEADER -------------------- */
-/* header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 80px;
-    padding: 0px 10px;
-    background-color: var(--azul-Senac);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    overflow: hidden;
-    box-sizing: border-box;
-} */
-
 .logo_e_texto {
     align-items: center;
     display: flex;
 }
 
-/* header a {
-    display: flex;
-    text-decoration: none;
-    color: var(--branco-Senac);
-} */
-
-/* .logo {
-    width: 50px;
-    height: 50px;
-    margin: 10px;
-    flex-shrink: 0;
-}
-
-.texto_InovaEdu {
-    margin: 10px;
-    color: var(--branco-Senac);
-    font-size: 20px;
-    font-weight: 400;
-    width: 140px;
-}
-
-.Nome_Usu {
-    color: var(--branco-Senac);
-}
-
-.Paginas {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    font-size: 16px;
-    gap: 50px;
-}
-
-.Paginas a {
-    text-decoration: none;
-    color: var(--branco-Senac);
-}
-
-.Paginas a:hover {
-    border-bottom: solid;
-    border-bottom-color: var(--laranja-Senac);
-}
-
-.sair {
-    color: var(--branco-Senac);
-    margin-left: 10px;
-}
-
-.hamburger {
-    display: none;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    margin-left: 8px;
-    align-items: center;
-    justify-content: center;
-    color: var(--branco-Senac);
-}
-
-.hamburger .bar {
-    display: block;
-    width: 20px;
-    height: 2px;
-    background: var(--branco-Senac);
-    position: relative;
-}
-
-.hamburger .bar::before,
-.hamburger .bar::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    width: 20px;
-    height: 2px;
-    background: var(--branco-Senac);
-}
-
-.hamburger .bar::before { top: -6px; }
-.hamburger .bar::after  { top: 6px; }
-
-#header-stars {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    z-index: 0;
-    pointer-events: none;
-}
-
-header > .hamburger,
-header > .logo_e_texto,
-header > #site-nav,
-header > div {
-    position: relative;
-    z-index: 2;
-} */
-
-/* -------------------- FOOTER -------------------- */
-/* footer {
-    background-color: var(--azul-Senac);
-    color: var(--branco-Senac);
-    padding: 15px 30px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    text-align: center;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-} */
-
-/* -------------------- CONTAINER PRINCIPAL (MAIS COMPACTO) -------------------- */
+/* -------------------- CONTAINER PRINCIPAL (LARGURA AUMENTADA) -------------------- */
 .container {
-    max-width: 1000px;  /* Reduzido de 1200px */
+    max-width: 1400px; /* Aumentado para expandir os cards na tela */
+    width: 95%;
     margin: 0 auto;
-    padding: 30px;      /* Reduzido de 20px */
+    padding: 30px 20px;
     min-height: calc(95vh - 175px);
 }
 
-/* -------------------- PROFILE CARD (MAIS COMPACTO) -------------------- */
+/* -------------------- PROFILE CARD -------------------- */
 .profile-card {
     background: white;
-    border-radius: 15px;     /* Reduzido de 20px */
-    padding: 20px;           /* Reduzido de 30px */
-    margin-bottom: 15px;     /* Reduzido de 30px */
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);  /* Sombra mais suave */
+    border-radius: 15px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     animation: slideIn 0.5s ease;
     position: relative;
+    width: 100%;
 }
 
 @keyframes slideIn {
@@ -192,14 +62,14 @@ header > div {
 .profile-header {
     display: flex;
     align-items: center;
-    gap: 20px;  /* Reduzido de 40px */
+    gap: 25px;
     flex-wrap: wrap;
 }
 
 .profile-photo-container {
     position: relative;
-    width: 100px;   /* Reduzido de 150px */
-    height: 100px;  /* Reduzido de 150px */
+    width: 110px;
+    height: 110px;
 }
 
 .profile-photo {
@@ -207,7 +77,7 @@ header > div {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--azul-Senac);  /* Borda mais fina */
+    border: 3px solid var(--azul-Senac);
     transition: transform 0.3s ease;
 }
 
@@ -221,8 +91,8 @@ header > div {
     right: 0px;
     background: var(--azul-Senac);
     color: white;
-    width: 30px;    /* Reduzido de 40px */
-    height: 30px;   /* Reduzido de 40px */
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -230,7 +100,7 @@ header > div {
     cursor: pointer;
     border: 2px solid white;
     transition: all 0.3s ease;
-    font-size: 14px;  /* Ícone menor */
+    font-size: 14px;
 }
 
 .photo-edit-btn:hover {
@@ -244,49 +114,51 @@ header > div {
 }
 
 .profile-info h1 {
-    font-size: 1.8em;       /* Reduzido de 2.5em */
+    font-size: 1.8em;
     margin-bottom: 5px;
     color: var(--azul-Senac);
 }
 
 .profile-bio {
     color: #666;
-    margin: 10px 0;          /* Reduzido de 15px */
-    line-height: 1.5;        /* Reduzido de 1.6 */
-    font-size: 0.95em;       /* Fonte menor */
+    margin: 10px 0;
+    line-height: 1.5;
+    font-size: 0.95em;
 }
 
 .course-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;                /* Reduzido de 10px */
-    margin: 8px 0;           /* Reduzido de 10px */
+    gap: 8px;
+    margin: 8px 0;
 }
 
 .course-badge {
     background: var(--azul-Senac);
-    padding: 5px 12px;       /* Reduzido de 8px 15px */
-    border-radius: 15px;     /* Reduzido de 20px */
+    padding: 5px 12px;
+    border-radius: 15px;
     display: inline-block;
     font-weight: 500;
     color: white;
-    font-size: 0.85em;       /* Reduzido de 0.9em */
+    font-size: 0.85em;
     box-shadow: 0 2px 5px rgba(0, 74, 141, 0.2);
 }
 
 .edit-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
     background: #28a745;
     color: white;
     border: none;
-    padding: 8px 20px;       /* Reduzido de 12px 30px */
-    border-radius: 20px;     /* Reduzido de 25px */
+    padding: 8px 20px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 0.9em;        /* Reduzido de 1em */
+    font-size: 0.9em;
     transition: all 0.3s ease;
-    margin-top: 10px;        /* Reduzido de 15px */
     display: inline-flex;
     align-items: center;
-    gap: 6px;                /* Reduzido de 8px */
+    gap: 6px;
 }
 
 .edit-btn:hover {
@@ -295,51 +167,60 @@ header > div {
     box-shadow: 0 5px 15px rgba(0, 74, 141, 0.3);
 }
 
-/* -------------------- SECTIONS (MAIS COMPACTAS) -------------------- */
+/* -------------------- DASHBOARD GRID (2 COLUNAS) -------------------- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas principais */
+    gap: 25px;
+}
+
+/* -------------------- SECTIONS -------------------- */
 .certificates-section,
 .repos-section {
     background: white;
-    border-radius: 15px;      /* Reduzido de 20px */
-    padding: 15px;            /* Reduzido de 30px */
-    margin-bottom: 15px;      /* Reduzido de 30px */
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     animation: slideIn 0.5s ease 0.1s both;
+    width: 100%;
 }
 
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;      /* Reduzido de 25px */
+    margin-bottom: 20px;
     flex-wrap: wrap;
-    gap: 10px;                /* Reduzido de 15px */
+    gap: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
 }
 
 .section-header h2 {
     color: var(--azul-Senac);
-    font-size: 1.4em;         /* Reduzido de 1.8em */
+    font-size: 1.3em;
     display: flex;
     align-items: center;
-    gap: 8px;                 /* Reduzido de 10px */
+    gap: 8px;
 }
 
 .section-header h2 i {
     color: var(--laranja-Senac);
-    font-size: 1.2em;         /* Ícone menor */
+    font-size: 1.1em;
 }
 
 .add-btn {
     background: #28a745;
     color: white;
     border: none;
-    padding: 6px 15px;        /* Reduzido de 10px 20px */
-    border-radius: 20px;      /* Reduzido de 25px */
+    padding: 6px 15px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 0.9em;         /* Reduzido de 1em */
+    font-size: 0.85em;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;                 /* Reduzido de 8px */
+    gap: 6px;
 }
 
 .add-btn:hover {
@@ -348,130 +229,166 @@ header > div {
     box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
 }
 
-/* -------------------- GRIDS -------------------- */
-.certificates-grid,
+/* -------------------- GRIDS INTERNAS -------------------- */
+
+/* Projetos em 1 COLUNA */
 .repos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));  /* Reduzido de 300px */
-    gap: 15px;                /* Reduzido de 20px */
+    grid-template-columns: 1fr;
+    gap: 15px;
 }
 
-/* -------------------- CERTIFICATE CARDS (MAIS COMPACTOS) -------------------- */
-.certificate-card {
-    background: #f8f9fa;
-    border-radius: 10px;      /* Reduzido de 15px */
-    padding: 15px;            /* Reduzido de 20px */
-    border-left: 3px solid var(--azul-Senac);  /* Borda mais fina */
-    position: relative;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    overflow: hidden;
+/* Certificados em 2 COLUNAS */
+.certificates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
-.certificate-card:hover {
-    transform: translateY(-3px) scale(1.01);  /* Efeito mais sutil */
-    box-shadow: 0 10px 20px rgba(0, 74, 141, 0.2);
-    border-left: 3px solid var(--laranja-Senac);
-}
-
-.certificate-icon {
-    font-size: 1.5em;         /* Reduzido de 2em */
-    color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
-}
-
-.certificate-card h3 {
-    color: #333;
-    margin-bottom: 8px;       /* Reduzido de 10px */
-    font-size: 1.1em;         /* Reduzido de 1.2em */
-}
-
-.certificate-card p {
-    color: #666;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    margin-bottom: 4px;       /* Reduzido de 5px */
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
-}
-
-.certificate-card p i {
-    color: var(--azul-Senac);
-    width: 16px;              /* Reduzido de 20px */
-    font-size: 0.9em;
-}
-
-.certificate-actions {
-    display: flex;
-    gap: 8px;                 /* Reduzido de 10px */
-    margin-top: 10px;         /* Reduzido de 15px */
-}
-
-.cert-btn {
-    padding: 4px 12px;        /* Reduzido de 6px 15px */
-    border: none;
-    border-radius: 12px;      /* Reduzido de 15px */
-    cursor: pointer;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
-}
-
-/* -------------------- REPOSITORY CARDS (MAIS COMPACTOS) -------------------- */
+/* -------------------- REPOSITORY CARDS (NOVO LAYOUT) -------------------- */
 .repo-card {
     background: #f8f9fa;
-    border-radius: 10px;      /* Reduzido de 15px */
-    padding: 15px;            /* Reduzido de 20px */
+    border-radius: 12px;
+    padding: 18px;
     border: 1px solid #e0e0e0;
+    border-left: 4px solid var(--azul-Senac);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .repo-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.repo-icon {
-    font-size: 1.5em;         /* Reduzido de 2em */
-    color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-left-color: var(--laranja-Senac);
 }
 
 .repo-card h3 {
     color: var(--azul-Senac);
-    margin-bottom: 8px;       /* Reduzido de 10px */
-    font-size: 1.1em;         /* Reduzido de 1.2em */
+    font-size: 1.15em;
+    margin-bottom: 2px;
 }
 
-.repo-turma {
+.repo-turma, .repo-date {
     color: #666;
-    font-size: 0.85em;        /* Reduzido de 0.9em */
-    margin-bottom: 6px;       /* Reduzido de 8px */
+    font-size: 0.85em;
     display: flex;
     align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
+    gap: 6px;
 }
 
-.repo-date {
-    font-size: 0.8em;         /* Reduzido de 0.85em */
-    color: #888;
+.repo-turma i, .repo-date i {
+    color: var(--azul-Senac);
+}
+
+.repo-actions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.repo-link {
+    text-decoration: none;
+}
+
+.entrar-projeto {
+    padding: 7px 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--azul-Senac);
+    color: white;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 500;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 4px;                 /* Reduzido de 5px */
+    gap: 6px;
 }
 
-.repo-file {
-    font-size: 0.8em;
-    color: #888;
+.entrar-projeto:hover {
+    background-color: var(--laranja-Senac);
+    transform: translateY(-2px);
+}
+
+/* -------------------- CERTIFICATE CARDS -------------------- */
+.certificate-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 3px solid var(--azul-Senac);
+    position: relative;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.certificate-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 74, 141, 0.15);
+    border-left-color: var(--laranja-Senac);
+}
+
+.certificate-icon {
+    font-size: 1.4em;
+    color: var(--azul-Senac);
+    margin-bottom: 6px;
+}
+
+.certificate-card h3 {
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 1em;
+}
+
+.certificate-card p {
+    color: #666;
+    font-size: 0.82em;
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-top: 6px;
 }
 
-/* -------------------- MODAL (MESMO TAMANHO) -------------------- */
+.certificate-card p i {
+    color: var(--azul-Senac);
+    width: 14px;
+}
+
+.certificate-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.cert-btn {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #e9ecef;
+}
+
+.cert-btn:hover {
+    background: #dee2e6;
+}
+
+.delete-cert {
+    color: #dc3545;
+}
+
+.delete-cert:hover {
+    background: #f8d7da;
+}
+
+/* -------------------- MODAL -------------------- */
 .modal {
     display: none;
     position: fixed;
@@ -500,7 +417,7 @@ header > div {
     background: white;
     border-radius: 15px;
     width: 90%;
-    max-width: 450px;  /* Reduzido de 500px */
+    max-width: 450px;
     animation: modalAppear 0.3s ease;
     overflow: hidden;
 }
@@ -519,7 +436,7 @@ header > div {
 .modal-header {
     background: var(--azul-Senac);
     color: white;
-    padding: 15px;  /* Reduzido de 20px */
+    padding: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -529,14 +446,14 @@ header > div {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.2em;  /* Reduzido */
+    font-size: 1.2em;
 }
 
 .close-btn {
     background: none;
     border: none;
     color: white;
-    font-size: 22px;  /* Reduzido de 24px */
+    font-size: 22px;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -546,208 +463,104 @@ header > div {
 }
 
 .modal-body {
-    padding: 15px;  /* Reduzido de 20px */
+    padding: 15px;
 }
 
 .form-group {
-    margin-bottom: 12px;  /* Reduzido de 15px */
+    margin-bottom: 12px;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 4px;  /* Reduzido de 5px */
+    margin-bottom: 4px;
     color: #333;
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.9em;  /* Reduzido */
+    font-size: 0.9em;
 }
 
 .form-group input,
 .form-group textarea {
-    width: 95%;
-    padding: 8px;  /* Reduzido de 10px */
+    width: 100%;
+    padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 8px;  /* Reduzido de 10px */
-    font-size: 0.95em;  /* Reduzido de 1em */
+    border-radius: 8px;
+    font-size: 0.95em;
     transition: all 0.3s ease;
 }
 
 .form-group textarea {
-    min-height: 80px;  /* Reduzido de 100px */
+    min-height: 80px;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 26px;  /* Reduzido de 15px */
-    width: 97%;
+    gap: 15px;
+    width: 100%;
 }
 
 .modal-footer {
-    padding: 15px;  /* Reduzido de 20px */
+    padding: 15px;
     border-top: 1px solid #eee;
     display: flex;
-    gap: 8px;  /* Reduzido de 10px */
+    gap: 8px;
     justify-content: flex-end;
 }
 
 .modal-footer button {
-    padding: 8px 15px;  /* Reduzido de 10px 20px */
+    padding: 8px 15px;
     border: none;
-    border-radius: 8px;  /* Reduzido de 10px */
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.9em;  /* Reduzido */
-    
+    font-size: 0.9em;
 }
-.cancel-btn{
+
+.cancel-btn {
     background: #6c757d;
     color: white;
 }
-.save-btn{
+
+.save-btn {
     background: var(--azul-Senac);
+    color: white;
+}
+
+.delete-btn {
+    background: #dc3545;
     color: white;
 }
 
 /* -------------------- NO ITEMS -------------------- */
 .no-items {
     text-align: center;
-    padding: 20px;  /* Reduzido de 40px */
+    padding: 20px;
     color: #999;
     grid-column: 1 / -1;
 }
 
 .no-items i {
-    font-size: 2.5em;  /* Reduzido de 3em */
-    margin-bottom: 8px;  /* Reduzido de 10px */
+    font-size: 2.5em;
+    margin-bottom: 8px;
     color: #ddd;
-}
-
-/* -------------------- LOADING OVERLAY -------------------- */
-.loading-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 2500;
-}
-
-.loading-overlay.active {
-    display: flex;
-}
-
-.spinner {
-    width: 40px;  /* Reduzido de 50px */
-    height: 40px;  /* Reduzido de 50px */
-    border: 4px solid #f3f3f3;  /* Borda mais fina */
-    border-top: 4px solid var(--azul-Senac);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* -------------------- TOAST NOTIFICATION -------------------- */
-.toast {
-    position: fixed;
-    bottom: 70px;
-    right: 15px;
-    background: white;
-    border-radius: 8px;
-    padding: 10px 20px;  /* Reduzido */
-    box-shadow: 0 3px 15px rgba(0,0,0,0.15);
-    transform: translateX(400px);
-    transition: transform 0.3s ease;
-    z-index: 2300;
-}
-
-.toast.show {
-    transform: translateX(0);
-}
-
-.toast-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9em;
-}
-
-.toast-icon {
-    font-size: 1.1em;
-}
-
-/* -------------------- UTILS -------------------- */
-#photo-upload {
-    display: none;
-}
-
-.none-value {
-    color: #999;
-    font-style: italic;
 }
 
 /* -------------------- RESPONSIVIDADE -------------------- */
 @media (max-width: 1024px) {
-    #site-nav a {
-        margin: 5%;
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Em telas médias/pequenas, os blocos empilham */
     }
 }
 
 @media (max-width: 768px) {
-    body {
-        padding-top: 0px;
-    }
-    
-    .hamburger {
-        display: inline-flex;
-    }
-
-    #site-nav.Paginas {
-        display: none;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 60px;
-        background: var(--azul-Senac);
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px 0;
-        align-items: center;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-        z-index: 900;
-        width: 100%;
-    }
-
-    header.nav-open #site-nav.Paginas {
-        display: flex;
-    }
-
-    header {
-        height: 60px;
-        padding: 0px;
-    }
-    
-    .logo {
-        width: 40px;
-        height: 40px;
-        margin: 8px 6px;
-    }
-    
-    .texto_InovaEdu {
-        display: none;
-    }
-    
-    .Paginas {
-        gap: 12px;
-        font-size: 15px;
+    .edit-btn {
+        position: static;
+        margin-top: 10px;
     }
     
     .profile-header {
@@ -755,58 +568,8 @@ header > div {
         text-align: center;
         gap: 15px;
     }
-    
-    .profile-info h1 {
-        font-size: 1.6em;
-    }
-    
-    .course-badges {
-        justify-content: center;
-    }
-    
-    .section-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .certificates-grid,
-    .repos-grid {
-        grid-template-columns: 1fr;  /* Um card por linha em mobile */
-    }
-}
 
-
-.edit-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    margin-top: 85px;
-}
-
-.repo-link{
-    text-decoration: none;
-    color: inherit;
-}
-.entrar-projeto{
-    margin-top: 10px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    background-color: var(--azul-Senac);
-    color: white;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-left: 34%;
-    
-}
-
-.entrar-projeto:hover{
-    background-color: var(--azul-Senac);
-}
-.delete-cert {
-    color: red;
+    .certificates-grid {
+        grid-template-columns: 1fr; /* Certificados viram 1 coluna no celular */
+    }
 }
