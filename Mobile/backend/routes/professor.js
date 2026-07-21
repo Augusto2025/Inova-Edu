@@ -81,7 +81,22 @@ router.get('/painel', async (req, res) => {
             ORDER BY t.idtopico DESC
         `, [professorId]);
 
-        // 6. Últimos projetos enviados nas turmas do professor
+        // 6. Últimos fóruns criados (visão geral, com autor e total de tópicos)
+        const ultimosForunsRes = await pool.query(`
+            SELECT 
+                f.idforum AS id,
+                f.nome,
+                f.data_criacao,
+                u."Nome" AS autor,
+                (SELECT COUNT(*) FROM topico t WHERE t.forum_id = f.idforum) AS total_topicos
+            FROM forum f
+            LEFT JOIN usuario u ON u."idUsuario" = f.usuario_id
+            ORDER BY f.idforum DESC
+            LIMIT 5
+        `);
+        const ultimosForuns = ultimosForunsRes.rows;
+
+        // 7. Últimos projetos enviados nas turmas do professor
         let ultimosProjetos = [];
         if (idsTurmas.length > 0) {
             const projRes = await pool.query(`
@@ -116,6 +131,7 @@ router.get('/painel', async (req, res) => {
             turmas,
             eventosHoje,
             topicosSemResposta: semRespostaRes.rows,
+            ultimosForuns,
             ultimosProjetos
         });
 
