@@ -208,31 +208,155 @@ body {
   margin-top: 5px;
 }
 
-/* PAINEL DE EVENTOS ---------------------------------------------------- */
+/* ==========================================================================
+   ÍCONE DE CALENDÁRIO QUADRADO COM STATUS DE COR
+   ========================================================================== */
+
+/* Ajuste do container no painel lateral */
 .event-panel {
-  width: 260px;
-  background: var(--white);
-  padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow-y: auto;
-  height: 76vh;
+    width: 320px;
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow-y: auto;
+    max-height: 76vh;
 }
 
 .event-panel h3 {
-  text-align: center;
-  color: var(--azul);
-  margin-bottom: 10px;
+    color: var(--azul);
+    font-size: 20px;
+    margin-bottom: 15px;
 }
 
-.event-item {
-  margin-bottom: 15px;
-  cursor: pointer;
-  transition: var(--transition);
+#event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
 }
 
-.event-item:hover {
-  color: var(--azul);
+/* Base do Card */
+.card-evento {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+}
+
+.card-evento:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Ícone de Calendário Quadrado */
+.data-evento-icone {
+    width: 58px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+    background: #ffffff;
+}
+
+/* Cabeçalho do ícone (onde a cor do status é aplicada) */
+.data-evento-icone .topo-calendario {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--azul);
+    transition: background 0.2s ease;
+}
+
+.data-evento-icone .topo-calendario .mes {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Corpo do ícone (exibe o número do dia) */
+.data-evento-icone .corpo-calendario {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.data-evento-icone .corpo-calendario .dia {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   CORES DE STATUS APLICADAS APENAS AO TOPO DO ÍCONE E À BORDA AO PASSAR O MOUSE
+   -------------------------------------------------------------------------- */
+
+/* Vermelho -> Finalizado (Passou do dia) */
+.card-evento.status-red .topo-calendario {
+    background: #E53E3E;
+}
+.card-evento.status-red:hover {
+    border-color: #E53E3E;
+}
+
+/* Amarelo -> Em andamento (Hoje) */
+.card-evento.status-yellow .topo-calendario {
+    background: #E5AB3E;
+}
+.card-evento.status-yellow:hover {
+    border-color: #E5AB3E;
+}
+
+/* Verde -> Agendado (Futuro) */
+.card-evento.status-green .topo-calendario {
+    background: #43CD48;
+}
+.card-evento.status-green:hover {
+    border-color: #43CD48;
+}
+
+/* Detalhes do texto das informações do evento */
+.info-evento {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.info-evento h3 {
+    font-size: 0.9rem;
+    color: var(--azul);
+    margin-bottom: 2px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-evento p {
+    font-size: 0.78rem;
+    color: #475569;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ------------------------------- MODAL ------------------------------- */

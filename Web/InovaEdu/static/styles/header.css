@@ -8,166 +8,189 @@
     --text-muted: #64748b;
 }
 
-
-
-/* HEADER */
-
-.navbar{
-    width:100%;
-    height:70px;
-    background-color: var(--azul-Senac);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 35px;
+/* ==========================================================================
+   ANIMAÇÕES DE ONDULAÇÃO SENOIDAL
+   ========================================================================== */
+@keyframes flutuarOnda {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-12px) scaleY(1.05);
+    }
 }
 
-.logo img{
+@keyframes flutuarOndaInversa {
+    0%, 100% {
+        transform: translateY(0) scaleY(1.05);
+    }
+    50% {
+        transform: translateY(10px) scaleY(0.95);
+    }
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.navbar {
+    width: 100%;
+    height: 107px; /* Altura ideal para exibir as ondas sem amassar */
+    background-color: var(--azul-Senac);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 35px;
+    position: relative;
+    overflow: hidden; /* Garante que as ondas não vazem do header */
+}
+
+/* CONTAINER DAS ONDAS NO HEADER */
+.navbar .ondas-container {
+    position: absolute;
+    bottom: -19px;
+    left: -2px;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.navbar .onda {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.navbar .onda-1 {
+    animation: flutuarOnda 8s ease-in-out infinite;
+    bottom: 0px;
+}
+
+.navbar .onda-2 {
+    animation: flutuarOndaInversa 11s ease-in-out infinite;
+    bottom: -5px;
+}
+
+.navbar .onda-3 {
+    animation: flutuarOnda 14s ease-in-out infinite;
+    bottom: -10px;
+}
+
+/* Garantindo que os elementos do Header fiquem acima das ondas */
+.logo, .menu, .user, .hamburger {
+    position: relative;
+    z-index: 2;
+}
+
+.logo img {
     width: 55px;
 }
 
 /* MENU */
-
-.menu{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.menu a{
-    text-decoration:none;
-    color:var(--branco-Senac);
-
-    font-size:14px;
-    font-weight:500;
-
-    padding:10px 18px;
-
-    border-radius:14px;
-
-    transition:.3s;
+.menu a {
+    text-decoration: none;
+    color: var(--branco-Senac);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 14px;
+    transition: .3s;
 }
 
-.menu a:hover{
-    background:rgba(255,255,255,.08);
+.menu a:hover {
+    background: rgba(255, 255, 255, .08);
 }
 
-.menu .active{
-    background:var(--azul-Senac-hover);
-    position:relative;
+.menu .active {
+    background: var(--azul-Senac-hover);
+    position: relative;
 }
 
-.menu .active::after{
-    content:"";
-
-    width:65%;
-    height:3px;
-
-    background:var(--laranja-Senac);
-
-    position:absolute;
-
-    bottom:0;
-    left:17%;
-
-    border-radius:20px;
+.menu .active::after {
+    content: "";
+    width: 65%;
+    height: 3px;
+    background: var(--laranja-Senac);
+    position: absolute;
+    bottom: 0;
+    left: 17%;
+    border-radius: 20px;
 }
 
 /* USUÁRIO */
-
-.user{
-    display:flex;
-    align-items:center;
-    gap:12px;
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.user-name{
-    text-decoration:none;
-    color:var(--branco-Senac);
-
-    font-size:14px;
-    font-weight:500;
+.user-name {
+    text-decoration: none;
+    color: var(--branco-Senac);
+    font-size: 14px;
+    font-weight: 500;
 }
 
 /* BOTÃO SAIR */
-
-.logout{
-    width:38px;
-    height:38px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:rgba(255,255,255,.10);
-
-    color:var(--branco-Senac);
-    text-decoration:none;
-
-    transition:.3s;
+.logout {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .10);
+    color: var(--branco-Senac);
+    text-decoration: none;
+    transition: .3s;
 }
 
-/* .logout:hover{
-    background:rgba(255,255,255,.18);
-    color:var(--laranja-senac);
-} */
-
-.logout i{
-    font-size:18px;
+.logout i {
+    font-size: 18px;
 }
 
 /* MENU MOBILE */
-
-.hamburger{
-    display:none;
-
-    background:none;
-    border:none;
-
-    color:var(--branco-Senac);
-
-    font-size:28px;
-
-    cursor:pointer;
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--branco-Senac);
+    font-size: 28px;
+    cursor: pointer;
 }
 
-@media(max-width:768px){
-
-    .hamburger{
-        display:block;
+@media(max-width:768px) {
+    .hamburger {
+        display: block;
     }
 
-    .menu{
-        display:none;
-
-        position:absolute;
-
-        top:70px;
-        left:0;
-
-        width:100%;
-
-        background:var(--azul-Senac);
-
-        flex-direction:column;
-
-        padding:20px 0;
-
-        z-index:999;
+    .menu {
+        display: none;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        width: 100%;
+        background: var(--azul-Senac);
+        flex-direction: column;
+        padding: 20px 0;
+        z-index: 999;
     }
 
-    .navbar.nav-open .menu{
-        display:flex;
+    .navbar.nav-open .menu {
+        display: flex;
     }
 
-    .logo img{
-        width:55px;
+    .logo img {
+        width: 55px;
     }
 
-    .user-name{
-        font-size:12px;
+    .user-name {
+        font-size: 12px;
     }
 }

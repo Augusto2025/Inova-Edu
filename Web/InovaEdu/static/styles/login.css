@@ -34,18 +34,18 @@ body {
     rgba(255, 255, 255, 0.04) 80px
   );
   background-size: 200% 200%;
-  animation: moverOndas 12s linear infinite;
+  animation: moverOndas 100s linear infinite;
 }
 
 /* Animação que faz as ondas diagonais se moverem suavemente ao fundo */
-/* @keyframes moverOndas {
+@keyframes moverOndas {
   0% {
     background-position: 0% 0%;
   }
   100% {
     background-position: 100% 100%;
   }
-} */
+}
 
 /* Container Principal do Card */
 .glass-login-card {
