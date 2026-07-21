@@ -13,6 +13,7 @@ const repositorioRoutes = require('./routes/repositorio');
 const eventosRoutes = require('./routes/eventos');
 const forumRoutes = require('./routes/forum');
 const homeRoutes = require('./routes/home'); // 💻 Corrigido: alterado de 'home' para 'homeRoutes'
+const professorRoutes = require('./routes/professor');
 
 const topicoRoutes = require('./routes/topico');
 const conversaRoutes = require('./routes/conversa');
@@ -35,6 +36,7 @@ app.use('/topico', topicoRoutes);
 app.use('/conversa', conversaRoutes);
 app.use('/perfil', perfilRoutes);
 app.use('/notifications', notificationsRoutes);
+app.use('/professor', professorRoutes);
 
 // Middleware global de erro para garantir que nenhuma rota retorna erro sem tratamento
 app.use((err, req, res, next) => {
