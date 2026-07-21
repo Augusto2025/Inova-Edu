@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../components/Cores";
+import Header from "../components/Header";
 import api from "../services/api";
 import { useNotifications } from "../context/NotificationContext";
 
@@ -18,6 +19,19 @@ function formatarHora(horaString) {
   if (!horaString) return "";
   // "10:00:00" -> "10:00"
   return horaString.toString().slice(0, 5);
+}
+
+function formatarTempoRelativo(dataString) {
+  if (!dataString) return "";
+  const data = new Date(dataString);
+  const agora = new Date();
+  const diffMs = agora - data;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return diffMin <= 1 ? "Agora mesmo" : `Há ${diffMin} min`;
+  const diffHoras = Math.floor(diffMin / 60);
+  if (diffHoras < 24) return `Há ${diffHoras}h`;
+  const diffDias = Math.floor(diffHoras / 24);
+  return `Há ${diffDias} dia${diffDias > 1 ? "s" : ""}`;
 }
 
 export default function HomePainelProfessor({ navigation }) {
@@ -29,6 +43,7 @@ export default function HomePainelProfessor({ navigation }) {
     turmas: [],
     eventosHoje: [],
     topicosSemResposta: [],
+    ultimosForuns: [],
     ultimosProjetos: [],
   });
 
@@ -43,7 +58,18 @@ export default function HomePainelProfessor({ navigation }) {
       });
 
       if (resposta.data?.sucesso) {
-        setPainel(resposta.data);
+        // 🛡️ Mescla com os valores padrão em vez de substituir tudo —
+        // assim, se o backend ainda não tiver algum campo novo (ex: backend
+        // desatualizado no Render), a tela não quebra, só mostra vazio.
+        setPainel((prev) => ({
+          professor: resposta.data.professor || prev.professor,
+          totais: resposta.data.totais || prev.totais,
+          turmas: resposta.data.turmas || [],
+          eventosHoje: resposta.data.eventosHoje || [],
+          topicosSemResposta: resposta.data.topicosSemResposta || [],
+          ultimosForuns: resposta.data.ultimosForuns || [],
+          ultimosProjetos: resposta.data.ultimosProjetos || [],
+        }));
       }
     } catch (error) {
       console.warn("⚠️ Erro ao carregar painel do professor:", error.message);
@@ -89,37 +115,27 @@ export default function HomePainelProfessor({ navigation }) {
 
   return (
     <View style={styles.safe}>
-      {/* CABEÇALHO */}
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <View style={styles.avatarPlaceholder}>
-            <Ionicons name="person" size={28} color="#fff" />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.saudacao}>
-              Olá, Professor {painel.professor.nome} 👋
-            </Text>
-            <Text style={styles.subSaudacao}>Tec. Desenvolvimento de Sistemas</Text>
-            <Text style={styles.resumoTurmas}>
-              {painel.totais.turmas} turmas • {painel.totais.alunos} alunos
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.sinoBtn} onPress={markAllAsRead}>
-            <Ionicons name="notifications" size={20} color="#fff" />
-            {totalNovas > 0 && (
-              <View style={styles.sinoBadge}>
-                <Text style={styles.sinoBadgeText}>{totalNovas}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Header
+        nomeTela={
+          carregando
+            ? "Carregando..."
+            : `Olá, ${painel.professor.nome} ${painel.professor.sobrenome} 👋`
+        }
+        exibirPerfil={true}
+        quantidadeNotificacoes={totalNovas}
+        aoClicarNoSino={markAllAsRead}
+        carregando={carregando}
+      />
 
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.resumoTurmas}>
+          {painel.totais.turmas} turmas • {painel.totais.alunos} alunos
+        </Text>
+
         <Text style={styles.sectionTitle}>Painel do Professor</Text>
 
         {/* CARDS DE TOTAIS */}
@@ -267,34 +283,48 @@ export default function HomePainelProfessor({ navigation }) {
           <Text style={styles.emptyText}>Nenhum evento para hoje.</Text>
         )}
 
-        {/* FÓRUM QUE PRECISA DE RESPOSTA + ÚLTIMOS PROJETOS ENVIADOS */}
+        {/* ÚLTIMOS FÓRUNS CRIADOS + ÚLTIMOS PROJETOS ENVIADOS */}
         <View style={{ marginTop: 10 }}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Fórum que precisa de resposta</Text>
+            <Text style={styles.sectionTitle}>Últimos fóruns criados</Text>
+            <TouchableOpacity onPress={() => {
+              try { navigation.navigate("Fórum"); } catch (e) {}
+            }}>
+              <Text style={styles.verTodos}>Ver todos</Text>
+            </TouchableOpacity>
           </View>
 
-          {primeiroTopicoPendente ? (
+          {painel.ultimosForuns.length > 0 ? (
             <View style={styles.card}>
-              <View style={styles.forumPendenteRow}>
-                <View style={styles.forumIconCircle}>
-                  <MaterialCommunityIcons name="comment-text-multiple" size={18} color="#fff" />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.forumPendenteTitulo} numberOfLines={1}>
-                    {primeiroTopicoPendente.titulo}
-                  </Text>
-                  <Text style={styles.forumPendenteSub}>Sem respostas ainda</Text>
-                </View>
-              </View>
-              <TouchableOpacity
-                style={styles.responderBtn}
-                onPress={() => abrirTopico(primeiroTopicoPendente)}
-              >
-                <Text style={styles.responderBtnText}>Responder</Text>
-              </TouchableOpacity>
+              {painel.ultimosForuns.map((forum, index) => (
+                <TouchableOpacity
+                  key={forum.id}
+                  style={[
+                    styles.forumPendenteRow,
+                    index < painel.ultimosForuns.length - 1 && styles.eventoRowBorda,
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    try { navigation.navigate("Fórum", { forumId: forum.id }); } catch (e) {}
+                  }}
+                >
+                  <View style={styles.forumIconCircle}>
+                    <MaterialCommunityIcons name="comment-text-multiple" size={18} color="#fff" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.forumPendenteTitulo} numberOfLines={1}>
+                      {forum.nome}
+                    </Text>
+                    <Text style={styles.forumPendenteSub}>
+                      por {forum.autor || "Alguém"} • {forum.total_topicos} tópico(s) • {formatarTempoRelativo(forum.data_criacao)}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color="#999" />
+                </TouchableOpacity>
+              ))}
             </View>
           ) : (
-            <Text style={styles.emptyText}>Nenhum tópico seu esperando resposta.</Text>
+            <Text style={styles.emptyText}>Nenhum fórum criado ainda.</Text>
           )}
 
           <View style={styles.sectionHeaderRow}>
@@ -336,28 +366,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 15 },
 
-  header: { paddingHorizontal: 18, paddingTop: 10, paddingBottom: 20 },
-  headerRow: { flexDirection: "row", alignItems: "center" },
-  avatarPlaceholder: {
-    width: 52, height: 52, borderRadius: 26,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center", alignItems: "center",
-  },
-  saudacao: { color: "#fff", fontSize: 18, fontWeight: "bold" },
-  subSaudacao: { color: "#dbe7fb", fontSize: 12, marginTop: 2 },
-  resumoTurmas: { color: "#dbe7fb", fontSize: 12, marginTop: 4, fontWeight: "600" },
-  sinoBtn: {
-    width: 42, height: 42, borderRadius: 21,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    justifyContent: "center", alignItems: "center",
-  },
-  sinoBadge: {
-    position: "absolute", top: -2, right: -2,
-    backgroundColor: "#EF4444", borderRadius: 9,
-    minWidth: 18, height: 18, justifyContent: "center", alignItems: "center",
-    paddingHorizontal: 3,
-  },
-  sinoBadgeText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
+  resumoTurmas: { color: "#777", fontSize: 13, fontWeight: "600", marginBottom: 4 },
 
   sectionTitle: { fontSize: 18, fontWeight: "bold", color: "#111" },
   sectionHeaderRow: {
