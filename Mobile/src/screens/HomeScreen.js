@@ -18,6 +18,7 @@ import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o API_ENDPOINTS
 import { useNotifications } from "../context/NotificationContext";
+import HomePainelProfessor from "./HomePainelProfessor";
 
 // Chave usada para guardar o histórico de repositórios recentes no celular,
 // separado por usuário (pra não misturar histórico entre contas diferentes no mesmo aparelho).
@@ -25,6 +26,10 @@ const RECENTES_KEY_PREFIX = "@InovaEdu:repositoriosRecentes:";
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
+
+  // 🆕 Descobre se o usuário logado é Aluno ou Professor, pra decidir qual Home mostrar
+  const [tipoUsuario, setTipoUsuario] = useState(null);
+  const [tipoCarregado, setTipoCarregado] = useState(false);
 
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState("");
@@ -45,6 +50,20 @@ export default function HomeScreen({ navigation }) {
   const [recentReposCarregado, setRecentReposCarregado] = useState(false);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // 🆕 Carrega o tipo salvo no login (Aluno/Professor) assim que a tela monta
+  useEffect(() => {
+    (async () => {
+      try {
+        const tipo = await AsyncStorage.getItem("tipo");
+        setTipoUsuario(tipo);
+      } catch (e) {
+        console.warn("⚠️ Erro ao ler tipo do usuário:", e.message);
+      } finally {
+        setTipoCarregado(true);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     Animated.loop(
@@ -87,7 +106,6 @@ export default function HomeScreen({ navigation }) {
           forum: Array.isArray(dados.forum) ? dados.forum : [],
           projetos: Array.isArray(dados.projetos) ? dados.projetos : [],
         });
-        console.log("Forum recebido:", dados.forum);
 
         // Se retornou com dados parciais, loga o aviso
         if (dados.aviso) {
@@ -344,6 +362,20 @@ export default function HomeScreen({ navigation }) {
 
   const estaBuscando = busca.trim() !== "";
   const forumPrincipal = homeData.forum.length > 0 ? homeData.forum[0] : null;
+
+  // 🆕 Enquanto não sabemos o tipo, evita piscar a tela errada
+  if (!tipoCarregado) {
+    return (
+      <View style={[styles.safe, { justifyContent: "center", alignItems: "center" }]}>
+        <Text style={{ color: "#fff" }}>Carregando...</Text>
+      </View>
+    );
+  }
+
+  // 🆕 Professor vê o painel dedicado; o restante do arquivo abaixo é a visão do Aluno
+  if (tipoUsuario === "Professor") {
+    return <HomePainelProfessor navigation={navigation} />;
+  }
 
   return (
     <View style={styles.safe}>
