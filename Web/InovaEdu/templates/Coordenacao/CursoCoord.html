@@ -1,0 +1,204 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos</title>
+
+    <link rel="stylesheet" href="{% static 'styles/navbar_coordenacao.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/CursoCoord.css' %}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+    {% include 'partials/navbar_Coordenacao.html' %}
+
+    <main class="container-geral">
+
+        <section class="lista_conteudo container-curso lista-curso" id="listaCurso">
+            <!-- Barra Superior -->
+            <div class="barra-superior-lista">
+
+                <div class="filtros-lista">
+
+                    <!-- Pesquisa -->
+                    <div class="busca-geral">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="pesquisarCurso"
+                            placeholder="Buscar por nome do curso..."
+                        >
+                    </div>
+
+                </div>
+                <!-- Botão -->
+                <a href="#" class="btn-add-geral" id="abrirModalCurso">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Novo Curso
+                </a>
+
+            </div>
+
+            <!-- Lista -->
+            <section class="lista-curso-conteudo">
+
+            <ul>
+                <!-- Cabeçalho -->
+                <li class="curso-cabecalho">
+                    <span>Nome</span>
+                    <span>Início</span>
+                    <span>Término</span>
+                    <span>Ações</span>
+                </li>
+
+                {% for curso in cursos %}
+
+                <!-- Curso -->
+                <li class="curso-item">
+                    <span>{{ curso.nome_curso }}</span>
+                    <span>{{ curso.data_inicio|date:"d/m/Y" }}</span>
+                    <span>{{ curso.data_final|date:"d/m/Y" }}</span>
+
+                    <div class="acoes-geral_usuario">
+
+                        <button
+                            type="button"
+                            class="btn-editar"
+                            data-id="{{ curso.idcurso }}"
+                            data-nome="{{ curso.nome_curso }}"
+                            data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
+                            data-final="{{ curso.data_final|date:'Y-m-d' }}"
+                            data-descricao="{{ curso.descricao_curso }}">
+                            Editar
+                        </button>
+
+                        <button
+                            class="btn-descricao icon-descricao"
+                            data-descricao="{{ curso.descricao_curso|escapejs }}">
+                            <i class="fa-solid fa-align-center"></i>
+                        </button>
+                        <form
+                            method="POST"
+                            action="{% url 'excluir_curso' curso.idcurso %}">
+                            {% csrf_token %}
+                            <button
+                                type="button"
+                                class="btn-excluir-curso abrir-modal-excluir">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="curso-vazio">
+                    Nenhum curso cadastrado.
+                </li>
+                {% endfor %}
+            </ul>
+
+
+            
+
+            <!-- MODAL CADASTRO CURSO -->
+            <div id="modalCadastroCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharModalCurso">&times;</span>
+
+                    <div class="titulo_lista_curso">
+                        <p>Cadastro de Curso</p>
+                    </div>
+
+                    <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <label for="nome_curso">Nome do Curso</label>
+                        <input type="text" id="nome_curso" name="nome_curso">
+
+                        <div class="datas">
+
+                            <div>
+                                <label for="data_inicio">Data de Início</label>
+                                <input type="date" id="data_inicio" name="data_inicio">
+                            </div>
+
+                            <div>
+                                <label for="data_final">Data de Término</label>
+                                <input type="date" id="data_final" name="data_final">
+                            </div>
+
+                        </div>
+
+                        <label for="descricao_curso">Descrição</label>
+                        <textarea id="descricao_curso" name="descricao_curso"></textarea>
+
+                        <div class="botoes-modal">
+
+                            <button type="button" id="cancelarModalCurso" class="btn-cancelar">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" class="btn-salvar">
+                                Salvar Curso
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </main>
+ <script src="{% static 'scripts/coordenacao.js' %}"></script>
+</body>
+</html>

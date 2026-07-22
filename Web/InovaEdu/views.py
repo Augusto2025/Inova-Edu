@@ -1389,12 +1389,67 @@ def editar_usuario(request, idusuario):
 
 
 
-
-
-
-
 def CursoCoord(request):
-    return render(request, 'Coordenacao/CursoCoord.html')
+
+    cursos = Curso.objects.all().order_by("nome_curso")
+
+    return render(
+        request,
+        "Coordenacao/CursoCoord.html",
+        {
+            "cursos": cursos
+        }
+    )
+
+
+
+def criar_curso(request):
+
+    if request.method == "POST":
+
+        email_usuario = request.session.get("usuario_email")
+
+        if not email_usuario:
+            return redirect("login")
+
+        try:
+            usuario = Usuario.objects.get(email=email_usuario)
+
+        except Usuario.DoesNotExist:
+            return redirect("login")
+
+
+        Curso.objects.create(
+            nome_curso=request.POST.get("nome_curso"),
+            descricao_curso=request.POST.get("descricao_curso"),
+            data_inicio=request.POST.get("data_inicio") or None,
+            data_final=request.POST.get("data_final") or None,
+            imagem=request.FILES.get("imagem"),
+            usuario=usuario,
+        )
+
+        return redirect("CursoCoord")  # nome da URL
+
+
+    return redirect("CursoCoord")
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+ 
 
 def TurmaCoord(request):
     return render(request, 'Coordenacao/TurmaCoord.html')

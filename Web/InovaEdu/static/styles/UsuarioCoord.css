@@ -333,7 +333,7 @@
 /* LISTA DO USUARIO */
 
 .lista-usuario-conteudo{
-    max-height: 500px;   /* ajuste para a altura que desejar */
+    max-height: 600px;   /* ajuste para a altura que desejar */
     overflow-y: auto;
     overflow-x: hidden;
 
@@ -668,3 +668,4 @@
     }
 
 }
+

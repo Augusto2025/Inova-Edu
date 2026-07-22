@@ -124,3 +124,60 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
+// ABRIR A MODAL CADRASTRO DO CURSO
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const abrirModal = document.getElementById("abrirModalCurso");
+    const modal = document.getElementById("modalCadastroCurso");
+    const fecharModal = document.getElementById("fecharModalCurso");
+    const cancelarModal = document.getElementById("cancelarModalCurso");
+
+    if(abrirModal){
+
+        abrirModal.addEventListener("click", (e)=>{
+
+            e.preventDefault();
+
+            modal.classList.add("abrir");
+
+        });
+
+    }
+
+    if(fecharModal){
+
+        fecharModal.addEventListener("click", ()=>{
+
+            modal.classList.remove("abrir");
+
+        });
+
+    }
+
+    if(cancelarModal){
+
+        cancelarModal.addEventListener("click", ()=>{
+
+            modal.classList.remove("abrir");
+
+        });
+
+    }
+
+    modal.addEventListener("click",(e)=>{
+
+        if(e.target === modal){
+
+            modal.classList.remove("abrir");
+
+        }
+
+    });
+
+});
+
+
+
+// pesquisar 
