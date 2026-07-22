@@ -25,7 +25,7 @@
 
       
         <section class="search-container">
-            <form method="get" action="{% url 'home' %}" class="search-form-wrapper">
+            <form method="get" action="{% url 'cursos' %}" class="search-form-wrapper">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
                     <input type="search" name="q" placeholder=" Digite o nome do curso..." value="{{ query }}">
@@ -33,7 +33,6 @@
                 <button type="submit" class="btn-search">Buscar</button>
             </form>
         </section>
-
 
         {% if curso|length == 0 %}
             <div class="no-results">
@@ -46,7 +45,10 @@
 
         <section class="cards-grid">
             {% for Curso in curso %}
-                <article class="card">
+                
+                <!-- CARD DO CURSO (Oculta a partir do 8º curso) -->
+                <article class="card {% if forloop.counter > 7 %}curso-oculto{% endif %}" 
+                         {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
                     
                     {% if Curso.imagem %}
                         <div class="card-image" style="background-image: url('{{ Curso.imagem.url }}'); background-size: cover; background-position: center;">
@@ -59,36 +61,46 @@
                     {% endif %}
 
                     <div class="card-content">
-                        
                         <h3>{{ Curso.nome_curso }}</h3>
-                        <p>Clique no botão abaixo para conferir os detalhes.</p>
+                        {% if Curso.descricao_curso %}
+                            <p>{{ Curso.descricao_curso|slice:":120" }}</p>
+                        {% else %}
+                            <p>Descrição não disponível.</p>
+                        {% endif %}
                         <div class="borda"></div>
                         <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
                     </div>
 
                 </article>
+
+                <!-- CARD "VER MAIS" (Aparece no lugar do 8º item) -->
+                {% if forloop.counter == 8 %}
+                    <article class="card card-ver-mais" id="btnVerMaisCursos">
+                        <div class="card-ver-mais-content">
+                            <div class="icone-ver-mais">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <h3>Ver mais cursos</h3>
+                            <p>Clique para expandir e ver todos os cursos</p>
+                        </div>
+                    </article>
+                {% endif %}
+
             {% endfor %}
         </section>
     </main>
 
-      
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const filtroBtn = document.getElementById('filtroBtn');
-            const sidebar = document.getElementById('sidebarFiltro');
-
-            if (filtroBtn && sidebar) {
-                filtroBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    sidebar.classList.toggle('open');
-                });
-
-                // Fecha o painel de filtros se o usuário clicar fora dele
-                document.addEventListener('click', (e) => {
-                    if (!sidebar.contains(e.target) && e.target !== filtroBtn) {
-                        sidebar.classList.remove('open');
-                    }
+            // Lógica do "Ver Mais Cursos"
+            const btnVerMais = document.getElementById('btnVerMaisCursos');
+            if (btnVerMais) {
+                btnVerMais.addEventListener('click', () => {
+                    const cursosOcultos = document.querySelectorAll('.curso-oculto');
+                    cursosOcultos.forEach(card => {
+                        card.style.display = 'flex'; // Reexibe os cursos ocultos
+                    });
+                    btnVerMais.style.display = 'none'; // Esconde o card "Ver mais"
                 });
             }
         });
