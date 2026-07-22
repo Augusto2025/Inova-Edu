@@ -1,48 +1,43 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const menuToggle = document.getElementById("menuToggle");
+  const navMenu = document.getElementById("navMenu");
 
-    const menuToggle = document.getElementById("menuToggle");
-    const navMenu = document.getElementById("navMenu");
-
-    menuToggle.addEventListener("click", function () {
-        navMenu.classList.toggle("active");
-    });
-
+  menuToggle.addEventListener("click", function () {
+    navMenu.classList.toggle("active");
+  });
 });
-
 
 // funcionar o modal de cadastro
 document.addEventListener("DOMContentLoaded", function () {
+  const abrir = document.getElementById("abrirModal");
+  const modal = document.getElementById("modalCadastro");
+  const fechar = document.getElementById("fecharModal");
+  const cancelar = document.getElementById("cancelarModal");
 
-    const abrir = document.getElementById("abrirModal");
-    const modal = document.getElementById("modalCadastro");
-    const fechar = document.getElementById("fecharModal");
-    const cancelar = document.getElementById("cancelarModal");
-
-    if (abrir && modal) {
-        abrir.addEventListener("click", function (e) {
-            e.preventDefault();
-            modal.style.display = "flex";
-        });
-    }
-
-    if (fechar) {
-        fechar.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
-    }
-
-    if (cancelar) {
-        cancelar.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
-    }
-
-    window.addEventListener("click", function (e) {
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
+  if (abrir && modal) {
+    abrir.addEventListener("click", function (e) {
+      e.preventDefault();
+      modal.style.display = "flex";
     });
+  }
 
+  if (fechar) {
+    fechar.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+  }
+
+  if (cancelar) {
+    cancelar.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+  }
+
+  window.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
 });
 
 // funcionar o modal de editar
@@ -56,24 +51,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelarEditar = document.getElementById("cancelarEditar");
     const formEditar = document.getElementById("formEditarUsuario");
 
-botoesEditar.forEach(botao => {
-    botao.addEventListener("click", function () {
+    botoesEditar.forEach((botao) => {
 
-        const li = this.closest("li");
-        const idusuario = li.dataset.id;
+        botao.addEventListener("click", function () {
 
-        document.getElementById("idusuarioEdit").value = idusuario;
-        document.getElementById("nomeEdit").value = li.dataset.nome;
-        document.getElementById("SobrenomeEdit").value = li.dataset.sobrenome;
-        document.getElementById("EmailEdit").value = li.dataset.email;
-        document.getElementById("descricaoEdit").value = li.dataset.descricao;
-        document.getElementById("tipoCadastroEdit").value = li.dataset.tipo;
+            const idusuario = this.dataset.id;
 
-        formEditar.action = `/usuarios/editar/${idusuario}/`;
+            document.getElementById("idusuarioEdit").value = idusuario;
+            document.getElementById("nomeEdit").value = this.dataset.nome;
+            document.getElementById("SobrenomeEdit").value = this.dataset.sobrenome;
+            document.getElementById("EmailEdit").value = this.dataset.email;
+            document.getElementById("descricaoEdit").value = this.dataset.descricao;
+            document.getElementById("tipoCadastroEdit").value = this.dataset.tipo;
 
-        modalEditar.style.display = "flex";
+            formEditar.action = `/usuarios/editar/${idusuario}/`;
+
+            modalEditar.style.display = "flex";
+        });
+
     });
-});
 
     fecharEditar.onclick = () => modalEditar.style.display = "none";
     cancelarEditar.onclick = () => modalEditar.style.display = "none";
@@ -83,7 +79,6 @@ botoesEditar.forEach(botao => {
             modalEditar.style.display = "none";
         }
     });
+
 });
-
 // FILTRO DOS TIPOS
-

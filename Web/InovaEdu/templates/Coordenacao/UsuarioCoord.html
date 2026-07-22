@@ -128,41 +128,44 @@
               </td>
 
               <td>
-                <div class="acoes-geral_usuario">
-                  <li
-                    data-id="{{ usuario.idusuario }}"
-                    data-nome="{{ usuario.nome }}"
-                    data-sobrenome="{{ usuario.sobrenome }}"
-                    data-email="{{ usuario.email }}"
-                    data-descricao="{{ usuario.descricao }}"
-                    data-tipo="{{ usuario.tipo }}">
+                  <div class="acoes-geral_usuario">
 
-                  
+                      <button
+                          type="button"
+                          class="btn-editar"
+                          data-id="{{ usuario.idusuario }}"
+                          data-nome="{{ usuario.nome }}"
+                          data-sobrenome="{{ usuario.sobrenome }}"
+                          data-email="{{ usuario.email }}"
+                          data-descricao="{{ usuario.descricao }}"
+                          data-tipo="{{ usuario.tipo }}">
+                          Editar
+                      </button>
 
-                    <button type="button" class="btn-editar">
-                        Editar
-                    </button>
-                  </li>
+                      <button
+                          class="btn-descricao icon-descricao"
+                          data-descricao="{{ usuario.descricao|escapejs }}">
+                          <i class="fa-solid fa-align-center"></i>
+                      </button>
 
-                  <button
-                    class="btn-descricao icon-descricao"
-                    data-descricao="{{ usuario.descricao|escapejs }}"
-                  >
-                    <i class="fa-solid fa-align-center"></i>
-                  </button>
+                      <form method="POST" action="{% url 'excluir_usuario' usuario.idusuario %}">
+                          {% csrf_token %}
+                          <button class="btn-excluir abrir-modal-excluir">
+                              <i class="fa-solid fa-trash"></i>
+                          </button>
+                      </form>
 
-                  <form
-                    method="POST"
-                    action="{% url 'excluir_usuario' usuario.idusuario %}"
-                  >
-                    {% csrf_token %}
-
-                    <button class="btn-excluir abrir-modal-excluir">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </form>
-                </div>
+                  </div>
               </td>
+
+
+
+
+
+
+
+
+              
             </tr>
 
             {% empty %}

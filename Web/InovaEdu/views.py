@@ -1357,28 +1357,26 @@ def UsuarioCoord(request):
     return render(request, "Coordenacao/UsuarioCoord.html", context)
 
 def editar_usuario(request, idusuario):
-    usuario = Usuario.objects.get(idusuario=idusuario)
+    usuario = get_object_or_404(Usuario, idusuario=idusuario)
 
     if request.method == "POST":
-        # Verifica se os dados estão sendo passados corretamente
-        print(request.POST)
-        print(request.FILES)
 
         usuario.nome = request.POST.get("nome")
         usuario.sobrenome = request.POST.get("sobrenome")
         usuario.email = request.POST.get("email")
-        # usuario.senha = request.POST.get("senha")
         usuario.descricao = request.POST.get("descricao")
         usuario.tipo = request.POST.get("tipoCadastro")
 
-        if "imagem" in request.FILES:
-            usuario.imagem = request.FILES["imagem"]
+        if request.FILES.get("imagem"):
+            usuario.imagem = request.FILES.get("imagem")
 
         usuario.save()
-        print("SALVO COM SUCESSO")
-        return redirect("Coordenacao/UsuarioCoord.html")
 
-    return redirect("Coordenacao/UsuarioCoord.html ")
+        messages.success(request, "Usuário atualizado com sucesso!")
+
+        return redirect("UsuariosCoord")
+
+    return redirect("UsuariosCoord")
 
 
 
@@ -1638,29 +1636,6 @@ def excluir_usuario(request, idusuario):
     return redirect("home_Coordenacao")
 
 
-# def editar_usuario(request, idusuario):
-#     usuario = Usuario.objects.get(idusuario=idusuario)
-
-#     if request.method == "POST":
-#         # Verifica se os dados estão sendo passados corretamente
-#         print(request.POST)
-#         print(request.FILES)
-
-#         usuario.nome = request.POST.get("nome")
-#         usuario.sobrenome = request.POST.get("sobrenome")
-#         usuario.email = request.POST.get("email")
-#         # usuario.senha = request.POST.get("senha")
-#         usuario.descricao = request.POST.get("descricao")
-#         usuario.tipo = request.POST.get("tipoCadastro")
-
-#         if "imagem" in request.FILES:
-#             usuario.imagem = request.FILES["imagem"]
-
-#         usuario.save()
-#         print("SALVO COM SUCESSO")
-#         return redirect("home_Coordenacao")
-
-#     return redirect("home_Coordenacao")
 
 
 # CURSO

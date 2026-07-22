@@ -51,7 +51,7 @@ urlpatterns = [
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
     
-    path( "usuarios/",views.lista_usuarios, name="lista_usuarios"),
+    # path( "usuarios/",views.lista_usuarios, name="lista_usuarios"),
     
     
     
