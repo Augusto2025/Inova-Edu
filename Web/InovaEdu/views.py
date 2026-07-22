@@ -1402,7 +1402,6 @@ def CursoCoord(request):
     )
 
 
-
 def criar_curso(request):
 
     if request.method == "POST":
@@ -1411,6 +1410,7 @@ def criar_curso(request):
 
         if not email_usuario:
             return redirect("login")
+
 
         try:
             usuario = Usuario.objects.get(email=email_usuario)
@@ -1428,10 +1428,11 @@ def criar_curso(request):
             usuario=usuario,
         )
 
-        return redirect("CursoCoord")  # nome da URL
+
+        return redirect("CursoCoord")
 
 
-    return redirect("CursoCoord")
+    return redirect("Coordenacao/CursoCoord")
 
 
     
