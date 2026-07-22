@@ -49,7 +49,7 @@
         <main class="container">
             <section class="forum-grid">
 
-                <!-- CARD CRIAR FÓRUM (GLASS DASHED) -->
+                <!-- CARD CRIAR FÓRUM (GLASS DASHED - Sempre Visível) -->
                 <article class="forum-card create-card" id="abrirModalForum">
                     <div class="create-card-content">
                         <div class="plus-circle">
@@ -60,9 +60,11 @@
                     </div>
                 </article>
 
-                <!-- LISTA DE CARDS GLASS -->
+                <!-- LISTA DE CARDS GLASS (Oculta a partir do 8º fórum) -->
                 {% for Forum in foruns %}
-                <article class="forum-card glass-card">
+                <article class="forum-card glass-card {% if forloop.counter > 7 %}forum-oculto{% endif %}"
+                         {% if forloop.counter > 7 %}style="display: none;"{% endif %}>
+                    
                     <div class="card-header-glass">
                         <span class="category-badge">
                             <i class="fa-solid fa-hashtag"></i> COMUNIDADE
@@ -72,7 +74,11 @@
                         <div class="owner-menu">
                             <span class="owner-tag">Seu Fórum</span>
                             <div class="acoes-forum">
-                                <button class="btn-icon btn-editar" title="Editar" data-forum-id="{{ Forum.idforum }}">
+                                <button class="btn-icon btn-editar" title="Editar" 
+                                        data-forum-id="{{ Forum.idforum }}"
+                                        data-forum-nome="{{ Forum.nome }}"
+                                        data-topico-titulo="{{ Forum.topico_set.first.titulo }}"
+                                        data-topico-descricao="{{ Forum.topico_set.first.descricao }}">
                                     <i class="fas fa-pen"></i>
                                 </button>
                                 <button class="btn-icon btn-excluir" title="Excluir" data-forum-id="{{ Forum.idforum }}">
@@ -106,6 +112,16 @@
                     </div>
                 </article>
                 {% endfor %}
+
+                <!-- CARD "VER MAIS FÓRUNS" (Aparece se houver mais de 7 fóruns) -->
+                {% if foruns|length > 7 %}
+                    <article class="forum-card card-ver-mais" id="btnVerMaisForuns">
+                        <div class="card-ver-mais-content">
+                            <h3>Ver mais fóruns</h3>
+                            <p>Clique para ver mais tópicos e fóruns</p>
+                        </div>
+                    </article>
+                {% endif %}
 
             </section>
         </main>
@@ -182,6 +198,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- 1. GERENCIAMENTO DE MODAIS INTATO ---
             const abrirModal = document.getElementById('abrirModalForum');
             const fecharModal = document.getElementById('fecharModalForum');
             const modalCriar = document.getElementById('modalCriarForum');
@@ -202,24 +220,29 @@
             const inputTitulo = document.getElementById('inputTituloTopico');
             const inputDescricao = document.getElementById('inputDescricaoTopico');
         
-            document.querySelectorAll('.btn-editar').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    inputNome.value = btn.dataset.forumNome || '';
-                    inputTitulo.value = btn.dataset.topicoTitulo || '';
-                    inputDescricao.value = btn.dataset.topicoDescricao || '';
-                    formEditar.action = `/forum/editar/${btn.dataset.forumId}/`;
-                    modalEditar.classList.add('open');
+            // Função para (re)vincular eventos dos botões de Editar/Excluir
+            function vincularEventosAcoes() {
+                document.querySelectorAll('.btn-editar').forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (inputNome) inputNome.value = btn.dataset.forumNome || '';
+                        if (inputTitulo) inputTitulo.value = btn.dataset.topicoTitulo || '';
+                        if (inputDescricao) inputDescricao.value = btn.dataset.topicoDescricao || '';
+                        if (formEditar) formEditar.action = `/forum/editar/${btn.dataset.forumId}/`;
+                        if (modalEditar) modalEditar.classList.add('open');
+                    };
                 });
-            });
-        
-            document.querySelectorAll('.btn-excluir').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    formExcluir.action = `/forum/excluir/${btn.dataset.forumId}/`;
-                    modalExcluir.classList.add('open');
+            
+                document.querySelectorAll('.btn-excluir').forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (formExcluir) formExcluir.action = `/forum/excluir/${btn.dataset.forumId}/`;
+                        if (modalExcluir) modalExcluir.classList.add('open');
+                    };
                 });
-            });
+            }
+
+            vincularEventosAcoes(); // Chamada inicial
         
             const fecharEditar = document.getElementById('fecharModalEditar');
             const fecharExcluir = document.getElementById('fecharModalExcluir');
@@ -234,6 +257,75 @@
                     });
                 }
             });
+
+
+            // --- 2. LÓGICA DE EXIBIR DE 12 EM 12 ---
+            function inicializarVerMais() {
+                const btnVerMais = document.getElementById('btnVerMaisForuns');
+                if (!btnVerMais) return;
+
+                btnVerMais.addEventListener('click', () => {
+                    const forunsOcultos = Array.from(document.querySelectorAll('.forum-oculto'));
+                    const proximos12 = forunsOcultos.slice(0, 12);
+
+                    proximos12.forEach(card => {
+                        card.style.display = 'flex';
+                        card.classList.remove('forum-oculto');
+                    });
+
+                    if (document.querySelectorAll('.forum-oculto').length === 0) {
+                        btnVerMais.style.display = 'none';
+                    }
+                });
+            }
+
+            inicializarVerMais();
+
+
+            // --- 3. LÓGICA DE BUSCA AUTOMÁTICA EM TEMPO REAL ---
+            const inputBusca = document.querySelector('input[name="q"]');
+            const searchForm = document.querySelector('.search-form-wrapper');
+            const forumGrid = document.querySelector('.forum-grid');
+            let timeout = null;
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', (e) => e.preventDefault());
+            }
+
+            if (inputBusca && forumGrid) {
+                inputBusca.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+
+                    timeout = setTimeout(() => {
+                        const query = e.target.value.trim();
+                        const url = `{% url 'forum_blocos' %}?q=${encodeURIComponent(query)}`;
+
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const novaGrid = doc.querySelector('.forum-grid');
+                                
+                                if (novaGrid) {
+                                    forumGrid.innerHTML = novaGrid.innerHTML;
+                                    
+                                    // Re-associa os botões dos modais e do botão ver mais
+                                    vincularEventosAcoes();
+                                    inicializarVerMais();
+
+                                    // Reconecta o evento de clique do "Criar Fórum" atualizado no DOM
+                                    const novoAbrirModal = document.getElementById('abrirModalForum');
+                                    if (novoAbrirModal && modalCriar) {
+                                        novoAbrirModal.addEventListener('click', () => modalCriar.classList.add('open'));
+                                    }
+                                }
+                            })
+                            .catch(err => console.error('Erro na busca do fórum:', err));
+                    }, 300);
+                });
+            }
+
         });
     </script>
 {% endblock %}
