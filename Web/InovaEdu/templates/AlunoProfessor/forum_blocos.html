@@ -63,7 +63,7 @@
                 <!-- LISTA DE CARDS GLASS (Oculta a partir do 8º fórum) -->
                 {% for Forum in foruns %}
                 <article class="forum-card glass-card {% if forloop.counter > 7 %}forum-oculto{% endif %}"
-                         {% if forloop.counter > 7 %}style="display: none;"{% endif %}>
+                         {% if forloop.counter > 4 %}style="display: none;"{% endif %}>
                     
                     <div class="card-header-glass">
                         <span class="category-badge">
