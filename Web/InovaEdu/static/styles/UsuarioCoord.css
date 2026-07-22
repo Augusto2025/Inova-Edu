@@ -446,6 +446,10 @@
 }
 
 /* Ações */
+.lista-usuarios li {
+    list-style: none;
+}
+
 
 .acoes-geral_usuario{
 
@@ -506,7 +510,14 @@
 
 }
 
+
+
+
+
+
+
 /* MODAL DO CADASTRO DE USUARIO */
+
 .modal{
     display:none;
     position:fixed;

@@ -129,9 +129,20 @@
 
               <td>
                 <div class="acoes-geral_usuario">
-                  <button class="btn-editar">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
+                  <li
+                    data-id="{{ usuario.idusuario }}"
+                    data-nome="{{ usuario.nome }}"
+                    data-sobrenome="{{ usuario.sobrenome }}"
+                    data-email="{{ usuario.email }}"
+                    data-descricao="{{ usuario.descricao }}"
+                    data-tipo="{{ usuario.tipo }}">
+
+                  
+
+                    <button type="button" class="btn-editar">
+                        Editar
+                    </button>
+                  </li>
 
                   <button
                     class="btn-descricao icon-descricao"
@@ -241,50 +252,111 @@
 
     {% comment %} MODAL EDITAR {% endcomment %}
 
-    <div id="modalEditar" class="modal">
-                <div class="modal-conteudo">
-                    <span class="fechar" id="fecharEditar">&times;</span>
-                    <div class="titulo_lista_editar">
-                        <p>Editar Usuário</p>
-                    </div>
-                    <form id="formEditarUsuario" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="hidden" id="idusuarioEdit" name="idusuario">
+   <div id="modalEditar" class="modal">
+    <div class="modal-conteudo">
 
-                        <label for="nomeEdit">Primeiro Nome:</label>
-                        <input type="text" id="nomeEdit" name="nome" required placeholder="Digite seu nome">
+        <!-- Cabeçalho -->
+        <div class="modal-header">
+            <h2>
+                <i class="fa-solid fa-user-pen"></i>
+                Editar Usuário
+            </h2>
 
-                        <label for="SobrenomeEdit">Sobrenome:</label>
-                        <input type="text" id="SobrenomeEdit" name="sobrenome" required
-                            placeholder="Digite seu sobrenome">
+            <span class="fechar" id="fecharEditar">&times;</span>
+        </div>
 
-                        <label for="EmailEdit">Email:</label>
-                        <input type="email" id="EmailEdit" name="email" required placeholder="exemplo@gmail.com">
+        <form id="formEditarUsuario" method="POST" action="{% url 'editar_usuario' 0 %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="idusuarioEdit" name="idusuario">
 
-                        {% comment %} <label for="SenhaEdit">Senha:</label>
-                        <input type="password" id="SenhaEdit" name="senha" required placeholder="***********"> {% endcomment %}
+            <!-- Primeira linha -->
+            <div class="linha">
+                <div class="campo">
+                    <label for="nomeEdit">Primeiro Nome</label>
+                    <input
+                        type="text"
+                        id="nomeEdit"
+                        name="nome"
+                        placeholder="Digite seu nome"
+                        required>
+                </div>
 
-                        <label for="descricaoEdit">Descrição:</label>
-                        <textarea id="descricaoEdit" name="descricao" rows="4"
-                            placeholder="Lorem ipsum dolor sit amet...."></textarea>
-
-                        {% comment %} <label for="imagemEdit">Imagem:</label>
-                        <input type="file" id="imagemEdit" name="imagem" accept="image/*"> {% endcomment %}
-
-                        <label for="tipoCadastroEdit">Escolha sua opção de cadastro:</label>
-                        <select id="tipoCadastroEdit" name="tipoCadastro" required>
-                            <option value="" disabled selected>Selecione uma opção</option>
-                            <option value="Professor">Professor</option>
-                            <option value="Aluno">Aluno</option>
-                            <option value="Coordenador">Coordenação</option>
-                        </select>
-
-                        <button type="submitsalvar">Salvar</button>
-                        <button type="buttoncancelar" id="cancelarEditar">Cancelar</button>
-                    </form>
+                <div class="campo">
+                    <label for="SobrenomeEdit">Sobrenome</label>
+                    <input
+                        type="text"
+                        id="SobrenomeEdit"
+                        name="sobrenome"
+                        placeholder="Digite seu sobrenome"
+                        required>
                 </div>
             </div>
 
+            <!-- Segunda linha -->
+            <div class="linha">
+                <div class="campo">
+                    <label for="EmailEdit">Email</label>
+                    <input
+                        type="email"
+                        id="EmailEdit"
+                        name="email"
+                        placeholder="exemplo@gmail.com"
+                        required>
+                </div>
+
+                <div class="campo">
+                    <label for="tipoCadastroEdit">Tipo de Cadastro</label>
+                    <select id="tipoCadastroEdit" name="tipoCadastro" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Aluno">Aluno</option>
+                        <option value="Coordenador">Coordenação</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Descrição -->
+            <div class="campo">
+                <label for="descricaoEdit">Descrição</label>
+                <textarea
+                    id="descricaoEdit"
+                    name="descricao"
+                    rows="4"
+                    placeholder="Lorem ipsum dolor sit amet..."></textarea>
+            </div>
+
+            <!-- Caso queira voltar a usar imagem -->
+            {% comment %}
+            <div class="campo">
+                <label for="imagemEdit">Imagem</label>
+                <input
+                    type="file"
+                    id="imagemEdit"
+                    name="imagem"
+                    accept="image/*">
+            </div>
+            {% endcomment %}
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    id="cancelarEditar"
+                    class="btn-cancelar">
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-salvar">
+                    Salvar Alterações
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
 
 
 
@@ -307,7 +379,7 @@
 
 
 
-   
+   <script src="{% static 'scripts/coordenacao.js' %}"></script>
     
     
   </body>
