@@ -25,7 +25,7 @@
     margin:126px auto;
 
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:18px;
 }
 
@@ -111,6 +111,11 @@
     color:#1f2d3d;
 }
 
+.icone.verde{
+    background: #d1fae5;
+    color: #059669;
+}
+
 /* ========================= */
 /* RESPONSIVO */
 /* ========================= */
@@ -181,6 +186,7 @@
     box-shadow:0 5px 18px rgba(0,0,0,.08);
     position: relative;
     top: -100px; /* sobe */
+    
     
 }
 

@@ -1345,12 +1345,17 @@ def UsuarioCoord(request):
 
     elif filtro == "aluno":
         usuarios = usuarios.filter(tipo__iexact="Aluno")
+    
+    elif filtro == "coordenador":
+        usuarios = usuarios.filter(tipo__iexact="Coordenador")
+    
 
     context = {
         "usuarios": usuarios,
         "total_usuarios": Usuario.objects.count(),
         "total_professores": Usuario.objects.filter(tipo__iexact="Professor").count(),
         "total_alunos": Usuario.objects.filter(tipo__iexact="Aluno").count(),
+         "total_coordenadores": Usuario.objects.filter(tipo__iexact="Coordenador").count(),
         "filtro": filtro,
     }
 
