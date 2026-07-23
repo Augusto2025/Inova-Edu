@@ -29,7 +29,7 @@
 
       <!-- Área fixa com mensagem de Boas-Vindas -->
       <div class="hero-info">
-        <span class="saudacao">Olá! Boas-vindas ao seu espaço acadêmico.</span>
+        <span class="saudacao">Olá! {{ usuario.nome }}, boas-vindas ao seu espaço acadêmico.</span>
         <h1>Inova Edu<br /></h1>
         <h3>Repositórios Acadêmicos Reunidos</h3>
 
@@ -146,7 +146,7 @@
           <div class="conteudo-curso">
             <h3>{{ curso.nome_curso }}</h3>
             <p>{{ curso.descricao_curso|truncatechars:120 }}</p>
-            <a href="#" class="btn-entrar"> Entrar </a>
+            <a class="btn-entrar" href="{% url 'turmas' curso_id=curso.idcurso %}">Entrar</a>
           </div>
 
         </div>
@@ -163,5 +163,9 @@
     </section>
 
     <script src="{% static 'scripts/HomeAlunoProfessor.js' %}"></script>
+    
+    {% block footer %}
+      {% include "partials/footer.html" %}
+    {% endblock %}
   </body>
 </html>
