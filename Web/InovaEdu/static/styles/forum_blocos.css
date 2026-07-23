@@ -59,7 +59,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 25px;
-  margin-top: 25px;
+  margin: 30px 0;
 }
 
 .glass-card {
@@ -242,6 +242,50 @@ body {
 .Botao_entrar_forum:hover {
   background: var(--azul-Senac-hover);
   gap: 12px;
+}
+
+.card-ver-mais {
+  background: rgba(0, 70, 184, 0.04);
+  border: 2px dashed var(--azul-Senac);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 234px;
+}
+
+.card-ver-mais:hover{
+  background: rgba(72, 130, 196, 0.08);
+  border-color: #f7941d;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(120, 156, 215, 0.12);
+}
+
+.card-ver-mais-content {
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-ver-mais:hover .icone-ver-mais {
+  background: #f7941d;
+  transform: scale(1.1) rotate(90deg);
+}
+
+.card-ver-mais-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--azul-Senac);
+  transition: color 0.3s ease;
+}
+
+.card-ver-mais-content p {
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
 /* NO RESULTS */

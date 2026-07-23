@@ -59,15 +59,21 @@ router.get('/painel', async (req, res) => {
         );
         const totalTopicos = parseInt(topicosRes.rows[0]?.total || 0, 10);
 
-        // 4. Eventos de hoje (visão geral, já que eventos não são por turma no seu modelo)
-        const eventosHojeRes = await pool.query(`
+        // 4. Eventos de hoje (pro card de totais) e próximos eventos (pra lista, hoje + futuros)
+        const totalEventosHojeRes = await pool.query(`
+            SELECT COUNT(*) AS total FROM eventos WHERE "Data_do_evento" = CURRENT_DATE
+        `);
+        const totalEventosHoje = parseInt(totalEventosHojeRes.rows[0]?.total || 0, 10);
+
+        const eventosProximosRes = await pool.query(`
             SELECT "idEventos" AS id, "Nome_do_evento" AS titulo, "Hora_do_evento" AS hora, 
                    "Data_do_evento" AS data, "Endereco" AS local
             FROM eventos 
-            WHERE "Data_do_evento" = CURRENT_DATE
-            ORDER BY "Hora_do_evento" ASC
+            WHERE "Data_do_evento" >= CURRENT_DATE
+            ORDER BY "Data_do_evento" ASC, "Hora_do_evento" ASC
+            LIMIT 5
         `);
-        const eventosHoje = eventosHojeRes.rows;
+        const eventosProximos = eventosProximosRes.rows;
 
         // 5. Tópicos do professor que ainda não tiveram nenhuma resposta
         const semRespostaRes = await pool.query(`
@@ -126,10 +132,10 @@ router.get('/painel', async (req, res) => {
                 alunos: totalAlunos,
                 projetos: totalProjetos,
                 topicos: totalTopicos,
-                eventosHoje: eventosHoje.length
+                eventosHoje: totalEventosHoje
             },
             turmas,
-            eventosHoje,
+            eventosProximos,
             topicosSemResposta: semRespostaRes.rows,
             ultimosForuns,
             ultimosProjetos

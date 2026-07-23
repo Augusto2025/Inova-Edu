@@ -34,6 +34,20 @@ function formatarTempoRelativo(dataString) {
   return `Há ${diffDias} dia${diffDias > 1 ? "s" : ""}`;
 }
 
+function obterRotuloEvento(dataString) {
+  if (!dataString) return "";
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const dataEvento = new Date(dataString);
+  dataEvento.setHours(0, 0, 0, 0);
+  const diffDias = Math.round((dataEvento - hoje) / 86400000);
+
+  if (diffDias === 0) return "Hoje";
+  if (diffDias === 1) return "Amanhã";
+  const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+  return `${dataEvento.getUTCDate()} ${meses[dataEvento.getUTCMonth()]}`;
+}
+
 export default function HomePainelProfessor({ navigation }) {
   const { totalNovas, markAllAsRead } = useNotifications();
   const [carregando, setCarregando] = useState(true);
@@ -41,7 +55,7 @@ export default function HomePainelProfessor({ navigation }) {
     professor: { nome: "Professor", sobrenome: "" },
     totais: { turmas: 0, alunos: 0, projetos: 0, topicos: 0, eventosHoje: 0 },
     turmas: [],
-    eventosHoje: [],
+    eventosProximos: [],
     topicosSemResposta: [],
     ultimosForuns: [],
     ultimosProjetos: [],
@@ -65,7 +79,7 @@ export default function HomePainelProfessor({ navigation }) {
           professor: resposta.data.professor || prev.professor,
           totais: resposta.data.totais || prev.totais,
           turmas: resposta.data.turmas || [],
-          eventosHoje: resposta.data.eventosHoje || [],
+          eventosProximos: resposta.data.eventosProximos || [],
           topicosSemResposta: resposta.data.topicosSemResposta || [],
           ultimosForuns: resposta.data.ultimosForuns || [],
           ultimosProjetos: resposta.data.ultimosProjetos || [],
@@ -119,9 +133,10 @@ export default function HomePainelProfessor({ navigation }) {
         nomeTela={
           carregando
             ? "Carregando..."
-            : `Olá, ${painel.professor.nome} ${painel.professor.sobrenome} 👋`
+            : `Olá, Professor ${painel.professor.nome} 👋`
         }
         exibirPerfil={true}
+        subtitulo="Professor"
         quantidadeNotificacoes={totalNovas}
         aoClicarNoSino={markAllAsRead}
         carregando={carregando}
@@ -247,9 +262,9 @@ export default function HomePainelProfessor({ navigation }) {
           <Text style={styles.emptyText}>Nenhuma turma vinculada a você ainda.</Text>
         )}
 
-        {/* EVENTOS DE HOJE (substitui "próximas aulas", que exigiria uma tabela de horário que ainda não existe) */}
+        {/* PRÓXIMOS EVENTOS (hoje + futuros) */}
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Eventos de hoje</Text>
+          <Text style={styles.sectionTitle}>Próximos eventos</Text>
           <TouchableOpacity onPress={() => {
             try { navigation.navigate("Eventos"); } catch (e) {}
           }}>
@@ -257,14 +272,14 @@ export default function HomePainelProfessor({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {painel.eventosHoje.length > 0 ? (
+        {painel.eventosProximos.length > 0 ? (
           <View style={styles.card}>
-            {painel.eventosHoje.map((evento, index) => (
+            {painel.eventosProximos.map((evento, index) => (
               <View
                 key={evento.id}
                 style={[
                   styles.eventoRow,
-                  index < painel.eventosHoje.length - 1 && styles.eventoRowBorda,
+                  index < painel.eventosProximos.length - 1 && styles.eventoRowBorda,
                 ]}
               >
                 <View style={styles.eventoBarra} />
@@ -274,13 +289,13 @@ export default function HomePainelProfessor({ navigation }) {
                   {evento.local ? <Text style={styles.eventoLocal}>{evento.local}</Text> : null}
                 </View>
                 <View style={styles.eventoTag}>
-                  <Text style={styles.eventoTagText}>Hoje</Text>
+                  <Text style={styles.eventoTagText}>{obterRotuloEvento(evento.data)}</Text>
                 </View>
               </View>
             ))}
           </View>
         ) : (
-          <Text style={styles.emptyText}>Nenhum evento para hoje.</Text>
+          <Text style={styles.emptyText}>Nenhum evento próximo cadastrado.</Text>
         )}
 
         {/* ÚLTIMOS FÓRUNS CRIADOS + ÚLTIMOS PROJETOS ENVIADOS */}

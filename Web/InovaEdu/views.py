@@ -157,38 +157,11 @@ def redefinir_senha(request, uidb64, token):
 
 def cursos(request):
     query = request.GET.get("q", "").strip()
-    inicio = request.GET.get("inicio")
-    fim = request.GET.get("fim")
-    ordenar = request.GET.get("ordenar")
-
-    # Pegar os eventos para usar no JavaScript
-    eventos = Eventos.objects.all()
-    eventos_json = [
-        {
-            "nome": evento.nome_do_evento,
-            "data": evento.data_do_evento.strftime("%Y-%m-%d"),
-            "descricao": evento.descricao,
-            "hora": evento.hora_do_evento.strftime("%H:%M"),
-            "endereco": evento.endereco,
-        }
-        for evento in eventos
-    ]
 
     if query:
         curso = Curso.objects.filter(nome_curso__icontains=query)
     else:
         curso = Curso.objects.all()
-
-    if inicio:
-        curso = curso.filter(data_inicio__gte=inicio)
-
-    if fim:
-        curso = curso.filter(data_final__lte=fim)
-
-    if ordenar == "asc":
-        curso = curso.order_by("nome_curso")
-    elif ordenar == "desc":
-        curso = curso.order_by("-nome_curso")
 
     return render(
         request,
@@ -196,14 +169,11 @@ def cursos(request):
         {
             "curso": curso,
             "query": query,
-            "eventos_json": json.dumps(eventos_json),
         },
     )
 
 
 # perfil aluno
-
-
 def perfil(request):
 
     email = request.session.get('usuario_email')
@@ -928,7 +898,7 @@ def calendario(request):
             "descricao": evento.descricao,
             "hora": evento.hora_do_evento.strftime("%H:%M"),
             "endereco": evento.endereco,
-            "dono_email": evento.usuario.email # Adicionado
+            "dono_email": evento.usuario.email if evento.usuario else "Sem usuário" 
         }
         for evento in eventos
     ]
