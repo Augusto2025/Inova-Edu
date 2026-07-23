@@ -29,6 +29,7 @@ export default function Header({
   quantidadeNotificacoes = 0, 
   aoClicarNoSino,            
   carregando = false, 
+  subtitulo = "Tec. Desenvolvimento de Sistemas", // 🆕 permite customizar o texto abaixo do nome (ex: "Professor")
 }) {
   const navigation = useNavigation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -102,7 +103,7 @@ export default function Header({
                       {nomeTela}
                     </Text>
                     <Text style={[styles.courseSubtitle, { color: headerSubTextColor, fontSize: 12 * fontSizeScale, opacity: isDarkMode ? 0.7 : 1 }]} numberOfLines={1}>
-                      Tec. Desenvolvimento de Sistemas
+                      {subtitulo}
                     </Text>
                   </>
                 )}
