@@ -23,9 +23,7 @@
             "enableMinifyInReleaseBuilds": true
           }
         }
-      ],
-      "expo-status-bar",
-      "expo-sharing"
+      ]
     ],
     "owner": "alcides1212",
     "extra": {
