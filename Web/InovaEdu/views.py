@@ -978,7 +978,8 @@ def forum_topicos(request, idforum):
 
     query = request.GET.get("q", "").strip()
 
-    topicos = Topico.objects.filter(forum=forum)
+    # Filtra os tópicos do fórum e carrega o usuário criador
+    topicos = Topico.objects.filter(forum=forum).select_related('usuario')
 
     if query:
         topicos = topicos.filter(titulo__icontains=query)
