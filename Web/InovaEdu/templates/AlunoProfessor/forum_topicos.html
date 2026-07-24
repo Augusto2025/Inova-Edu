@@ -125,10 +125,10 @@
                 <form id="formCriarTopico" method="POST" action="{% url 'criar_topico' forum.idforum %}">
                     {% csrf_token %}
                     <label>Título do tópico</label>
-                    <input name="titulo" required maxlength="100" placeholder="Ex: Dúvidas sobre a aula">
+                    <input name="titulo" required maxlength="50" placeholder="Ex: Dúvidas sobre a aula">
 
                     <label>Descrição do tópico</label>
-                    <textarea name="descricao" maxlength="500" placeholder="Ex: Descreva o assunto da discussão"></textarea>
+                    <textarea name="descricao" maxlength="150" placeholder="Ex: Descreva o assunto da discussão"></textarea>
                 </form>
             </div>
             <div class="modal-footer">
@@ -149,10 +149,10 @@
                 <form method="POST" id="formEditarTopico">
                     {% csrf_token %}
                     <label>Título do Tópico:</label>
-                    <input type="text" name="titulo" id="inputTituloTopico" required>
+                    <input type="text" name="titulo" id="inputTituloTopico" required maxlength="50">
 
                     <label>Descrição do Tópico:</label>
-                    <textarea name="descricao" id="inputDescricaoTopico"></textarea>
+                    <textarea name="descricao" id="inputDescricaoTopico" maxlength="150"></textarea>
                 </form>
             </div>
             <div class="modal-footer">

@@ -145,7 +145,7 @@
                 <form id="formCriarForum" method="POST" action="{% url 'criar_forum' %}">
                     {% csrf_token %}
                     <label>Nome do fórum</label>
-                    <input name="nome" required maxlength="40" placeholder="Ex: Dúvidas sobre Python">
+                    <input name="nome" required maxlength="30" placeholder="Ex: Dúvidas sobre Python">
 
                     <label>Título do primeiro tópico</label>
                     <input name="titulo_topico" required maxlength="30" placeholder="Ex: Como começar com Python">

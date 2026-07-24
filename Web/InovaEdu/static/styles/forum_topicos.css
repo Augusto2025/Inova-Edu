@@ -104,7 +104,7 @@ body {
 /* Informações do Tópico */
 .topico-info {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   flex: 1;
 }
@@ -144,9 +144,13 @@ body {
 }
 
 .resumo-topico {
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
   color: #64748b;
   line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  width: 100%;
 }
 
 /* Criador e Data do Tópico */
@@ -179,6 +183,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-direction: column;
 }
 
 .botao-ver-topico {
@@ -259,6 +264,7 @@ body {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #f1f5f9;
+    flex-direction: row;
   }
 }
 
