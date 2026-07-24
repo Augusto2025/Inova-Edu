@@ -14,12 +14,7 @@
     <div class="container">
         <header class="section-header">
             <div class="rota">
-                Página:
-                {{ turma.curso.nome_curso }}
-                >
-                {{ turma.codigo_turma }}
-                >
-                Projetos
+                Página: {{ turma.curso.nome_curso }} &gt; {{ turma.codigo_turma }} &gt; Projetos
             </div>
 
             <div class="header-main-action">
@@ -78,10 +73,9 @@
                             </p>
                         </td>
 
-                        <!-- Badges de Turma e Turno -->
+                        <!-- Badges de Turno -->
                         <td class="col-turma">
                             <div class="badges-group">
-                                {% comment %} <span class="codigo">{{ turma.codigo_turma }}</span> {% endcomment %}
                                 <span class="turno">{{ turma.turno }}</span>
                             </div>
                         </td>
@@ -125,58 +119,55 @@
                         {% endif %}
                     </tr>
 
-                    <!-- Modal Permissões por Projeto -->
+                    <!-- MODAL PERMISSÕES POR PROJETO -->
                     {% if can_modify %}
                     <div id="modalAlunos{{ projeto.idprojeto }}" class="modal">
-                        <div class="modal-moderno">
+                        <div class="modal-card">
                             <div class="modal-header">
                                 <div class="header-text">
                                     <h2>Membros do Projeto</h2>
-                                    <p>
-                                        Quem pode editar o repositório
-                                        <strong>{{ projeto.nome_projeto }}</strong>?
-                                    </p>
+                                    <p>Quem pode editar o repositório <strong>{{ projeto.nome_projeto }}</strong>?</p>
                                 </div>
                                 <span class="fechar">&times;</span>
                             </div>
 
-                            <form method="post">
+                            <form method="post" class="modal-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="salvar_alunos_repositorio">
                                 <input type="hidden" name="projeto_id" value="{{ projeto.idprojeto }}">
 
-                                <div class="lista-alunos-scroll">
-                                    {% for aluno in turma.usuariodaturma_set.all %}
-                                    <label class="aluno-row">
-                                        <input
-                                            type="checkbox"
-                                            name="alunos_edicao"
-                                            value="{{ aluno.id_usuario.idusuario }}"
-                                            {% if aluno.id_usuario in projeto.alunos_edicao.all %}
-                                            checked
-                                            {% endif %}
-                                        >
-                                        <div class="aluno-content">
-                                            <div class="avatar-circle">
-                                                {{ aluno.id_usuario.nome|slice:":1" }}{{ aluno.id_usuario.sobrenome|slice:":1" }}
+                                <div class="modal-body">
+                                    <div class="lista-alunos-scroll">
+                                        {% for aluno in turma.usuariodaturma_set.all %}
+                                        <label class="aluno-row">
+                                            <input
+                                                type="checkbox"
+                                                name="alunos_edicao"
+                                                value="{{ aluno.id_usuario.idusuario }}"
+                                                {% if aluno.id_usuario in projeto.alunos_edicao.all %}
+                                                checked
+                                                {% endif %}
+                                            >
+                                            <div class="aluno-content">
+                                                <div class="avatar-circle">
+                                                    {{ aluno.id_usuario.nome|slice:":1" }}{{ aluno.id_usuario.sobrenome|slice:":1" }}
+                                                </div>
+                                                <span class="nome-completo">
+                                                    {{ aluno.id_usuario.nome }} {{ aluno.id_usuario.sobrenome }}
+                                                </span>
                                             </div>
-                                            <span class="nome-completo">
-                                                {{ aluno.id_usuario.nome }}
-                                                {{ aluno.id_usuario.sobrenome }}
-                                            </span>
-                                        </div>
-                                    </label>
-                                    {% empty %}
-                                        <div class="empty-state">
-                                            Nenhum aluno cadastrado nesta turma.
-                                        </div>
-                                    {% endfor %}
+                                        </label>
+                                        {% empty %}
+                                            <div class="empty-state">
+                                                Nenhum aluno cadastrado nesta turma.
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
 
-                                <div class="modal-actions">
-                                    <button type="submit" class="btn-save">
-                                        Salvar Permissões
-                                    </button>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-cancelar fechar">Cancelar</button>
+                                    <button type="submit" class="btn-save">Salvar Permissões</button>
                                 </div>
                             </form>
                         </div>
@@ -196,46 +187,53 @@
 
         <!-- MODAL CADASTRAR / EDITAR PROJETO -->
         <div id="modalProjeto" class="modal">
-            <div class="modal-content">
+            <div class="modal-card">
                 <div class="modal-header">
-                    <h2 id="modalTitle">Cadastrar Projeto</h2>
+                    <div class="header-text">
+                        <h2 id="modalTitle">Cadastrar Projeto</h2>
+                        <p>Preencha os dados abaixo para gerenciar o repositório do projeto.</p>
+                    </div>
                     <span class="fechar">&times;</span>
                 </div>
 
-                <form id="formProjeto" method="post" enctype="multipart/form-data">
+                <form id="formProjeto" method="post" enctype="multipart/form-data" class="modal-form">
                     {% csrf_token %}
                     <input type="hidden" name="action" id="actionInput" value="cadastrar_projeto">
                     <input type="hidden" name="projeto_id" id="projetoIdInput">
 
-                    <div class="campo">
-                        <label for="nomeProjetoInput">Nome do Projeto</label>
-                        <input
-                            type="text"
-                            id="nomeProjetoInput"
-                            name="nome_projeto"
-                            placeholder="Digite o nome do projeto"
-                            required>
-                    </div>
+                    <div class="modal-body">
+                        <div class="campo">
+                            <label for="nomeProjetoInput">Nome do Projeto</label>
+                            <input
+                                type="text"
+                                id="nomeProjetoInput"
+                                name="nome_projeto"
+                                placeholder="Digite o nome do projeto"
+                                required>
+                        </div>
 
-                    <div class="campo">
-                        <label for="descricaoInput">Descrição do Projeto</label>
-                        <textarea
-                            id="descricaoInput"
-                            name="descricao"
-                            placeholder="Digite uma descrição"
-                            rows="4"></textarea>
-                    </div>
+                        <div class="campo">
+                            <label for="descricaoInput">Descrição do Projeto</label>
+                            <textarea
+                                id="descricaoInput"
+                                name="descricao"
+                                placeholder="Digite uma breve descrição"
+                                rows="4"></textarea>
+                        </div>
 
-                    <div class="campo">
-                        <label>Foto do Projeto</label>
-                        <input
-                            type="file"
-                            name="imagem"
-                            accept="image/*">
+                        <div class="campo">
+                            <label for="imagemInput">Foto de Capa</label>
+                            <input
+                                type="file"
+                                id="imagemInput"
+                                name="imagem"
+                                accept="image/*">
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit">Salvar</button>
+                        <button type="button" class="btn-cancelar fechar">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -244,41 +242,38 @@
         <!-- MODAL CONFIRMAR EXCLUSÃO -->
         {% if can_modify %}
         <div id="modalExcluir" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Confirmar Exclusão</h2>
+            <div class="modal-card">
+                <div class="modal-header modal-header-danger">
+                    <div class="header-text">
+                        <h2>Confirmar Exclusão</h2>
+                        <p>Ação irreversível de remoção</p>
+                    </div>
                     <span class="fechar">&times;</span>
                 </div>
 
-                <div class="conteudo-excluir">
-                    <p>
-                        Tem certeza que deseja excluir o projeto
-                        <strong id="nomeProjetoExcluir"></strong>?
-                    </p>
+                <form id="formExcluir" method="post" class="modal-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="excluir_projeto">
+                    <input type="hidden" id="projetoIdExcluir" name="projeto_id">
 
-                    <form id="formExcluir" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="excluir_projeto">
-                        <input type="hidden" id="projetoIdExcluir" name="projeto_id">
+                    <div class="modal-body">
+                        <p class="texto-confirmacao">
+                            Tem certeza que deseja excluir o projeto <strong id="nomeProjetoExcluir"></strong>?
+                        </p>
+                    </div>
 
-                        <div class="acoes-modal-excluir">
-                            <button type="button" class="btn-cancelar-excluir fechar">
-                                Cancelar
-                            </button>
-
-                            <button type="submit" class="btn-confirmar-excluir">
-                                Excluir
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancelar fechar">Cancelar</button>
+                        <button type="submit" class="btn-confirmar-excluir">Excluir</button>
+                    </div>
+                </form>
             </div>
         </div>
         {% endif %}
 
     </main>
 
-    <!-- ================= JS ================= -->
+    <!-- JS -->
     <script>
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -331,7 +326,7 @@
             });
         });
 
-        // Fechar modais
+        // Fechar modais ao clicar no 'X' ou em botões com a classe .fechar
         document.querySelectorAll('.fechar').forEach(btn => {
             btn.addEventListener('click', function () {
                 const modal = this.closest('.modal');

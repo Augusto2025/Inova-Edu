@@ -386,6 +386,10 @@
     align-items: flex-start;
 }
 
+.modal-header-danger {
+    background: #dc2626;
+}
+
 .header-text h2 {
     font-size: 1.2rem;
     margin-bottom: 4px;
