@@ -1454,30 +1454,65 @@ def editar_curso(request):
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
  
-
 def TurmaCoord(request):
-    return render(request, 'Coordenacao/TurmaCoord.html')
+    turmas = Turma.objects.select_related("curso", "professor").all()
+    cursos = Curso.objects.all()
+    professores = Usuario.objects.filter(tipo="Professor")
+
+    context = {
+        "turmas": turmas,
+        "cursos": cursos,
+        "professores": professores,
+    }
+
+    return render(request, "Coordenacao/TurmaCoord.html", context)
+
+
+def criar_turma(request):
+    if request.method == "POST":
+        codigo_turma = request.POST.get("codigo_turma")
+        turno = request.POST.get("turno")
+        ano = request.POST.get("ano")
+        curso_id = request.POST.get("curso_id")
+        professor_id = request.POST.get("professor_id")
+
+        curso = get_object_or_404(Curso, idcurso=curso_id)
+        professor = get_object_or_404(Usuario, idusuario=professor_id)
+
+        Turma.objects.create(
+            codigo_turma=codigo_turma,
+            turno=turno,
+            ano=ano,
+            curso=curso,
+            professor=professor,
+        )
+
+        return redirect("TurmaCoord")
 
 
 
+def editar_turma(request):
+    if request.method == "POST":
 
+        turma = get_object_or_404(
+            Turma,
+            idturma=request.POST.get("idturma")
+        )
 
+        turma.codigo_turma = request.POST.get("codigo_turma")
+        turma.turno = request.POST.get("turno")
+        turma.ano = request.POST.get("ano")
+        turma.curso_id = request.POST.get("curso")
 
+        # salvar professor
+        turma.professor_id = request.POST.get("professor_id")
 
+        turma.save()
 
+        messages.success(request, "Editado com sucesso!")
+
+    return redirect("TurmaCoord")
 
 
 
@@ -1718,28 +1753,28 @@ def excluir_usuario(request, idusuario):
 # CURSO
 
 
-def criar_curso(request):
-    if request.method == "POST":
+# def criar_curso(request):
+#     if request.method == "POST":
 
-        email_usuario = request.session.get("usuario_email")
-        if not email_usuario:
-            return redirect("login")
+#         email_usuario = request.session.get("usuario_email")
+#         if not email_usuario:
+#             return redirect("login")
 
-        try:
-            usuario = Usuario.objects.get(email=email_usuario)
-        except Usuario.DoesNotExist:
-            return redirect("login")
+#         try:
+#             usuario = Usuario.objects.get(email=email_usuario)
+#         except Usuario.DoesNotExist:
+#             return redirect("login")
 
-        Curso.objects.create(
-            nome_curso=request.POST.get("nome_curso"),
-            descricao_curso=request.POST.get("descricao_curso"),
-            data_inicio=request.POST.get("data_inicio"),
-            data_final=request.POST.get("data_final"),
-            imagem=request.FILES.get("imagem"),
-            usuario=usuario,
-        )
+#         Curso.objects.create(
+#             nome_curso=request.POST.get("nome_curso"),
+#             descricao_curso=request.POST.get("descricao_curso"),
+#             data_inicio=request.POST.get("data_inicio"),
+#             data_final=request.POST.get("data_final"),
+#             imagem=request.FILES.get("imagem"),
+#             usuario=usuario,
+#         )
 
-        return redirect("home_Coordenacao")
+#         return redirect("home_Coordenacao")
 
 
 
@@ -1755,48 +1790,8 @@ def excluir_curso(request, idcurso):
 # TURMA
 
 
-def criar_turma(request):
-    if request.method == "POST":
-        codigo_turma = request.POST.get("codigo_turma")
-        turno = request.POST.get("turno")
-        ano = request.POST.get("ano")
-        curso_id = request.POST.get("curso_id")
-        professor_id = request.POST.get("professor_id")
 
-        curso = get_object_or_404(Curso, idcurso=curso_id)
-        professor = get_object_or_404(Usuario, idusuario=professor_id)
 
-        Turma.objects.create(
-            codigo_turma=codigo_turma,
-            turno=turno,
-            ano=ano,
-            curso=curso,
-            professor=professor,
-        )
-
-        return redirect("home_Coordenacao")
-
-def editar_turma(request):
-    if request.method == "POST":
-
-        turma = get_object_or_404(
-            Turma,
-            idturma=request.POST.get("idturma")
-        )
-
-        turma.codigo_turma = request.POST.get("codigo_turma")
-        turma.turno = request.POST.get("turno")
-        turma.ano = request.POST.get("ano")
-        turma.curso_id = request.POST.get("curso")
-
-        # salvar professor
-        turma.professor_id = request.POST.get("professor_id")
-
-        turma.save()
-
-        messages.success(request, "Editado com sucesso!")
-
-    return redirect("home_Coordenacao")
 
 
 def excluir_turma(request, idturma):

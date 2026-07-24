@@ -715,23 +715,23 @@ button[type="buttoncancelar"]:hover{
     color:#526377;
 }
 
-.btn-salvar{
-    background:#c76a28;
-    color:#fff;
-}
+
 
 .btn-cancelar,
 .btn-salvar{
-    width:170px;
-    padding:13px 20px;
+    padding:12px 28px;
     border:none;
     border-radius:8px;
-    font-size:15px;
+    background:#b75a17;
+    color:#fff;
     font-weight:600;
     cursor:pointer;
     transition:.3s;
 }
 
+.btn-salvar:hover{
+    background:#9c4c14;
+}
 
 
 

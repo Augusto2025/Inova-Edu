@@ -401,11 +401,15 @@
 
                             <span class="acoes-geral">
                                 <!-- EDITAR -->
-                                <button type="button" class="btn-editar-curso" title="Editar curso"
-                                    data-id="{{ curso.idcurso }}" data-nome="{{ curso.nome_curso }}"
-                                    data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
-                                    data-final="{{ curso.data_final|date:'Y-m-d' }}"
-                                    data-descricao="{{ curso.descricao_curso }}">
+                               <button
+                                    type="button"
+                                    class="btn-editar-turma"
+                                    data-id="{{ turma.idturma }}"
+                                    data-codigo="{{ turma.codigo_turma }}"
+                                    data-turno="{{ turma.turno }}"
+                                    data-ano="{{ turma.ano }}"
+                                    data-curso="{{ turma.curso.idcurso }}"
+                                    data-professor="{{ turma.professor_id }}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 

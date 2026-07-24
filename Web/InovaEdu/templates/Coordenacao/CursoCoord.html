@@ -18,12 +18,12 @@
 
     {% include 'partials/navbar_Coordenacao.html' %}
 
-      <section class="topo-pagina">
-            <div>
-                <h1><i class="fa-solid fa-graduation-cap"></i> Cursos</h1>
-                <p>Cadastre, edite e gerencie todos os cursos da instituição.</p>
-            </div>
-        </section>
+    <section class="topo-pagina">
+        <div>
+            <h1><i class="fa-solid fa-graduation-cap"></i> Cursos</h1>
+            <p>Cadastre, edite e gerencie todos os cursos da instituição.</p>
+        </div>
+    </section>
 
     <main class="container-geral">
 
@@ -83,7 +83,7 @@
                             data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
                             data-final="{{ curso.data_final|date:'Y-m-d' }}"
                             data-descricao="{{ curso.descricao_curso }}">
-                            Editar
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button>
 
                         <button
