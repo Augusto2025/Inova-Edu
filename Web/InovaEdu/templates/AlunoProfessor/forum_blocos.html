@@ -102,6 +102,10 @@
                             <i class="fa-solid fa-comments"></i>
                             <span>Ativo</span>
                         </div>
+                        <div class="metric-pill">
+                            <i class="fa-solid fa-user"></i>
+                            <span>{{ Forum.usuario.nome }}</span>
+                        </div>
                     </div>
 
                     <div class="card-footer-glass">
@@ -135,6 +139,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-comments"></i> Criar Fórum</h2>
+                <button type="button" class="modal-close" id="fecharModalCriar">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="formCriarForum" method="POST" action="{% url 'criar_forum' %}">
@@ -160,6 +165,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-pen-to-square"></i> Editar Fórum</h2>
+                <button type="button" class="modal-close" id="fecharModalEditar">&times;</button>
             </div>
             <div class="modal-body">
                 <form method="POST" id="formEditarForum">
@@ -185,6 +191,7 @@
         <div class="modal-content">
             <div class="modal-header header-danger">
                 <h2><i class="fa-solid fa-triangle-exclamation"></i> Excluir Fórum</h2>
+                <button type="button" class="modal-close" id="fecharModalExcluir">&times;</button>
             </div>
             <p style="padding: 15px 20px 0 20px; color: #555;">Tem certeza que deseja excluir este fórum?</p>
             <div class="modal-body">

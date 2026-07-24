@@ -1119,7 +1119,8 @@ def forum_blocos(request):
     data_criacao = request.GET.get("data_criacao", "")
     ordenar = request.GET.get("ordenar", "")
 
-    foruns = Forum.objects.all()
+    # Otimização com select_related('usuario')
+    foruns = Forum.objects.select_related('usuario').all()
 
     if query:
         foruns = foruns.filter(nome__icontains=query)
