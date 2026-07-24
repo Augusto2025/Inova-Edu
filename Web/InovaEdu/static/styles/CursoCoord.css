@@ -31,7 +31,7 @@
     overflow:hidden;
     box-shadow:0 5px 18px rgba(0,0,0,.08);
     position: relative;
-    top: 150px; /* sobe */
+    top: 50px; /* sobe */
     
     
 }
@@ -187,8 +187,10 @@
     background:#003f88;
     color:#fff;
     font-weight:600;
-
     padding:16px 25px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .curso-item{
@@ -523,4 +525,233 @@
 .btn-salvar:hover{
 
     background:#9e4e14;
+}
+
+/* MODAL EDITAR  */
+/* =======================
+    MODAL
+======================= */
+
+.modal{
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active{
+    display: flex;
+}
+
+.modal-conteudo{
+    width: 720px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    animation: aparecer .25s ease;
+}
+
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform:translateY(-20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =======================
+    FECHAR
+======================= */
+
+.fechar{
+    position:absolute;
+    top:22px;
+    right:25px;
+    font-size:34px;
+    color:#7c8797;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.fechar:hover{
+    color:#003B91;
+}
+
+/* =======================
+    TÍTULO
+======================= */
+
+.titulo_lista_editar_curso{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 22px 30px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.titulo_lista_editar_curso i{
+    font-size: 28px;
+    color: #0b4a8b;
+}
+
+.titulo_lista_editar_curso p{
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #0b4a8b;
+}
+/* =======================
+    FORMULÁRIO
+======================= */
+
+.modal-conteudo form{
+    padding:28px 30px 30px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+}
+
+/* descrição ocupa tudo */
+
+.modal-conteudo textarea,
+.modal-conteudo button{
+    grid-column:1 / -1;
+}
+
+.modal-conteudo label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:#70798b;
+    margin-bottom:8px;
+    text-transform:uppercase;
+}
+
+.modal-conteudo input,
+.modal-conteudo textarea{
+    width:100%;
+    padding:14px 15px;
+    border:1px solid #cfd8e6;
+    background:#f4f7fb;
+    border-radius:9px;
+    font-size:16px;
+    outline:none;
+    transition:.25s;
+}
+
+.modal-conteudo textarea{
+    min-height:140px;
+    resize:none;
+}
+
+.modal-conteudo input:focus,
+.modal-conteudo textarea:focus{
+    border-color:#0b4a8b;
+    background:#fff;
+}
+
+/* =======================
+    BOTÕES
+======================= */
+
+.modal-conteudo form::after{
+    content:"";
+    grid-column:1/-1;
+    border-top:1px solid #ececec;
+    margin-top:5px;
+}
+
+.modal-conteudo button{
+    width:170px;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+    transition:.3s;
+}
+
+button[type="submitsalvar"]{
+    background:#c76a28;
+    color:#fff;
+    justify-self:end;
+}
+
+button[type="submitsalvar"]:hover{
+    background:#b95f20;
+}
+
+button[type="buttoncancelar"]{
+    background:#f1f2f5;
+    color:#4d6078;
+    justify-self:end;
+    margin-right:185px;
+}
+
+button[type="buttoncancelar"]:hover{
+    background:#e4e6eb;
+}
+.acoes-modal{
+    grid-column:1/-1;
+    border-top:1px solid #ececec;
+    padding-top:22px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+}
+
+.btn-cancelar{
+    background:#f1f2f5;
+    color:#526377;
+}
+
+.btn-salvar{
+    background:#c76a28;
+    color:#fff;
+}
+
+.btn-cancelar,
+.btn-salvar{
+    width:170px;
+    padding:13px 20px;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+
+
+
+
+/* =======================
+    RESPONSIVO
+======================= */
+
+@media(max-width:700px){
+
+    .modal-conteudo form{
+        grid-template-columns:1fr;
+    }
+
+    button[type="buttoncancelar"]{
+        margin-right:0;
+    }
+
+    .modal-conteudo button{
+        width:100%;
+    }
+
 }

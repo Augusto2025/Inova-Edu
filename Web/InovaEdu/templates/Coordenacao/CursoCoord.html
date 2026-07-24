@@ -18,6 +18,13 @@
 
     {% include 'partials/navbar_Coordenacao.html' %}
 
+      <section class="topo-pagina">
+            <div>
+                <h1><i class="fa-solid fa-graduation-cap"></i> Cursos</h1>
+                <p>Cadastre, edite e gerencie todos os cursos da instituição.</p>
+            </div>
+        </section>
+
     <main class="container-geral">
 
         <section class="lista_conteudo container-curso lista-curso" id="listaCurso">
@@ -44,6 +51,7 @@
                 </a>
 
             </div>
+          
 
             <!-- Lista -->
             <section class="lista-curso-conteudo">
@@ -118,24 +126,24 @@
                         {% csrf_token %}
 
                         <label for="nome_curso">Nome do Curso</label>
-                        <input type="text" id="nome_curso" name="nome_curso">
+                        <input type="text" id="nome_curso" name="nome_curso" placeholder="Ex: Tecnico em..." >
 
                         <div class="datas">
 
                             <div>
                                 <label for="data_inicio">Data de Início</label>
-                                <input type="date" id="data_inicio" name="data_inicio">
+                                <input type="date" id="data_inicio" name="data_inicio" placeholder="Ex: 00-00-0000">
                             </div>
 
                             <div>
                                 <label for="data_final">Data de Término</label>
-                                <input type="date" id="data_final" name="data_final">
+                                <input type="date" id="data_final" name="data_final" placeholder="Ex: 00-00-0000">
                             </div>
 
                         </div>
 
                         <label for="descricao_curso">Descrição</label>
-                        <textarea id="descricao_curso" name="descricao_curso"></textarea>
+                        <textarea id="descricao_curso" name="descricao_curso" placeholder="Breve resumo do curso..."></textarea>
 
                         <div class="botoes-modal">
 
@@ -151,36 +159,50 @@
                     </form>
                 </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </section>
+
+        {% comment %} MODAL EDITAR CURSO {% endcomment %}
+            <div id="modalEditarCurso" class="modal">
+                <div class="modal-conteudo">
+                    <span class="fechar" id="fecharEditarCurso">&times;</span>
+
+                    <div class="titulo_lista_editar_curso">
+                        <i class="fa-solid fa-user-pen"></i>
+                        <p>Editar Curso</p>
+                    </div>
+
+                    <form action="{% url 'editar_curso' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="idcurso" id="edit_idcurso">
+
+                        <label>Nome do Curso:</label>
+                        <input type="text" id="edit_nome_curso" name="nome_curso" required>
+
+                        <label>Data de Início:</label>
+                        <input type="date" id="edit_data_inicio" name="data_inicio">
+
+                        <label>Data de Término:</label>
+                        <input type="date" id="edit_data_final" name="data_final">
+
+                        {% comment %} <label>Imagem do Curso:</label>
+                        <input type="file" id="edit_imagem" name="imagem" accept="image/*"> {% endcomment %}
+
+                        <label>Descrição:</label>
+                        <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea>
+
+                        <div class="acoes-modal">
+                            <button type="button" id="cancelarEditarCurso" class="btn-cancelar">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" class="btn-salvar">
+                                Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
 
 

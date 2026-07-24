@@ -1434,7 +1434,23 @@ def criar_curso(request):
 
     return redirect("Coordenacao/CursoCoord")
 
+def editar_curso(request):
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=request.POST.get("idcurso"))
 
+        curso.nome_curso = request.POST.get("nome_curso")
+        curso.data_inicio = request.POST.get("data_inicio")
+        curso.data_final = request.POST.get("data_final")
+        curso.descricao_curso = request.POST.get("descricao_curso")
+
+        if request.FILES.get("imagem"):
+            curso.imagem = request.FILES.get("imagem")
+
+        curso.save()
+        print("SALVO COM SUCESSO")
+
+    # ✅ continua na mesma página
+    return redirect("CursoCoord")
     
     
     
@@ -1726,23 +1742,7 @@ def criar_curso(request):
         return redirect("home_Coordenacao")
 
 
-def editar_curso(request):
-    if request.method == "POST":
-        curso = get_object_or_404(Curso, idcurso=request.POST.get("idcurso"))
 
-        curso.nome_curso = request.POST.get("nome_curso")
-        curso.data_inicio = request.POST.get("data_inicio")
-        curso.data_final = request.POST.get("data_final")
-        curso.descricao_curso = request.POST.get("descricao_curso")
-
-        if request.FILES.get("imagem"):
-            curso.imagem = request.FILES.get("imagem")
-
-        curso.save()
-        print("SALVO COM SUCESSO")
-
-    # ✅ continua na mesma página
-    return redirect("home_Coordenacao")
 
 
 def excluir_curso(request, idcurso):

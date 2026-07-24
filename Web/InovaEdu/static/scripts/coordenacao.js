@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const menuToggle = document.getElementById("menuToggle");
-  const navMenu = document.getElementById("navMenu");
+    const menuToggle = document.getElementById("menuToggle");
+    const navMenu = document.getElementById("navMenu");
 
-  menuToggle.addEventListener("click", function () {
-    navMenu.classList.toggle("active");
-  });
+    menuToggle.addEventListener("click", function () {
+        navMenu.classList.toggle("active");
+    });
 });
 
 // funcionar o modal de cadastro
@@ -180,4 +180,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// pesquisar 
+// EDITAR DO CURSO 
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("modalEditarCurso");
+    const fechar = document.getElementById("fecharEditarCurso");
+    const cancelar = document.getElementById("cancelarEditarCurso");
+
+    document.querySelectorAll(".btn-editar").forEach(botao => {
+
+        botao.addEventListener("click", function () {
+
+            document.getElementById("edit_idcurso").value = this.dataset.id;
+            document.getElementById("edit_nome_curso").value = this.dataset.nome;
+            document.getElementById("edit_data_inicio").value = this.dataset.inicio;
+            document.getElementById("edit_data_final").value = this.dataset.final;
+            document.getElementById("edit_descricao_curso").value = this.dataset.descricao;
+
+            modal.classList.add("active");
+        });
+
+    });
+
+    fechar.addEventListener("click", () => {
+        modal.classList.remove("active");
+    });
+
+    cancelar.addEventListener("click", () => {
+        modal.classList.remove("active");
+    });
+
+    window.addEventListener("click", function(e){
+        if(e.target == modal){
+            modal.classList.remove("active");
+        }
+    });
+
+});

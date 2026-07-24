@@ -50,7 +50,7 @@ urlpatterns = [
     path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
-    
+    path("CursoCoord/", views.CursoCoord, name="CursoCoord"),
     
     
     

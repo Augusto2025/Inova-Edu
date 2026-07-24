@@ -22,7 +22,7 @@
 .filtros-usuarios{
     width:95%;
     max-width:50%;
-    margin:126px auto;
+    margin:20px auto;
 
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -185,7 +185,7 @@
     overflow:hidden;
     box-shadow:0 5px 18px rgba(0,0,0,.08);
     position: relative;
-    top: -100px; /* sobe */
+    top: 40px; /* sobe */
     
     
 }
