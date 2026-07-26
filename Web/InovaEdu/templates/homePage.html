@@ -157,10 +157,10 @@
                         {# O filtro |slice:":3" pega apenas os 3 primeiros itens da lista #}
                         {% for curso in cursos|slice:":3" %}
                             <div class="curso-card">
-                                <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome }}">
+                                <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
                                 <div class="curso-info">
-                                    <h3>{{ curso.nome }}</h3>
-                                    <p>{{ curso.descricao }}</p>
+                                    <h3>{{ curso.nome_curso }}</h3>
+                                    <p>{{ curso.descricao_curso }}</p>
                                 </div>
                             </div>
                         {% endfor %}
