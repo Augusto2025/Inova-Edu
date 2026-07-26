@@ -1407,15 +1407,10 @@ def salvar_alunos_turma(request):
         except Exception as e:
             return JsonResponse({"status": "erro", "msg": str(e)})
 
-
-
-
-
- 
-
-
 def homePage(request):
-    return render(request, "homePage.html")
+    # Exemplo na sua view do Django:
+    cursos = Curso.objects.all().order_by('-idcurso')[:3]
+    return render(request, "homePage.html", {"cursos": cursos})
 
 
 def excluir_usuario(request, idusuario):
