@@ -19,6 +19,8 @@ export default function TopicosScreen({ navigation, route }) {
   const [topicos, setTopicos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
+  // 🆕 Sabe se quem está logado é Professor, pra liberar editar/apagar de qualquer tópico (moderação)
+  const [ehModerador, setEhModerador] = useState(false);
   const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", descricao: "", id: null });
 
   // ==========================================
@@ -45,6 +47,12 @@ export default function TopicosScreen({ navigation, route }) {
       const idSalvo = await AsyncStorage.getItem('idUsuario');
       if (idSalvo !== null) {
         setUsuarioLogadoId(parseInt(idSalvo));
+      }
+
+      // 🆕 Verifica o tipo salvo no login pra saber se é Professor (moderador)
+      const tipo = await AsyncStorage.getItem('tipo');
+      if (tipo) {
+        setEhModerador(tipo.toLowerCase() === 'professor');
       }
     } catch (error) {
       console.error("Erro ao ler ID do usuário:", error);
@@ -140,7 +148,8 @@ export default function TopicosScreen({ navigation, route }) {
   const fecharModal = () => setModal({ visible: false, modo: "Criar", titulo: "", descricao: "", id: null });
 
   const renderItem = ({ item }) => {
-    const exibirBotoes = item.usuarioIdCriador === usuarioLogadoId && usuarioLogadoId !== null;
+    // 🆕 Mostra editar/apagar se for o dono OU se for professor (moderador)
+    const exibirBotoes = (item.usuarioIdCriador === usuarioLogadoId && usuarioLogadoId !== null) || ehModerador;
 
     return (
       <TouchableOpacity 

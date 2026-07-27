@@ -20,6 +20,8 @@ export default function ForumScreen({ navigation }) {
   const [carregando, setCarregando] = useState(true);
   const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", id: null });
   const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
+  // 🆕 Sabe se quem está logado é Professor, pra liberar editar/apagar de qualquer fórum (moderação)
+  const [ehModerador, setEhModerador] = useState(false);
 
   // ==========================================
   // 1. CARREGAR DADOS INICIAIS (GETS)
@@ -49,6 +51,12 @@ export default function ForumScreen({ navigation }) {
       const idSalvo = await AsyncStorage.getItem('idUsuario'); 
       if (idSalvo !== null) {
         setUsuarioLogadoId(parseInt(idSalvo)); // 🌟 Define o ID real no estado do componente
+      }
+
+      // 🆕 Verifica o tipo salvo no login pra saber se é Professor (moderador)
+      const tipo = await AsyncStorage.getItem('tipo');
+      if (tipo) {
+        setEhModerador(tipo.toLowerCase() === 'professor');
       }
     } catch (error) {
       console.error("Erro ao ler ID do usuário:", error);
@@ -158,42 +166,47 @@ export default function ForumScreen({ navigation }) {
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {topicos.map((item) => (
-            <TouchableOpacity 
-              key={item.id} 
-              // Card usa cor do tema (card)
-              style={[styles.card, { backgroundColor: theme.card }]} 
-              onPress={() => navigation.navigate("Titulo", { topico: item })}
-            >
-              <View style={[styles.iconBox, { backgroundColor: item.cor }]}><Ionicons name="chatbubble-ellipses" size={22} color="#fff" /></View>
-              <View style={styles.content}>
-                <View style={styles.topRow}>
-                  {/* Fonte escalável e cor do texto do tema */}
-                  <Text style={[styles.title, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>{item.titulo}</Text>
-                  <Text style={[styles.time, { fontSize: 11 * fontSizeScale }]}>{item.tempo}</Text>
-                </View>
-                <Text style={[styles.description, { color: theme.text, fontSize: 13 * fontSizeScale }]} numberOfLines={2}>{item.descricao}</Text>
-                
-                <View style={styles.footer}>
-                  <View style={styles.footerLeft}>
-                    <View style={styles.info}>
-                      <Ionicons name="person-outline" size={13} color={theme.text} />
-                      <Text style={[styles.infoText, { color: theme.text, fontSize: 11 * fontSizeScale }]} numberOfLines={1}>
-                        {item.autor}
-                      </Text>
-                    </View>
-                  </View>
+          {topicos.map((item) => {
+            // 🆕 Mostra editar/apagar se for o dono OU se for professor (moderador)
+            const podeGerenciar = item.usuarioIdCriador === usuarioLogadoId || ehModerador;
 
-                  {item.usuarioIdCriador === usuarioLogadoId && (
-                    <View style={styles.actions}>
-                      <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
-                      <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
+            return (
+              <TouchableOpacity 
+                key={item.id} 
+                // Card usa cor do tema (card)
+                style={[styles.card, { backgroundColor: theme.card }]} 
+                onPress={() => navigation.navigate("Titulo", { topico: item })}
+              >
+                <View style={[styles.iconBox, { backgroundColor: item.cor }]}><Ionicons name="chatbubble-ellipses" size={22} color="#fff" /></View>
+                <View style={styles.content}>
+                  <View style={styles.topRow}>
+                    {/* Fonte escalável e cor do texto do tema */}
+                    <Text style={[styles.title, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>{item.titulo}</Text>
+                    <Text style={[styles.time, { fontSize: 11 * fontSizeScale }]}>{item.tempo}</Text>
+                  </View>
+                  <Text style={[styles.description, { color: theme.text, fontSize: 13 * fontSizeScale }]} numberOfLines={2}>{item.descricao}</Text>
+                  
+                  <View style={styles.footer}>
+                    <View style={styles.footerLeft}>
+                      <View style={styles.info}>
+                        <Ionicons name="person-outline" size={13} color={theme.text} />
+                        <Text style={[styles.infoText, { color: theme.text, fontSize: 11 * fontSizeScale }]} numberOfLines={1}>
+                          {item.autor}
+                        </Text>
+                      </View>
                     </View>
-                  )}
+
+                    {podeGerenciar && (
+                      <View style={styles.actions}>
+                        <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
+                        <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       )}
 

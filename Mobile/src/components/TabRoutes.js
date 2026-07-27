@@ -23,6 +23,9 @@ const Tab = createBottomTabNavigator();
 export default function TabRoutes() {
   return (
     <Tab.Navigator
+      // 🆕 Garante que, ao entrar no "Main" (logo após o login), a tela inicial seja a Home,
+      // independente da ordem em que as abas aparecem na barra abaixo.
+      initialRouteName="Home"
       backBehavior="history"
       screenOptions={({ route }) => ({
         headerShown: false,
