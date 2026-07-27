@@ -1361,6 +1361,20 @@ def UsuarioCoord(request):
 
     return render(request, "Coordenacao/UsuarioCoord.html", context)
 
+def excluir_usuario(request, idusuario):
+    if request.method == "POST":
+        usuario = get_object_or_404(Usuario, idusuario=idusuario)
+        usuario.delete()
+
+        messages.success(request, "Usuário excluído com sucesso!")
+
+    return redirect("UsuariosCoord")
+
+
+
+
+
+
 def editar_usuario(request, idusuario):
     usuario = get_object_or_404(Usuario, idusuario=idusuario)
 
@@ -1741,10 +1755,7 @@ def homePage(request):
     return render(request, "homePage.html")
 
 
-def excluir_usuario(request, idusuario):
-    usuario = get_object_or_404(Usuario, idusuario=idusuario)
-    usuario.delete()
-    return redirect("home_Coordenacao")
+
 
 
 

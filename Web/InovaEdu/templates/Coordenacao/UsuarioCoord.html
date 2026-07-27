@@ -21,15 +21,8 @@
   <body>
     {% include 'partials/navbar_Coordenacao.html' %}
 
-     
     <div class="filtros-usuarios">
       <div class="filtro-card ativo" data-filtro="todos">
-          
-
-
-
-
-
         <div class="icone azul">
           <i class="fa-solid fa-users"></i>
         </div>
@@ -157,8 +150,9 @@
                     data-sobrenome="{{ usuario.sobrenome }}"
                     data-email="{{ usuario.email }}"
                     data-descricao="{{ usuario.descricao }}"
-                    data-tipo="{{ usuario.tipo }}">
-                   <i class="fa-solid fa-pen-to-square"></i>
+                    data-tipo="{{ usuario.tipo }}"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
                   </button>
 
                   <button
@@ -168,15 +162,13 @@
                     <i class="fa-solid fa-align-center"></i>
                   </button>
 
-                  <form
-                    method="POST"
-                    action="{% url 'excluir_usuario' usuario.idusuario %}"
+                  <button
+                    type="button"
+                    class="btn-excluir"
+                    onclick="abrirModalExcluir('{{ usuario.idusuario }}', '{{ usuario.nome }} {{ usuario.sobrenome }}')"
                   >
-                    {% csrf_token %}
-                    <button class="btn-excluir abrir-modal-excluir">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </form>
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -389,6 +381,50 @@
       </div>
     </div>
 
+    {% comment %} EXCLUIR USUARIO {% endcomment %}
+    <div id="modalExcluir" class="modal">
+      <div class="modal-conteudo modal-excluir">
+        {% comment %} <span class="fechar" onclick="fecharModalExcluir()">&times;</span> {% endcomment %}
+
+        <h2>Excluir usuário</h2>
+
+        <p id="textoExcluir"></p>
+
+        <form id="formExcluir" method="POST">
+          {% csrf_token %}
+
+          <div class="botoes-modal">
+            <button
+              type="button"
+              class="btn-cancelar"
+              onclick="fecharModalExcluir()"
+            >
+              Cancelar
+            </button>
+
+            <button type="submit" class="btn-confirmar-excluir">Excluir</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if messages %}
+    <div class="mensagens">
+      {% for message in messages %}
+      <div class="mensagem {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <script src="{% static 'scripts/coordenacao.js' %}"></script>
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll(".mensagem").forEach((msg) => {
+          msg.style.transition = "0.5s";
+          msg.style.opacity = "0";
+          setTimeout(() => msg.remove(), 500);
+        });
+      }, 3000);
+    </script>
   </body>
 </html>

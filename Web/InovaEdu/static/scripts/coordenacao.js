@@ -300,3 +300,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+// EXCLUIR BOTÃO USUARIO 
+// EXCLUIR USUÁRIO
+
+function abrirModalExcluir(id, nome) {
+    document.getElementById("textoExcluir").innerHTML =
+        `Tem certeza que deseja excluir <strong>${nome}</strong>?`;
+
+    document.getElementById("formExcluir").action = `/usuarios/excluir/${id}/`;
+
+    document.getElementById("modalExcluir").style.display = "flex";
+}
+
+function fecharModalExcluir() {
+    document.getElementById("modalExcluir").style.display = "none";
+}
+
+window.addEventListener("click", function (e) {
+    const modalExcluir = document.getElementById("modalExcluir");
+
+    if (e.target === modalExcluir) {
+        fecharModalExcluir();
+    }
+});
