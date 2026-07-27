@@ -2,6 +2,19 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db'); // Sua conexão com o Postgres
 
+// ==========================================
+// HELPER: verifica se o usuário é Professor (moderador)
+// ==========================================
+async function ehProfessor(usuarioId) {
+    if (!usuarioId) return false;
+    const resultado = await pool.query(
+        'SELECT "Tipo" FROM usuario WHERE "idUsuario" = $1',
+        [usuarioId]
+    );
+    const tipo = resultado.rows[0]?.Tipo;
+    return !!tipo && tipo.toLowerCase() === 'professor';
+}
+
 // 1. GET: Listar todos os tópicos de um fórum específico
 // URL: /topico/forum/:forumId
 router.get('/forum/:forumId', async (req, res) => {
@@ -53,7 +66,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// 3. PUT: Editar um tópico existente (Valida se quem edita é o dono)
+// 3. PUT: Editar um tópico existente (Valida se quem edita é o dono OU um professor/moderador)
 // URL: /topico/:id
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
@@ -67,7 +80,10 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ sucesso: false, mensagem: 'Tópico não encontrado.' });
         }
 
-        if (checarDono.rows[0].usuario_id !== parseInt(usuarioId)) {
+        const donoTopico = checarDono.rows[0].usuario_id;
+        const moderador = await ehProfessor(usuarioId);
+
+        if (donoTopico !== parseInt(usuarioId) && !moderador) {
             return res.status(403).json({ sucesso: false, mensagem: 'Você não tem permissão para editar este tópico.' });
         }
 
@@ -81,7 +97,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// 4. DELETE: Excluir um tópico (Valida se quem apaga é o dono)
+// 4. DELETE: Excluir um tópico (Valida se quem apaga é o dono OU um professor/moderador)
 // URL: /topico/:id
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
@@ -94,10 +110,15 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({ sucesso: false, mensagem: 'Tópico não encontrado.' });
         }
 
-        if (checarDono.rows[0].usuario_id !== parseInt(usuarioId)) {
+        const donoTopico = checarDono.rows[0].usuario_id;
+        const moderador = await ehProfessor(usuarioId);
+
+        if (donoTopico !== parseInt(usuarioId) && !moderador) {
             return res.status(403).json({ sucesso: false, mensagem: 'Você não tem permissão para apagar este tópico.' });
         }
 
+        // Apaga também as mensagens desse tópico antes de apagar o tópico em si
+        await pool.query('DELETE FROM mensagem WHERE "ID_Topico" = $1', [id]);
         await pool.query('DELETE FROM topico WHERE "idtopico" = $1', [id]);
         return res.json({ sucesso: true, mensagem: 'Tópico excluído com sucesso!' });
     } catch (err) {

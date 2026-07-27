@@ -3,6 +3,19 @@ const router = express.Router();
 const db = require('../config/db'); 
 
 // ==========================================
+// HELPER: verifica se o usuário é Professor (moderador)
+// ==========================================
+async function ehProfessor(usuarioId) {
+    if (!usuarioId) return false;
+    const resultado = await db.query(
+        'SELECT "Tipo" FROM usuario WHERE "idUsuario" = $1',
+        [usuarioId]
+    );
+    const tipo = resultado.rows[0]?.Tipo;
+    return !!tipo && tipo.toLowerCase() === 'professor';
+}
+
+// ==========================================
 // 1. ROTA: LISTAR TODOS OS TÓPICOS (GET)
 // ==========================================
 router.get('/', async (req, res) => {
@@ -73,21 +86,23 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 3. ROTA: EDITAR UM TÓPICO (PUT) - VALIDA DONO
+// 3. ROTA: EDITAR UM FÓRUM (PUT) - VALIDA DONO OU PROFESSOR (MODERADOR)
 // ==========================================
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { titulo, usuarioId } = req.body; // Recebe quem está tentando editar
 
     try {
-        // O WHERE agora garante que só atualiza se o fórum pertencer a esse usuarioId
-        const query = `
-            UPDATE forum 
-            SET nome = $1
-            WHERE idforum = $2 AND usuario_id = $3
-            RETURNING idforum
-        `;
-        const resultado = await db.query(query, [titulo, id, usuarioId]);
+        const moderador = await ehProfessor(usuarioId);
+
+        // Se for professor, atualiza sem exigir que seja o dono do fórum.
+        // Caso contrário, mantém a validação original (só o dono pode editar).
+        const query = moderador
+            ? `UPDATE forum SET nome = $1 WHERE idforum = $2 RETURNING idforum`
+            : `UPDATE forum SET nome = $1 WHERE idforum = $2 AND usuario_id = $3 RETURNING idforum`;
+
+        const valores = moderador ? [titulo, id] : [titulo, id, usuarioId];
+        const resultado = await db.query(query, valores);
 
         if (resultado.rows.length === 0) {
             return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste tópico.' });
@@ -102,7 +117,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // ==========================================
-// 4. ROTA: DELETAR UM FÓRUM (DELETE) - VALIDA DONO
+// 4. ROTA: DELETAR UM FÓRUM (DELETE) - VALIDA DONO OU PROFESSOR (MODERADOR)
 //    Exclui em cascata: mensagens dos tópicos -> tópicos -> fórum,
 //    tudo dentro de uma transação (se algo falhar, desfaz tudo).
 // ==========================================
@@ -113,6 +128,8 @@ router.delete('/:id', async (req, res) => {
     const client = await db.connect();
 
     try {
+        const moderador = await ehProfessor(usuarioId);
+
         await client.query('BEGIN');
 
         // 1) Apaga as mensagens de todos os tópicos que pertencem a este fórum
@@ -128,14 +145,17 @@ router.delete('/:id', async (req, res) => {
             [id]
         );
 
-        // 3) Apaga o fórum em si, só se o usuarioId bater com o dono (mesma validação de antes)
-        const resultado = await client.query(
-            `DELETE FROM forum WHERE idforum = $1 AND usuario_id = $2 RETURNING idforum`,
-            [id, usuarioId]
-        );
+        // 3) Apaga o fórum em si. Professor (moderador) pode apagar de qualquer usuário;
+        //    caso contrário, só se o usuarioId bater com o dono (mesma validação de antes).
+        const query = moderador
+            ? `DELETE FROM forum WHERE idforum = $1 RETURNING idforum`
+            : `DELETE FROM forum WHERE idforum = $1 AND usuario_id = $2 RETURNING idforum`;
+        const valores = moderador ? [id] : [id, usuarioId];
+
+        const resultado = await client.query(query, valores);
 
         if (resultado.rows.length === 0) {
-            // Ou o fórum não existe, ou o usuário não é o dono — desfaz tudo (inclusive os deletes acima)
+            // Ou o fórum não existe, ou o usuário não é o dono nem professor — desfaz tudo
             await client.query('ROLLBACK');
             return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste fórum.' });
         }
