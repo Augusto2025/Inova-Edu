@@ -44,6 +44,7 @@ urlpatterns = [
     path('CursoCoord/', views.CursoCoord, name='CursoCoord'),
     path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),   
     path("cursos/", views.CursoCoord, name="CursoCoord"),
+
     
     
     

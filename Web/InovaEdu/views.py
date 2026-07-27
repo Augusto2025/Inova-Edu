@@ -1608,7 +1608,6 @@ def editar_turma(request):
 
 
 
-
 def home_Coordenacao(request):
     email_sessao = request.session.get("usuario_email")
 

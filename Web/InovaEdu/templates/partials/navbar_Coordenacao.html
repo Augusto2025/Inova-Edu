@@ -20,12 +20,12 @@
     </ul>
 
     <div class="nav-actions">
-        <a href="" class="btn-perfil">
+        {% comment %} <a href="{% url 'PerfilCoord' %}" class="btn-perfil">
             <i class="fa-solid fa-user"></i>
             Perfil
-        </a>
+        </a> {% endcomment %}
 
-        <a href="" class="btn-sair">
+        <a href="{% url 'login' %}" class="btn-sair">
             <i class="fa-solid fa-right-from-bracket"></i>
             Sair
         </a>
