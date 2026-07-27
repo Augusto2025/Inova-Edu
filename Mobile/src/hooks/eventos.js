@@ -22,30 +22,64 @@ export const useEventos = () => {
     };
 
     const salvarEvento = async (novoEvento, onSuccess) => {
-        const idUsuario = await AsyncStorage.getItem('idUsuario');
-        const isEdicao = novoEvento.id != null;
-        const url = isEdicao ? `${URL_BASE}/eventos/${novoEvento.id}` : `${URL_BASE}/eventos`;
-        const method = isEdicao ? 'PUT' : 'POST';
+    const idUsuario = await AsyncStorage.getItem('idUsuario');
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...novoEvento, usuario_id: idUsuario })
-            });
+    const isEdicao = novoEvento.id != null;
+    const url = isEdicao
+        ? `${URL_BASE}/eventos/${novoEvento.id}`
+        : `${URL_BASE}/eventos`;
 
-            if (response.ok) {
-                Alert.alert("Sucesso", isEdicao ? "Evento atualizado!" : "Evento criado!");
-                onSuccess(); // Executa o que a tela precisar (fechar modal, limpar formulário)
-                buscarEventos();
-            } else {
-                const errorData = await response.json();
-                Alert.alert("Erro", errorData.mensagem || "Não foi possível salvar.");
-            }
-        } catch (error) {
-            Alert.alert("Erro", "Falha na conexão.");
+    const method = isEdicao ? 'PUT' : 'POST';
+
+    // Converte DD/MM/AAAA -> AAAA-MM-DD
+    let dataFormatada = novoEvento.date;
+
+    if (dataFormatada.includes("/")) {
+        const [dia, mes, ano] = dataFormatada.split("/");
+        dataFormatada = `${ano}-${mes}-${dia}`;
+    }
+
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ...novoEvento,
+                date: dataFormatada,
+                usuario_id: idUsuario
+            })
+        });
+
+        if (response.ok) {
+            Alert.alert(
+                "Sucesso",
+                isEdicao ? "Evento atualizado!" : "Evento criado!"
+            );
+
+            onSuccess();
+            buscarEventos();
+
+        } else {
+            const errorData = await response.json();
+
+            console.log("Status:", response.status);
+            console.log("Erro Backend:", errorData);
+
+            Alert.alert(
+                "Erro",
+                errorData.detalhe ||
+                errorData.mensagem ||
+                JSON.stringify(errorData)
+            );
         }
-    };
+
+    } catch (error) {
+        console.log(error);
+        Alert.alert("Erro", error.message);
+    }
+};
 
     const excluirEvento = async (idEvento, onSuccess) => {
         const idUsuario = await AsyncStorage.getItem('idUsuario');

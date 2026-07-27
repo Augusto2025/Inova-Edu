@@ -102,26 +102,53 @@ router.put('/:id', async (req, res) => {
 });
 
 // ==========================================
-// 4. ROTA: DELETAR UM TÓPICO (DELETE) - VALIDA DONO
+// 4. ROTA: DELETAR UM FÓRUM (DELETE) - VALIDA DONO
+//    Exclui em cascata: mensagens dos tópicos -> tópicos -> fórum,
+//    tudo dentro de uma transação (se algo falhar, desfaz tudo).
 // ==========================================
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const { usuarioId } = req.body; // Recebe quem está tentando deletar
 
+    const client = await db.connect();
+
     try {
-        // O WHERE garante que a deleção só ocorre se for o dono real
-        const query = 'DELETE FROM forum WHERE idforum = $1 AND usuario_id = $2 RETURNING idforum';
-        const resultado = await db.query(query, [id, usuarioId]);
+        await client.query('BEGIN');
+
+        // 1) Apaga as mensagens de todos os tópicos que pertencem a este fórum
+        await client.query(
+            `DELETE FROM mensagem
+             WHERE "ID_Topico" IN (SELECT "idtopico" FROM topico WHERE "forum_id" = $1)`,
+            [id]
+        );
+
+        // 2) Apaga os tópicos deste fórum
+        await client.query(
+            `DELETE FROM topico WHERE "forum_id" = $1`,
+            [id]
+        );
+
+        // 3) Apaga o fórum em si, só se o usuarioId bater com o dono (mesma validação de antes)
+        const resultado = await client.query(
+            `DELETE FROM forum WHERE idforum = $1 AND usuario_id = $2 RETURNING idforum`,
+            [id, usuarioId]
+        );
 
         if (resultado.rows.length === 0) {
-            return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste tópico.' });
+            // Ou o fórum não existe, ou o usuário não é o dono — desfaz tudo (inclusive os deletes acima)
+            await client.query('ROLLBACK');
+            return res.status(403).json({ mensagem: 'Ação negada: Você não é o criador deste fórum.' });
         }
 
-        res.json({ mensagem: 'Tópico excluído com sucesso!' });
+        await client.query('COMMIT');
+        res.json({ mensagem: 'Fórum e todos os seus tópicos foram excluídos com sucesso!' });
 
     } catch (error) {
-        console.error("Erro ao deletar tópico:", error);
-        res.status(500).json({ mensagem: 'Erro ao excluir o tópico.', detalhe: error.message });
+        await client.query('ROLLBACK');
+        console.error("Erro ao deletar fórum:", error);
+        res.status(500).json({ mensagem: 'Erro ao excluir o fórum.', detalhe: error.message });
+    } finally {
+        client.release();
     }
 });
 

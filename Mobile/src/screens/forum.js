@@ -78,7 +78,7 @@ export default function ForumScreen({ navigation }) {
           })
         });
 
-        if (!response.ok) throw new Error("Erro ao criar tópico no servidor.");
+        if (!response.ok) throw new Error("Erro ao criar o fórum no servidor.");
       } else {
         // Editar Fórum
         const response = await fetch(`${URL_FORUM}/${modal.id}`, {
@@ -91,8 +91,8 @@ export default function ForumScreen({ navigation }) {
         });
 
         if (!response.ok) {
-          if(response.status === 403) throw new Error("Você não tem permissão para editar este tópico.");
-          throw new Error("Erro ao editar tópico no servidor.");
+          if(response.status === 403) throw new Error("Você não tem permissão para editar este fórum.");
+          throw new Error("Erro ao editar o fórum no servidor.");
         }
       }
 
@@ -111,7 +111,7 @@ export default function ForumScreen({ navigation }) {
   const eliminarTopico = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
-      "Tem certeza que deseja apagar este tópico?",
+      "Tem certeza que deseja apagar este fórum? Todos os tópicos dentro dele também serão apagados.",
       [
         { text: "Cancelar", style: "cancel" },
         { 
@@ -128,12 +128,12 @@ export default function ForumScreen({ navigation }) {
               });
 
               if (!response.ok) {
-                if(response.status === 403) throw new Error("Você não tem permissão para apagar este tópico.");
+                if(response.status === 403) throw new Error("Você não tem permissão para apagar este fórum.");
                 throw new Error("Erro ao eliminar do servidor.");
               }
               
               setTopicos(topicos.filter(item => item.id !== id));
-              Alert.alert("Sucesso", "Tópico excluído com sucesso!");
+              Alert.alert("Sucesso", "Fórum e todos os seus tópicos foram excluídos com sucesso!");
             } catch (error) {
               console.error("Erro ao eliminar:", error);
               Alert.alert("Ação Negada", error.message);
@@ -207,7 +207,7 @@ export default function ForumScreen({ navigation }) {
             <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               
               <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, { fontSize: 18 * fontSizeScale }]}>{modal.modo === "Criar" ? "Criar Tópico" : "Editar Tópico"}</Text>
+                <Text style={[styles.modalTitle, { fontSize: 18 * fontSizeScale }]}>{modal.modo === "Criar" ? "Criar Fórum" : "Editar Fórum"}</Text>
                 <TouchableOpacity onPress={fecharModal} style={{ position: 'absolute', right: 20 }}>
                   <Feather name="x" size={20} color="white" />
                 </TouchableOpacity>
@@ -215,7 +215,7 @@ export default function ForumScreen({ navigation }) {
 
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Título do Tópico</Text>
+                  <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Título do Fórum</Text>
                   {/* TextInput adaptado */}
                   <TextInput 
                     placeholder="Digite o título..." 

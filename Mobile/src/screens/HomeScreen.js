@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
   Text,
@@ -20,12 +20,26 @@ import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o 
 import { useNotifications } from "../context/NotificationContext";
 import HomePainelProfessor from "./HomePainelProfessor";
 
+// Importação do Contexto de Tema (mesmo padrão usado no RepositorioScreen / HomePainelProfessor)
+import { ThemeContext } from "../context/ThemeContext";
+
 // Chave usada para guardar o histórico de repositórios recentes no celular,
 // separado por usuário (pra não misturar histórico entre contas diferentes no mesmo aparelho).
 const RECENTES_KEY_PREFIX = "@InovaEdu:repositoriosRecentes:";
 
 export default function HomeScreen({ navigation }) {
   const primaryColor = COLORS.primary;
+
+  // AQUI ESTÁ A CORREÇÃO! Puxando as configurações visuais do app.
+  const context = useContext(ThemeContext);
+  const theme = context?.theme || {
+    background: "#FFFFFF",
+    card: "#F8FAFC",
+    text: "#000000",
+    border: "#E2E8F0",
+    dark: false,
+  };
+  const fontSizeScale = context?.fontSizeScale || 1;
 
   // 🆕 Descobre se o usuário logado é Aluno ou Professor, pra decidir qual Home mostrar
   const [tipoUsuario, setTipoUsuario] = useState(null);
@@ -366,7 +380,12 @@ export default function HomeScreen({ navigation }) {
   // 🆕 Enquanto não sabemos o tipo, evita piscar a tela errada
   if (!tipoCarregado) {
     return (
-      <View style={[styles.safe, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.safe,
+          { justifyContent: "center", alignItems: "center", backgroundColor: theme.dark ? theme.background : "#1459b3" },
+        ]}
+      >
         <Text style={{ color: "#fff" }}>Carregando...</Text>
       </View>
     );
@@ -378,7 +397,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.safe}>
+    <View style={[styles.safe, { backgroundColor: theme.dark ? theme.background : "#1459b3" }]}>
       <Header
         nomeTela={
           carregando
@@ -392,16 +411,18 @@ export default function HomeScreen({ navigation }) {
       />
 
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* SEÇÃO: EVENTOS */}
-        <Text style={styles.sectionTitle}>Próximos eventos</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 20 * fontSizeScale }]}>
+          Próximos eventos
+        </Text>
 
         {carregando ? (
           [1, 2].map((item) => (
-            <View key={item} style={[styles.eventCard, { gap: 14 }]}>
+            <View key={item} style={[styles.eventCard, { backgroundColor: theme.card, gap: 14 }]}>
               <Skeleton width={52} height={56} borderRadius={10} />
               <View style={{ flex: 1, gap: 8 }}>
                 <Skeleton width="70%" height={16} borderRadius={4} />
@@ -445,7 +466,7 @@ export default function HomeScreen({ navigation }) {
             return (
               <TouchableOpacity
                 key={event.id || event.idevento}
-                style={styles.eventCard}
+                style={[styles.eventCard, { backgroundColor: theme.card }]}
                 activeOpacity={0.8}
                 onPress={() =>
                   navigation.navigate("Eventos", { selectedDate: dataOriginal })
@@ -461,16 +482,16 @@ export default function HomeScreen({ navigation }) {
                     <Text style={styles.monthText}>{mes}</Text>
                   </View>
                   <View style={styles.dateBadgeBottom}>
-                    <Text style={styles.dayText}>{dia}</Text>
+                    <Text style={[styles.dayText, { color: theme.text }]}>{dia}</Text>
                   </View>
                 </View>
 
                 <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle} numberOfLines={1}>
+                  <Text style={[styles.eventTitle, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>
                     {tituloEvento}
                   </Text>
-                  <Text style={styles.eventTimeInfo} numberOfLines={1}>
-                    <Ionicons name="time-outline" size={13} color="#777" />{" "}
+                  <Text style={[styles.eventTimeInfo, { color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale }]} numberOfLines={1}>
+                    <Ionicons name="time-outline" size={13 * fontSizeScale} color={theme.text} style={{ opacity: 0.6 }} />{" "}
                     {horarioEvento}
                     {" • "}
                     {localEvento}
@@ -484,23 +505,27 @@ export default function HomeScreen({ navigation }) {
             );
           })
         ) : (
-          <Text style={styles.emptyText}>Nenhum evento encontrado.</Text>
+          <Text style={[styles.emptyText, { color: theme.text, opacity: 0.5, fontSize: 13 * fontSizeScale }]}>
+            Nenhum evento encontrado.
+          </Text>
         )}
 
         {/* SEÇÃO: BUSCA DE REPOSITÓRIOS */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchTitle}>Buscar repositórios</Text>
-          <View style={styles.searchBox}>
+        <View style={[styles.searchContainer, { backgroundColor: theme.card }]}>
+          <Text style={[styles.searchTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
+            Buscar repositórios
+          </Text>
+          <View style={[styles.searchBox, { backgroundColor: theme.dark ? theme.border : "#f2f2f2" }]}>
             <Feather
               name="search"
-              size={18}
-              color="#888"
-              style={{ marginRight: 10 }}
+              size={18 * fontSizeScale}
+              color={theme.text}
+              style={{ marginRight: 10, opacity: 0.6 }}
             />
             <TextInput
               placeholder="Buscar por curso, turma ou projeto..."
-              placeholderTextColor="#888"
-              style={styles.searchInput}
+              placeholderTextColor={theme.dark ? "#94A3B8" : "#888"}
+              style={[styles.searchInput, { color: theme.text, fontSize: 14 * fontSizeScale }]}
               value={busca}
               onChangeText={setBusca}
             />
@@ -509,9 +534,11 @@ export default function HomeScreen({ navigation }) {
           {estaBuscando && (
             <View style={{ marginTop: 15 }}>
               {repoSearchLoading ? (
-                <Text style={styles.emptyText}>Buscando repositórios...</Text>
+                <Text style={[styles.emptyText, { color: theme.text, opacity: 0.5, fontSize: 13 * fontSizeScale }]}>
+                  Buscando repositórios...
+                </Text>
               ) : repoSearchError ? (
-                <Text style={[styles.emptyText, { color: "#c0392b" }]}>
+                <Text style={[styles.emptyText, { color: "#c0392b", fontSize: 13 * fontSizeScale }]}>
                   {repoSearchError === "endpoint_not_found"
                     ? "Endpoint de busca indisponível."
                     : repoSearchError === "server_error"
@@ -533,7 +560,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                       <TouchableOpacity
                         key={repo.chave_unica || repo.id}
-                        style={styles.repoCard}
+                        style={[styles.repoCard, { backgroundColor: theme.card }]}
                         activeOpacity={0.8}
                         onPress={() => {
                           if (temProjeto) {
@@ -567,17 +594,17 @@ export default function HomeScreen({ navigation }) {
                             style={[
                               styles.repoImg,
                               styles.centerContainer,
-                              { backgroundColor: "#f2f2f2" },
+                              { backgroundColor: theme.dark ? theme.border : "#f2f2f2" },
                             ]}
                           >
                             <Feather
                               name={temProjeto ? "folder" : "folder-minus"}
-                              size={24}
+                              size={24 * fontSizeScale}
                               color={temProjeto ? COLORS.primary : "#aaa"}
                             />
                           </View>
                         )}
-                        <Text numberOfLines={1} style={styles.repoTitle}>
+                        <Text numberOfLines={1} style={[styles.repoTitle, { color: theme.text, fontSize: 13 * fontSizeScale }]}>
                           {repo.nome_projeto ||
                             (repo.tipo_resultado === "turma"
                               ? repo.nome_turma
@@ -588,7 +615,7 @@ export default function HomeScreen({ navigation }) {
                           numberOfLines={1}
                           style={[
                             styles.emptyText,
-                            { marginTop: 4, color: "#555" },
+                            { marginTop: 4, color: theme.text, opacity: 0.6, fontSize: 13 * fontSizeScale },
                           ]}
                         >
                           {repo.nome_turma ||
@@ -600,7 +627,7 @@ export default function HomeScreen({ navigation }) {
                   })}
                 </ScrollView>
               ) : (
-                <Text style={styles.emptyText}>
+                <Text style={[styles.emptyText, { color: theme.text, opacity: 0.5, fontSize: 13 * fontSizeScale }]}>
                   Nenhum repositório encontrado.
                 </Text>
               )}
@@ -611,7 +638,9 @@ export default function HomeScreen({ navigation }) {
         {/* SEÇÃO: REPOSITÓRIOS RECENTES — agora vem do histórico local (AsyncStorage),
               só populado quando o usuário busca e entra em um repositório de verdade. */}
         <View style={styles.repoHeaderRow}>
-          <Text style={styles.sectionTitle}>Repositórios recentes</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 20 * fontSizeScale }]}>
+            Repositórios recentes
+          </Text>
           {recentRepos.length > 0 && (
             <TouchableOpacity
               onPress={() => navigation.navigate("Repositório")}
@@ -621,6 +650,7 @@ export default function HomeScreen({ navigation }) {
                   color: COLORS.primary,
                   fontWeight: "600",
                   marginTop: 20,
+                  fontSize: 14 * fontSizeScale,
                 }}
               >
                 Ver todos
@@ -638,7 +668,7 @@ export default function HomeScreen({ navigation }) {
             {[1, 2].map((i) => (
               <View
                 key={i}
-                style={[styles.newRepoCard, { width: 220, opacity: 0.6 }]}
+                style={[styles.newRepoCard, { width: 220, opacity: 0.6, backgroundColor: theme.card, borderColor: theme.border }]}
               />
             ))}
           </ScrollView>
@@ -650,7 +680,7 @@ export default function HomeScreen({ navigation }) {
             contentContainerStyle={{ gap: 12, paddingBottom: 5 }}
           >
             {recentRepos.map((repo) => (
-              <View key={repo.id} style={styles.newRepoCard}>
+              <View key={repo.id} style={[styles.newRepoCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
                 <TouchableOpacity
                   style={{
                     flex: 1,
@@ -665,31 +695,31 @@ export default function HomeScreen({ navigation }) {
                     })
                   }
                 >
-                  <View style={styles.repoLeftIconContainer}>
+                  <View style={[styles.repoLeftIconContainer, { backgroundColor: theme.dark ? theme.border : "#F8FAFC" }]}>
                     {repo.imagem ? (
                       <Image
                         source={{ uri: repo.imagem }}
                         style={{ width: 40, height: 40, borderRadius: 8 }}
                       />
                     ) : (
-                      <Feather name="folder" size={20} color={COLORS.primary} />
+                      <Feather name="folder" size={20 * fontSizeScale} color={COLORS.primary} />
                     )}
                   </View>
 
                   <View style={styles.repoTextContainer}>
-                    <Text numberOfLines={1} style={styles.newRepoTitle}>
+                    <Text numberOfLines={1} style={[styles.newRepoTitle, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
                       {repo.nome || "Projeto"}
                     </Text>
                     {repo.subtitulo ? (
                       <Text
                         numberOfLines={1}
-                        style={{ color: "#6b7280", fontSize: 12, marginTop: 6 }}
+                        style={{ color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale, marginTop: 6 }}
                       >
                         {repo.subtitulo}
                       </Text>
                     ) : (
                       <View style={styles.repoTag}>
-                        <Text style={styles.repoTagText}>Git Repository</Text>
+                        <Text style={[styles.repoTagText, { fontSize: 11 * fontSizeScale }]}>Git Repository</Text>
                       </View>
                     )}
                   </View>
@@ -697,27 +727,29 @@ export default function HomeScreen({ navigation }) {
 
                 {/* 🆕 Botão de remover este item da lista de recentes */}
                 <TouchableOpacity
-                  style={styles.removeRecentBtn}
+                  style={[styles.removeRecentBtn, { backgroundColor: theme.dark ? theme.border : "#F1F5F9" }]}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   onPress={() => confirmarRemoverRecente(repo)}
                 >
-                  <Feather name="x" size={14} color="#94A3B8" />
+                  <Feather name="x" size={14 * fontSizeScale} color="#94A3B8" />
                 </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
         ) : (
-          <Text style={styles.emptyText}>
+          <Text style={[styles.emptyText, { color: theme.text, opacity: 0.5, fontSize: 13 * fontSizeScale }]}>
             Busque e entre em um repositório para ele aparecer aqui.
           </Text>
         )}
 
         {/* SEÇÃO: FÓRUM */}
-        <Text style={styles.sectionTitle}>Fórum ativo</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 20 * fontSizeScale }]}>
+          Fórum ativo
+        </Text>
 
         {forumPrincipal ? (
           <TouchableOpacity
-            style={styles.forumContainerCard}
+            style={[styles.forumContainerCard, { backgroundColor: theme.card }]}
             activeOpacity={0.8}
             onPress={() => {
               if (!forumPrincipal) return;
@@ -731,15 +763,17 @@ export default function HomeScreen({ navigation }) {
               <View style={styles.forumIconCircle}>
                 <MaterialCommunityIcons
                   name="comment-text-multiple"
-                  size={20}
+                  size={20 * fontSizeScale}
                   color="#fff"
                 />
               </View>
               <View style={styles.forumTitleBlock}>
-                <Text style={styles.forumMainTitle} numberOfLines={1}>
+                <Text style={[styles.forumMainTitle, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>
                   {forumPrincipal.titulo}
                 </Text>
-                <Text style={styles.forumTimeAgo}>tópico recente</Text>
+                <Text style={[styles.forumTimeAgo, { color: theme.text, opacity: 0.6, fontSize: 11 * fontSizeScale }]}>
+                  tópico recente
+                </Text>
               </View>
               <Animated.View
                 style={[
@@ -756,13 +790,15 @@ export default function HomeScreen({ navigation }) {
               </Animated.View>
             </View>
             <Text
-              style={styles.forumBodyText}
+              style={[styles.forumBodyText, { color: theme.text, opacity: 0.7, fontSize: 13 * fontSizeScale }]}
               numberOfLines={2}>
               {forumPrincipal.conteudo || "Nenhuma mensagem ainda."}
           </Text>
           </TouchableOpacity>
         ) : (
-          <Text style={styles.emptyText}>Nenhum fórum ativo.</Text>
+          <Text style={[styles.emptyText, { color: theme.text, opacity: 0.5, fontSize: 13 * fontSizeScale }]}>
+            Nenhum fórum ativo.
+          </Text>
         )}
       </ScrollView>
     </View>
@@ -770,19 +806,16 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor:"#ffffff" },
+  safe: { flex: 1 },
+  container: { flex: 1 },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 5 },
   sectionTitle: {
-    fontSize: 20,
     fontWeight: "bold",
-    color: "#111",
     marginTop: 20,
     marginBottom: 12,
   },
   centerContainer: { justifyContent: "center", alignItems: "center" },
   eventCard: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 12,
     marginBottom: 10,
@@ -802,26 +835,24 @@ const styles = StyleSheet.create({
   dateBadgeBottom: { flex: 1, justifyContent: "center", alignItems: "center" },
   dayText: { fontSize: 16, fontWeight: "bold" },
   eventInfo: { flex: 1, paddingHorizontal: 12 },
-  eventTitle: { fontSize: 15, fontWeight: "bold", color: "#222" },
-  eventTimeInfo: { fontSize: 12, color: "#666", marginTop: 2 },
+  eventTitle: { fontWeight: "bold" },
+  eventTimeInfo: { marginTop: 2 },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
   searchContainer: {
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     marginTop: 15,
     elevation: 3,
   },
-  searchTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+  searchTitle: { fontWeight: "bold", marginBottom: 12 },
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
     borderRadius: 14,
     paddingHorizontal: 12,
     height: 46,
   },
-  searchInput: { flex: 1, color: "#111" },
+  searchInput: { flex: 1 },
   miniResultCard: {
     width: 110,
     alignItems: "center",
@@ -839,7 +870,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   forumContainerCard: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 14,
     elevation: 2,
@@ -856,8 +886,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   forumTitleBlock: { flex: 1 },
-  forumMainTitle: { fontWeight: "bold", fontSize: 15, color: "#111" },
-  forumTimeAgo: { fontSize: 11, color: "#888" },
+  forumMainTitle: { fontWeight: "bold" },
+  forumTimeAgo: {},
   forumBadgeCount: {
     width: 20,
     height: 20,
@@ -869,26 +899,21 @@ const styles = StyleSheet.create({
   forumBodyText: {
     marginLeft: 50,
     marginTop: 8,
-    color: "#555",
-    fontSize: 13,
     lineHeight: 18,
   },
   emptyText: {
     textAlign: "center",
-    color: "#999",
     marginVertical: 10,
-    fontSize: 13,
   },
   repoCard: {
     width: 140,
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 8,
     alignItems: "center",
     elevation: 2,
   },
   repoImg: { width: 120, height: 68, borderRadius: 8, marginBottom: 8 },
-  repoTitle: { fontSize: 13, fontWeight: "600", color: "#222" },
+  repoTitle: { fontWeight: "600" },
   /* Estilos novos / melhorados para Repositórios Recentes */
   repoHeaderRow: {
     flexDirection: "row",
@@ -897,7 +922,6 @@ const styles = StyleSheet.create({
   },
   newRepoCard: {
     width: 220,
-    backgroundColor: "#fff",
     borderRadius: 14,
     padding: 12,
     flexDirection: "row",
@@ -908,14 +932,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 6,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
     position: "relative",
   },
   repoLeftIconContainer: {
     width: 44,
     height: 44,
     borderRadius: 10,
-    backgroundColor: "#F8FAFC",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -924,7 +946,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  newRepoTitle: { fontSize: 14, fontWeight: "700", color: "#111" },
+  newRepoTitle: { fontWeight: "700" },
   repoTag: {
     marginTop: 6,
     alignSelf: "flex-start",
@@ -933,7 +955,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
   },
-  repoTagText: { fontSize: 11, fontWeight: "700", color: "#5B21B6" },
+  repoTagText: { fontWeight: "700", color: "#5B21B6" },
   removeRecentBtn: {
     position: "absolute",
     top: 6,
@@ -941,7 +963,6 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#F1F5F9",
     justifyContent: "center",
     alignItems: "center",
   },

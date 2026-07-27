@@ -53,8 +53,16 @@ router.post('/', async (req, res) => {
             RETURNING *
         `;
         
-        const resultado = await db.query(query, [title, time, date, description, local, usuario_id]);
-        const eventoCriado = resultado.rows[0];
+       const resultado = await db.query(query, [
+    title,
+    time,
+    date,
+    description,
+    local,
+    usuario_id
+]);
+
+console.log(resultado.rows[0]);
 
         // Cria notificações para todos os usuários, exceto quem criou o evento
         await db.query(
