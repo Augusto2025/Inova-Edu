@@ -303,14 +303,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // EXCLUIR BOTÃO USUARIO 
-// EXCLUIR USUÁRIO
 
 function abrirModalExcluir(id, nome) {
     document.getElementById("textoExcluir").innerHTML =
-        `Tem certeza que deseja excluir <strong>${nome}</strong>?`;
-
+    `Tem certeza que deseja excluir <strong>${nome}</strong>?`;
+    
     document.getElementById("formExcluir").action = `/usuarios/excluir/${id}/`;
-
+    
     document.getElementById("modalExcluir").style.display = "flex";
 }
 
@@ -320,8 +319,48 @@ function fecharModalExcluir() {
 
 window.addEventListener("click", function (e) {
     const modalExcluir = document.getElementById("modalExcluir");
-
+    
     if (e.target === modalExcluir) {
         fecharModalExcluir();
     }
+});
+
+
+
+// EXCLUIR CURSO
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalExcluir = document.getElementById("modalExcluirCurso");
+    const formExcluir = document.getElementById("formExcluirCurso");
+    const textoExcluir = document.getElementById("textoExcluirCurso");
+    const cancelar = document.getElementById("cancelarExcluirCurso");
+
+    document.querySelectorAll(".abrir-modal-excluir").forEach(botao => {
+
+        botao.addEventListener("click", function () {
+
+            const idCurso = this.dataset.id;
+            const nomeCurso = this.dataset.nome;
+
+            textoExcluir.innerHTML =
+                `Você tem certeza que deseja excluir o curso <strong>${nomeCurso}</strong>?`;
+
+            formExcluir.action = formExcluir.dataset.url.replace("0", idCurso);
+
+            modalExcluir.style.display = "flex";
+        });
+
+    });
+
+    cancelar.addEventListener("click", function () {
+        modalExcluir.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+        if (event.target === modalExcluir) {
+            modalExcluir.style.display = "none";
+        }
+    });
+
 });

@@ -91,13 +91,15 @@
                             data-descricao="{{ curso.descricao_curso|escapejs }}">
                             <i class="fa-solid fa-align-center"></i>
                         </button>
-                        <form
-                            method="POST"
-                            action="{% url 'excluir_curso' curso.idcurso %}">
+
+                        <form method="POST" action="{% url 'excluir_curso' curso.idcurso %}" class="form-excluir-curso">
                             {% csrf_token %}
+
                             <button
                                 type="button"
-                                class="btn-excluir-curso abrir-modal-excluir">
+                                class="btn-excluir abrir-modal-excluir"
+                                data-id="{{ curso.idcurso }}"
+                                data-nome="{{ curso.nome }}">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
@@ -203,24 +205,95 @@
                     </form>
                 </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </main>
+
+    <div id="modalExcluirCurso" class="modal-excluir-curso">
+
+        <div class="modal-excluir-curso-conteudo">
+
+            <h2 class="modal-excluir-curso-titulo">Excluir curso</h2>
+
+            <p id="textoExcluirCurso" class="modal-excluir-curso-texto"></p>
+
+            <form id="formExcluirCurso" method="POST" data-url="{% url 'excluir_curso' 0 %}">
+                {% csrf_token %}
+
+                <div class="modal-excluir-curso-botoes">
+
+                    <button
+                        type="button"
+                        id="cancelarExcluirCurso"
+                        class="btn-cancelar-curso">
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn-confirmar-excluir-curso">
+                        Excluir
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+                <div class="toast {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const toast = document.querySelector(".toast");
+
+            if (toast) {
+
+                setTimeout(() => {
+
+                    toast.style.transition = ".4s";
+                    toast.style.opacity = "0";
+                    toast.style.transform = "translateX(120%)";
+
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 400);
+
+                }, 3000);
+
+            }
+
+        });
+       
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  <script src="{% static 'scripts/coordenacao.js' %}"></script>
 </body>
 </html>

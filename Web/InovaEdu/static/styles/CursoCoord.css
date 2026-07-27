@@ -231,16 +231,11 @@
 }
 
 .acoes-geral_usuario button{
-
     width:36px;
     height:36px;
-
     border:none;
-
     border-radius:8px;
-
     cursor:pointer;
-
     transition:.3s;
 
 }
@@ -265,6 +260,9 @@
     color:#dc2626;
 
 }
+
+
+
 
 .acoes-geral_usuario button:hover{
 
@@ -711,13 +709,19 @@ button[type="buttoncancelar"]:hover{
 }
 
 .btn-cancelar{
-    background:#f1f2f5;
-    color:#526377;
+    padding:12px 28px;
+    border:none;
+    border-radius:8px;
+    background:#f3f4f6;
+    color:#6b7280;
+    font-weight:600;
+    cursor:pointer;
 }
 
+.btn-cancelar:hover{
+    background:#e5e7eb;
+}
 
-
-.btn-cancelar,
 .btn-salvar{
     padding:12px 28px;
     border:none;
@@ -754,4 +758,136 @@ button[type="buttoncancelar"]:hover{
         width:100%;
     }
 
+}
+
+
+/* MODAL EXCLUIR  */
+/* Fundo escuro */
+.modal-excluir-curso {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Caixa do modal */
+.modal-excluir-curso-conteudo {
+    width: 420px;
+    max-width: 90%;
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 30px 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+    animation: abrirModalCurso .25s ease;
+}
+
+/* Título */
+.modal-excluir-curso-titulo {
+    margin: 0;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Texto */
+.modal-excluir-curso-texto {
+    margin: 22px 0 34px;
+    color: #666;
+    font-size: 1.25rem;
+    line-height: 1.5;
+}
+
+.modal-excluir-curso-texto strong {
+    color: #444;
+    font-weight: 700;
+}
+
+/* Botões */
+.modal-excluir-curso-botoes {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* Estilo comum */
+.btn-cancelar-curso,
+.btn-confirmar-excluir-curso {
+    width: 170px;
+    height: 46px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s;
+}
+
+/* Cancelar */
+.btn-cancelar-curso {
+    background: #cfcfcf;
+    color: #fff;
+}
+
+.btn-cancelar-curso:hover {
+    background: #bdbdbd;
+}
+
+/* Excluir */
+.btn-confirmar-excluir-curso {
+    background: #d87434;
+    color: #fff;
+}
+
+.btn-confirmar-excluir-curso:hover {
+    background: #c56528;
+}
+
+/* Animação */
+@keyframes abrirModalCurso {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MENSAGEM */
+.toast-container {
+       position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+  padding: 14px 20px;
+    border-radius: 8px;
+    color: #fff;
+    margin-bottom: 10px;
+    font-weight: 600;
+    animation: aparecer .3s ease;
+}
+
+.toast.success {
+    background: #22c55e;
+}
+
+
+@keyframes toastEntrar {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

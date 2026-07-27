@@ -1376,6 +1376,7 @@ def excluir_usuario(request, idusuario):
 
 
 def editar_usuario(request, idusuario):
+
     usuario = get_object_or_404(Usuario, idusuario=idusuario)
 
     if request.method == "POST":
@@ -1395,7 +1396,7 @@ def editar_usuario(request, idusuario):
 
         return redirect("UsuariosCoord")
 
-    return redirect("UsuariosCoord")
+    return render(request, "Coordenacao/EditarUsuario.html", {"usuario": usuario})
 
 
 
@@ -1425,13 +1426,11 @@ def criar_curso(request):
         if not email_usuario:
             return redirect("login")
 
-
         try:
             usuario = Usuario.objects.get(email=email_usuario)
 
         except Usuario.DoesNotExist:
             return redirect("login")
-
 
         Curso.objects.create(
             nome_curso=request.POST.get("nome_curso"),
@@ -1442,11 +1441,11 @@ def criar_curso(request):
             usuario=usuario,
         )
 
+        messages.success(request, "Curso cadastrado com sucesso!")
 
         return redirect("CursoCoord")
 
-
-    return redirect("Coordenacao/CursoCoord")
+    return redirect("CursoCoord")
 
 def editar_curso(request):
     if request.method == "POST":
@@ -1465,6 +1464,20 @@ def editar_curso(request):
 
     # ✅ continua na mesma página
     return redirect("CursoCoord")
+
+def excluir_curso(request, idcurso):
+    if request.method == "POST":
+        curso = get_object_or_404(Curso, idcurso=idcurso)
+
+        curso.delete()
+        messages.success(request, "Curso excluído com sucesso!")
+        
+    return redirect(request.META.get("HTTP_REFERER", "CursoCoord"))
+
+
+
+
+
     
     
     
@@ -1790,11 +1803,11 @@ def homePage(request):
 
 
 
-def excluir_curso(request, idcurso):
-    if request.method == "POST":
-        curso = get_object_or_404(Curso, idcurso=idcurso)
-        curso.delete()
-        return redirect(request.META.get("HTTP_REFERER", "home_Coordenacao"))
+# def excluir_curso(request, idcurso):
+#     if request.method == "POST":
+#         curso = get_object_or_404(Curso, idcurso=idcurso)
+#         curso.delete()
+#         return redirect(request.META.get("HTTP_REFERER", "home_Coordenacao"))
 
 
 # TURMA
