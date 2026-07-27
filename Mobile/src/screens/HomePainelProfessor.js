@@ -15,10 +15,12 @@ import Header from "../components/Header";
 import api from "../services/api";
 import { useNotifications } from "../context/NotificationContext";
 
+// ==========================================
+// FUNÇÕES AUXILIARES DE FORMATAÇÃO
+// ==========================================
 function formatarHora(horaString) {
   if (!horaString) return "";
-  // "10:00:00" -> "10:00"
-  return horaString.toString().slice(0, 5);
+  return horaString.toString().slice(0, 5); // "10:00:00" -> "10:00"
 }
 
 function formatarTempoRelativo(dataString) {
@@ -34,20 +36,39 @@ function formatarTempoRelativo(dataString) {
   return `Há ${diffDias} dia${diffDias > 1 ? "s" : ""}`;
 }
 
-function obterRotuloEvento(dataString) {
-  if (!dataString) return "";
+// LÓGICA DE CORES ATUALIZADA
+function obterCorEvento(dataString) {
+  if (!dataString) return "#10B981";
+
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
+
   const dataEvento = new Date(dataString);
   dataEvento.setHours(0, 0, 0, 0);
-  const diffDias = Math.round((dataEvento - hoje) / 86400000);
 
-  if (diffDias === 0) return "Hoje";
-  if (diffDias === 1) return "Amanhã";
-  const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
-  return `${dataEvento.getUTCDate()} ${meses[dataEvento.getUTCMonth()]}`;
+  if (dataEvento.getTime() < hoje.getTime()) {
+    return "#EF5350"; // Vermelho (Passado)
+  } else if (dataEvento.getTime() === hoje.getTime()) {
+    return "#F59E0B"; // Amarelo (Hoje)
+  } else {
+    return "#10B981"; // Verde (Futuro)
+  }
 }
 
+// Extrai Mês e Dia para o badge do calendário
+function obterDadosData(dataString) {
+  if (!dataString) return { mes: "---", dia: "--" };
+  const data = new Date(dataString);
+  const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+  return {
+    mes: meses[data.getUTCMonth()],
+    dia: data.getUTCDate(),
+  };
+}
+
+// ==========================================
+// COMPONENTE PRINCIPAL
+// ==========================================
 export default function HomePainelProfessor({ navigation }) {
   const { totalNovas, markAllAsRead } = useNotifications();
   const [carregando, setCarregando] = useState(true);
@@ -72,9 +93,6 @@ export default function HomePainelProfessor({ navigation }) {
       });
 
       if (resposta.data?.sucesso) {
-        // 🛡️ Mescla com os valores padrão em vez de substituir tudo —
-        // assim, se o backend ainda não tiver algum campo novo (ex: backend
-        // desatualizado no Render), a tela não quebra, só mostra vazio.
         setPainel((prev) => ({
           professor: resposta.data.professor || prev.professor,
           totais: resposta.data.totais || prev.totais,
@@ -192,7 +210,7 @@ export default function HomePainelProfessor({ navigation }) {
           </View>
         </View>
 
-        {/* PENDÊNCIAS — só o que dá pra calcular de verdade hoje: tópicos sem resposta */}
+        {/* PENDÊNCIAS */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Pendências</Text>
         </View>
@@ -224,9 +242,7 @@ export default function HomePainelProfessor({ navigation }) {
         {/* MINHAS TURMAS */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Minhas turmas</Text>
-          <TouchableOpacity onPress={() => {
-            try { navigation.navigate("Turmas"); } catch (e) {}
-          }}>
+          <TouchableOpacity onPress={() => { try { navigation.navigate("Turmas"); } catch (e) {} }}>
             <Text style={styles.verTodos}>Ver todas</Text>
           </TouchableOpacity>
         </View>
@@ -262,37 +278,48 @@ export default function HomePainelProfessor({ navigation }) {
           <Text style={styles.emptyText}>Nenhuma turma vinculada a você ainda.</Text>
         )}
 
-        {/* PRÓXIMOS EVENTOS (hoje + futuros) */}
+        {/* PRÓXIMOS EVENTOS COM CORES DINÂMICAS */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Próximos eventos</Text>
-          <TouchableOpacity onPress={() => {
-            try { navigation.navigate("Eventos"); } catch (e) {}
-          }}>
+          <TouchableOpacity onPress={() => { try { navigation.navigate("Eventos"); } catch (e) {} }}>
             <Text style={styles.verTodos}>Ver agenda</Text>
           </TouchableOpacity>
         </View>
 
         {painel.eventosProximos.length > 0 ? (
-          <View style={styles.card}>
-            {painel.eventosProximos.map((evento, index) => (
-              <View
-                key={evento.id}
-                style={[
-                  styles.eventoRow,
-                  index < painel.eventosProximos.length - 1 && styles.eventoRowBorda,
-                ]}
-              >
-                <View style={styles.eventoBarra} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.eventoHora}>{formatarHora(evento.hora)}</Text>
-                  <Text style={styles.eventoTitulo}>{evento.titulo}</Text>
-                  {evento.local ? <Text style={styles.eventoLocal}>{evento.local}</Text> : null}
-                </View>
-                <View style={styles.eventoTag}>
-                  <Text style={styles.eventoTagText}>{obterRotuloEvento(evento.data)}</Text>
-                </View>
-              </View>
-            ))}
+          <View style={styles.eventosList}>
+            {painel.eventosProximos.map((evento) => {
+              const { mes, dia } = obterDadosData(evento.data);
+              const corTema = obterCorEvento(evento.data);
+
+              return (
+                <TouchableOpacity key={evento.id} style={styles.eventoCard} activeOpacity={0.8}>
+                  {/* Ícone Estilo Folhinha de Calendário */}
+                  <View style={[styles.calendarIcon, { borderColor: corTema }]}>
+                    <View style={[styles.calendarHeader, { backgroundColor: corTema }]}>
+                      <Text style={styles.calendarMonthText}>{mes}</Text>
+                    </View>
+                    <View style={styles.calendarBody}>
+                      <Text style={styles.calendarDayText}>{dia}</Text>
+                    </View>
+                  </View>
+
+                  {/* Informações do Evento */}
+                  <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text style={styles.eventoTitulo} numberOfLines={1}>{evento.titulo}</Text>
+                    <View style={styles.eventoMetaRow}>
+                      <Feather name="clock" size={12} color="#777" style={{ marginRight: 4 }} />
+                      <Text style={styles.eventoMetaText}>
+                        {formatarHora(evento.hora)} {evento.local ? `• ${evento.local}` : ""}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Ponto Indicador na Direita */}
+                  <View style={[styles.statusDot, { backgroundColor: corTema }]} />
+                </TouchableOpacity>
+              );
+            })}
           </View>
         ) : (
           <Text style={styles.emptyText}>Nenhum evento próximo cadastrado.</Text>
@@ -302,9 +329,7 @@ export default function HomePainelProfessor({ navigation }) {
         <View style={{ marginTop: 10 }}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Últimos fóruns criados</Text>
-            <TouchableOpacity onPress={() => {
-              try { navigation.navigate("Fórum"); } catch (e) {}
-            }}>
+            <TouchableOpacity onPress={() => { try { navigation.navigate("Fórum"); } catch (e) {} }}>
               <Text style={styles.verTodos}>Ver todos</Text>
             </TouchableOpacity>
           </View>
@@ -375,6 +400,9 @@ export default function HomePainelProfessor({ navigation }) {
   );
 }
 
+// ==========================================
+// ESTILOS
+// ==========================================
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
   center: { justifyContent: "center", alignItems: "center" },
@@ -439,27 +467,85 @@ const styles = StyleSheet.create({
   },
   acessarBtnText: { color: COLORS.primary, fontWeight: "700", fontSize: 13 },
 
-  eventoRow: { flexDirection: "row", alignItems: "center", padding: 12, gap: 10 },
-  eventoRowBorda: { borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
-  eventoBarra: { width: 4, height: 34, borderRadius: 2, backgroundColor: COLORS.primary },
-  eventoHora: { fontSize: 12, color: COLORS.primary, fontWeight: "700" },
-  eventoTitulo: { fontSize: 14, fontWeight: "700", color: "#111", marginTop: 2 },
-  eventoLocal: { fontSize: 12, color: "#888", marginTop: 2 },
-  eventoTag: { backgroundColor: "#EEF2FF", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
-  eventoTagText: { color: COLORS.primary, fontSize: 11, fontWeight: "700" },
+  // ESTILOS DO CALENDÁRIO
+  eventosList: {
+    gap: 12,
+  },
+  eventoCard: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+  },
+  calendarIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: "hidden",
+    alignItems: "center",
+  },
+  calendarHeader: {
+    width: "100%",
+    paddingVertical: 3,
+    alignItems: "center",
+  },
+  calendarMonthText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  calendarBody: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  calendarDayText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1E293B",
+  },
+  eventoTitulo: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#1E293B",
+    marginBottom: 4,
+  },
+  eventoMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  eventoMetaText: {
+    fontSize: 12,
+    color: "#64748B",
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginLeft: 6,
+  },
 
   forumPendenteRow: { flexDirection: "row", alignItems: "center", padding: 12, gap: 10 },
+  eventoRowBorda: { borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
   forumIconCircle: {
     width: 36, height: 36, borderRadius: 18, backgroundColor: "#5360f0",
     justifyContent: "center", alignItems: "center",
   },
   forumPendenteTitulo: { fontWeight: "700", fontSize: 14, color: "#111" },
   forumPendenteSub: { fontSize: 12, color: "#888", marginTop: 2 },
-  responderBtn: {
-    backgroundColor: "#EDE9FE", marginHorizontal: 12, marginBottom: 12, borderRadius: 12,
-    paddingVertical: 10, alignItems: "center",
-  },
-  responderBtnText: { color: "#7C3AED", fontWeight: "700", fontSize: 13 },
 
   projetoRow: { flexDirection: "row", alignItems: "center", padding: 10, gap: 10 },
   projetoNome: { fontWeight: "700", fontSize: 14, color: "#111" },

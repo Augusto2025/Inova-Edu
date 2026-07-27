@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Skeleton from "./Skeleton";
 
 // IMPORTE A SUA FOTO LOCAL AQUI
@@ -32,11 +33,12 @@ export default function Header({
   subtitulo = "Tec. Desenvolvimento de Sistemas", // 🆕 permite customizar o texto abaixo do nome (ex: "Professor")
 }) {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // 2. RESGATANDO AS VARIÁVEIS DE TEMA COM PROTEÇÃO (FALLBACK)
   const context = useContext(ThemeContext);
-  const theme = context?.theme || { background: '#F8FAFC', card: '#FFFFFF', text: '#333333', border: '#E2E8F0' };
+  const theme = context?.theme || { background: '#fff', card: '#FFFFFF', text: '#333333', border: '#E2E8F0' };
   const fontSizeScale = context?.fontSizeScale || 1;
   const isDarkMode = context?.isDarkMode || false;
 
@@ -73,7 +75,7 @@ export default function Header({
 
   return (
     <View style={[styles.wrapper, { backgroundColor: headerBgColor }]}>
-      <View style={[styles.logoRow, { backgroundColor: headerBgColor }]} />
+      <View style={[styles.logoRow, { backgroundColor: headerBgColor, height: insets.top + 22 }]} />
 
       <View style={[styles.header, { backgroundColor: headerBgColor }]}>
         
@@ -178,8 +180,14 @@ export default function Header({
 }
 
 const styles = StyleSheet.create({
-  wrapper: {}, 
-  logoRow: { paddingTop: 45, height: 50 }, 
+  wrapper: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    zIndex: 2,
+  }, 
+  logoRow: {}, 
   header: { 
     paddingBottom: 15, 
     paddingHorizontal: 22, 
@@ -189,7 +197,7 @@ const styles = StyleSheet.create({
   },
   left: { flex: 1, marginRight: 10 },
   profileContainer: { flexDirection: "row", alignItems: "center" },
-  profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2 },
+  profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2.5, borderColor: "rgba(255,255,255,0.5)" },
   rightHeaderText: { flex: 1, justifyContent: 'center' },
   title: { fontWeight: "bold" },
   courseSubtitle: { marginTop: 2, fontWeight: "500" },
@@ -204,6 +212,6 @@ const styles = StyleSheet.create({
   notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
   badge: { position: "absolute", top: 5, right: 5, backgroundColor: "#ff4d67", justifyContent: "center", alignItems: "center" },
   badgeText: { color: "#fff", fontWeight: "bold" },
-  curveContainer: {},
-  curve: { height: 45, borderTopLeftRadius: 30, borderTopRightRadius: 30 },
+  curveContainer: {color: "#fff",},
+  curve: { height: 45, borderTopLeftRadius: 30, borderTopRightRadius: 30, color: "#fff", },
 });

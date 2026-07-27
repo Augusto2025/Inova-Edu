@@ -1,29 +1,52 @@
-import { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import { Image } from 'react-native';
-import { TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import SplashScreen from './SplashScreen';
 import { API_ENDPOINTS } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// npm install react-native-keyboard-aware-scroll-view
-
-// Substitua pela URL gerada pelo seu deploy no Render quando ele estiver pronto!
-// Adeus IP local! Agora o seu app aponta para a internet real:
 const URL_BACKEND = API_ENDPOINTS.login;
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
-    // 🆕 Tipo escolhido na tela: 'Aluno' ou 'Professor'
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
+    const [lembrarDeMim, setLembrarDeMim] = useState(false); // 🆕 Estado para o Checkbox
+
     const Logo = require('../../assets/LOGOBRANCO.png');
 
-    // 🌟 Transformada em async para poder realizar a requisição HTTP
+    // ==========================================
+    // 1. CARREGAR DADOS SALVOS AO ABRIR A TELA
+    // ==========================================
+    useEffect(() => {
+        carregarCredenciaisSalvas();
+    }, []);
+
+    const carregarCredenciaisSalvas = async () => {
+        try {
+            const emailSalvo = await AsyncStorage.getItem('lembrar_email');
+            const senhaSalva = await AsyncStorage.getItem('lembrar_senha');
+            const tipoSalvo = await AsyncStorage.getItem('lembrar_tipo');
+            const estaLembrado = await AsyncStorage.getItem('lembrar_ativo');
+
+            if (estaLembrado === 'true') {
+                if (emailSalvo) setEmail(emailSalvo);
+                if (senhaSalva) setSenha(senhaSalva);
+                if (tipoSalvo) setTipoSelecionado(tipoSalvo);
+                setLembrarDeMim(true);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados salvos:', error);
+        }
+    };
+
+    // ==========================================
+    // 2. EXECUTAR LOGIN E TRATAR SALVAMENTO
+    // ==========================================
     const handleLogin = async () => {
         if (email === '' || senha === '') {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
@@ -35,14 +58,27 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // 🆕 Exige que a pessoa escolha se é Aluno ou Professor antes de entrar
         if (!tipoSelecionado) {
             Alert.alert('Erro', 'Selecione se você é Aluno ou Professor.');
             return;
         }
 
-    
         try {
+            // --- Lógica de Salvar / Limpar "Lembrar de Mim" ---
+            if (lembrarDeMim) {
+                await AsyncStorage.setItem('lembrar_email', email);
+                await AsyncStorage.setItem('lembrar_senha', senha);
+                await AsyncStorage.setItem('lembrar_tipo', tipoSelecionado);
+                await AsyncStorage.setItem('lembrar_ativo', 'true');
+            } else {
+                await AsyncStorage.multiRemove([
+                    'lembrar_email', 
+                    'lembrar_senha', 
+                    'lembrar_tipo', 
+                    'lembrar_ativo'
+                ]);
+            }
+
             // Envia os dados para o seu servidor
             const resposta = await fetch(URL_BACKEND, {
                 method: 'POST',
@@ -50,30 +86,24 @@ export default function LoginScreen({ navigation }) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: email.trim(), // Remove espaços em branco bobos
+                    email: email.trim(),
                     senha: senha,
-                    tipo: tipoSelecionado, // 🆕 Envia o tipo escolhido pra validação no backend
+                    tipo: tipoSelecionado,
                 }),
             });
 
             const dados = await resposta.json();
 
             if (dados.sucesso) {
-                // ATENÇÃO AQUI: Salva o ID real do usuário no celular 
-                // Convertemos para String porque o AsyncStorage só aceita texto.
                 await AsyncStorage.setItem('idUsuario', dados.usuario.id.toString());
                 await AsyncStorage.setItem('tipo', dados.usuario.tipo);
-                // Se o banco validou, avança para a Main passando os dados obtidos (opcional)
+                
                 setCarregandoTransicao(true);
 
-                // 2. Segura o usuário por 1.2 segundos para ele ver o "Carregando..."
                 setTimeout(() => {
-                    // 3. Só depois do tempo, joga ele para a tela principal
                     navigation.replace('Main', { usuario: dados.usuario });
                 }, 1200); 
             } else {
-                // Alerta com a mensagem de erro vinda do seu banco de dados
-                // (inclui o caso de tipo selecionado não bater com o cadastrado)
                 Alert.alert('Erro de Login', dados.mensagem);
             }
 
@@ -88,17 +118,17 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <View style={{ flex: 1 }}>
-            
             <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
                 <View style={styles.containerTotal}>
                     <View style={styles.header}>
                         <Image source={Logo} style={styles.Logo} />
                         <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
                     </View>
+                    
                     <View style={styles.containerCenter}>
                         <Text style={styles.titulo}>Login</Text>
 
-                        {/* 🆕 Seletor Aluno / Professor */}
+                        {/* Seletor Aluno / Professor */}
                         <Text style={styles.labelTipo}>Você é:</Text>
                         <View style={styles.tipoContainer}>
                             <TouchableOpacity
@@ -142,14 +172,28 @@ export default function LoginScreen({ navigation }) {
                             placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
-                            />
+                        />
+                        
                         <CustomInput
                             placeholder="Senha"
                             value={senha}
                             onChangeText={setSenha}
-                            // esconde o texto digitado, para proteger a senha do usuário
                             secureTextEntry
+                        />
+
+                        {/* 🆕 Opção "Lembrar de mim" */}
+                        <TouchableOpacity 
+                            style={styles.lembrarContainer} 
+                            activeOpacity={0.8}
+                            onPress={() => setLembrarDeMim(!lembrarDeMim)}
+                        >
+                            <Ionicons 
+                                name={lembrarDeMim ? "checkbox" : "square-outline"} 
+                                size={22} 
+                                color={lembrarDeMim ? "#1459b3" : "#64748B"} 
                             />
+                            <Text style={styles.lembrarText}>Lembrar de mim</Text>
+                        </TouchableOpacity>
 
                         <CustomButton title="Entrar" onPress={handleLogin}/>
                     </View>
@@ -158,7 +202,7 @@ export default function LoginScreen({ navigation }) {
 
             {carregandoTransicao && <SplashScreen />}
         </View>
-    )
+    );
 }
 
 const paddingHeader = 90;
@@ -172,7 +216,7 @@ const styles = StyleSheet.create({
     tela: {
         backgroundColor: '#1459b3',
     },
-    header:{
+    header: {
         width: '100%',
         paddingBottom: paddingHeader,
         paddingTop: paddingHeader,
@@ -185,9 +229,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fafafa',
         height: '100%',
         width: '100%',
-        alignItems: 'flex-start',
-        paddingTop: '25%',
-        paddingLeft: '10%',
+        paddingTop: '12%',
+        paddingHorizontal: '8%', // Usamos horizontal para dar margem igual dos dois lados
+        alignItems: 'stretch',   // 🌟 Força todos os elementos a esticarem na mesma largura
     },
     titulo: {
         color: '#1459b3',
@@ -195,7 +239,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    // 🆕 Estilos do seletor Aluno / Professor
     labelTipo: {
         color: '#64748B',
         fontSize: 13,
@@ -206,8 +249,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 10,
         marginBottom: 18,
-        paddingRight: '10%',
-        width: '100%',
+        width: '100%', // 🌟 Mesma largura dos inputs
     },
     tipoBtn: {
         flex: 1,
@@ -229,5 +271,18 @@ const styles = StyleSheet.create({
     },
     tipoBtnTextAtivo: {
         color: '#fff',
+    },
+    lembrarContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 6,
+        marginBottom: 18,
+        alignSelf: 'flex-start', // Alinha a caixinha à esquerda no limite do campo
+    },
+    lembrarText: {
+        marginLeft: 8,
+        color: '#64748B',
+        fontSize: 14,
+        fontWeight: '600',
     },
 });

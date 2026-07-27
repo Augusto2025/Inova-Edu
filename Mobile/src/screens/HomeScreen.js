@@ -771,7 +771,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#1459b3" },
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor:"#ffffff" },
   scrollContent: { paddingHorizontal: 18, paddingBottom: 30, paddingTop: 5 },
   sectionTitle: {
     fontSize: 20,
