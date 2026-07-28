@@ -1544,6 +1544,15 @@ def editar_turma(request):
     return redirect("TurmaCoord")
 
 
+def excluir_turma(request, idturma):
+
+    turma = get_object_or_404(Turma, idturma=idturma)
+
+    if request.method == "POST":
+        turma.delete()
+        messages.success(request, "Turma excluída com sucesso!")
+
+    return redirect("TurmaCoord")
 
 
 
@@ -1819,11 +1828,7 @@ def homePage(request):
 
 
 
-def excluir_turma(request, idturma):
-    if request.method == "POST":
-        turma = get_object_or_404(Turma, idturma=idturma)
-        turma.delete()
-    return redirect("home_Coordenacao")
+
 
 
 def lista_curso(request):

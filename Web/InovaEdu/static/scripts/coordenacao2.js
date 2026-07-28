@@ -94,3 +94,42 @@ setTimeout(function () {
         }, 500);
     }
 }, 3000);
+
+
+// BOTÃO EXCLUIR 
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("modalExcluirTurma");
+    const texto = document.getElementById("textoExcluirTurma");
+    const form = document.getElementById("formExcluirTurma");
+    const cancelar = document.getElementById("cancelarExcluirTurma");
+
+    console.log("Botões:", document.querySelectorAll(".abrir-modal-excluir-turma"));
+
+    document.querySelectorAll(".abrir-modal-excluir-turma").forEach(botao => {
+
+        botao.addEventListener("click", function () {
+
+            // alert("Clique funcionou!");
+
+            const id = this.dataset.id;
+            const codigo = this.dataset.codigo;
+
+            texto.innerHTML =
+                `Tem certeza que deseja excluir a turma <strong>${codigo}</strong>?`;
+
+            form.action = form.dataset.url.replace("0", id);
+
+            modal.style.display = "flex";
+
+        });
+
+    });
+
+    if (cancelar) {
+        cancelar.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+    }
+
+});

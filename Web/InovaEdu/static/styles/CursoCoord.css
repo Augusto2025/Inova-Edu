@@ -771,7 +771,7 @@ button[type="buttoncancelar"]:hover{
 
 /* Caixa do modal */
 .modal-excluir-curso-conteudo {
-    width: 420px;
+    /* width: 420px; */
     max-width: 90%;
     background: #fff;
     border-radius: 14px;
@@ -779,6 +779,7 @@ button[type="buttoncancelar"]:hover{
     text-align: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
     animation: abrirModalCurso .25s ease;
+    
 }
 
 /* Título */

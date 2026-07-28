@@ -93,7 +93,13 @@
                                 class="form-excluir-turma">
                                 {% csrf_token %}
 
-                                <button type="button" class="btn-excluir-turma abrir-modal-excluir" title="Excluir turma">
+                               <button
+                                    type="button"
+                                    class="btn-excluir-turma abrir-modal-excluir-turma"
+                                    data-id="{{ turma.idturma }}"
+                                    data-codigo="{{ turma.codigo_turma }}"
+                                    title="Excluir turma">
+
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
@@ -277,6 +283,52 @@
             </div>
         </div>
 
+        <div id="modalExcluirTurma" class="modal-excluir-turma">
+
+            <div class="modal-excluir-turma-conteudo">
+
+                <h2>Excluir turma</h2>
+
+                <p id="textoExcluirTurma"></p>
+
+                <form id="formExcluirTurma"
+                    method="POST" 
+                    data-url="{% url 'excluir_turma' 0 %}">
+
+                    {% csrf_token %}
+
+                    <button type="button" id="cancelarExcluirTurma" class="btn-cancelar-turma">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-confirmar-excluir-turma">
+                        Excluir
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {% if messages %}
             <div class="toast-container">
@@ -313,15 +365,6 @@
             });
         
         </script>
-
-
-
-
-
-
-
-
-
 
         {% comment %} <script src="{% static 'scripts/coordenacao.js' %}"></script> {% endcomment %}
         <script src="{% static 'scripts/coordenacao2.js' %}"></script>
