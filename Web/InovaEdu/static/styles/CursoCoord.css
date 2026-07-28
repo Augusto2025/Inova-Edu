@@ -331,24 +331,20 @@
 /* ========================= */
 
 .titulo_lista_curso{
-
     display:flex;
     align-items:center;
-
     justify-content:space-between;
-
     padding:18px 25px;
-
     border-bottom:1px solid #e5e5e5;
 }
 
-.titulo_lista_curso p{
-
-    font-size:30px;
-
-    color:#003f88;
-
-    font-weight:600;
+.titulo_lista_curso h2{
+    margin:0;
+    color:#0d4c8b;
+    font-size:24px;
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
 /* ========================= */

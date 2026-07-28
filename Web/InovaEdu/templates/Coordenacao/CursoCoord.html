@@ -118,10 +118,15 @@
             <!-- MODAL CADASTRO CURSO -->
             <div id="modalCadastroCurso" class="modal">
                 <div class="modal-conteudo">
-                    <span class="fechar" id="fecharModalCurso">&times;</span>
-
+                    
                     <div class="titulo_lista_curso">
-                        <p>Cadastro de Curso</p>
+
+                        <h2>
+                            <i class="fa-solid fa-user-plus"></i>
+                            Cadastro Curso
+                        </h2>
+
+                        <span class="fechar" id="fecharModalCurso">&times;</span>
                     </div>
 
                     <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
