@@ -133,3 +133,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+// ===============================
+// PESQUISAR TURMAS
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const pesquisa = document.getElementById("pesquisarTurma");
+
+    if (!pesquisa) return;
+
+    pesquisa.addEventListener("keyup", function () {
+
+        const texto = this.value.toLowerCase().trim();
+
+        const linhas = document.querySelectorAll(".tabela-turmas tbody tr");
+
+        linhas.forEach(function (linha) {
+
+            const codigo = linha.cells[0].textContent.toLowerCase();
+            const turno = linha.cells[1].textContent.toLowerCase();
+            const ano = linha.cells[2].textContent.toLowerCase();
+            const curso = linha.cells[3].textContent.toLowerCase();
+            const professor = linha.cells[4].textContent.toLowerCase();
+
+            if (
+                codigo.includes(texto) ||
+                turno.includes(texto) ||
+                ano.includes(texto) ||
+                curso.includes(texto) ||
+                professor.includes(texto)
+            ) {
+                linha.style.display = "";
+            } else {
+                linha.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
