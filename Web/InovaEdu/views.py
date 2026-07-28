@@ -17,7 +17,7 @@ import io
 import zipfile
 import requests
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -273,41 +273,6 @@ def upload_foto(request):
         return JsonResponse({"message": str(e)}, status=500)
 
 
-@require_GET
-def listar_projetos_ajax(request):
-    email = request.session.get("usuario_email")
-
-    if not email:
-        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
-
-    try:
-        usuario = Usuario.objects.get(email=email)
-    except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
-
-    projetos = Projeto.objects.filter(alunos=usuario).select_related("turma")
-
-    lista_projetos = []
-
-    for projeto in projetos:
-        lista_projetos.append(
-            {
-                "id": projeto.id,
-                "titulo": projeto.titulo,
-                "descricao": projeto.descricao,
-                "turma": projeto.turma.nome if projeto.turma else None,
-                "data_criacao": (
-                    projeto.data_criacao.strftime("%d/%m/%Y")
-                    if hasattr(projeto, "data_criacao")
-                    else None
-                ),
-            }
-        )
-
-    return JsonResponse({"projetos": lista_projetos})
-
-
-
 def salvar_certificado(request):
 
     email = request.session.get("usuario_email")
@@ -422,18 +387,50 @@ def turmas(request, curso_id):
         },
     )
 
+@require_GET
+def listar_projetos_ajax(request):
+    email = request.session.get("usuario_email")
 
-# checagens futuras de permissão para editar o projeto (não funciona)
+    if not email:
+        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+
+    projetos = Projeto.objects.filter(alunos=usuario).select_related("turma")
+
+    lista_projetos = []
+    for projeto in projetos:
+        data_criacao = None
+        if hasattr(projeto, "data_criacao") and projeto.data_criacao:
+            data_criacao = projeto.data_criacao.strftime("%d/%m/%Y")
+
+        lista_projetos.append(
+            {
+                "id": getattr(projeto, "idprojeto", getattr(projeto, "id", None)),
+                "titulo": getattr(projeto, "nome_projeto", getattr(projeto, "titulo", "")),
+                "descricao": projeto.descricao,
+                "turma": projeto.turma.nome if projeto.turma else None,
+                "data_criacao": data_criacao,
+            }
+        )
+
+    return JsonResponse({"projetos": lista_projetos})
+
+
 def usuario_pode_editar_projeto(usuario, projeto):
-    if not usuario:
+    if not usuario or not projeto:
         return False
 
-    # Professor da turma (opcional, mas normalmente sim)
-    if usuario == projeto.turma.professor:
+    # Professor da turma
+    if projeto.turma and usuario == projeto.turma.professor:
         return True
 
-    # SOMENTE alunos permitidos no checklist
-    if projeto.alunos_edicao.filter(idusuario=usuario.idusuario).exists():
+    # Alunos com permissão concedida
+    user_id = getattr(usuario, "idusuario", getattr(usuario, "id", None))
+    if user_id and projeto.alunos_edicao.filter(idusuario=user_id).exists():
         return True
 
     return False
@@ -443,7 +440,6 @@ def projetos_da_turma(request, turma_id):
     turma = get_object_or_404(Turma, idturma=turma_id)
     projetos = Projeto.objects.filter(turma=turma)
 
-    # Usuário logado (sessão)
     email_logado = request.session.get("usuario_email")
     usuario_logado = None
     if email_logado:
@@ -452,14 +448,24 @@ def projetos_da_turma(request, turma_id):
         except Usuario.DoesNotExist:
             pass
 
-    can_modify = usuario_logado == turma.professor
+    can_modify = (usuario_logado == turma.professor) if (usuario_logado and turma) else False
 
-    if request.method == "POST" and can_modify:
+    if request.method == "POST":
+        # Identifica se a requisição veio via AJAX (fetch do seu JavaScript)
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+        if not can_modify:
+            msg = "Você não tem permissão para realizar esta ação."
+            if is_ajax:
+                return JsonResponse({"success": False, "message": msg}, status=403)
+            messages.error(request, msg)
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
+
         action = request.POST.get("action")
 
         # ===== CADASTRAR PROJETO =====
         if action == "cadastrar_projeto":
-            nome_projeto = request.POST.get("nome_projeto")
+            nome_projeto = request.POST.get("nome_projeto", "").strip()
             descricao = request.POST.get("descricao", "")
             imagem_file = request.FILES.get("imagem")
             if nome_projeto:
@@ -469,9 +475,7 @@ def projetos_da_turma(request, turma_id):
                 if imagem_file:
                     projeto.imagem = imagem_file
                 projeto.save()
-                messages.success(
-                    request, f'Projeto "{nome_projeto}" cadastrado com sucesso.'
-                )
+                messages.success(request, f'Projeto "{nome_projeto}" cadastrado com sucesso.')
             else:
                 messages.error(request, "O nome do projeto é obrigatório.")
 
@@ -480,14 +484,12 @@ def projetos_da_turma(request, turma_id):
             projeto_id = request.POST.get("projeto_id")
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
-                projeto.nome_projeto = request.POST.get("nome_projeto")
+                projeto.nome_projeto = request.POST.get("nome_projeto", "").strip()
                 projeto.descricao = request.POST.get("descricao", "")
                 if request.FILES.get("imagem"):
                     projeto.imagem = request.FILES["imagem"]
                 projeto.save()
-                messages.success(
-                    request, f'Projeto "{projeto.nome_projeto}" editado com sucesso.'
-                )
+                messages.success(request, f'Projeto "{projeto.nome_projeto}" editado com sucesso.')
             except Projeto.DoesNotExist:
                 messages.error(request, "Projeto não encontrado.")
 
@@ -496,14 +498,13 @@ def projetos_da_turma(request, turma_id):
             projeto_id = request.POST.get("projeto_id")
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+                nome = projeto.nome_projeto
                 projeto.delete()
-                messages.success(
-                    request, f'Projeto "{projeto.nome_projeto}" excluído com sucesso.'
-                )
+                messages.success(request, f'Projeto "{nome}" excluído com sucesso.')
             except Projeto.DoesNotExist:
                 messages.error(request, "Projeto não encontrado.")
 
-        # ===== SALVAR ALUNOS DO PROJETO =====
+        # ===== SALVAR ALUNOS DO PROJETO (REQUISIÇÃO AJAX) =====
         elif action == "salvar_alunos_repositorio":
             projeto_id = request.POST.get("projeto_id")
             try:
@@ -512,20 +513,28 @@ def projetos_da_turma(request, turma_id):
                 alunos_obj = Usuario.objects.filter(idusuario__in=alunos_selecionados)
                 projeto.alunos_edicao.set(alunos_obj)
                 projeto.save()
-                messages.success(
-                    request,
-                    f'Alunos do projeto "{projeto.nome_projeto}" atualizados com sucesso.',
-                )
+                
+                msg = f'Alunos do projeto "{projeto.nome_projeto}" atualizados com sucesso.'
+                
+                # <--- 2. RETORNO COMPATÍVEL COM SEU JS--->
+                if is_ajax:
+                    return JsonResponse({"success": True, "message": msg})
+                
+                messages.success(request, msg)
+
             except Projeto.DoesNotExist:
-                messages.error(request, "Projeto não encontrado.")
+                msg = "Projeto não encontrado."
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=404)
+                messages.error(request, msg)
 
         else:
+            if is_ajax:
+                return JsonResponse({"success": False, "message": "Ação inválida."}, status=400)
             messages.error(request, "Ação inválida.")
 
         return redirect("projetos_da_turma", turma_id=turma.idturma)
 
-    # ===== GET =====
-    # Pega todos os alunos da turma
     alunos_da_turma = [ut.id_usuario for ut in turma.usuariodaturma_set.all()]
 
     return render(
@@ -540,7 +549,7 @@ def projetos_da_turma(request, turma_id):
     )
 
 
-# Função para limpar nomes de arquivos e deixar válidos para Cloudinary
+# ---------- Funções Auxiliares Cloudinary e Zip ----------
 def sanitize_filename(filename):
     return re.sub(r"[^A-Za-z0-9._-]", "_", filename)
 
@@ -560,8 +569,14 @@ def upload_para_cloudinary(arquivo_file, public_id):
 def adicionar_pasta_ao_zip(zip_file, projeto, pasta=None, caminho=""):
     arquivos = Arquivo.objects.filter(projeto=projeto, pasta=pasta)
     for arquivo in arquivos:
-        r = requests.get(arquivo.url)
-        zip_file.writestr(f"{caminho}{arquivo.nome}", r.content)
+        if arquivo.url:
+            try:
+                r = requests.get(arquivo.url, timeout=10)
+                if r.status_code == 200:
+                    zip_file.writestr(f"{caminho}{arquivo.nome}", r.content)
+            except requests.RequestException:
+                pass  # Previne travamento caso algum arquivo específico falhe
+
     subpastas = Pasta.objects.filter(projeto=projeto, pasta_pai=pasta)
     for subpasta in subpastas:
         adicionar_pasta_ao_zip(
@@ -583,33 +598,34 @@ def download_repositorio_projeto(request, projeto_id):
     return response
 
 
-# ---------- Repositório do projeto (raiz) ----------
+# ---------- Repositório do projeto (Raiz) ----------
 def repositorio_projeto(request, projeto_id):
+    # teste de erro 500
+    # raise Exception("Testando a página de erro 500!")
     email = request.session.get("usuario_email")
     if not email:
         return redirect("login")
+
     usuario = get_object_or_404(Usuario, email=email)
     projeto = get_object_or_404(Projeto, idprojeto=projeto_id)
-    # turma = Turma.objects.all()
     can_modify = usuario_pode_editar_projeto(usuario, projeto)
 
-    if request.method == "POST" and can_modify:
-        action = request.POST.get("action")
+    if request.method == "POST":
+        if not can_modify:
+            messages.error(request, "Você não tem permissão para alterar este repositório.")
+            return redirect("repositorio_projeto", projeto_id=projeto.idprojeto)
 
-        # ================= AÇÕES =================
+        action = request.POST.get("action")
 
         # Criar pasta
         if action == "criar_pasta":
             nome_pasta = request.POST.get("nome_pasta", "").strip()
-            if (
-                nome_pasta
-                and not Pasta.objects.filter(
-                    nome=nome_pasta, projeto=projeto, pasta_pai=None
-                ).exists()
-            ):
-                Pasta.objects.create(
-                    nome=nome_pasta, criada_por=usuario, projeto=projeto
-                )
+            if nome_pasta:
+                if not Pasta.objects.filter(nome=nome_pasta, projeto=projeto, pasta_pai=None).exists():
+                    Pasta.objects.create(nome=nome_pasta, criada_por=usuario, projeto=projeto)
+                    messages.success(request, f'Pasta "{nome_pasta}" criada com sucesso.')
+                else:
+                    messages.warning(request, f'Já existe uma pasta com o nome "{nome_pasta}".')
 
         # Editar pasta
         elif action == "editar_pasta":
@@ -619,6 +635,7 @@ def repositorio_projeto(request, projeto_id):
                 pasta = get_object_or_404(Pasta, id=pasta_id, projeto=projeto)
                 pasta.nome = novo_nome
                 pasta.save()
+                messages.success(request, "Pasta renomeada com sucesso.")
 
         # Excluir pasta individual
         elif action == "excluir_pasta":
@@ -626,16 +643,19 @@ def repositorio_projeto(request, projeto_id):
             if pasta_id:
                 pasta = get_object_or_404(Pasta, id=pasta_id, projeto=projeto)
                 pasta.delete()
+                messages.success(request, "Pasta excluída.")
 
         # Excluir pastas selecionadas
         elif action == "excluir_pastas_selecionadas":
             ids = request.POST.getlist("pastas_selecionadas")
             if ids:
                 Pasta.objects.filter(id__in=ids, projeto=projeto).delete()
+                messages.success(request, "Pastas selecionadas excluídas.")
 
         # Excluir todas as pastas
         elif action == "excluir_todos_pastas":
             Pasta.objects.filter(projeto=projeto, pasta_pai=None).delete()
+            messages.success(request, "Todas as pastas da raiz foram excluídas.")
 
         # Upload de arquivo
         elif action == "upload_arquivo":
@@ -644,9 +664,7 @@ def repositorio_projeto(request, projeto_id):
                 nome_arquivo = sanitize_filename(
                     request.POST.get("nome_arquivo") or arquivo_file.name
                 )
-                if not Arquivo.objects.filter(
-                    nome=nome_arquivo, projeto=projeto, pasta=None
-                ).exists():
+                if not Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=None).exists():
                     pid, rtype, url = upload_para_cloudinary(
                         arquivo_file, f"projeto_{projeto.idprojeto}/{nome_arquivo}"
                     )
@@ -658,6 +676,9 @@ def repositorio_projeto(request, projeto_id):
                         projeto=projeto,
                         url=url,
                     )
+                    messages.success(request, f'Arquivo "{nome_arquivo}" enviado.')
+                else:
+                    messages.warning(request, f'O arquivo "{nome_arquivo}" já existe na raiz.')
 
         # Excluir arquivo individual
         elif action == "excluir_arquivo":
@@ -665,20 +686,24 @@ def repositorio_projeto(request, projeto_id):
             if arquivo_id:
                 arquivo = get_object_or_404(Arquivo, id=arquivo_id, projeto=projeto)
                 arquivo.delete()
+                messages.success(request, "Arquivo excluído.")
 
         # Excluir arquivos selecionados
         elif action == "excluir_arquivos_selecionados":
             ids = request.POST.getlist("arquivos_selecionados")
             if ids:
                 Arquivo.objects.filter(id__in=ids, projeto=projeto).delete()
+                messages.success(request, "Arquivos selecionados excluídos.")
 
         # Excluir todos os arquivos
         elif action == "excluir_todos_arquivos":
             Arquivo.objects.filter(projeto=projeto, pasta=None).delete()
+            messages.success(request, "Todos os arquivos da raiz foram excluídos.")
 
-        # Upload de pasta com arquivos
+        # Upload de pasta completa
         elif action == "upload_pasta":
             arquivos = request.FILES.getlist("arquivos")
+            enviados_count = 0
             for arquivo_file in arquivos:
                 caminho = getattr(arquivo_file, "webkitRelativePath", arquivo_file.name)
                 partes = caminho.split("/")
@@ -688,12 +713,10 @@ def repositorio_projeto(request, projeto_id):
                         nome=parte,
                         projeto=projeto,
                         pasta_pai=pasta_atual,
-                        criada_por=usuario,
+                        defaults={"criada_por": usuario},
                     )
                 nome_arquivo = sanitize_filename(partes[-1])
-                if not Arquivo.objects.filter(
-                    nome=nome_arquivo, projeto=projeto, pasta=pasta_atual
-                ).exists():
+                if not Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=pasta_atual).exists():
                     pid, rtype, url = upload_para_cloudinary(
                         arquivo_file,
                         f"projeto_{projeto.idprojeto}/{'/'.join([sanitize_filename(p) for p in partes])}",
@@ -707,10 +730,13 @@ def repositorio_projeto(request, projeto_id):
                         pasta=pasta_atual,
                         url=url,
                     )
+                    enviados_count += 1
+            if enviados_count > 0:
+                messages.success(request, f"{enviados_count} arquivo(s) enviado(s) com sucesso.")
 
         return redirect("repositorio_projeto", projeto_id=projeto.idprojeto)
 
-    # ================= LISTAGEM =================
+    # Listagem Raiz
     pastas = Pasta.objects.filter(projeto=projeto, pasta_pai=None)
     arquivos = Arquivo.objects.filter(projeto=projeto, pasta=None)
 
@@ -728,78 +754,79 @@ def repositorio_projeto(request, projeto_id):
     )
 
 
-# ---------- Repositório dentro de uma pasta ----------
+# ---------- Repositório dentro de uma subpasta ----------
 def repositorio_pasta(request, pasta_id):
     email = request.session.get("usuario_email")
     if not email:
         return redirect("login")
+
     usuario = get_object_or_404(Usuario, email=email)
     pasta_atual = get_object_or_404(Pasta, id=pasta_id)
     projeto = pasta_atual.projeto
     can_modify = usuario_pode_editar_projeto(usuario, projeto)
 
-    # Breadcrumb
+    # NAVEGAÇÃO BREADCRUMB
     path = []
     current = pasta_atual
     while current:
         path.insert(0, current)
         current = current.pasta_pai
 
-    if request.method == "POST" and can_modify:
+    if request.method == "POST":
+        if not can_modify:
+            messages.error(request, "Você não tem permissão para alterar esta pasta.")
+            return redirect("repositorio_pasta", pasta_id=pasta_atual.id)
+
         action = request.POST.get("action")
 
-        # ---------- Criar subpasta ----------
+        # Criar subpasta
         if action == "criar_pasta":
             nome_pasta = request.POST.get("nome_pasta", "").strip()
-            if (
-                nome_pasta
-                and not Pasta.objects.filter(
-                    nome=nome_pasta, projeto=projeto, pasta_pai=pasta_atual
-                ).exists()
-            ):
-                Pasta.objects.create(
-                    nome=nome_pasta,
-                    criada_por=usuario,
-                    projeto=projeto,
-                    pasta_pai=pasta_atual,
-                )
+            if nome_pasta:
+                if not Pasta.objects.filter(nome=nome_pasta, projeto=projeto, pasta_pai=pasta_atual).exists():
+                    Pasta.objects.create(
+                        nome=nome_pasta,
+                        criada_por=usuario,
+                        projeto=projeto,
+                        pasta_pai=pasta_atual,
+                    )
+                    messages.success(request, f'Subpasta "{nome_pasta}" criada.')
+                else:
+                    messages.warning(request, f'Já existe uma subpasta com o nome "{nome_pasta}".')
 
-        # ---------- Editar pasta ----------
+        # Editar subpasta
         elif action == "editar_pasta":
-            pasta_id = request.POST.get("pasta_id")
+            subpasta_id = request.POST.get("pasta_id")
             novo_nome = request.POST.get("novo_nome", "").strip()
-            if pasta_id and novo_nome:
-                subpasta = get_object_or_404(Pasta, id=pasta_id, projeto=projeto)
-                if subpasta.criada_por == usuario:
-                    subpasta.nome = novo_nome
-                    subpasta.save()
+            if subpasta_id and novo_nome:
+                subpasta = get_object_or_404(Pasta, id=subpasta_id, projeto=projeto)
+                subpasta.nome = novo_nome
+                subpasta.save()
+                messages.success(request, "Pasta renomeada com sucesso.")
 
-        # ---------- Excluir pasta individual ----------
+        # Excluir subpasta individual
         elif action == "excluir_pasta":
-            pasta_id = request.POST.get("pasta_id")
-            if pasta_id:
-                subpasta = get_object_or_404(Pasta, id=pasta_id, projeto=projeto)
-                if subpasta.criada_por == usuario:
-                    subpasta.delete()
+            subpasta_id = request.POST.get("pasta_id")
+            if subpasta_id:
+                subpasta = get_object_or_404(Pasta, id=subpasta_id, projeto=projeto)
+                subpasta.delete()
+                messages.success(request, "Pasta excluída.")
 
-        # ---------- Excluir pastas selecionadas ----------
+        # Excluir subpastas selecionadas
         elif action == "excluir_pastas_selecionadas":
             ids = request.POST.getlist("pastas_selecionadas")
-            for pasta_id in ids:
-                subpasta = get_object_or_404(Pasta, id=pasta_id, projeto=projeto)
-                if subpasta.criada_por == usuario:
-                    subpasta.delete()
+            if ids:
+                Pasta.objects.filter(id__in=ids, projeto=projeto).delete()
+                messages.success(request, "Subpastas selecionadas excluídas.")
 
-        # ---------- Upload de arquivo ----------
+        # Upload de arquivo na pasta atual
         elif action == "upload_arquivo":
             arquivo_file = request.FILES.get("arquivo")
             if arquivo_file:
                 nome_arquivo = sanitize_filename(
                     request.POST.get("nome_arquivo") or arquivo_file.name
                 )
-                if not Arquivo.objects.filter(
-                    nome=nome_arquivo, projeto=projeto, pasta=pasta_atual
-                ).exists():
+                if not Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=pasta_atual).exists():
                     pid, rtype, url = upload_para_cloudinary(
                         arquivo_file, f"projeto_{projeto.idprojeto}/{nome_arquivo}"
                     )
@@ -812,10 +839,14 @@ def repositorio_pasta(request, pasta_id):
                         pasta=pasta_atual,
                         url=url,
                     )
+                    messages.success(request, f'Arquivo "{nome_arquivo}" enviado.')
+                else:
+                    messages.warning(request, f'O arquivo "{nome_arquivo}" já existe nesta pasta.')
 
-        # ---------- Upload de pasta ----------
+        # Upload de pasta dentro da pasta atual
         elif action == "upload_pasta":
             arquivos = request.FILES.getlist("arquivos")
+            enviados_count = 0
             for arquivo_file in arquivos:
                 caminho = getattr(arquivo_file, "webkitRelativePath", arquivo_file.name)
                 partes = caminho.split("/")
@@ -825,12 +856,10 @@ def repositorio_pasta(request, pasta_id):
                         nome=parte,
                         projeto=projeto,
                         pasta_pai=pasta_corrente,
-                        criada_por=usuario,
+                        defaults={"criada_por": usuario},
                     )
                 nome_arquivo = sanitize_filename(partes[-1])
-                if not Arquivo.objects.filter(
-                    nome=nome_arquivo, projeto=projeto, pasta=pasta_corrente
-                ).exists():
+                if not Arquivo.objects.filter(nome=nome_arquivo, projeto=projeto, pasta=pasta_corrente).exists():
                     pid, rtype, url = upload_para_cloudinary(
                         arquivo_file,
                         f"projeto_{projeto.idprojeto}/{'/'.join([sanitize_filename(p) for p in partes])}",
@@ -844,30 +873,29 @@ def repositorio_pasta(request, pasta_id):
                         pasta=pasta_corrente,
                         url=url,
                     )
+                    enviados_count += 1
+            if enviados_count > 0:
+                messages.success(request, f"{enviados_count} arquivo(s) enviado(s) com sucesso.")
 
-        # ---------- Excluir arquivo individual ----------
+        # Excluir arquivo individual
         elif action == "excluir_arquivo":
             arquivo_id = request.POST.get("arquivo_id")
             if arquivo_id:
                 arquivo = get_object_or_404(
                     Arquivo, id=arquivo_id, projeto=projeto, pasta=pasta_atual
                 )
-                if arquivo.enviado_por == usuario:
-                    arquivo.delete()
+                arquivo.delete()
+                messages.success(request, "Arquivo excluído.")
 
-        # ---------- Excluir arquivos selecionados ----------
+        # Excluir arquivos selecionados
         elif action == "excluir_arquivos_selecionados":
             ids = request.POST.getlist("arquivos_selecionados")
-            for arquivo_id in ids:
-                arquivo = get_object_or_404(
-                    Arquivo, id=arquivo_id, projeto=projeto, pasta=pasta_atual
-                )
-                if arquivo.enviado_por == usuario:
-                    arquivo.delete()
+            if ids:
+                Arquivo.objects.filter(id__in=ids, projeto=projeto, pasta=pasta_atual).delete()
+                messages.success(request, "Arquivos selecionados excluídos.")
 
         return redirect("repositorio_pasta", pasta_id=pasta_atual.id)
 
-    # Listagem de subpastas e arquivos
     subpastas = Pasta.objects.filter(pasta_pai=pasta_atual)
     arquivos = Arquivo.objects.filter(pasta=pasta_atual)
 
@@ -963,14 +991,17 @@ def editar_evento(request, evento_id):
         'usuario': usuario
     })
 
+@require_http_methods(["DELETE", "POST"])
 def excluir_evento(request, evento_id):
     email = request.session.get('usuario_email')
     evento = get_object_or_404(Eventos, pk=evento_id)
     
-    # 🔥 SEGURANÇA: Só o dono exclui
-    if evento.usuario.email == email:
+    if evento.usuario and evento.usuario.email == email:
         evento.delete()
-    return redirect('calendario')
+        return JsonResponse({'message': 'Evento excluído com sucesso!'}, status=200)
+    
+    # Caso não seja o dono do evento
+    return JsonResponse({'message': 'Você não tem permissão para excluir este evento.'}, status=403)
 
 
 def forum_topicos(request, idforum):

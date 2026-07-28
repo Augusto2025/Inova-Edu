@@ -2,7 +2,8 @@
 console.log('Script do perfil carregado!');
 
 // Pegar o token CSRF
-const csrftoken = document.getElementById('csrf-token').value;
+const csrftokenElement = document.getElementById('csrf-token');
+const csrftoken = csrftokenElement ? csrftokenElement.value : '';
 
 // Configuração para requisições AJAX
 const headers = {
@@ -39,7 +40,25 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Funções do Perfil
+// Helper para travar/destravar botões durante requisições AJAX
+function setButtonLoading(btn, isLoading, loadingText = 'Salvar') {
+    if (!btn) return;
+    if (isLoading) {
+        btn.dataset.originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}...`;
+    } else {
+        btn.disabled = false;
+        if (btn.dataset.originalHtml) {
+            btn.innerHTML = btn.dataset.originalHtml;
+        }
+    }
+}
+
+// =========================
+// PERFIL
+// =========================
+
 function openProfileModal() {
     console.log('Abrindo modal de perfil');
     const modal = document.getElementById('profile-modal');
@@ -58,25 +77,23 @@ function closeProfileModal() {
 async function saveProfile() {
     console.log('=== saveProfile iniciado ===');
     
+    const btnSave = document.querySelector('#profile-modal .save-btn') || document.querySelector('#profile-modal button[type="submit"]');
+    if (btnSave && btnSave.disabled) return; // Evita duplo clique
+
     const nome = document.getElementById('edit-nome')?.value.trim();
     const sobrenome = document.getElementById('edit-sobrenome')?.value.trim();
     const bio = document.getElementById('edit-bio')?.value.trim();
 
-    console.log('Dados do formulário:', { nome, sobrenome, bio });
-
     if (!nome || !sobrenome) {
-        console.log('Erro: nome ou sobrenome vazio');
         showToast('Nome e sobrenome são obrigatórios!', 'error');
         return;
     }
 
+    setButtonLoading(btnSave, true, 'Salvando');
     showLoading();
 
     try {
         const url = '/api/atualizar-perfil/';
-        console.log('Fazendo POST para:', url);
-        console.log('Headers:', headers);
-        console.log('Body:', JSON.stringify({ nome, sobrenome, bio }));
         
         const response = await fetch(url, {
             method: 'POST',
@@ -88,24 +105,16 @@ async function saveProfile() {
             })
         });
 
-        console.log('Resposta status:', response.status);
-        console.log('Resposta headers:', response.headers);
-        
         const responseText = await response.text();
-        console.log('Resposta texto:', responseText);
         
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (e) {
             console.error('Erro ao parsear JSON:', e);
-            console.log('Resposta não é JSON válido');
             showToast('Erro no servidor. Verifique o console.', 'error');
-            hideLoading();
             return;
         }
-
-        console.log('Resposta data:', data);
 
         if (response.ok) {
             const profileName = document.getElementById('profile-name');
@@ -121,10 +130,9 @@ async function saveProfile() {
         }
     } catch (error) {
         console.error('Erro detalhado:', error);
-        console.log('Tipo do erro:', error.name);
-        console.log('Mensagem:', error.message);
         showToast('Erro ao salvar perfil. Tente novamente.', 'error');
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
@@ -132,46 +140,31 @@ async function saveProfile() {
 async function updateProfilePhoto(event) {
     console.log('=== updateProfilePhoto iniciado ===');
     
-    const file = event.target.files[0];
+    const fileInput = event.target;
+    const file = fileInput.files[0];
     
-    if (!file) {
-        console.log('Nenhum arquivo selecionado');
-        return;
-    }
-    
-    console.log('Arquivo selecionado:', {
-        nome: file.name,
-        tipo: file.type,
-        tamanho: file.size + ' bytes'
-    });
+    if (!file) return;
     
     if (!file.type.startsWith('image/')) {
-        console.log('Tipo de arquivo inválido:', file.type);
         showToast('Por favor, selecione uma imagem válida!', 'error');
+        fileInput.value = '';
         return;
     }
     
     if (file.size > 5 * 1024 * 1024) {
-        console.log('Arquivo muito grande:', file.size);
         showToast('A imagem deve ter no máximo 5MB!', 'error');
+        fileInput.value = '';
         return;
     }
 
     const formData = new FormData();
     formData.append('foto', file);
 
-    console.log('FormData criado');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-
+    fileInput.disabled = true;
     showLoading();
 
     try {
-        const url = '/api/upload-foto/';
-        console.log('Fazendo POST para:', url);
-        
-        const response = await fetch(url, {
+        const response = await fetch('/api/upload-foto/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken
@@ -179,31 +172,20 @@ async function updateProfilePhoto(event) {
             body: formData
         });
 
-        console.log('Resposta status:', response.status);
-        console.log('Resposta headers:', response.headers);
-        
         const responseText = await response.text();
-        console.log('Resposta texto:', responseText);
-        
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (e) {
             console.error('Erro ao parsear JSON:', e);
             showToast('Erro no servidor. Verifique o console.', 'error');
-            hideLoading();
             return;
         }
-
-        console.log('Resposta data:', data);
 
         if (response.ok) {
             const profilePhoto = document.getElementById('profile-photo');
             if (profilePhoto) profilePhoto.src = data.foto_url;
             showToast('Foto atualizada com sucesso!');
-            
-            // Limpar o input para poder selecionar o mesmo arquivo novamente
-            event.target.value = '';
         } else {
             showToast(data.message || 'Erro ao fazer upload da foto', 'error');
         }
@@ -211,39 +193,41 @@ async function updateProfilePhoto(event) {
         console.error('Erro detalhado:', error);
         showToast('Erro ao fazer upload da foto. Tente novamente.', 'error');
     } finally {
+        fileInput.disabled = false;
+        fileInput.value = ''; // Limpar input para poder re-selecionar o mesmo arquivo se quiser
         hideLoading();
     }
 }
 
+// =========================
+// CURSOS
+// =========================
 
-// Funções de Cursos
 let currentCursoId = null;
 
 function openCursoModal() {
-    console.log('Abrindo modal de curso');
     currentCursoId = null;
     const modalTitle = document.getElementById('curso-modal-title');
     if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Curso';
     
-    document.getElementById('curso-nome').value = '';
-    document.getElementById('curso-descricao').value = '';
-    document.getElementById('curso-data-inicio').value = '';
-    document.getElementById('curso-data-fim').value = '';
+    if (document.getElementById('curso-nome')) document.getElementById('curso-nome').value = '';
+    if (document.getElementById('curso-descricao')) document.getElementById('curso-descricao').value = '';
+    if (document.getElementById('curso-data-inicio')) document.getElementById('curso-data-inicio').value = '';
+    if (document.getElementById('curso-data-fim')) document.getElementById('curso-data-fim').value = '';
     
     const modal = document.getElementById('curso-modal');
     if (modal) modal.classList.add('active');
 }
 
 function openEditCursoModal(id, nome, descricao, dataInicio, dataFim) {
-    console.log('Abrindo modal de edição de curso:', id);
     currentCursoId = id;
     const modalTitle = document.getElementById('curso-modal-title');
     if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-edit"></i> Editar Curso';
     
-    document.getElementById('curso-nome').value = nome || '';
-    document.getElementById('curso-descricao').value = descricao || '';
-    document.getElementById('curso-data-inicio').value = dataInicio || '';
-    document.getElementById('curso-data-fim').value = dataFim || '';
+    if (document.getElementById('curso-nome')) document.getElementById('curso-nome').value = nome || '';
+    if (document.getElementById('curso-descricao')) document.getElementById('curso-descricao').value = descricao || '';
+    if (document.getElementById('curso-data-inicio')) document.getElementById('curso-data-inicio').value = dataInicio || '';
+    if (document.getElementById('curso-data-fim')) document.getElementById('curso-data-fim').value = dataFim || '';
     
     const modal = document.getElementById('curso-modal');
     if (modal) modal.classList.add('active');
@@ -256,6 +240,9 @@ function closeCursoModal() {
 }
 
 async function saveCurso() {
+    const btnSave = document.querySelector('#curso-modal .save-btn') || document.querySelector('#curso-modal button[type="submit"]');
+    if (btnSave && btnSave.disabled) return;
+
     const nome = document.getElementById('curso-nome')?.value.trim();
     const descricao = document.getElementById('curso-descricao')?.value.trim();
     const dataInicio = document.getElementById('curso-data-inicio')?.value;
@@ -266,6 +253,7 @@ async function saveCurso() {
         return;
     }
 
+    setButtonLoading(btnSave, true, 'Salvar');
     showLoading();
 
     try {
@@ -288,114 +276,88 @@ async function saveCurso() {
             showToast(currentCursoId ? 'Curso atualizado com sucesso!' : 'Curso adicionado com sucesso!');
             setTimeout(() => {
                 location.reload();
-            }, 1500);
+            }, 1200);
         } else {
             showToast(data.message || 'Erro ao salvar curso', 'error');
-            hideLoading();
         }
     } catch (error) {
         console.error('Erro:', error);
         showToast('Erro ao salvar curso. Tente novamente.', 'error');
-        hideLoading();
-    }
-}
-
-async function deleteCertificado(id) {
-
-    if (!confirm("Deseja excluir este certificado?")) return;
-
-    showLoading();
-
-    try {
-
-        const response = await fetch("/api/certificados/", {
-            method: "DELETE",
-            headers: headers,
-            body: JSON.stringify({
-                id: id
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            showToast("Certificado excluído!");
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            showToast(data.message || "Erro ao excluir", "error");
-        }
-
-    } catch (error) {
-        console.error(error);
-        showToast("Erro ao excluir certificado", "error");
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
-
-// Fechar modais com tecla ESC
 
 // =========================
 // CERTIFICADOS
 // =========================
 
 let currentCertificadoId = null;
+let certificadoParaExcluir = null;
 
 function openCertificadoModal() {
-
     currentCertificadoId = null;
 
-    document.getElementById("certificado-nome").value = "";
-    document.getElementById("certificado-descricao").value = "";
-    document.getElementById("certificado-data-inicio").value = "";
-    document.getElementById("certificado-data-fim").value = "";
+    if (document.getElementById("certificado-nome")) document.getElementById("certificado-nome").value = "";
+    if (document.getElementById("certificado-descricao")) document.getElementById("certificado-descricao").value = "";
+    if (document.getElementById("certificado-data-inicio")) document.getElementById("certificado-data-inicio").value = "";
+    if (document.getElementById("certificado-data-fim")) document.getElementById("certificado-data-fim").value = "";
 
-    document.getElementById("certificado-modal-title").innerHTML =
-        '<i class="fas fa-plus-circle"></i> Adicionar Certificado';
+    const titleElem = document.getElementById("certificado-modal-title");
+    if (titleElem) {
+        titleElem.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Certificado';
+    }
 
-    document.getElementById("certificado-modal").classList.add("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.add("active");
 }
 
 function closeCertificadoModal() {
-    document.getElementById("certificado-modal").classList.remove("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.remove("active");
 }
 
 function openEditCertificadoModal(id, nome, descricao, inicio, fim) {
-
     currentCertificadoId = id;
 
-    document.getElementById("certificado-nome").value = nome || "";
-    document.getElementById("certificado-descricao").value = descricao || "";
-    document.getElementById("certificado-data-inicio").value = inicio || "";
-    document.getElementById("certificado-data-fim").value = fim || "";
+    if (document.getElementById("certificado-nome")) document.getElementById("certificado-nome").value = nome || "";
+    if (document.getElementById("certificado-descricao")) document.getElementById("certificado-descricao").value = descricao || "";
+    if (document.getElementById("certificado-data-inicio")) document.getElementById("certificado-data-inicio").value = inicio || "";
+    if (document.getElementById("certificado-data-fim")) document.getElementById("certificado-data-fim").value = fim || "";
 
-    document.getElementById("certificado-modal-title").innerHTML =
-        '<i class="fas fa-edit"></i> Editar Certificado';
+    const titleElem = document.getElementById("certificado-modal-title");
+    if (titleElem) {
+        titleElem.innerHTML = '<i class="fas fa-edit"></i> Editar Certificado';
+    }
 
-    document.getElementById("certificado-modal").classList.add("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.add("active");
 }
 
 async function saveCertificado() {
+    const btnSave = document.querySelector('#certificado-modal .save-btn') || document.querySelector('#certificado-modal button[type="submit"]');
+    if (btnSave && btnSave.disabled) return;
 
-    const nome = document.getElementById("certificado-nome").value.trim();
-    const descricao = document.getElementById("certificado-descricao").value.trim();
-    const dataInicio = document.getElementById("certificado-data-inicio").value;
-    const dataFim = document.getElementById("certificado-data-fim").value;
+    const nome = document.getElementById("certificado-nome")?.value.trim();
+    const descricao = document.getElementById("certificado-descricao")?.value.trim();
+    const dataInicio = document.getElementById("certificado-data-inicio")?.value;
+    const dataFim = document.getElementById("certificado-data-fim")?.value;
 
     if (!nome) {
         showToast("Digite o nome do certificado", "error");
         return;
     }
 
+    setButtonLoading(btnSave, true, 'Salvando');
     showLoading();
 
     try {
-
         const response = await fetch("/api/certificados/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify({
-                id: currentCertificadoId,   // 👈 envia o ID se for edição
+                id: currentCertificadoId,
                 nome: nome,
                 descricao: descricao,
                 data_inicio: dataInicio,
@@ -408,35 +370,66 @@ async function saveCertificado() {
         if (response.ok) {
             showToast("Certificado salvo!");
             setTimeout(() => location.reload(), 1200);
+        } else {
+            showToast(data.message || "Erro ao salvar certificado", "error");
         }
 
     } catch (error) {
         console.error(error);
-        showToast("Erro ao salvar", "error");
+        showToast("Erro ao salvar certificado", "error");
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
 
-let certificadoParaExcluir = null;
-
 function openDeleteModal(id, nome) {
-
     certificadoParaExcluir = id;
+    const nameElem = document.getElementById("certificado-nome-delete");
+    if (nameElem) nameElem.innerText = nome;
 
-    document.getElementById("certificado-nome-delete").innerText = nome;
-
-    document.getElementById("confirm-delete-modal").style.display = "flex";
+    const modal = document.getElementById("confirm-delete-modal");
+    if (modal) modal.style.display = "flex";
 }
 
 function closeDeleteModal() {
-    document.getElementById("confirm-delete-modal").style.display = "none";
+    const modal = document.getElementById("confirm-delete-modal");
+    if (modal) modal.style.display = "none";
 }
 
-function confirmDeleteCertificado() {
+async function confirmDeleteCertificado() {
+    if (!certificadoParaExcluir) return;
 
-    deleteCertificado(certificadoParaExcluir);
+    const btnDelete = document.querySelector('#confirm-delete-modal .delete-btn') || document.querySelector('#confirm-delete-modal button[type="submit"]');
+    if (btnDelete && btnDelete.disabled) return;
 
-    closeDeleteModal();
+    setButtonLoading(btnDelete, true, 'Excluindo');
+    showLoading();
+
+    try {
+        const response = await fetch("/api/certificados/", {
+            method: "DELETE",
+            headers: headers,
+            body: JSON.stringify({
+                id: certificadoParaExcluir
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showToast("Certificado excluído!");
+            closeDeleteModal();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(data.message || "Erro ao excluir", "error");
+        }
+
+    } catch (error) {
+        console.error(error);
+        showToast("Erro ao excluir certificado", "error");
+    } finally {
+        setButtonLoading(btnDelete, false);
+        hideLoading();
+    }
 }
-

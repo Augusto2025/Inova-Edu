@@ -180,80 +180,87 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
-            <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+            <button type="button" class="close-btn" onclick="closeProfileModal()">&times;</button>
         </div>
 
         <div class="modal-body">
-            <div class="form-group">
-                <label>Nome</label>
-                <input type="text" id="edit-nome" value="{{ usuario.nome }}">
-            </div>
+            <form id="formEditarPerfil" onsubmit="event.preventDefault(); saveProfile();">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="edit-nome" value="{{ usuario.nome }}" required>
+                </div>
 
-            <div class="form-group">
-                <label>Sobrenome</label>
-                <input type="text" id="edit-sobrenome" value="{{ usuario.sobrenome }}">
-            </div>
+                <div class="form-group">
+                    <label>Sobrenome</label>
+                    <input type="text" name="sobrenome" id="edit-sobrenome" value="{{ usuario.sobrenome }}" required>
+                </div>
 
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea id="edit-bio">{{ usuario.descricao }}</textarea>
-            </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea name="descricao" id="edit-bio">{{ usuario.descricao }}</textarea>
+                </div>
+            </form>
         </div>
 
         <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
-            <button class="save-btn" onclick="saveProfile()">Salvar</button>
+            <button type="button" class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
+            <button type="button" onclick="saveProfile()" class="save-btn">Salvar</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL CERTIFICADO -->
+<!-- MODAL CERTIFICADO (CRIAR E EDITAR) -->
 <div class="modal" id="certificado-modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="certificado-modal-title">
                 <i class="fas fa-plus-circle"></i> Adicionar Certificado
             </h3>
-            <button class="close-btn" onclick="closeCertificadoModal()">&times;</button>
+            <button type="button" class="close-btn" onclick="closeCertificadoModal()">&times;</button>
         </div>
 
         <div class="modal-body">
-            <div class="form-group">
-                <label>Nome do Certificado</label>
-                <input type="text" id="certificado-nome">
-            </div>
+            <form id="formSalvarCertificado" onsubmit="event.preventDefault(); saveCertificado();">
+                <input type="hidden" name="id_certificado" id="certificado-id">
 
-            <div class="form-group">
-                <label>Descrição</label>
-                <textarea id="certificado-descricao"></textarea>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label>Data de início</label>
-                    <input type="date" id="certificado-data-inicio">
+                    <label>Nome do Certificado</label>
+                    <input type="text" name="nome" id="certificado-nome" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Data de término</label>
-                    <input type="date" id="certificado-data-fim">
+                    <label>Descrição</label>
+                    <textarea name="descricao" id="certificado-descricao"></textarea>
                 </div>
-            </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Data de início</label>
+                        <input type="date" name="data_inicio" id="certificado-data-inicio">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Data de término</label>
+                        <input type="date" name="data_fim" id="certificado-data-fim">
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeCertificadoModal()">Cancelar</button>
-            <button class="save-btn" onclick="saveCertificado()">Salvar</button>
+            <button type="button" class="cancel-btn" onclick="closeCertificadoModal()">Cancelar</button>
+            <button type="button" onclick="saveCertificado()" class="save-btn">Salvar</button>
         </div>
     </div>
 </div>
 
+<!-- MODAL CONFIRMAR EXCLUSÃO -->
 <div class="modal" id="confirm-delete-modal">
     <div class="modal-content">
 
         <div class="modal-header">
             <h3>⚠️ Confirmar Exclusão</h3>
-            <button onclick="closeDeleteModal()">&times;</button>
+            <button type="button" class="close-btn" onclick="closeDeleteModal()">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -268,11 +275,11 @@
         </div>
 
         <div class="modal-footer">
-            <button class="delete-btn" onclick="confirmDeleteCertificado()">
+            <button type="button" class="delete-btn" onclick="confirmDeleteCertificado()">
                 Excluir
             </button>
 
-            <button class="cancel-btn" onclick="closeDeleteModal()">
+            <button type="button" class="cancel-btn" onclick="closeDeleteModal()">
                 Cancelar
             </button>
         </div>
