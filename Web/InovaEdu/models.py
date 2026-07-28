@@ -279,7 +279,7 @@ class Arquivo(models.Model):
 
 class Certificado(models.Model):
     idcertificado = models.AutoField(db_column='idCertificado', primary_key=True)
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=30)
     descricao = models.CharField(max_length=150, blank=True, null=True)
     data_inicio = models.DateField(blank=True, null=True)
     data_final = models.DateField(blank=True, null=True)

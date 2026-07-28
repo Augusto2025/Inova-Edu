@@ -187,17 +187,17 @@
             <form id="formEditarPerfil" onsubmit="event.preventDefault(); saveProfile();">
                 <div class="form-group">
                     <label>Nome</label>
-                    <input type="text" name="nome" id="edit-nome" value="{{ usuario.nome }}" required>
+                    <input type="text" name="nome" id="edit-nome" value="{{ usuario.nome }}" maxlength="20" required>
                 </div>
 
                 <div class="form-group">
                     <label>Sobrenome</label>
-                    <input type="text" name="sobrenome" id="edit-sobrenome" value="{{ usuario.sobrenome }}" required>
+                    <input type="text" name="sobrenome" id="edit-sobrenome" value="{{ usuario.sobrenome }}" maxlength="20" required>
                 </div>
 
                 <div class="form-group">
                     <label>Bio</label>
-                    <textarea name="descricao" id="edit-bio">{{ usuario.descricao }}</textarea>
+                    <textarea maxlength="100" name="descricao" id="edit-bio">{{ usuario.descricao }}</textarea>
                 </div>
             </form>
         </div>
@@ -225,12 +225,12 @@
 
                 <div class="form-group">
                     <label>Nome do Certificado</label>
-                    <input type="text" name="nome" id="certificado-nome" required>
+                    <input type="text" name="nome" id="certificado-nome" maxlength="30" required>
                 </div>
 
                 <div class="form-group">
                     <label>Descrição</label>
-                    <textarea name="descricao" id="certificado-descricao"></textarea>
+                    <textarea name="descricao" id="certificado-descricao" maxlength="150"></textarea>
                 </div>
 
                 <div class="form-row">
