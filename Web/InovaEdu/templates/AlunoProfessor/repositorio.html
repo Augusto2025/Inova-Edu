@@ -178,10 +178,11 @@
         <div class="modal-body">
             <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="criar_pasta">
                 <input type="text" name="nome_pasta" required placeholder="Ex: Documentação">
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-criar-pasta')">Cancelar</button>
-                    <button type="submit" name="action" value="criar_pasta" class="btn-save">Criar</button>
+                    <button type="submit" class="btn-save">Criar</button>
                 </div>
             </form>
         </div>
@@ -200,10 +201,11 @@
         <div class="modal-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="upload_arquivo">
                 <input type="file" name="arquivo" required>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-upload')">Cancelar</button>
-                    <button type="submit" name="action" value="upload_arquivo" class="btn-save">Enviar</button>
+                    <button type="submit" class="btn-save">Enviar</button>
                 </div>
             </form>
         </div>
@@ -222,10 +224,11 @@
         <div class="modal-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="upload_pasta">
                 <input type="file" name="arquivos" webkitdirectory multiple required>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-upload-pasta')">Cancelar</button>
-                    <button type="submit" name="action" value="upload_pasta" class="btn-save">Enviar</button>
+                    <button type="submit" class="btn-save">Enviar</button>
                 </div>
             </form>
         </div>
@@ -244,11 +247,12 @@
         <div class="modal-body">
             <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="editar_pasta">
                 <input type="hidden" name="pasta_id" id="edit_pasta_id">
                 <input type="text" name="novo_nome" id="edit_nome_input" required>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="fecharModal('modal-edit-pasta')">Cancelar</button>
-                    <button type="submit" name="action" value="editar_pasta" class="btn-save">Salvar Alterações</button>
+                    <button type="submit" class="btn-save">Salvar Alterações</button>
                 </div>
             </form>
         </div>

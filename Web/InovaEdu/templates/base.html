@@ -23,7 +23,7 @@
     {% include "partials/chatbot.html" %}
   {% endblock %}
 
-  {% comment %} <!-- Coloque este script no base.html (antes do </body>) -->
+  <!-- Coloque este script no base.html (antes do </body>) -->
   <script>
     // Usamos delegação de eventos no document para capturar qualquer formulário enviado
     document.addEventListener('submit', function (e) {
@@ -68,6 +68,11 @@
         }
       });
     });
-  </script> {% endcomment %}
+    // Substitua o trecho de desabilitar por um setTimeout:
+    setTimeout(() => {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+    }, 10); // Executa 10ms depois do submit disparar
+  </script>
 </body>
 </html>

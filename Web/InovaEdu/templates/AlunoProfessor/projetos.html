@@ -131,7 +131,7 @@
                                 <span class="fechar">&times;</span>
                             </div>
 
-                            <form method="post" class="modal-form">
+                            <form method="post" class="modal-form form-permissoes-ajax">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="salvar_alunos_repositorio">
                                 <input type="hidden" name="projeto_id" value="{{ projeto.idprojeto }}">
@@ -277,75 +277,207 @@
     <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        const modalProjeto = document.getElementById('modalProjeto');
-        const modalExcluir = document.getElementById('modalExcluir');
+    // Elementos Globais dos Modais
+    const modalProjeto = document.getElementById('modalProjeto');
+    const modalExcluir = document.getElementById('modalExcluir');
 
-        // Cadastro de Projeto
-        const btnNovoProjeto = document.getElementById('abrirModalCadastro');
+    // Captura o Token CSRF do formulário ou dos cookies
+    function getCsrfToken(form) {
+        let token = form ? form.querySelector('[name=csrfmiddlewaretoken]')?.value : null;
+        if (!token) {
+            const name = 'csrftoken=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(name) === 0) {
+                    token = c.substring(name.length, c.length);
+                    break;
+                }
+            }
+        }
+        return token || '';
+    }
 
-        if (btnNovoProjeto) {
-            btnNovoProjeto.addEventListener('click', () => {
-                document.getElementById('modalTitle').innerText = 'Cadastrar Projeto';
-                document.getElementById('actionInput').value = 'cadastrar_projeto';
-                document.getElementById('formProjeto').reset();
-                modalProjeto.style.display = 'flex';
-            });
+    // Função auxiliar para exibir notificações (Toast com fallback para Alert)
+    function exibirNotificacao(mensagem, tipo = 'success') {
+        if (typeof showToast === 'function') {
+            showToast(mensagem, tipo);
+        } else {
+            alert(tipo === 'error' ? '⚠️ ' + mensagem : '✅ ' + mensagem);
+        }
+    }
+
+    // ====================================================
+    // 1. MODAIS: ABRIR E PREENCHER
+    // ====================================================
+
+    // Cadastrar Projeto
+    const btnNovoProjeto = document.getElementById('abrirModalCadastro');
+    if (btnNovoProjeto) {
+        btnNovoProjeto.addEventListener('click', () => {
+            const titleEl = document.getElementById('modalTitle');
+            const actionInput = document.getElementById('actionInput');
+            const formProjeto = document.getElementById('formProjeto');
+
+            if (titleEl) titleEl.innerText = 'Cadastrar Projeto';
+            if (actionInput) actionInput.value = 'cadastrar_projeto';
+            if (formProjeto) formProjeto.reset();
+            if (modalProjeto) modalProjeto.style.display = 'flex';
+        });
+    }
+
+    // Editar Projeto
+    document.querySelectorAll('.editarBtn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const titleEl = document.getElementById('modalTitle');
+            const actionInput = document.getElementById('actionInput');
+            const idInput = document.getElementById('projetoIdInput');
+            const nomeInput = document.getElementById('nomeProjetoInput');
+            const descInput = document.getElementById('descricaoInput');
+
+            if (titleEl) titleEl.innerText = 'Editar Projeto';
+            if (actionInput) actionInput.value = 'editar_projeto';
+            if (idInput) idInput.value = this.dataset.id || '';
+            if (nomeInput) nomeInput.value = this.dataset.nome || '';
+            if (descInput) descInput.value = this.dataset.descricao || '';
+
+            if (modalProjeto) modalProjeto.style.display = 'flex';
+        });
+    });
+
+    // Excluir Projeto
+    document.querySelectorAll('.btn-excluir').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const idExcluir = document.getElementById('projetoIdExcluir');
+            const nomeExcluir = document.getElementById('nomeProjetoExcluir');
+
+            if (idExcluir) idExcluir.value = this.dataset.id || '';
+            if (nomeExcluir) nomeExcluir.textContent = this.dataset.nome || '';
+
+            if (modalExcluir) modalExcluir.style.display = 'flex';
+        });
+    });
+
+    // Gerenciar Permissões
+    document.querySelectorAll('.btn-gerenciar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const modalId = this.dataset.modal;
+            if (modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.style.display = 'flex';
+            }
+        });
+    });
+
+    // ====================================================
+    // 2. SALVAR PERMISSÕES VIA AJAX (VERSÃO BLINDADA)
+    // ====================================================
+    document.addEventListener('submit', async function (e) {
+        const form = e.target;
+
+        if (!form.classList.contains('form-permissoes-ajax')) return;
+
+        e.preventDefault();
+
+        let btnSubmit = e.submitter || 
+                        form.querySelector('button[type="submit"], input[type="submit"]') || 
+                        (form.id ? document.querySelector(`button[type="submit"][form="${form.id}"], input[type="submit"][form="${form.id}"]`) : null);
+
+        if (btnSubmit && btnSubmit.disabled) return;
+
+        const originalHTML = btnSubmit ? btnSubmit.innerHTML : '';
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
         }
 
-        // Permissões
-        document.querySelectorAll('.btn-gerenciar').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const modalId = this.dataset.modal;
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.style.display = 'flex';
+        const csrfInput = form.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfInput ? csrfInput.value : '';
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-        });
 
-        // Editar Projeto
-        document.querySelectorAll('.editarBtn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.getElementById('modalTitle').innerText = 'Editar Projeto';
-                document.getElementById('actionInput').value = 'editar_projeto';
-                document.getElementById('projetoIdInput').value = this.dataset.id;
-                document.getElementById('nomeProjetoInput').value = this.dataset.nome;
-                document.getElementById('descricaoInput').value = this.dataset.descricao;
-                modalProjeto.style.display = 'flex';
-            });
-        });
+            const data = await response.json();
 
-        // Excluir Projeto
-        document.querySelectorAll('.btn-excluir').forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.getElementById('projetoIdExcluir').value = this.dataset.id;
-                document.getElementById('nomeProjetoExcluir').textContent = this.dataset.nome;
-                if (modalExcluir) {
-                    modalExcluir.style.display = 'flex';
+            if (response.ok && data.success) {
+                if (typeof exibirNotificacao === 'function') {
+                    exibirNotificacao(data.message || 'Permissões salvas com sucesso!', 'success');
+                } else {
+                    alert(data.message || 'Permissões salvas com sucesso!');
                 }
-            });
-        });
 
-        // Fechar modais ao clicar no 'X' ou em botões com a classe .fechar
-        document.querySelectorAll('.fechar').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const modal = this.closest('.modal');
-                if (modal) {
-                    modal.style.display = 'none';
+                const modalParent = form.closest('.modal') || (btnSubmit ? btnSubmit.closest('.modal') : null);
+                if (modalParent) {
+                    modalParent.style.display = 'none';
                 }
-            });
-        });
-
-        // Clique fora do modal
-        window.addEventListener('click', function (e) {
-            document.querySelectorAll('.modal').forEach(modal => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
+            } else {
+                const msgErro = data.message || `Erro do servidor (Código ${response.status})`;
+                if (typeof exibirNotificacao === 'function') {
+                    exibirNotificacao(msgErro, 'error');
+                } else {
+                    alert(msgErro);
                 }
-            });
-        });
-
+            }
+        } catch (error) {
+            if (typeof exibirNotificacao === 'function') {
+                exibirNotificacao('Erro de conexão ou falha ao processar resposta.', 'error');
+            } else {
+                alert('Erro de conexão ou falha ao processar resposta.');
+            }
+        } finally {
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = originalHTML;
+            }
+        }
     });
+
+    // ====================================================
+    // 3. PADRONIZAÇÃO DOS OUTROS FORMULÁRIOS TRADICIONAIS
+    // ====================================================
+    // Mostra "Processando..." também nos formulários normais (Cadastrar, Editar, Excluir)
+    document.querySelectorAll('form:not(.form-permissoes-ajax)').forEach(form => {
+        form.addEventListener('submit', function () {
+            const btnSubmit = this.querySelector('button[type="submit"]');
+            if (btnSubmit && !btnSubmit.disabled) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = 'Processando...';
+            }
+        });
+    });
+
+    // ====================================================
+    // 4. FECHAR MODAIS (BOTÕES E CLIQUE FORA)
+    // ====================================================
+
+    // Fechar ao clicar no 'X' ou em botões de cancelar
+    document.querySelectorAll('.fechar, .btn-cancelar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const modal = this.closest('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    // Fechar ao clicar no fundo escuro (overlay do modal)
+    window.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+
+});
     </script>
 
 {% endblock %}
