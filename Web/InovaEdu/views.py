@@ -48,7 +48,7 @@ def login(request):
         # pegando pelo email
         request.session["usuario_email"] = usuario.email
         if usuario.tipo == "Coordenador":
-            return redirect("home_Coordenacao")
+            return redirect("HomeCoord")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
             return redirect("home_aluno_professor")
     # se ele não for, ele manda um erro e volta pro login
@@ -1310,9 +1310,22 @@ def criar_evento(request):
 
 
 # ================ TELAS COORDENAÇÃO ====================
+
 def HomeCoord(request):
-    print("ENTROU NA VIEW HomeCoord")
-    return render(request, "Coordenacao/HomeCoord.html")
+
+    total_usuarios = Usuario.objects.count()
+    total_cursos = Curso.objects.count()
+    total_turmas = Turma.objects.count()
+
+    context = {
+        "total_usuarios": total_usuarios,
+        "total_cursos": total_cursos,
+        "total_turmas": total_turmas,
+    }
+
+    return render(request, "Coordenacao/HomeCoord.html", context)
+
+
 
 
 def UsuarioCoord(request):
@@ -1646,216 +1659,10 @@ def excluir_turma(request, idturma):
 
 
 
-def home_Coordenacao(request):
-    email_sessao = request.session.get("usuario_email")
-
-    if not email_sessao:
-        return redirect("login")
-
-    usuario_logado = get_object_or_404(Usuario, email=email_sessao)
-
-    usuarios = Usuario.objects.all()
-    cursos = Curso.objects.all()
-    turmas = Turma.objects.select_related('curso').all()
-    
-    professores = Usuario.objects.filter(tipo__iexact="Professor")
-    
-  
-    #dashoard total de usuários, cursos e turmas
-    
-    total_usuarios = usuarios.count()
-    total_cursos = cursos.count()  
-    total_turmas = turmas.count()
-    
-    
-   
-
-    if request.method == "POST":
-        print(request.POST)
-        acao = request.POST.get("acao")
-
-        # EDITAR PERFIL ==========================
-        if acao == "editar_perfil":
-            usuario_logado.nome = request.POST.get("nome")
-            usuario_logado.sobrenome = request.POST.get("sobrenome")
-            usuario_logado.email = request.POST.get("email")
-            usuario_logado.descricao = request.POST.get("descricao")
-
-            if request.FILES.get("imagem"):
-                usuario_logado.imagem = request.FILES.get("imagem")
-
-            usuario_logado.save()
-            return redirect("home_Coordenacao")
-
-        #  CADASTRAR USUÁRIO ==========================
-
-        if acao == "cadastrar_usuario":
-            Usuario.objects.create(
-                nome=request.POST.get("nome"),
-                sobrenome=request.POST.get("sobrenome"),
-                email=request.POST.get("email"),
-                senha=request.POST.get("senha"),
-                descricao=request.POST.get("descricao"),
-                tipo=request.POST.get("tipoCadastro"),
-                imagem=request.FILES.get("imagem"),
-            )
-
-            messages.success(request, "Usuário cadastrado com sucesso!")
-            return redirect('home_Coordenacao')
-        
-        
-
-    return render(request, 'Coordenacao/home_Coordenacao.html', {
-        'usuarios': usuarios,
-        'professores': professores,
-        'cursos': cursos,
-        'turmas': turmas,
-        'usuario_logado': usuario_logado,
-        
-        'total_usuarios': total_usuarios,
-        'total_cursos': total_cursos,  
-        'total_turmas': total_turmas,
-    })
-
-
-
-
-
-
-def listar_alunos(request):
-    alunos = Usuario.objects.filter(tipo__in=['Aluno', 'Professor'])
-
-    data = [
-        {
-            "id": aluno.idusuario,
-            "nome": aluno.nome,
-            "sobrenome": aluno.sobrenome
-        }
-        for aluno in alunos
-    ]
-
-    return JsonResponse(data, safe=False)
-
-
-def salvar_alunos_turma(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-
-            turma_id = data.get("turma")
-            alunos_ids = data.get("alunos", [])
-
-            turma = Turma.objects.get(idturma=turma_id)
-
-            # 🔥 remove todos vínculos antigos
-            UsuarioDaTurma.objects.filter(id_turma=turma).delete()
-
-            for aluno_id in alunos_ids:
-                try:
-                    aluno = Usuario.objects.get(idusuario=aluno_id)
-
-                    if aluno.tipo.lower() in ["aluno", "professor"]:
-                        UsuarioDaTurma.objects.create(
-                            id_usuario=aluno,
-                            id_turma=turma
-                        )
-
-                except Usuario.DoesNotExist:
-                    continue
-
-            return JsonResponse({"status": "ok"})
-
-        except Exception as e:
-            return JsonResponse({"status": "erro", "msg": str(e)})
-
-
-
-
-
- 
-
 
 def homePage(request):
     return render(request, "homePage.html")
 
 
-
-
-
-
-
-# CURSO
-
-
-# def criar_curso(request):
-#     if request.method == "POST":
-
-#         email_usuario = request.session.get("usuario_email")
-#         if not email_usuario:
-#             return redirect("login")
-
-#         try:
-#             usuario = Usuario.objects.get(email=email_usuario)
-#         except Usuario.DoesNotExist:
-#             return redirect("login")
-
-#         Curso.objects.create(
-#             nome_curso=request.POST.get("nome_curso"),
-#             descricao_curso=request.POST.get("descricao_curso"),
-#             data_inicio=request.POST.get("data_inicio"),
-#             data_final=request.POST.get("data_final"),
-#             imagem=request.FILES.get("imagem"),
-#             usuario=usuario,
-#         )
-
-#         return redirect("home_Coordenacao")
-
-
-
-
-
-# def excluir_curso(request, idcurso):
-#     if request.method == "POST":
-#         curso = get_object_or_404(Curso, idcurso=idcurso)
-#         curso.delete()
-#         return redirect(request.META.get("HTTP_REFERER", "home_Coordenacao"))
-
-
-# TURMA
-
-
-
-
-
-
-
-
-
-def lista_curso(request):
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
-
-
-
-
-
-
-
-
-
-
 # NOVO VISUAL DA COORDENAÇÃO=================
 
-def HomeCoord(request):
-
-    total_usuarios = Usuario.objects.count()
-    total_cursos = Curso.objects.count()
-    total_turmas = Turma.objects.count()
-
-    context = {
-        "total_usuarios": total_usuarios,
-        "total_cursos": total_cursos,
-        "total_turmas": total_turmas,
-    }
-
-    return render(request, "Coordenacao/HomeCoord.html", context)
