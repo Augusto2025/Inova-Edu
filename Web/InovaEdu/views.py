@@ -600,6 +600,8 @@ def download_repositorio_projeto(request, projeto_id):
 
 # ---------- Repositório do projeto (Raiz) ----------
 def repositorio_projeto(request, projeto_id):
+    # teste de erro 500
+    # raise Exception("Testando a página de erro 500!")
     email = request.session.get("usuario_email")
     if not email:
         return redirect("login")

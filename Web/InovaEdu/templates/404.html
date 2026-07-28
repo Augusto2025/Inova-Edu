@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+    
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .btn-primary{
+            background-color: var(--azul-Senac);
+            color: var(--branco-Senac);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <div class="container" style="text-align: center; margin: 10% 0;">
+        <div style="font-size: 4rem; color: #f39c12; margin-bottom: 20px;">
+            <i class="fa-solid fa-compass"></i>
+        </div>
+        
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">404 - Página Não Encontrada</h1>
+        <p style="color: #666; font-size: 1.1rem; max-width: 500px; margin: 0 auto 30px auto;">
+            A página ou diretório que você tentou acessar não existe ou foi movido.
+        </p>
+
+        <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
+            <i class="fa-solid fa-house"></i> Voltar para a home
+        </a>
+    </div>
+
+{% include "partials/footer.html" %}
+{% endblock %}
