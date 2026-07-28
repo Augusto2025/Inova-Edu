@@ -72,7 +72,7 @@
           <i class="fa-solid fa-calendar-check header-icon"></i>
           <h2 id="modal-nome">Detalhes do Evento</h2>
         </div>
-        <button type="button" class="modal-close">&times;</button>
+        <button type="button" class="modal-close" onclick="closeEventModal()">&times;</button>
       </div>
 
       <!-- Corpo Branco com Ícones nos Rótulos -->
@@ -109,12 +109,12 @@
 
         <!-- Botões de Ação com Ícones -->
         <div id="modal-footer-btns" class="modal-footer hidden">
-          <button id="btn-editar-evento" class="btn-modal btn-edit">
+          <button type="button" id="btn-editar-evento" class="btn-modal btn-edit" onclick="openEditEventModal()">
             <i class="fa-solid fa-pen-to-square"></i> Editar
           </button>
-          <a id="btn-excluir-evento" href="#" class="btn-modal btn-delete" onclick="return confirm('Tem certeza que deseja excluir este evento?')">
+          <button type="button" id="btn-excluir-evento" class="btn-modal btn-delete" onclick="confirmDeleteEvent()">
             <i class="fa-solid fa-trash-can"></i> Excluir
-          </a>
+          </button>
         </div>
       </div>
 

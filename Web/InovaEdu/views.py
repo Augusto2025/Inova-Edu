@@ -17,7 +17,7 @@ import io
 import zipfile
 import requests
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -273,41 +273,6 @@ def upload_foto(request):
         return JsonResponse({"message": str(e)}, status=500)
 
 
-@require_GET
-def listar_projetos_ajax(request):
-    email = request.session.get("usuario_email")
-
-    if not email:
-        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
-
-    try:
-        usuario = Usuario.objects.get(email=email)
-    except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
-
-    projetos = Projeto.objects.filter(alunos=usuario).select_related("turma")
-
-    lista_projetos = []
-
-    for projeto in projetos:
-        lista_projetos.append(
-            {
-                "id": projeto.id,
-                "titulo": projeto.titulo,
-                "descricao": projeto.descricao,
-                "turma": projeto.turma.nome if projeto.turma else None,
-                "data_criacao": (
-                    projeto.data_criacao.strftime("%d/%m/%Y")
-                    if hasattr(projeto, "data_criacao")
-                    else None
-                ),
-            }
-        )
-
-    return JsonResponse({"projetos": lista_projetos})
-
-
-
 def salvar_certificado(request):
 
     email = request.session.get("usuario_email")
@@ -422,6 +387,38 @@ def turmas(request, curso_id):
         },
     )
 
+@require_GET
+def listar_projetos_ajax(request):
+    email = request.session.get("usuario_email")
+
+    if not email:
+        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+
+    projetos = Projeto.objects.filter(alunos=usuario).select_related("turma")
+
+    lista_projetos = []
+
+    for projeto in projetos:
+        lista_projetos.append(
+            {
+                "id": projeto.id,
+                "titulo": projeto.titulo,
+                "descricao": projeto.descricao,
+                "turma": projeto.turma.nome if projeto.turma else None,
+                "data_criacao": (
+                    projeto.data_criacao.strftime("%d/%m/%Y")
+                    if hasattr(projeto, "data_criacao")
+                    else None
+                ),
+            }
+        )
+
+    return JsonResponse({"projetos": lista_projetos})
 
 # checagens futuras de permissão para editar o projeto (não funciona)
 def usuario_pode_editar_projeto(usuario, projeto):
@@ -963,14 +960,17 @@ def editar_evento(request, evento_id):
         'usuario': usuario
     })
 
+@require_http_methods(["DELETE", "POST"])
 def excluir_evento(request, evento_id):
     email = request.session.get('usuario_email')
     evento = get_object_or_404(Eventos, pk=evento_id)
     
-    # 🔥 SEGURANÇA: Só o dono exclui
-    if evento.usuario.email == email:
+    if evento.usuario and evento.usuario.email == email:
         evento.delete()
-    return redirect('calendario')
+        return JsonResponse({'message': 'Evento excluído com sucesso!'}, status=200)
+    
+    # Caso não seja o dono do evento
+    return JsonResponse({'message': 'Você não tem permissão para excluir este evento.'}, status=403)
 
 
 def forum_topicos(request, idforum):
