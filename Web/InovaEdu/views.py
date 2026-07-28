@@ -1514,6 +1514,8 @@ def criar_turma(request):
             curso=curso,
             professor=professor,
         )
+        
+        messages.success(request, "Turma cadastrada com sucesso!")
 
         return redirect("TurmaCoord")
 
