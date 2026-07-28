@@ -23,6 +23,14 @@ export default function ForumScreen({ navigation }) {
   // 🆕 Sabe se quem está logado é Professor, pra liberar editar/apagar de qualquer fórum (moderação)
   const [ehModerador, setEhModerador] = useState(false);
 
+  // 🆕 Modo de seleção múltipla, pra marcar vários fóruns e apagar de uma vez
+  const [modoSelecao, setModoSelecao] = useState(false);
+  const [selecionados, setSelecionados] = useState([]);
+  const [apagandoSelecionados, setApagandoSelecionados] = useState(false);
+
+  // 🆕 Filtro para mostrar só os fóruns que o usuário logado criou
+  const [filtro, setFiltro] = useState('todos'); // 'todos' | 'meus'
+
   // ==========================================
   // 1. CARREGAR DADOS INICIAIS (GETS)
   // ==========================================
@@ -114,7 +122,7 @@ export default function ForumScreen({ navigation }) {
   };
 
   // ==========================================
-  // 3. ELIMINAR DO BACKEND (DELETE)
+  // 3. ELIMINAR DO BACKEND (DELETE) - individual
   // ==========================================
   const eliminarTopico = (id) => {
     Alert.alert(
@@ -152,6 +160,110 @@ export default function ForumScreen({ navigation }) {
     );
   };
 
+  // ==========================================
+  // 3b. SELEÇÃO MÚLTIPLA
+  // ==========================================
+  const entrarModoSelecao = (idInicial) => {
+    setModoSelecao(true);
+    setSelecionados(idInicial ? [idInicial] : []);
+  };
+
+  const cancelarSelecao = () => {
+    setModoSelecao(false);
+    setSelecionados([]);
+  };
+
+  const alternarSelecionado = (item) => {
+    const podeGerenciar = item.usuarioIdCriador === usuarioLogadoId || ehModerador;
+    if (!podeGerenciar) {
+      Alert.alert("Ação Negada", "Você não tem permissão para apagar este fórum.");
+      return;
+    }
+
+    setSelecionados((atual) => {
+      if (atual.includes(item.id)) {
+        return atual.filter((id) => id !== item.id);
+      }
+      return [...atual, item.id];
+    });
+  };
+
+  // 🆕 Aplica o filtro escolhido (Todos / Meus fóruns) antes de qualquer outra lógica de exibição
+  const topicosFiltrados = filtro === 'meus'
+    ? topicos.filter((item) => item.usuarioIdCriador === usuarioLogadoId)
+    : topicos;
+
+  // 🆕 Marca ou desmarca todos os fóruns visíveis (já filtrados) que o usuário pode gerenciar (dono ou moderador)
+  const idsGerenciaveis = topicosFiltrados
+    .filter((item) => item.usuarioIdCriador === usuarioLogadoId || ehModerador)
+    .map((item) => item.id);
+
+  const todosSelecionados = idsGerenciaveis.length > 0 && idsGerenciaveis.every((id) => selecionados.includes(id));
+
+  const alternarSelecionarTodos = () => {
+    if (todosSelecionados) {
+      setSelecionados([]);
+    } else {
+      setSelecionados(idsGerenciaveis);
+    }
+  };
+
+  const eliminarSelecionados = () => {
+    if (selecionados.length === 0) return;
+
+    Alert.alert(
+      "Confirmar Exclusão",
+      `Tem certeza que deseja apagar ${selecionados.length} fórum(ns)? Todos os tópicos dentro deles também serão apagados.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Apagar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setApagandoSelecionados(true);
+
+              const resultados = await Promise.allSettled(
+                selecionados.map((id) =>
+                  fetch(`${URL_FORUM}/${id}`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuarioId: usuarioLogadoId }),
+                  }).then((r) => {
+                    if (!r.ok) throw new Error(`Falha ao apagar fórum ${id}`);
+                    return id;
+                  })
+                )
+              );
+
+              const apagadosComSucesso = resultados
+                .filter((r) => r.status === "fulfilled")
+                .map((r) => r.value);
+              const falhas = resultados.filter((r) => r.status === "rejected").length;
+
+              setTopicos((atual) => atual.filter((item) => !apagadosComSucesso.includes(item.id)));
+              cancelarSelecao();
+
+              if (falhas > 0) {
+                Alert.alert(
+                  "Concluído com erros",
+                  `${apagadosComSucesso.length} fórum(ns) apagado(s). ${falhas} não puderam ser apagados (permissão ou erro no servidor).`
+                );
+              } else {
+                Alert.alert("Sucesso", `${apagadosComSucesso.length} fórum(ns) apagado(s) com sucesso!`);
+              }
+            } catch (error) {
+              console.error("Erro ao apagar selecionados:", error);
+              Alert.alert("Erro", "Não foi possível apagar os fóruns selecionados.");
+            } finally {
+              setApagandoSelecionados(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const fecharModal = () => setModal({ visible: false, modo: "Criar", titulo: "", id: null });
 
   return (
@@ -159,24 +271,101 @@ export default function ForumScreen({ navigation }) {
       <Header nomeTela={"Forum"} />
       <BarraPesquisa />
 
+      {/* 🆕 Filtro: Todos os fóruns ou só os que eu criei */}
+      {!carregando && topicos.length > 0 && !modoSelecao && (
+        <View style={styles.filtroRow}>
+          <TouchableOpacity
+            style={[styles.filtroBtn, filtro === 'todos' && { backgroundColor: COLORS.primary }]}
+            onPress={() => setFiltro('todos')}
+          >
+            <Text style={[styles.filtroBtnTexto, filtro === 'todos' && styles.filtroBtnTextoAtivo, { fontSize: 13 * fontSizeScale }]}>
+              Todos
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filtroBtn, filtro === 'meus' && { backgroundColor: COLORS.primary }]}
+            onPress={() => setFiltro('meus')}
+          >
+            <Text style={[styles.filtroBtnTexto, filtro === 'meus' && styles.filtroBtnTextoAtivo, { fontSize: 13 * fontSizeScale }]}>
+              Meus fóruns
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* 🆕 Barra de ações da seleção múltipla */}
+      {!carregando && topicos.length > 0 && (
+        <View style={styles.selecaoBarRow}>
+          {modoSelecao ? (
+            <>
+              <Text style={[styles.selecaoContagem, { color: theme.text, fontSize: 13 * fontSizeScale }]}>
+                {selecionados.length} selecionado(s)
+              </Text>
+              <View style={{ flexDirection: "row", gap: 16 }}>
+                <TouchableOpacity onPress={alternarSelecionarTodos}>
+                  <Text style={[styles.selecaoAcaoTexto, { fontSize: 13 * fontSizeScale }]}>
+                    {todosSelecionados ? "Desmarcar todos" : "Selecionar todos"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={cancelarSelecao}>
+                  <Text style={[styles.selecaoAcaoTexto, { fontSize: 13 * fontSizeScale }]}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <TouchableOpacity onPress={() => entrarModoSelecao(null)}>
+              <Text style={[styles.selecaoAcaoTexto, { fontSize: 13 * fontSizeScale }]}>Selecionar fóruns</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       {carregando ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={theme.primary} />
           <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>Carregando fórum...</Text>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {topicos.map((item) => {
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: modoSelecao ? 90 : 0 }}>
+          {topicosFiltrados.length === 0 ? (
+            <View style={{ marginTop: 40, alignItems: 'center', paddingHorizontal: 20 }}>
+              <Text style={{ color: theme.text, opacity: 0.6, textAlign: 'center', fontSize: 13 * fontSizeScale }}>
+                Você ainda não criou nenhum fórum.
+              </Text>
+            </View>
+          ) : topicosFiltrados.map((item) => {
             // 🆕 Mostra editar/apagar se for o dono OU se for professor (moderador)
             const podeGerenciar = item.usuarioIdCriador === usuarioLogadoId || ehModerador;
+            const estaSelecionado = selecionados.includes(item.id);
 
             return (
               <TouchableOpacity 
                 key={item.id} 
                 // Card usa cor do tema (card)
-                style={[styles.card, { backgroundColor: theme.card }]} 
-                onPress={() => navigation.navigate("Titulo", { topico: item })}
+                style={[styles.card, { backgroundColor: theme.card }, modoSelecao && estaSelecionado && { borderWidth: 2, borderColor: COLORS.primary }]} 
+                activeOpacity={0.8}
+                onPress={() => {
+                  if (modoSelecao) {
+                    alternarSelecionado(item);
+                  } else {
+                    navigation.navigate("Titulo", { topico: item });
+                  }
+                }}
+                onLongPress={() => {
+                  if (!modoSelecao) entrarModoSelecao(item.id);
+                }}
               >
+                {/* 🆕 Checkbox de seleção, só quando o modo seleção está ativo */}
+                {modoSelecao && (
+                  <View style={styles.checkboxWrap}>
+                    <Ionicons 
+                      name={estaSelecionado ? "checkmark-circle" : "ellipse-outline"} 
+                      size={22} 
+                      color={podeGerenciar ? (estaSelecionado ? COLORS.primary : "#94A3B8") : "#CBD5E1"} 
+                    />
+                  </View>
+                )}
+
                 <View style={[styles.iconBox, { backgroundColor: item.cor }]}><Ionicons name="chatbubble-ellipses" size={22} color="#fff" /></View>
                 <View style={styles.content}>
                   <View style={styles.topRow}>
@@ -196,7 +385,7 @@ export default function ForumScreen({ navigation }) {
                       </View>
                     </View>
 
-                    {podeGerenciar && (
+                    {!modoSelecao && podeGerenciar && (
                       <View style={styles.actions}>
                         <TouchableOpacity style={styles.editButton} onPress={() => setModal({ visible: true, modo: "Editar", titulo: item.titulo, id: item.id })}><Feather name="edit-2" size={16} color="#5B5EF7" /></TouchableOpacity>
                         <TouchableOpacity style={styles.deleteButton} onPress={() => eliminarTopico(item.id)}><MaterialIcons name="delete-outline" size={18} color="#FF6B6B" /></TouchableOpacity>
@@ -210,7 +399,29 @@ export default function ForumScreen({ navigation }) {
         </ScrollView>
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", id: null })}><Ionicons name="add" size={28} color="#fff" /></TouchableOpacity>
+      {/* 🆕 Barra fixa embaixo com a ação de apagar selecionados */}
+      {modoSelecao && selecionados.length > 0 && (
+        <View style={[styles.barraInferior, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
+          <TouchableOpacity 
+            style={[styles.apagarSelecionadosBtn, apagandoSelecionados && { opacity: 0.6 }]} 
+            onPress={eliminarSelecionados}
+            disabled={apagandoSelecionados}
+          >
+            {apagandoSelecionados ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <MaterialIcons name="delete-outline" size={20} color="#fff" />
+                <Text style={styles.apagarSelecionadosTexto}>Apagar {selecionados.length} selecionado(s)</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {!modoSelecao && (
+        <TouchableOpacity style={styles.fab} onPress={() => setModal({ visible: true, modo: "Criar", titulo: "", id: null })}><Ionicons name="add" size={28} color="#fff" /></TouchableOpacity>
+      )}
 
       {/* MODAL DE CRIAÇÃO / EDIÇÃO */}
       <Modal visible={modal.visible} transparent animationType="fade" onRequestClose={fecharModal}>
@@ -269,6 +480,52 @@ const styles = StyleSheet.create({
   editButton: { marginRight: 10, padding: 4 },
   deleteButton: { padding: 4 },
   fab: { position: "absolute", bottom: 20, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: "#ff8c00", justifyContent: "center", alignItems: "center", elevation: 4 },
+
+  // 🆕 Estilos do filtro Todos / Meus fóruns
+  filtroRow: {
+    flexDirection: "row",
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  filtroBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "#EEF2FF",
+  },
+  filtroBtnTexto: { color: COLORS.primary, fontWeight: "600" },
+  filtroBtnTextoAtivo: { color: "#fff" },
+
+  // 🆕 Estilos da seleção múltipla
+  selecaoBarRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  selecaoContagem: { fontWeight: "600" },
+  selecaoAcaoTexto: { color: COLORS.primary, fontWeight: "700" },
+  checkboxWrap: { justifyContent: "center", alignItems: "center", marginRight: 10 },
+  barraInferior: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 14,
+    borderTopWidth: 1,
+  },
+  apagarSelecionadosBtn: {
+    backgroundColor: "#FF6B6B",
+    borderRadius: 14,
+    paddingVertical: 14,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+  },
+  apagarSelecionadosTexto: { color: "#fff", fontWeight: "700", fontSize: 14 },
   
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.67)', justifyContent: 'center', padding: 15 },
   modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden' },
