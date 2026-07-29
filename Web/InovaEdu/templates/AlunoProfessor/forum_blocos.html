@@ -49,8 +49,8 @@
                 <h2>Meus Fóruns</h2>
             </div>
 
-            <section class="forum-grid">
-                <!-- CARD CRIAR FÓRUM (Fixo na área dos meus fóruns) -->
+            <section class="forum-grid" id="sec-meus-foruns">
+                <!-- CARD CRIAR FÓRUM (Fixo) -->
                 <article class="forum-card create-card" id="abrirModalForum">
                     <div class="create-card-content">
                         <div class="plus-circle">
@@ -61,18 +61,17 @@
                     </div>
                 </article>
 
-                {% if foruns|length == 0 %}
-                    <div class="no-results glass-card">
-                        <i class="fa-solid fa-folder-open no-results-icon"></i>
-                        <p>Nenhum fórum encontrado.</p>
-                        <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
-                    </div>
-                {% endif %}
+                <!-- MENSAGEM AMIGÁVEL: MEUS FÓRUNS VAZIOS -->
+                <div class="no-results glass-card" id="msg-sem-meus-foruns" style="display: none;">
+                    <i class="fa-solid fa-comments no-results-icon"></i>
+                    <p>Você ainda não criou nenhum fórum.</p>
+                    <small>Clique em <strong>"Criar Novo Fórum"</strong> para iniciar seu primeiro debate!</small>
+                </div>
 
                 <!-- LOOP: MEUS FÓRUNS -->
                 {% for Forum in foruns %}
                     {% if request.session.usuario_email == Forum.usuario.email %}
-                    <article class="forum-card glass-card">
+                    <article class="forum-card glass-card card-meu-forum">
                         <div class="card-header-glass">
                             <span class="category-badge">
                                 <i class="fa-solid fa-hashtag"></i> MEU FÓRUM
@@ -122,24 +121,23 @@
             </section>
 
 
-            <!-- SEÇÃO 2: FÓRUNS DA COMUNIDADE (OUTROS FÓRUNS) -->
+            <!-- SEÇÃO 2: FÓRUNS DA COMUNIDADE -->
             <div class="section-title-divider" style="margin-top: 40px;">
                 <i class="fa-solid fa-users"></i>
                 <h2>Fóruns da Comunidade</h2>
             </div>
 
-            {% if foruns.usuario.email|length == 0 %}
-                    <div class="no-results glass-card">
-                        <i class="fa-solid fa-folder-open no-results-icon"></i>
-                        <p>Nenhum fórum encontrado.</p>
-                        <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
-                    </div>
-            {% endif %}
+            <section class="forum-grid" id="sec-comunidade-foruns">
+                <!-- MENSAGEM AMIGÁVEL: FÓRUNS DA COMUNIDADE VAZIOS -->
+                <div class="no-results glass-card" id="msg-sem-comunidade" style="display: none; width: 100%;">
+                    <i class="fa-solid fa-users-slash no-results-icon"></i>
+                    <p>Nenhum fórum da comunidade foi encontrado.</p>
+                    <small>Seja o primeiro a movimentar a comunidade criando um novo tema!</small>
+                </div>
 
-            <section class="forum-grid">
                 {% for Forum in foruns %}
                     {% if request.session.usuario_email != Forum.usuario.email %}
-                    <article class="forum-card glass-card {% if forloop.counter > 7 %}forum-oculto{% endif %}"
+                    <article class="forum-card glass-card card-comunidade-forum {% if forloop.counter > 7 %}forum-oculto{% endif %}"
                              {% if forloop.counter > 7 %}style="display: none;"{% endif %}>
                         
                         <div class="card-header-glass">
@@ -275,6 +273,21 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
+            // --- FUNÇÃO PARA VERIFICAR E EXIBIR MENSAGENS VAZIAS ---
+            function verificarEstadosVazios() {
+                const meusForuns = document.querySelectorAll('.card-meu-forum');
+                const msgMeusForuns = document.getElementById('msg-sem-meus-foruns');
+                if (msgMeusForuns) {
+                    msgMeusForuns.style.display = (meusForuns.length === 0) ? 'flex' : 'none';
+                }
+
+                const comunidadeForuns = document.querySelectorAll('.card-comunidade-forum');
+                const msgComunidade = document.getElementById('msg-sem-comunidade');
+                if (msgComunidade) {
+                    msgComunidade.style.display = (comunidadeForuns.length === 0) ? 'flex' : 'none';
+                }
+            }
+
             // --- 1. GERENCIAMENTO DE MODAIS ---
             const abrirModal = document.getElementById('abrirModalForum');
             const fecharModal = document.getElementById('fecharModalForum');
@@ -318,6 +331,7 @@
             }
 
             vincularEventosAcoes();
+            verificarEstadosVazios();
         
             const fecharEditar = document.getElementById('fecharModalEditar');
             const fecharExcluir = document.getElementById('fecharModalExcluir');
@@ -385,6 +399,7 @@
                                     
                                     vincularEventosAcoes();
                                     inicializarVerMais();
+                                    verificarEstadosVazios();
 
                                     const novoAbrirModal = document.getElementById('abrirModalForum');
                                     if (novoAbrirModal && modalCriar) {

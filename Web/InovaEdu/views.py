@@ -313,9 +313,11 @@ def salvar_certificado(request):
                 certificado.data_final = data_final
                 certificado.save()
 
+                messages.success(request, "Certificado autualizado com sucesso!")
                 return JsonResponse({"message": "Certificado atualizado"})
             
             except Certificado.DoesNotExist:
+                messages.error(request, "Certificado não encontrado")
                 return JsonResponse({"message": "Certificado não encontrado"}, status=404)
 
         # CRIAR
@@ -329,6 +331,7 @@ def salvar_certificado(request):
                 usuario=usuario
             )
 
+            messages.success(request, "Certificado criado com sucesso!")
             return JsonResponse({"message": "Certificado criado"})
 
 
@@ -349,9 +352,11 @@ def salvar_certificado(request):
 
             certificado.delete()
 
+            messages.success(request, "Certificado excluído com sucesso!")
             return JsonResponse({"message": "Certificado excluído"})
         
         except Certificado.DoesNotExist:
+            messages.error(request, "Certificado não encontrado")
             return JsonResponse({"message": "Certificado não encontrado"}, status=404)
 
 
@@ -1118,6 +1123,7 @@ def editar_forum(request, forum_id):
             topico.descricao = topico_descricao
             topico.save()
 
+        messages.success(request, "Fórum editado com sucesso!")
         return redirect("forum_blocos")
 
     return redirect("forum_blocos")
