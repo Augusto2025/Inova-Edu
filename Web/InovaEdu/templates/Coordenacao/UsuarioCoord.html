@@ -21,6 +21,14 @@
   <body>
     {% include 'partials/navbar_Coordenacao.html' %}
 
+
+     <section class="topo-pagina">
+          <div>
+              <h1><i class="fa-solid fa-graduation-cap"></i> Usuários</h1>
+              <p>Cadastre, edite e gerencie todos os Turmas da instituição.</p>
+          </div>
+      </section>
+
     <div class="filtros-usuarios">
       <div class="filtro-card ativo" data-filtro="todos">
         <div class="icone azul">
@@ -82,9 +90,10 @@
 
           <select id="filtroTipo" class="select-tipo">
             <option value="">Tipo de Usuário: Todos</option>
-            <option value="Aluno">Aluno</option>
-            <option value="Professor">Professor</option>
-            <option value="Coordenador">Coordenador</option>
+            <option value="">Todos os Usuários: Todos {{ total_usuarios }}</option>
+            <option value="Aluno">Aluno {{ total_alunos }} </option>
+            <option value="Professor">Professor {{ total_professores }}</option>
+            <option value="Coordenador">Coordenador {{ total_coordenadores }}</option>
           </select>
         </div>
 
