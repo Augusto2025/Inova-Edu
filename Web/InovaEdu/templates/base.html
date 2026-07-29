@@ -23,6 +23,10 @@
     {% include "partials/chatbot.html" %}
   {% endblock %}
 
+  {% block content3 %}
+    {% block menssagem %}{% endblock  %}
+  {% endblock  %}
+
   <!-- Coloque este script no base.html (antes do </body>) -->
   <script>
     // Usamos delegação de eventos no document para capturar qualquer formulário enviado

@@ -981,8 +981,9 @@ def editar_evento(request, evento_id):
         if data_str and hora_str:
             evento.data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
             evento.hora_do_evento = datetime.strptime(hora_str, '%H:%M').time()
-            
+
         evento.save()
+        messages.success(request, "Evento atualizado com sucesso!")
         return redirect('calendario')
 
     # Se for GET, renderiza a página de criação, mas com os dados do evento
