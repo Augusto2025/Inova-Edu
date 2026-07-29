@@ -12,9 +12,10 @@
 
 <div class="container">
 
-    <!-- PERFIL -->
-    <div class="profile-card">
-        <div class="profile-header">
+    <!-- HERO / CARD DE PERFIL UNIFICADO -->
+    <div class="profile-hero-card">
+        <div class="profile-hero-header">
+            <!-- FOTO COM CAMERA OVERLAY -->
             <div class="profile-photo-container">
                 {% if usuario.imagem %}
                     <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
@@ -22,26 +23,25 @@
                     <img src="{% static 'img/default_user.png' %}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
                 {% endif %}
 
-                <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
+                <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()" title="Alterar foto">
                     <i class="fas fa-camera"></i>
                 </div>
 
-                <input type="file" id="photo-upload" accept="image/*"
-                       style="display: none;" onchange="updateProfilePhoto(event)">
+                <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
             </div>
 
-            <div class="profile-info">
-                <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
-
-                <!-- BADGES CERTIFICADOS -->
-                <div class="course-badges">
+            <!-- INFORMAÇÕES DO USUÁRIO -->
+            <div class="profile-hero-info">
+                <div class="profile-title-row">
+                    <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
+                    
                     {% if turma %}
-                        <span class="course-badge">
-                            Turma {{ turma.codigo_turma }} - {{ turma.ano }} ({{ turma.turno }})
+                        <span class="badge-turma">
+                            <i class="fas fa-graduation-cap"></i> Turma {{ turma.codigo_turma }} • {{ turma.ano }} ({{ turma.turno }})
                         </span>
                     {% else %}
-                        <span class="course-badge">
-                            Turma não informada
+                        <span class="badge-turma badge-empty">
+                            <i class="fas fa-graduation-cap"></i> Turma não informada
                         </span>
                     {% endif %}
                 </div>
@@ -49,124 +49,141 @@
                 <p class="profile-bio" id="profile-bio">
                     {{ usuario.descricao|default:"Sem descrição cadastrada." }}
                 </p>
+            </div>
 
-                <button class="edit-btn" onclick="openProfileModal()">
-                    <i class="fas fa-edit"></i> Editar Perfil
+            <!-- BOTÃO DE EDITAR -->
+            <div class="profile-hero-action">
+                <button class="btn-edit-profile" onclick="openProfileModal()">
+                    <i class="fas fa-user-edit"></i> Editar Perfil
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ESTRUTURA EM 2 COLUNAS (PROJETOS | CERTIFICADOS) -->
-    <div class="dashboard-grid">
+    <!-- NAVEGAÇÃO POR ABAS (TABS BAR) -->
+    <div class="workspace-tabs-container">
+        <div class="tabs-nav">
+            <button class="tab-btn active" id="btn-tab-projetos" onclick="switchTab('projetos')">
+                <i class="fas fa-folder-open"></i>
+                <span>Projetos</span>
+                <span class="tab-counter">{{ projetos|length }}</span>
+            </button>
 
-        <!-- BLANCO DE PROJETOS (1 COLUNA INTERNA) -->
-        <div class="repos-section">
-            <div class="section-header">
-                <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
-            </div>
+            <button class="tab-btn" id="btn-tab-certificados" onclick="switchTab('certificados')">
+                <i class="fas fa-award"></i>
+                <span>Certificados</span>
+                <span class="tab-counter">{{ certificados|length }}</span>
+            </button>
+        </div>
 
-            <div class="repos-grid" id="projetos-grid">
+        <div class="tabs-extra-action">
+            <button class="btn-add-global" id="btn-add-cert-action" style="display: none;" onclick="openCertificadoModal()">
+                <i class="fas fa-plus"></i> Novo Certificado
+            </button>
+        </div>
+    </div>
+
+    <!-- ÁREA DE CONTEÚDO DAS ABAS -->
+    <div class="workspace-content">
+
+        <!-- ABA 1: PROJETOS -->
+        <div class="tab-content active" id="tab-projetos">
+            <div class="tab-grid-list">
                 {% for projeto in projetos %}
-                    <div class="repo-card">
-                        <h3>{{ projeto.nome_projeto }}</h3>
+                    <div class="workspace-card repo-card-item">
+                        <div class="card-icon-box">
+                            <i class="fas fa-code"></i>
+                        </div>
 
-                        <p class="repo-turma">
-                            <i class="fas fa-users"></i>
-                            {% if projeto.turma %}
-                                Turma: {{ projeto.turma.codigo_turma }} -
-                                {{ projeto.turma.curso.nome_curso }} -
-                                {{ projeto.turma.ano }}
-                                ({{ projeto.turma.turno }})
-                            {% else %}
-                                Turma não informada
-                            {% endif %}
-                        </p>
+                        <div class="card-main-info">
+                            <div class="card-title-line">
+                                <h3>{{ projeto.nome_projeto }}</h3>
+                                <span class="pill-date">
+                                    <i class="far fa-calendar-alt"></i> {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                                </span>
+                            </div>
 
-                        <p class="repo-date">
-                            <i class="far fa-calendar-alt"></i>
-                            Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
-                        </p>
+                            <p class="card-subtitle">
+                                <i class="fas fa-users"></i>
+                                {% if projeto.turma %}
+                                    Turma {{ projeto.turma.codigo_turma }} • {{ projeto.turma.curso.nome_curso }} ({{ projeto.turma.turno }})
+                                {% else %}
+                                    Turma não informada
+                                {% endif %}
+                            </p>
+                        </div>
 
-                        <div class="repo-actions">
-                            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="repo-link">
-                                <button class="entrar-projeto">
-                                    <i class="fas fa-folder-open"></i> Entrar
+                        <div class="card-action-side">
+                            <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="dash-btn-link">
+                                <button class="btn-primary-action">
+                                    <span>Acessar Projeto</span>
+                                    <i class="fas fa-arrow-right"></i>
                                 </button>
                             </a>
                         </div>
                     </div>
                 {% empty %}
-                    <div class="no-items">
+                    <div class="no-items-placeholder">
                         <i class="fas fa-folder-open"></i>
-                        <p>Nenhum projeto cadastrado ainda.</p>
+                        <h4>Nenhum projeto associado</h4>
+                        <p>Você ainda não possui projetos vinculados à sua turma.</p>
                     </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- BLOCO DE CERTIFICADOS (2 COLUNAS INTERNAS) -->
-        <div class="certificates-section">
-            <div class="section-header">
-                <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
-
-                <button class="add-btn" onclick="openCertificadoModal()">
-                    <i class="fas fa-plus"></i> Adicionar Certificado
-                </button>
-            </div>
-
-            <div class="certificates-grid" id="certificados-grid">
+        <!-- ABA 2: CERTIFICADOS -->
+        <div class="tab-content" id="tab-certificados">
+            <div class="tab-grid-list">
                 {% for certificado in certificados %}
-                <div class="certificate-card" data-id="{{ certificado.idcertificado }}">
-                    <div class="certificate-icon">
-                        <i class="fas fa-certificate"></i>
+                    <div class="workspace-card cert-card-item" data-id="{{ certificado.idcertificado }}">
+                        <div class="card-icon-box icon-cert">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+
+                        <div class="card-main-info">
+                            <div class="card-title-line">
+                                <h3>{{ certificado.nome }}</h3>
+                                <span class="pill-date">
+                                    <i class="far fa-clock"></i>
+                                    {% if certificado.data_inicio %}{{ certificado.data_inicio|date:"d/m/Y" }}{% else %}---{% endif %} 
+                                    até 
+                                    {% if certificado.data_final %}{{ certificado.data_final|date:"d/m/Y" }}{% else %}Atual{% endif %}
+                                </span>
+                            </div>
+
+                            <p class="card-description">
+                                {{ certificado.descricao|default:"Sem descrição cadastrada." }}
+                            </p>
+                        </div>
+
+                        <div class="card-action-side horizontal-actions">
+                            <button class="btn-icon-action edit" title="Editar"
+                                onclick='openEditCertificadoModal(
+                                    {{ certificado.idcertificado }},
+                                    "{{ certificado.nome|escapejs }}",
+                                    "{{ certificado.descricao|escapejs }}",
+                                    "{{ certificado.data_inicio|date:'Y-m-d' }}",
+                                    "{{ certificado.data_final|date:'Y-m-d' }}"
+                                )'>
+                                <i class="fas fa-pen"></i>
+                            </button>
+
+                            <button class="btn-icon-action delete" title="Excluir"
+                                onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome|escapejs }}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </div>
-
-                    <h3>{{ certificado.nome }}</h3>
-
-                    <p><strong>Descrição:</strong>
-                        {{ certificado.descricao|default:"Sem descrição" }}
-                    </p>
-
-                    {% if certificado.data_inicio %}
-                        <p>
-                            <i class="far fa-calendar-alt"></i>
-                            <strong>Início:</strong>
-                            {{ certificado.data_inicio|date:"d/m/Y" }}
-                        </p>
-                    {% endif %}
-
-                    {% if certificado.data_final %}
-                        <p>
-                            <i class="far fa-calendar-check"></i>
-                            <strong>Término:</strong>
-                            {{ certificado.data_final|date:"d/m/Y" }}
-                        </p>
-                    {% endif %}
-
-                    <div class="certificate-actions">
-                        <button class="cert-btn edit-cert"
-                            onclick='openEditCertificadoModal(
-                                {{ certificado.idcertificado }},
-                                "{{ certificado.nome|escapejs }}",
-                                "{{ certificado.descricao|escapejs }}",
-                                "{{ certificado.data_inicio|date:'Y-m-d' }}",
-                                "{{ certificado.data_final|date:'Y-m-d' }}"
-                            )'>
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-
-                        <button class="cert-btn delete-cert"
-                        onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome }}')">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </div>
-                </div>
                 {% empty %}
-                <div class="no-items">
-                    <i class="fas fa-book-open"></i>
-                    <p>Nenhum certificado cadastrado ainda.</p>
-                </div>
+                    <div class="no-items-placeholder">
+                        <i class="fas fa-award"></i>
+                        <h4>Nenhum certificado cadastrado</h4>
+                        <p>Adicione seus cursos e qualificações para enriquecer seu perfil.</p>
+                        <button class="btn-primary-action" onclick="openCertificadoModal()">
+                            <i class="fas fa-plus"></i> Adicionar Certificado
+                        </button>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -257,9 +274,8 @@
 <!-- MODAL CONFIRMAR EXCLUSÃO -->
 <div class="modal" id="confirm-delete-modal">
     <div class="modal-content">
-
-        <div class="modal-header">
-            <h3>⚠️ Confirmar Exclusão</h3>
+        <div class="modal-header excluir">
+            <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h3>
             <button type="button" class="close-btn" onclick="closeDeleteModal()">&times;</button>
         </div>
 
@@ -269,25 +285,41 @@
                 <strong id="certificado-nome-delete"></strong>?
             </p>
 
-            <p style="color:red;">
+            <p class="text-danger">
                 Esta ação não pode ser desfeita.
             </p>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="delete-btn" onclick="confirmDeleteCertificado()">
-                Excluir
-            </button>
-
-            <button type="button" class="cancel-btn" onclick="closeDeleteModal()">
-                Cancelar
-            </button>
+            <button type="button" class="delete-btn" onclick="confirmDeleteCertificado()">Excluir</button>
+            <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
         </div>
-
     </div>
 </div>
 
 <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
+<!-- SCRIPT DE TROCA DE ABAS -->
+<script>
+    function switchTab(tabName) {
+        // Oculta conteúdos
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        // Desativa botões
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        // Ativa selecionado
+        document.getElementById('tab-' + tabName).classList.add('active');
+        document.getElementById('btn-tab-' + tabName).classList.add('active');
+
+        // Mostra o botão "+ Novo Certificado" somente na aba de certificados
+        const addCertBtn = document.getElementById('btn-add-cert-action');
+        if (tabName === 'certificados') {
+            addCertBtn.style.display = 'inline-flex';
+        } else {
+            addCertBtn.style.display = 'none';
+        }
+    }
+</script>
 
 <script src="{% static 'scripts/perfil.js' %}"></script>
 

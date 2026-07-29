@@ -133,7 +133,7 @@ class Turma(models.Model):
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
-    descricao = models.TextField(db_column='Descricao', blank=True, null=True)
+    descricao = models.TextField(db_column='Descricao', blank=True, null=True, max_length=200)
     imagem = CloudinaryField('imagem_projeto', db_column='Imagem', blank=True, null=True)
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)

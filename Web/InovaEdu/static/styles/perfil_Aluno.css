@@ -1,75 +1,63 @@
-/* Importando a fonte Roboto do header */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/* Importando a fonte Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 /* -------------------- VARIÁVEIS -------------------- */
 :root {
-    --laranja-Senac: #F7941D;
-    --branco-Senac: #FFF;
     --azul-Senac: #004A8D;
-    --cinza-Senac: #D9D9D9;
+    --laranja-Senac: #F7941D;
+    --bg-light: #F8FAFC;
+    --card-border: #E2E8F0;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
 }
 
-/* -------------------- RESET -------------------- */
+/* -------------------- RESET & GLOBAL -------------------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
 }
 
 body {
-    background-color: #f8fafc;
-    color: var(--text-main);
+    background-color: var(--bg-light);
+    color: var(--text-primary);
 }
 
-.logo_e_texto {
-    align-items: center;
-    display: flex;
+h1, h2, h3, h4, p, span, button, a {
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-/* -------------------- CONTAINER PRINCIPAL (LARGURA AUMENTADA) -------------------- */
 .container {
-    max-width: 1400px; /* Aumentado para expandir os cards na tela */
-    width: 95%;
+    max-width: 1100px;
+    width: 92%;
     margin: 0 auto;
-    padding: 30px 20px;
-    min-height: calc(95vh - 175px);
+    padding: 30px 0;
+    min-height: calc(100vh - 180px);
 }
 
-/* -------------------- PROFILE CARD -------------------- */
-.profile-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px 30px;
-    margin-bottom: 25px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    animation: slideIn 0.5s ease;
-    position: relative;
-    width: 100%;
+/* -------------------- PROFILE HERO CARD -------------------- */
+.profile-hero-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.profile-header {
+.profile-hero-header {
     display: flex;
     align-items: center;
-    gap: 25px;
-    flex-wrap: wrap;
+    gap: 24px;
 }
 
 .profile-photo-container {
     position: relative;
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
 }
 
 .profile-photo {
@@ -78,19 +66,14 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--azul-Senac);
-    transition: transform 0.3s ease;
-}
-
-.profile-photo:hover {
-    transform: scale(1.05);
 }
 
 .photo-edit-btn {
     position: absolute;
-    bottom: 0px;
-    right: 0px;
+    bottom: 2px;
+    right: 2px;
     background: var(--azul-Senac);
-    color: white;
+    color: #ffffff;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -98,298 +81,353 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px solid white;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    border: 2px solid #ffffff;
+    transition: all 0.2s ease;
+    font-size: 0.85em;
 }
 
 .photo-edit-btn:hover {
     background: var(--laranja-Senac);
-    transform: scale(1.1);
-    box-shadow: 0 3px 10px rgba(0, 74, 141, 0.4);
+    transform: scale(1.08);
 }
 
-.profile-info {
+.profile-hero-info {
     flex: 1;
+    min-width: 0;
 }
 
-.profile-info h1 {
-    font-size: 1.8em;
-    margin-bottom: 5px;
+.profile-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.profile-title-row h1 {
+    font-size: 1.6em;
+    font-weight: 700;
     color: var(--azul-Senac);
 }
 
-.profile-bio {
-    color: #666;
-    margin: 10px 0;
-    line-height: 1.5;
-    font-size: 0.95em;
-}
-
-.course-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 8px 0;
-}
-
-.course-badge {
-    background: var(--azul-Senac);
-    padding: 5px 12px;
-    border-radius: 15px;
-    display: inline-block;
-    font-weight: 500;
-    color: white;
-    font-size: 0.85em;
-    box-shadow: 0 2px 5px rgba(0, 74, 141, 0.2);
-}
-
-.edit-btn {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 20px;
+.badge-turma {
+    background: #E0F2FE;
+    color: var(--azul-Senac);
+    font-size: 0.82em;
+    font-weight: 600;
+    padding: 4px 12px;
     border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.edit-btn:hover {
-    background: var(--laranja-Senac);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 74, 141, 0.3);
+.badge-turma.badge-empty {
+    background: #F1F5F9;
+    color: var(--text-secondary);
 }
 
-/* -------------------- DASHBOARD GRID (2 COLUNAS) -------------------- */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Duas colunas principais */
-    gap: 25px;
+.profile-bio {
+    color: var(--text-secondary);
+    font-size: 0.92em;
+    line-height: 1.5;
+    white-space: pre-line;
 }
 
-/* -------------------- SECTIONS -------------------- */
-.certificates-section,
-.repos-section {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    animation: slideIn 0.5s ease 0.1s both;
-    width: 100%;
-    /* max-height: 504px */
+.profile-hero-action {
+    flex-shrink: 0;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 10px;
-}
-
-.section-header h2 {
+.btn-edit-profile {
+    background: #ffffff;
     color: var(--azul-Senac);
-    font-size: 1.3em;
+    border: 1px solid var(--azul-Senac);
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.88em;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.2s ease;
 }
 
-.section-header h2 i {
-    color: var(--laranja-Senac);
-    font-size: 1.1em;
+.btn-edit-profile:hover {
+    background: var(--azul-Senac);
+    color: #ffffff;
 }
 
-.add-btn {
-    background: #28a745;
-    color: white;
+/* -------------------- WORKSPACE TABS NAV -------------------- */
+.workspace-tabs-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--card-border);
+    margin-bottom: 24px;
+    padding-bottom: 2px;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    background: transparent;
     border: none;
-    padding: 6px 15px;
-    border-radius: 20px;
+    padding: 12px 20px;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-secondary);
     cursor: pointer;
-    font-size: 0.85em;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    gap: 10px;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.tab-btn i {
+    font-size: 1.05em;
+}
+
+.tab-counter {
+    background: #E2E8F0;
+    color: var(--text-secondary);
+    font-size: 0.78em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.tab-btn:hover {
+    color: var(--azul-Senac);
+}
+
+.tab-btn.active {
+    color: var(--azul-Senac);
+}
+
+.tab-btn.active .tab-counter {
+    background: rgba(0, 74, 141, 0.12);
+    color: var(--azul-Senac);
+}
+
+/* Indicador de linha inferior na aba ativa */
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--azul-Senac);
+    border-radius: 3px 3px 0 0;
+}
+
+.btn-add-global {
+    background: var(--azul-Senac);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
+    transition: background 0.2s ease;
 }
 
-.add-btn:hover {
-    background: #218838;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+.btn-add-global:hover {
+    background: var(--laranja-Senac);
 }
 
-/* -------------------- GRIDS INTERNAS -------------------- */
-
-/* Projetos em 1 COLUNA */
-.repos-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
+/* -------------------- TAB CONTENT AREA -------------------- */
+.tab-content {
+    display: none;
 }
 
-/* Certificados em 2 COLUNAS */
-.certificates-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
 }
 
-/* -------------------- REPOSITORY CARDS (NOVO LAYOUT) -------------------- */
-.repo-card {
-    background: #f8f9fa;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-grid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* -------------------- WORKSPACE CARDS -------------------- */
+.workspace-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 18px;
-    border: 1px solid #e0e0e0;
-    border-left: 4px solid var(--azul-Senac);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.repo-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    border-left-color: var(--laranja-Senac);
-}
-
-.repo-card h3 {
-    color: var(--azul-Senac);
-    font-size: 1.15em;
-    margin-bottom: 2px;
-}
-
-.repo-turma, .repo-date {
-    color: #666;
-    font-size: 0.85em;
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.repo-turma i, .repo-date i {
-    color: var(--azul-Senac);
-}
-
-.repo-actions {
-    margin-top: 8px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.repo-link {
-    text-decoration: none;
-}
-
-.entrar-projeto {
-    padding: 7px 18px;
-    border: none;
-    border-radius: 8px;
-    background-color: var(--azul-Senac);
-    color: white;
-    cursor: pointer;
-    font-size: 0.85em;
-    font-weight: 500;
+    gap: 18px;
     transition: all 0.2s ease;
+}
+
+.workspace-card:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.card-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: rgba(0, 74, 141, 0.08);
+    color: var(--azul-Senac);
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    flex-shrink: 0;
+}
+
+.card-icon-box.icon-cert {
+    background: rgba(247, 148, 29, 0.12);
+    color: var(--laranja-Senac);
+}
+
+.card-main-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-title-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.card-title-line h3 {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pill-date {
+    font-size: 0.78em;
+    color: var(--text-secondary);
+    background: #F1F5F9;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.card-subtitle,
+.card-description {
+    font-size: 0.88em;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.card-subtitle i {
+    color: var(--azul-Senac);
+    margin-right: 4px;
+}
+
+/* Ações à Direita do Card */
+.card-action-side {
+    flex-shrink: 0;
+}
+
+.btn-primary-action {
+    background: var(--azul-Senac);
+    color: #ffffff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-action:hover {
+    background: var(--laranja-Senac);
+}
+
+.horizontal-actions {
+    display: flex;
     gap: 6px;
 }
 
-.entrar-projeto:hover {
-    background-color: var(--laranja-Senac);
-    transform: translateY(-2px);
-}
-
-/* -------------------- CERTIFICATE CARDS -------------------- */
-.certificate-card {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 15px;
-    border-left: 3px solid var(--azul-Senac);
-    position: relative;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.certificate-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0, 74, 141, 0.15);
-    border-left-color: var(--laranja-Senac);
-}
-
-.certificate-icon {
-    font-size: 1.4em;
-    color: var(--azul-Senac);
-    margin-bottom: 6px;
-}
-
-.certificate-card h3 {
-    color: #333;
-    margin-bottom: 6px;
-    font-size: 1em;
-}
-
-.certificate-card p {
-    color: #666;
-    font-size: 0.82em;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.certificate-card p i {
-    color: var(--azul-Senac);
-    width: 14px;
-}
-
-.certificate-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.cert-btn {
-    padding: 4px 10px;
-    border: none;
-    border-radius: 12px;
+.btn-icon-action {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--text-secondary);
     cursor: pointer;
-    font-size: 0.8em;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 4px;
-    background: #e9ecef;
+    justify-content: center;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
 }
 
-.cert-btn:hover {
-    background: #dee2e6;
+.btn-icon-action.edit:hover {
+    background: #E0F2FE;
+    color: #0284C7;
+    border-color: #BEE3F8;
 }
 
-.delete-cert {
-    color: #dc3545;
+.btn-icon-action.delete:hover {
+    background: #FEF2F2;
+    color: #EF4444;
+    border-color: #FECACA;
 }
 
-.delete-cert:hover {
-    background: #f8d7da;
+/* Placeholder Vazio */
+.no-items-placeholder {
+    text-align: center;
+    padding: 50px 20px;
+    background: #ffffff;
+    border: 1px dashed var(--card-border);
+    border-radius: 12px;
+    color: var(--text-secondary);
 }
 
-/* -------------------- MODAL -------------------- */
+.no-items-placeholder i {
+    font-size: 2.5em;
+    color: #CBD5E1;
+    margin-bottom: 12px;
+}
+
+.no-items-placeholder h4 {
+    font-size: 1.1em;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.no-items-placeholder p {
+    font-size: 0.9em;
+    margin-bottom: 16px;
+}
+
+/* -------------------- MODAIS UNIFICADOS -------------------- */
 .modal {
     display: none;
     position: fixed;
@@ -397,180 +435,179 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(15, 23, 42, 0.5);
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(4px);
+    padding: 16px;
 }
 
 .modal.active {
     display: flex;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
 }
 
 .modal-content {
-    background: white;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 450px;
-    animation: modalAppear 0.3s ease;
+    background: #ffffff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-}
-
-@keyframes modalAppear {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .modal-header {
     background: var(--azul-Senac);
-    color: white;
-    padding: 15px;
+    color: #ffffff;
+    padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+.modal-header.excluir {
+    background: #DC2626;
+}
+
 .modal-header h3 {
+    font-size: 1.1em;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.2em;
 }
 
 .close-btn {
-    background: none;
+    background: transparent;
     border: none;
-    color: white;
-    font-size: 22px;
+    color: #ffffff;
+    font-size: 1.5em;
     cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.close-btn:hover {
-    transform: scale(1.2);
+    line-height: 1;
 }
 
 .modal-body {
-    padding: 15px;
+    padding: 20px;
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .form-group label {
-    margin-bottom: 4px;
-    color: #333;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-primary);
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
+    padding: 9px 12px;
+    border: 1px solid var(--card-border);
     border-radius: 8px;
-    font-size: 0.95em;
-    transition: all 0.3s ease;
+    font-size: 0.9em;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--azul-Senac);
 }
 
 .form-group textarea {
     min-height: 80px;
+    resize: vertical;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    width: 100%;
+    gap: 12px;
 }
 
 .modal-footer {
-    padding: 15px;
-    border-top: 1px solid #eee;
+    padding: 14px 20px;
+    background: #F8FAFC;
+    border-top: 1px solid var(--card-border);
     display: flex;
-    gap: 8px;
     justify-content: flex-end;
+    gap: 10px;
 }
 
 .modal-footer button {
-    padding: 8px 15px;
-    border: none;
+    padding: 8px 16px;
     border-radius: 8px;
+    border: none;
+    font-size: 0.88em;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
 }
 
 .cancel-btn {
-    background: #6c757d;
-    color: white;
+    background: #E2E8F0;
+    color: var(--text-primary);
 }
 
 .save-btn {
     background: var(--azul-Senac);
-    color: white;
+    color: #ffffff;
 }
 
 .delete-btn {
-    background: #dc3545;
-    color: white;
+    background: #DC2626;
+    color: #ffffff;
 }
 
-/* -------------------- NO ITEMS -------------------- */
-.no-items {
-    text-align: center;
-    padding: 20px;
-    color: #999;
-    grid-column: 1 / -1;
-}
-
-.no-items i {
-    font-size: 2.5em;
-    margin-bottom: 8px;
-    color: #ddd;
+.text-danger {
+    color: #DC2626;
+    font-size: 0.85em;
+    margin-top: 6px;
 }
 
 /* -------------------- RESPONSIVIDADE -------------------- */
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr; /* Em telas médias/pequenas, os blocos empilham */
-    }
-}
-
 @media (max-width: 768px) {
-    .edit-btn {
-        position: static;
-        margin-top: 10px;
-    }
-    
-    .profile-header {
+    .profile-hero-header {
         flex-direction: column;
         text-align: center;
-        gap: 15px;
     }
 
-    .certificates-grid {
-        grid-template-columns: 1fr; /* Certificados viram 1 coluna no celular */
+    .profile-title-row {
+        justify-content: center;
+    }
+
+    .profile-hero-action {
+        width: 100%;
+    }
+
+    .btn-edit-profile {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .workspace-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-title-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .card-action-side {
+        width: 100%;
+    }
+
+    .btn-primary-action {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
     }
 }

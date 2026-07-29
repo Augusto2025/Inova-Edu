@@ -1048,15 +1048,19 @@ def criar_evento(request):
 
 @require_http_methods(["DELETE", "POST"])
 def excluir_evento(request, evento_id):
-    email = request.session.get('usuario_email')
-    evento = get_object_or_404(Eventos, pk=evento_id)
-    
-    if evento.usuario and evento.usuario.email == email:
-        evento.delete()
-        return JsonResponse({'message': 'Evento excluído com sucesso!'}, status=200)
-    
-    # Caso não seja o dono do evento
-    return JsonResponse({'message': 'Você não tem permissão para excluir este evento.'}, status=403)
+  email = request.session.get("usuario_email")
+  evento = get_object_or_404(Eventos, pk=evento_id)
+
+  if evento.usuario and evento.usuario.email == email:
+    evento.delete()
+    messages.success(request, "Evento excluído com sucesso!")
+    return JsonResponse({"message": "Evento excluído com sucesso!"}, status=200)
+
+  messages.error(request, "Você não tem permissão para excluir este evento.")
+  return JsonResponse(
+      {"message": "Você não tem permissão para excluir este evento."},
+      status=403,
+  )
 
 def forum_blocos(request):
     query = request.GET.get("q", "").strip()

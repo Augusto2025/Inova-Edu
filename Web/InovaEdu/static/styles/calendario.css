@@ -24,6 +24,7 @@ body {
 .alert-success{
   margin: auto;
   margin-top: 40px;
+  min-width: 918px;
 }
 
 /* CONTAINER PRINCIPAL ------------------------------------------------------ */
