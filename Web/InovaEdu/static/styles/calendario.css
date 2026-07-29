@@ -21,6 +21,11 @@ body {
   color: #334155;
 }
 
+.alert-success{
+  margin: auto;
+  margin-top: 40px;
+}
+
 /* CONTAINER PRINCIPAL ------------------------------------------------------ */
 .calendar-container {
   display: flex;
@@ -535,6 +540,7 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 15px;
+    width: 97%;
   }
 
   .sidebar {

@@ -7,8 +7,11 @@
   
   {% include "partials/header.html" %}
 
+  {% include "partials/menssagem.html" %}
+  
   <section class="calendar-container">
-    <!-- Sidebar com meses -->
+
+    <!-- Sidebar com meses (Mini-Painel Lateral) -->
     <aside class="sidebar">
       <div class="year-controls">
         <button id="prev-year">&lt;</button>
@@ -53,7 +56,7 @@
       </footer>
     </main>
 
-    <!-- Eventos do mês -->
+    <!-- Eventos do mês (Painel de Timeline de Agendas) -->
     <section class="event-panel">
       <h3>Eventos do mês</h3>
       <div id="event-list">
