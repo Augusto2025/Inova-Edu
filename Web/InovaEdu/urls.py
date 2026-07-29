@@ -49,6 +49,11 @@ urlpatterns = [
     path('criar_turma/', views.criar_turma, name='criar_turma'),
     path("CursoCoord/", views.CursoCoord, name="CursoCoord"),
     
+    
+    path("turma/salvar-alunos/",views.salvar_turma_usuario,name="salvar_turma_usuario",),
+    
+    
+    
     path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
     path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('turma/editar/', views.editar_turma, name='editar_turma'),

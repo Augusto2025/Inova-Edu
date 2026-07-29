@@ -1572,7 +1572,36 @@ def excluir_turma(request, idturma):
     return redirect("TurmaCoord")
 
 
+def adicionar_alunos_turma(request):
 
+    if request.method == "POST":
+
+        dados = json.loads(request.body)
+
+        turma = Turma.objects.get(idturma=dados["turma_id"])
+
+        turma.alunos.clear()
+
+        for id_aluno in dados["alunos"]:
+
+            aluno = Usuario.objects.get(idusuario=id_aluno)
+
+            turma.alunos.add(aluno)
+
+        return JsonResponse({"sucesso": True})
+
+    return JsonResponse({"sucesso": False})
+
+def salvar_turma_usuario(request):
+    dados = json.loads(request.body)
+
+    turma = Turma.objects.get(idturma=dados["turma_id"])
+
+    turma.alunos.clear()
+
+    turma.alunos.add(*dados["alunos"])
+
+    return JsonResponse({"sucesso": True})
 
 
 

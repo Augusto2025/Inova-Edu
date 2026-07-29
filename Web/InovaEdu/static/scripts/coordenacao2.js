@@ -222,3 +222,56 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// SELECIONAR OS USUARIOS DA TURMA
+let alunosSelecionados = [];
+
+document.querySelectorAll(".btn-add-aluno").forEach(botao => {
+    botao.addEventListener("click", function () {
+
+        const li = this.closest("li");
+        const id = li.dataset.id;
+        const nome = li.querySelector("span").innerText;
+
+        // evita repetir
+        if (alunosSelecionados.find(a => a.id == id)) {
+            return;
+        }
+
+        alunosSelecionados.push({
+            id: id,
+            nome: nome
+        });
+
+        atualizarListaSelecionados();
+    });
+});
+
+function atualizarListaSelecionados() {
+
+    const lista = document.getElementById("listaSelecionados");
+    lista.innerHTML = "";
+
+    alunosSelecionados.forEach((aluno, index) => {
+
+        lista.innerHTML += `
+            <li>
+                <span>${aluno.nome}</span>
+
+                <button type="button"
+                        class="btn-remover"
+                        onclick="removerAluno(${index})">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </li>
+        `;
+    });
+
+}
+
+function removerAluno(index){
+    alunosSelecionados.splice(index,1);
+    atualizarListaSelecionados();
+}
+
+// SALVAR OS USUARIOS DA TURMA

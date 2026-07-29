@@ -180,7 +180,7 @@
 
 .turma-usuarios{
     display:flex;
-    justify-content:center;
+    /* justify-content:center; */
 }
 
 .btn-ver-usuarios{
@@ -206,6 +206,8 @@
     display:flex;
     justify-content:flex-end;
     gap:10px;
+    position: fixed;
+    left: 80%;
 }
 
 .btn-editar-turma,
@@ -505,7 +507,8 @@
     border-radius: 10px;
     height: 220px;
     overflow-y: auto;
-    background: #fafafa;
+    color: black;
+    background: var(--azul-Senac);
 }
 
 .modal-usuarios-lista ul {
@@ -599,8 +602,9 @@
     margin: 0 20px;
     border: 1px solid #e7e7e7;
     border-radius: 6px;
-    background: #fff;
+    background: var(--branco-Senac);
     overflow-y: auto;
+    color: black;
 }
 
 .modal-usuarios-lista{
