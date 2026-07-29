@@ -1,5 +1,6 @@
 :root {
   --laranja-Senac: #f7941d;
+  --laranjaEscuro-Senac: #b85c18;
   --branco-Senac: #fff;
   --azul-Senac: #004a8d;
   --cinza-Senac: #f2f2f2;
@@ -127,7 +128,7 @@
         1fr
         .8fr
         2fr
-        .9fr
+        1.9fr
         1fr;
 
     background:#0d4b89;
@@ -156,7 +157,7 @@
         1fr
         .8fr
         2fr
-        .9fr
+        1.9fr
         1fr;
 
     align-items:center;
@@ -429,14 +430,286 @@
 
 /* TELA DE ADICIONAR OS USUARIO */
 
+/* ===========================
+   MODAL USUÁRIOS DA TURMA
+=========================== */
+
+.modal-usuarios {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal-usuarios-box {
+    width: 100%;
+    max-width: 750px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .25);
+    animation: aparecerModal .25s ease;
+}
+
+/* ===========================
+   TOPO
+=========================== */
+
+.modal-usuarios-topo {
+    background: linear-gradient(90deg, #004A8D, #0066C5);
+    color: #fff;
+    padding: 18px 25px;
+}
+
+.modal-usuarios-topo h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* ===========================
+   PESQUISA
+=========================== */
+
+.modal-usuarios-busca {
+    padding: 20px 25px 10px;
+}
+
+.modal-usuarios-busca input {
+    width: 100%;
+    height: 45px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    padding: 0 15px;
+    font-size: 15px;
+    outline: none;
+    transition: .2s;
+}
+
+.modal-usuarios-busca input:focus {
+    border-color: #004A8D;
+    box-shadow: 0 0 0 3px rgba(0, 74, 141, .15);
+}
+
+/* ===========================
+   LISTA DO BANCO
+=========================== */
+
+.modal-usuarios-lista {
+    margin: 0 25px;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    height: 220px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+.modal-usuarios-lista ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.modal-usuarios-lista li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid #eee;
+    transition: .2s;
+}
+
+.modal-usuarios-lista li:last-child {
+    border-bottom: none;
+}
+
+.modal-usuarios-lista li:hover {
+    background: #eef6ff;
+}
+
+/* ===========================
+   ALUNOS ADICIONADOS
+=========================== */
+
+/* ===== MODAL ===== */
+
 .modal-usuarios{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.45);
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-usuarios-box{
+    width: 520px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.12);
+    overflow: hidden;
+    animation: abrirModal .2s ease;
+}
+
+/* ===== TOPO ===== */
+
+.modal-usuarios-topo{
+    padding: 15px 20px;
+    border-bottom: 1px solid #ececec;
+    background: #fafafa;
+}
+
+.modal-usuarios-topo h3{
+    margin: 0;
+    font-size: 18px;
+    color: #004A8D;
+    font-weight: 600;
+}
+
+/* ===== PESQUISA ===== */
+
+.modal-usuarios-busca{
+    padding: 18px 20px 10px;
+}
+
+.modal-usuarios-busca input{
+    width: 100%;
+    height: 38px;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    padding: 0 12px;
+    outline: none;
+    font-size: 14px;
+}
+
+.modal-usuarios-busca input:focus{
+    border-color: #6b9ed4;
+}
+
+/* ===== LISTAS ===== */
+
+.modal-usuarios-lista,
+.modal-usuarios-selecionados ul{
+    margin: 0 20px;
+    border: 1px solid #e7e7e7;
+    border-radius: 6px;
+    background: #fff;
+    overflow-y: auto;
+}
+
+.modal-usuarios-lista{
+    height: 140px;
+}
+
+.modal-usuarios-selecionados{
+    margin-top: 18px;
+}
+
+.modal-usuarios-selecionados h3{
+    margin: 0 20px 8px;
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
+}
+
+.modal-usuarios-selecionados ul{
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.modal-usuarios-lista ul,
+.modal-usuarios-selecionados ul{
+    list-style: none;
+    padding: 0;
+}
+
+.modal-usuarios-lista li,
+.modal-usuarios-selecionados li{
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-usuarios-lista li:last-child,
+.modal-usuarios-selecionados li:last-child{
+    border-bottom: none;
+}
+
+.modal-usuarios-lista li:hover{
+    background: #f6f9fc;
+}
+
+/* ===== BOTÕES ===== */
+
+.modal-usuarios-footer{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid #ececec;
+}
+
+.btn-cancelar-modal{
+    background: #f3f3f3;
+    color: #555;
+    border: 1px solid #dcdcdc;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-cancelar-modal:hover{
+    background: #e8e8e8;
+}
+
+.btn-salvar-alunos{
+    background:var(--laranjaEscuro-Senac);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-salvar-alunos:hover{
+    background: #00396d;
+}
+
+/* ===== SCROLL ===== */
+
+.modal-usuarios-lista::-webkit-scrollbar,
+.modal-usuarios-selecionados ul::-webkit-scrollbar{
+    width: 6px;
+}
+
+.modal-usuarios-lista::-webkit-scrollbar-thumb,
+.modal-usuarios-selecionados ul::-webkit-scrollbar-thumb{
+    background: #c8c8c8;
+    border-radius: 20px;
+}
+
+/* ===== ANIMAÇÃO ===== */
+
+@keyframes abrirModal{
+    from{
+        opacity:0;
+        transform: translateY(-10px);
+    }
+    to{
+        opacity:1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -786,3 +1059,5 @@
     }
 
 }
+
+/*  */

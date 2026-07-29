@@ -175,3 +175,50 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+
+// ABRIR O USUARIO DA TURMA
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalUsuarios = document.getElementById("modalUsuariosTurma");
+    const btnCancelar = document.getElementById("cancelarUsuariosTurma");
+
+    // Todos os botões de usuários
+    document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
+
+        btn.addEventListener("click", function () {
+
+            // ID da turma clicada
+            const turmaId = this.dataset.turma;
+
+            // Usuários da turma (caso queira usar depois)
+            let usuarios = [];
+            try {
+                usuarios = JSON.parse(this.dataset.usuarios);
+            } catch (e) {
+                console.log("Nenhum usuário encontrado.");
+            }
+
+            console.log("Turma:", turmaId);
+            console.log("Usuários:", usuarios);
+
+            // Abre a modal
+            modalUsuarios.style.display = "flex";
+        });
+
+    });
+
+    // Fechar ao clicar em Cancelar
+    btnCancelar.addEventListener("click", function () {
+        modalUsuarios.style.display = "none";
+    });
+
+    // Fechar clicando fora da modal
+    window.addEventListener("click", function (e) {
+        if (e.target === modalUsuarios) {
+            modalUsuarios.style.display = "none";
+        }
+    });
+
+});

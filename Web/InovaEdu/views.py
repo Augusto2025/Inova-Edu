@@ -1500,10 +1500,14 @@ def TurmaCoord(request):
     cursos = Curso.objects.all()
     professores = Usuario.objects.filter(tipo="Professor")
 
+    # Apenas alunos
+    alunos = Usuario.objects.filter(tipo="Aluno")
+    
     context = {
         "turmas": turmas,
         "cursos": cursos,
         "professores": professores,
+        "alunos": alunos,
     }
 
     return render(request, "Coordenacao/TurmaCoord.html", context)

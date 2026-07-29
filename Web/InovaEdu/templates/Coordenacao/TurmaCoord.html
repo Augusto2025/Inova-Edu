@@ -61,7 +61,7 @@
                         <span>Turno</span>
                         <span>Ano</span>
                         <span>Curso</span>
-                        <span>Usuários</span>
+                        <span>Usuários da Turma</span>
                         <span class="turma-acoes">Ações</span>
                     </li>
 
@@ -131,7 +131,17 @@
 
                     <!-- LISTA DO BANCO -->
                     <div class="modal-usuarios-lista">
-                        <ul id="listaAlunosBanco"></ul>
+                        <ul id="listaAlunosBanco">
+                            {% for aluno in alunos %}
+                            <li data-id="{{ aluno.idusuario }}">
+                                <span>{{ aluno.nome }} {{ aluno.sobrenome }}</span>
+
+                                <button type="button" class="btn-add-aluno">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
 
                     <!-- ALUNOS SELECIONADOS -->
@@ -283,6 +293,7 @@
             </div>
         </div>
 
+        {% comment %} Excluir {% endcomment %}
         <div id="modalExcluirTurma" class="modal-excluir-turma">
 
             <div class="modal-excluir-turma-conteudo">
@@ -312,6 +323,7 @@
         </div>
 
 
+        
 
 
 
