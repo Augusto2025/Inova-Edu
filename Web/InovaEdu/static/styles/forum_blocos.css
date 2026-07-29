@@ -244,6 +244,34 @@ body {
   gap: 12px;
 }
 
+/* DIVISOR DE SEÇÕES (MEUS FÓRUNS / COMUNIDADE) */
+.section-title-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 25px 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(0, 70, 184, 0.12);
+}
+
+.section-title-divider h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--azul-Senac);
+}
+
+.section-title-divider i {
+  font-size: 1.3rem;
+  color: var(--laranja-Senac);
+}
+
+.forum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 25px;
+  margin: 15px 0 30px 0; /* Ajuste na margem para ficar proporcional com as divisões */
+}
+
 .card-ver-mais {
   background: rgba(0, 70, 184, 0.04);
   border: 2px dashed var(--azul-Senac);

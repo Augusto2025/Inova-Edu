@@ -991,6 +991,60 @@ def editar_evento(request, evento_id):
         'usuario': usuario
     })
 
+def criar_evento(request):
+    email = request.session.get("usuario_email")
+    usuario = None
+    if email:
+        try:
+            usuario = Usuario.objects.get(email=email)
+        except Usuario.DoesNotExist:
+            usuario = None
+
+    if request.method == "POST":
+        nome = request.POST.get("nome", "").strip()
+        data_str = request.POST.get("data")
+        hora_str = request.POST.get("hora")
+        descricao = request.POST.get("descricao", "").strip()
+        endereco = request.POST.get("endereco", "").strip()
+
+        # validações básicas
+        if not nome or not data_str or not hora_str:
+            return render(
+                request,
+                "AlunoProfessor/criar_evento.html",
+                {
+                    "erro": "Nome, data e hora são obrigatórios.",
+                    "usuario": usuario,
+                    "form": request.POST,
+                },
+            )
+
+        try:
+            data_do_evento = datetime.strptime(data_str, "%Y-%m-%d").date()
+            hora_do_evento = datetime.strptime(hora_str, "%H:%M").time()
+        except ValueError:
+            return render(
+                request,
+                "AlunoProfessor/criar_evento.html",
+                {
+                    "erro": "Formato de data/hora inválido.",
+                    "usuario": usuario,
+                    "form": request.POST,
+                },
+            )
+
+        Eventos.objects.create(
+            nome_do_evento=nome,
+            data_do_evento=data_do_evento,
+            hora_do_evento=hora_do_evento,
+            descricao=descricao,
+            endereco=endereco,
+            usuario=usuario,
+        )
+        return redirect("calendario")
+
+    return render(request, "AlunoProfessor/criar_evento.html", {"usuario": usuario})
+
 @require_http_methods(["DELETE", "POST"])
 def excluir_evento(request, evento_id):
     email = request.session.get('usuario_email')
@@ -1003,6 +1057,128 @@ def excluir_evento(request, evento_id):
     # Caso não seja o dono do evento
     return JsonResponse({'message': 'Você não tem permissão para excluir este evento.'}, status=403)
 
+def forum_blocos(request):
+    query = request.GET.get("q", "").strip()
+    data_criacao = request.GET.get("data_criacao", "")
+    ordenar = request.GET.get("ordenar", "")
+    usuario_email = request.session.get('usuario_email')
+
+    # Otimização com select_related('usuario')
+    foruns = Forum.objects.select_related('usuario').all()
+
+    if query:
+        foruns = foruns.filter(nome__icontains=query)
+
+    meus_foruns_count = Forum.objects.filter(usuario__email=usuario_email).count()
+
+    if data_criacao:
+        foruns = foruns.filter(data_criacao=data_criacao)
+
+    if ordenar == "asc":
+        foruns = foruns.order_by("nome")
+    elif ordenar == "desc":
+        foruns = foruns.order_by("-nome")
+
+    return render(
+        request,
+        'AlunoProfessor/forum_blocos.html',
+        {
+            'foruns': foruns,
+            'meus_foruns_count': meus_foruns_count,
+            'query': query,
+        }
+    )
+
+def editar_forum(request, forum_id):
+    forum = get_object_or_404(Forum, pk=forum_id)
+    email_logado = request.session.get("usuario_email")
+
+    # Só permite editar se o usuário logado for o criador
+    if not forum.usuario or email_logado != forum.usuario.email:
+        return redirect("forum_blocos")
+
+    topico = forum.topicos.first()
+
+    if request.method == "POST":
+        forum_nome = request.POST.get("nome", "").strip()
+        topico_titulo = request.POST.get("titulo", "").strip()
+        topico_descricao = request.POST.get("descricao", "").strip()
+
+        if forum_nome:
+            forum.nome = forum_nome
+            forum.save()
+
+        if topico:
+            topico.titulo = topico_titulo
+            topico.descricao = topico_descricao
+            topico.save()
+
+        return redirect("forum_blocos")
+
+    return redirect("forum_blocos")
+
+
+def excluir_forum(request, forum_id):
+    if request.method == "POST":
+        forum = get_object_or_404(Forum, pk=forum_id)
+        usuario_email = request.session.get("usuario_email")
+
+        # Só permite excluir se for o dono
+        if forum.usuario and forum.usuario.email == usuario_email:
+            forum.delete()
+            messages.success(request, "Fórum excluído com sucesso!")
+        else:
+            messages.error(request, "Você não tem permissão para excluir este fórum.")
+
+    return redirect("forum_blocos")  # volta para a página principal
+
+
+def criar_forum(request):
+    email = request.session.get("usuario_email")
+    if not email:
+        return redirect("login")
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return redirect("login")
+
+    if request.method == "POST":
+        nome = request.POST.get("nome", "").strip()
+        titulo_topico = request.POST.get("titulo_topico", "").strip()
+        descricao_topico = request.POST.get("descricao_topico", "").strip()
+
+        meus_foruns_count = Forum.objects.filter(usuario__email=email).count()
+        if meus_foruns_count >= 5:
+            messages.error(request, "Você só pode ter no máximo 5 fóruns criados!")
+            return redirect('forum_blocos')
+
+        # ✅ 1. Valida APENAS o nome do fórum (que é o único campo obrigatório)
+        if not nome:
+            messages.error(request, "Informe o nome do fórum.")
+            return redirect("forum_blocos")
+
+        # 2️⃣ Cria o Fórum
+        forum = Forum.objects.create(
+            nome=nome, 
+            data_criacao=timezone.now().date(), 
+            usuario=usuario
+        )
+
+        # 3️⃣ Cria o primeiro Tópico APENAS se o usuário preencheu o título
+        if titulo_topico:
+            Topico.objects.create(
+                forum=forum,
+                titulo=titulo_topico,
+                descricao=descricao_topico,
+                usuario=usuario,
+            )
+
+        messages.success(request, "Fórum criado com sucesso!")
+        return redirect("forum_blocos")
+
+    # 🚫 Não renderiza template próprio (modal cuida disso)
+    return redirect("forum_blocos")
 
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
@@ -1145,171 +1321,6 @@ def editar_mensagem(request, msg_id):
             msg.save()
             
     return redirect(request.META.get('HTTP_REFERER'))
-
-def forum_blocos(request):
-    query = request.GET.get("q", "").strip()
-    data_criacao = request.GET.get("data_criacao", "")
-    ordenar = request.GET.get("ordenar", "")
-
-    # Otimização com select_related('usuario')
-    foruns = Forum.objects.select_related('usuario').all()
-
-    if query:
-        foruns = foruns.filter(nome__icontains=query)
-
-    if data_criacao:
-        foruns = foruns.filter(data_criacao=data_criacao)
-
-    if ordenar == "asc":
-        foruns = foruns.order_by("nome")
-    elif ordenar == "desc":
-        foruns = foruns.order_by("-nome")
-
-    return render(
-        request,
-        'AlunoProfessor/forum_blocos.html',
-        {
-            'foruns': foruns,
-            'query': query,
-        }
-    )
-
-def editar_forum(request, forum_id):
-    forum = get_object_or_404(Forum, pk=forum_id)
-    email_logado = request.session.get("usuario_email")
-
-    # Só permite editar se o usuário logado for o criador
-    if not forum.usuario or email_logado != forum.usuario.email:
-        return redirect("forum_blocos")
-
-    topico = forum.topicos.first()
-
-    if request.method == "POST":
-        forum_nome = request.POST.get("nome", "").strip()
-        topico_titulo = request.POST.get("titulo", "").strip()
-        topico_descricao = request.POST.get("descricao", "").strip()
-
-        if forum_nome:
-            forum.nome = forum_nome
-            forum.save()
-
-        if topico:
-            topico.titulo = topico_titulo
-            topico.descricao = topico_descricao
-            topico.save()
-
-        return redirect("forum_blocos")
-
-    return redirect("forum_blocos")
-
-
-def excluir_forum(request, forum_id):
-    if request.method == "POST":
-        forum = get_object_or_404(Forum, pk=forum_id)
-        usuario_email = request.session.get("usuario_email")
-
-        # Só permite excluir se for o dono
-        if forum.usuario and forum.usuario.email == usuario_email:
-            forum.delete()
-            messages.success(request, "Fórum excluído com sucesso!")
-        else:
-            messages.error(request, "Você não tem permissão para excluir este fórum.")
-
-    return redirect("forum_blocos")  # volta para a página principal
-
-
-def criar_forum(request):
-    email = request.session.get("usuario_email")
-    if not email:
-        return redirect("login")
-
-    try:
-        usuario = Usuario.objects.get(email=email)
-    except Usuario.DoesNotExist:
-        return redirect("login")
-
-    if request.method == "POST":
-        nome = request.POST.get("nome", "").strip()
-        titulo_topico = request.POST.get("titulo_topico", "").strip()
-        descricao_topico = request.POST.get("descricao_topico", "").strip()
-
-        if not nome or not titulo_topico:
-            messages.error(request, "Preencha todos os campos obrigatórios.")
-            return redirect("forum_blocos")
-
-        # 1️⃣ Cria o Fórum
-        forum = Forum.objects.create(
-            nome=nome, data_criacao=timezone.now().date(), usuario=usuario
-        )
-
-        # 2️⃣ Cria o primeiro Tópico
-        Topico.objects.create(
-            forum=forum,
-            titulo=titulo_topico,
-            descricao=descricao_topico,
-            usuario=usuario,
-        )
-
-        messages.success(request, "Fórum criado com sucesso!")
-        return redirect("forum_blocos")
-
-    # 🚫 Não renderiza template próprio (modal cuida disso)
-    return redirect("forum_blocos")
-
-
-def criar_evento(request):
-    email = request.session.get("usuario_email")
-    usuario = None
-    if email:
-        try:
-            usuario = Usuario.objects.get(email=email)
-        except Usuario.DoesNotExist:
-            usuario = None
-
-    if request.method == "POST":
-        nome = request.POST.get("nome", "").strip()
-        data_str = request.POST.get("data")
-        hora_str = request.POST.get("hora")
-        descricao = request.POST.get("descricao", "").strip()
-        endereco = request.POST.get("endereco", "").strip()
-
-        # validações básicas
-        if not nome or not data_str or not hora_str:
-            return render(
-                request,
-                "AlunoProfessor/criar_evento.html",
-                {
-                    "erro": "Nome, data e hora são obrigatórios.",
-                    "usuario": usuario,
-                    "form": request.POST,
-                },
-            )
-
-        try:
-            data_do_evento = datetime.strptime(data_str, "%Y-%m-%d").date()
-            hora_do_evento = datetime.strptime(hora_str, "%H:%M").time()
-        except ValueError:
-            return render(
-                request,
-                "AlunoProfessor/criar_evento.html",
-                {
-                    "erro": "Formato de data/hora inválido.",
-                    "usuario": usuario,
-                    "form": request.POST,
-                },
-            )
-
-        Eventos.objects.create(
-            nome_do_evento=nome,
-            data_do_evento=data_do_evento,
-            hora_do_evento=hora_do_evento,
-            descricao=descricao,
-            endereco=endereco,
-            usuario=usuario,
-        )
-        return redirect("calendario")
-
-    return render(request, "AlunoProfessor/criar_evento.html", {"usuario": usuario})
 
 
 # ================ TELAS COORDENAÇÃO ====================

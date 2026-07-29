@@ -14,6 +14,26 @@
     <div class="glass-bg-wrapper">
         <div class="container">
 
+            {% if messages %}
+                <div class="messages-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+                    {% for message in messages %}
+                        {% if 'error' in message.tags or 'danger' in message.tags or 'warning' in message.tags %}
+                            <!-- MENSAGEM VERMELHA (Erros e Avisos Importantes) -->
+                            <div class="alert alert-{{ message.tags }}" style="padding: 12px 16px; border-radius: 8px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% else %}
+                            <!-- MENSAGEM VERDE (Criação, Edição e Sucesso) -->
+                            <div class="alert alert-{{ message.tags }}" style="padding: 12px 16px; border-radius: 8px; background-color: #dbf8d7; color: #285b1d; border: 1px solid #cef5c6; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <header class="section-header">
                 <div class="rota">
                     Página: Todos os fóruns
@@ -35,21 +55,18 @@
                     </button>
                 </form>
             </section>
-
-            {% if foruns|length == 0 %}
-                <div class="no-results glass-card">
-                    <i class="fa-solid fa-folder-open no-results-icon"></i>
-                    <p>Nenhum fórum encontrado.</p>
-                    <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
-                </div>
-            {% endif %}
-
         </div>
 
-        <main class="container">
-            <section class="forum-grid">
+        <main class="container" id="foruns-main-wrapper">
+            
+            <!-- SEÇÃO 1: MEUS FÓRUNS -->
+            <div class="section-title-divider">
+                <i class="fa-solid fa-user-gear"></i>
+                <h2>Meus Fóruns</h2>
+            </div>
 
-                <!-- CARD CRIAR FÓRUM (GLASS DASHED - Sempre Visível) -->
+            <section class="forum-grid">
+                <!-- CARD CRIAR FÓRUM (Fixo na área dos meus fóruns) -->
                 <article class="forum-card create-card" id="abrirModalForum">
                     <div class="create-card-content">
                         <div class="plus-circle">
@@ -60,64 +77,123 @@
                     </div>
                 </article>
 
-                <!-- LISTA DE CARDS GLASS (Oculta a partir do 8º fórum) -->
-                {% for Forum in foruns %}
-                <article class="forum-card glass-card {% if forloop.counter > 7 %}forum-oculto{% endif %}"
-                         {% if forloop.counter > 4 %}style="display: none;"{% endif %}>
-                    
-                    <div class="card-header-glass">
-                        <span class="category-badge">
-                            <i class="fa-solid fa-hashtag"></i> COMUNIDADE
-                        </span>
+                {% if foruns|length == 0 %}
+                    <div class="no-results glass-card">
+                        <i class="fa-solid fa-folder-open no-results-icon"></i>
+                        <p>Nenhum fórum encontrado.</p>
+                        <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
+                    </div>
+                {% endif %}
 
-                        {% if request.session.usuario_email == Forum.usuario.email %}
-                        <div class="owner-menu">
-                            <span class="owner-tag">Seu Fórum</span>
-                            <div class="acoes-forum">
-                                <button class="btn-icon btn-editar" title="Editar" 
-                                        data-forum-id="{{ Forum.idforum }}"
-                                        data-forum-nome="{{ Forum.nome }}"
-                                        data-topico-titulo="{{ Forum.topico_set.first.titulo }}"
-                                        data-topico-descricao="{{ Forum.topico_set.first.descricao }}">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button class="btn-icon btn-excluir" title="Excluir" data-forum-id="{{ Forum.idforum }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                <!-- LOOP: MEUS FÓRUNS -->
+                {% for Forum in foruns %}
+                    {% if request.session.usuario_email == Forum.usuario.email %}
+                    <article class="forum-card glass-card">
+                        <div class="card-header-glass">
+                            <span class="category-badge">
+                                <i class="fa-solid fa-hashtag"></i> MEU FÓRUM
+                            </span>
+
+                            <div class="owner-menu">
+                                <span class="owner-tag">Seu Fórum</span>
+                                <div class="acoes-forum">
+                                    <button class="btn-icon btn-editar" title="Editar" 
+                                            data-forum-id="{{ Forum.idforum }}"
+                                            data-forum-nome="{{ Forum.nome }}"
+                                            data-topico-titulo="{{ Forum.topico_set.first.titulo }}"
+                                            data-topico-descricao="{{ Forum.topico_set.first.descricao }}">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="btn-icon btn-excluir" title="Excluir" data-forum-id="{{ Forum.idforum }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="card-body-glass">
-                        <h2 class="forum-card-title">{{ Forum.nome }}</h2>
-                    </div>
+                        <div class="card-body-glass">
+                            <h2 class="forum-card-title">{{ Forum.nome }}</h2>
+                        </div>
 
-                    <div class="card-metrics-pills">
-                        <div class="metric-pill">
-                            <i class="fa-regular fa-calendar"></i>
-                            <span>{{ Forum.data_criacao }}</span>
+                        <div class="card-metrics-pills">
+                            <div class="metric-pill">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span>{{ Forum.data_criacao }}</span>
+                            </div>
+                            <div class="metric-pill">
+                                <i class="fa-solid fa-comments"></i>
+                                <span>Ativo</span>
+                            </div>
                         </div>
-                        <div class="metric-pill">
-                            <i class="fa-solid fa-comments"></i>
-                            <span>Ativo</span>
-                        </div>
-                        <div class="metric-pill">
-                            <i class="fa-solid fa-user"></i>
-                            <span>{{ Forum.usuario.nome }}</span>
-                        </div>
-                    </div>
 
-                    <div class="card-footer-glass">
-                        <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
-                            <span>Acessar Fórum</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </a>
+                        <div class="card-footer-glass">
+                            <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
+                                <span>Acessar Fórum</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                    {% endif %}
+                {% endfor %}
+            </section>
+
+
+            <!-- SEÇÃO 2: FÓRUNS DA COMUNIDADE (OUTROS FÓRUNS) -->
+            <div class="section-title-divider" style="margin-top: 40px;">
+                <i class="fa-solid fa-users"></i>
+                <h2>Fóruns da Comunidade</h2>
+            </div>
+
+            {% if foruns.usuario.email|length == 0 %}
+                    <div class="no-results glass-card">
+                        <i class="fa-solid fa-folder-open no-results-icon"></i>
+                        <p>Nenhum fórum encontrado.</p>
+                        <small>Tente buscar por outros termos ou crie um novo fórum abaixo.</small>
                     </div>
-                </article>
+            {% endif %}
+
+            <section class="forum-grid">
+                {% for Forum in foruns %}
+                    {% if request.session.usuario_email != Forum.usuario.email %}
+                    <article class="forum-card glass-card {% if forloop.counter > 7 %}forum-oculto{% endif %}"
+                             {% if forloop.counter > 7 %}style="display: none;"{% endif %}>
+                        
+                        <div class="card-header-glass">
+                            <span class="category-badge">
+                                <i class="fa-solid fa-hashtag"></i> COMUNIDADE
+                            </span>
+                        </div>
+
+                        <div class="card-body-glass">
+                            <h2 class="forum-card-title">{{ Forum.nome }}</h2>
+                        </div>
+
+                        <div class="card-metrics-pills">
+                            <div class="metric-pill">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span>{{ Forum.data_criacao }}</span>
+                            </div>
+                            <div class="metric-pill">
+                                <i class="fa-solid fa-comments"></i>
+                                <span>Ativo</span>
+                            </div>
+                            <div class="metric-pill">
+                                <i class="fa-solid fa-user"></i>
+                                <span>{{ Forum.usuario.nome }}</span>
+                            </div>
+                        </div>
+
+                        <div class="card-footer-glass">
+                            <a class="Botao_entrar_forum" href="{% url 'forum_topicos' Forum.idforum %}">
+                                <span>Acessar Fórum</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                    {% endif %}
                 {% endfor %}
 
-                <!-- CARD "VER MAIS FÓRUNS" (Aparece se houver mais de 7 fóruns) -->
+                <!-- CARD "VER MAIS FÓRUNS" -->
                 {% if foruns|length > 7 %}
                     <article class="forum-card card-ver-mais" id="btnVerMaisForuns">
                         <div class="card-ver-mais-content">
@@ -129,38 +205,49 @@
                         </div>
                     </article>
                 {% endif %}
-
             </section>
+
         </main>
     </div>
 
-    <!-- MODAIS INTATOS -->
+    <!-- MODAL CRIAR FÓRUM -->
     <div id="modalCriarForum" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-comments"></i> Criar Fórum</h2>
-                <button type="button" class="modal-close" id="fecharModalCriar">&times;</button>
+                <button type="button" class="modal-close" id="fecharModalForum">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="formCriarForum" method="POST" action="{% url 'criar_forum' %}">
                     {% csrf_token %}
-                    <label>Nome do fórum</label>
+                    
+                    <label>Nome do fórum *</label>
                     <input name="nome" required maxlength="30" placeholder="Ex: Dúvidas sobre Python">
 
-                    <label>Título do primeiro tópico</label>
-                    <input name="titulo_topico" required maxlength="30" placeholder="Ex: Como começar com Python">
+                    <div style="margin: 15px 0 10px 0;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: normal;">
+                            <input style="width: 18px; height: 18px; margin: 0px" type="checkbox" id="checkCriarTopico" name="criar_topico" onchange="toggleCamposTopico(this.checked)">
+                            <span>Deseja criar um primeiro tópico junto?</span>
+                        </label>
+                    </div>
 
-                    <label>Descrição do tópico</label>
-                    <textarea name="descricao_topico" maxlength="300" placeholder="Ex: Tenho dúvidas sobre como começar a aprender Python."></textarea>
+                    <div id="containerCamposTopico" style="display: none;">
+                        <label>Título do primeiro tópico *</label>
+                        <input type="text" id="inputTituloTopico" name="titulo_topico" maxlength="30" placeholder="Ex: Como começar com Python">
+
+                        <label>Descrição do tópico</label>
+                        <textarea name="descricao_topico" maxlength="300" placeholder="Ex: Tenho dúvidas sobre como começar a aprender Python."></textarea>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="submit" form="formCriarForum" class="btn-primary">Criar</button>
-                <button type="button" id="fecharModalForum" class="btn-secondary">Cancelar</button>
+                <button type="button" class="btn-secondary" id="fecharModalForum">Cancelar</button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL EDITAR FÓRUM -->
     <div id="modalEditarForum" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -172,21 +259,16 @@
                     {% csrf_token %}
                     <label>Nome do Fórum:</label>
                     <input type="text" name="nome" id="inputNomeForum" required>
-
-                    <label>Título do Tópico:</label>
-                    <input type="text" name="titulo" id="inputTituloTopico" required>
-
-                    <label>Descrição do Tópico:</label>
-                    <textarea name="descricao" id="inputDescricaoTopico"></textarea>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn-primary" form="formEditarForum">Salvar</button>
-                <button type="button" id="fecharModalEditar" class="btn-secondary">Cancelar</button>
+                <button type="button" class="btn-secondary" id="fecharModalEditar">Cancelar</button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL EXCLUIR FÓRUM -->
     <div id="modalExcluirForum" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header header-danger">
@@ -209,7 +291,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
-            // --- 1. GERENCIAMENTO DE MODAIS INTATO ---
+            // --- 1. GERENCIAMENTO DE MODAIS ---
             const abrirModal = document.getElementById('abrirModalForum');
             const fecharModal = document.getElementById('fecharModalForum');
             const modalCriar = document.getElementById('modalCriarForum');
@@ -230,7 +312,6 @@
             const inputTitulo = document.getElementById('inputTituloTopico');
             const inputDescricao = document.getElementById('inputDescricaoTopico');
         
-            // Função para (re)vincular eventos dos botões de Editar/Excluir
             function vincularEventosAcoes() {
                 document.querySelectorAll('.btn-editar').forEach(btn => {
                     btn.onclick = (e) => {
@@ -252,7 +333,7 @@
                 });
             }
 
-            vincularEventosAcoes(); // Chamada inicial
+            vincularEventosAcoes();
         
             const fecharEditar = document.getElementById('fecharModalEditar');
             const fecharExcluir = document.getElementById('fecharModalExcluir');
@@ -267,7 +348,6 @@
                     });
                 }
             });
-
 
             // --- 2. LÓGICA DE EXIBIR DE 12 EM 12 ---
             function inicializarVerMais() {
@@ -291,18 +371,17 @@
 
             inicializarVerMais();
 
-
             // --- 3. LÓGICA DE BUSCA AUTOMÁTICA EM TEMPO REAL ---
             const inputBusca = document.querySelector('input[name="q"]');
             const searchForm = document.querySelector('.search-form-wrapper');
-            const forumGrid = document.querySelector('.forum-grid');
+            const mainWrapper = document.getElementById('foruns-main-wrapper');
             let timeout = null;
 
             if (searchForm) {
                 searchForm.addEventListener('submit', (e) => e.preventDefault());
             }
 
-            if (inputBusca && forumGrid) {
+            if (inputBusca && mainWrapper) {
                 inputBusca.addEventListener('input', (e) => {
                     clearTimeout(timeout);
 
@@ -315,16 +394,14 @@
                             .then(html => {
                                 const parser = new DOMParser();
                                 const doc = parser.parseFromString(html, 'text/html');
-                                const novaGrid = doc.querySelector('.forum-grid');
+                                const novoWrapper = doc.querySelector('#foruns-main-wrapper');
                                 
-                                if (novaGrid) {
-                                    forumGrid.innerHTML = novaGrid.innerHTML;
+                                if (novoWrapper) {
+                                    mainWrapper.innerHTML = novoWrapper.innerHTML;
                                     
-                                    // Re-associa os botões dos modais e do botão ver mais
                                     vincularEventosAcoes();
                                     inicializarVerMais();
 
-                                    // Reconecta o evento de clique do "Criar Fórum" atualizado no DOM
                                     const novoAbrirModal = document.getElementById('abrirModalForum');
                                     if (novoAbrirModal && modalCriar) {
                                         novoAbrirModal.addEventListener('click', () => modalCriar.classList.add('open'));
@@ -337,6 +414,20 @@
             }
 
         });
+
+        function toggleCamposTopico(marcado) {
+            const container = document.getElementById('containerCamposTopico');
+            const inputTitulo = document.getElementById('inputTituloTopico');
+
+            if (marcado) {
+                container.style.display = 'block';
+                inputTitulo.setAttribute('required', 'required');
+            } else {
+                container.style.display = 'none';
+                inputTitulo.removeAttribute('required');
+                inputTitulo.value = '';
+            }
+        }
     </script>
 {% endblock %}
 
