@@ -11,8 +11,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.guts26.simuladorfinanceiro",
-      "jsEngine": "hermes"
+      "package": "com.guts26.simuladorfinanceiro"
     },
     "plugins": [
       [
@@ -23,7 +22,10 @@
             "enableMinifyInReleaseBuilds": true
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-sharing",
+      "expo-status-bar"
     ],
     "owner": "alcides1212",
     "extra": {
