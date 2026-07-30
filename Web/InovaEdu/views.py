@@ -392,33 +392,50 @@ def turmas(request, curso_id):
         },
     )
 
+from django.db.models import Q
+
 @require_GET
 def listar_projetos_ajax(request):
+    """
+    Retorna a lista de projetos associados ao usuário logado via JSON.
+    """
     email = request.session.get("usuario_email")
 
     if not email:
-        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
+        msg = "Usuário não autenticado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=403)
 
     try:
         usuario = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+        msg = "Usuário não encontrado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=404)
 
-    projetos = Projeto.objects.filter(alunos=usuario).select_related("turma")
+    # Busca projetos onde o usuário é aluno participante OU possui permissão de edição
+    projetos = (
+        Projeto.objects.filter(Q(alunos=usuario) | Q(alunos_edicao=usuario))
+        .distinct()
+        .select_related("turma")
+    )
 
     lista_projetos = []
     for projeto in projetos:
-        data_criacao = None
-        if hasattr(projeto, "data_criacao") and projeto.data_criacao:
-            data_criacao = projeto.data_criacao.strftime("%d/%m/%Y")
+        data_formatada = (
+            projeto.data_de_criacao.strftime("%d/%m/%Y")
+            if getattr(projeto, "data_de_criacao", None)
+            else None
+        )
 
         lista_projetos.append(
             {
-                "id": getattr(projeto, "idprojeto", getattr(projeto, "id", None)),
-                "titulo": getattr(projeto, "nome_projeto", getattr(projeto, "titulo", "")),
-                "descricao": projeto.descricao,
-                "turma": projeto.turma.nome if projeto.turma else None,
-                "data_criacao": data_criacao,
+                "id": projeto.idprojeto,
+                "titulo": projeto.nome_projeto,
+                "descricao": projeto.descricao or "",
+                "turma": projeto.turma.codigo_turma if (projeto.turma and hasattr(projeto.turma, 'codigo_turma')) else None,
+                "data_criacao": data_formatada,
+                "imagem_url": projeto.imagem.url if projeto.imagem else None,
             }
         )
 
@@ -426,120 +443,213 @@ def listar_projetos_ajax(request):
 
 
 def usuario_pode_editar_projeto(usuario, projeto):
+    """
+    Auxiliar para verificar se um determinado usuário pode editar um projeto específico.
+    """
     if not usuario or not projeto:
         return False
 
-    # Professor da turma
-    if projeto.turma and usuario == projeto.turma.professor:
-        return True
+    # É o professor da turma?
+    if projeto.turma and projeto.turma.professor:
+        if usuario.idusuario == projeto.turma.professor.idusuario:
+            return True
 
-    # Alunos com permissão concedida
-    user_id = getattr(usuario, "idusuario", getattr(usuario, "id", None))
-    if user_id and projeto.alunos_edicao.filter(idusuario=user_id).exists():
+    # O aluno está na lista de permissões de edição?
+    if projeto.alunos_edicao.filter(idusuario=usuario.idusuario).exists():
         return True
 
     return False
 
 
 def projetos_da_turma(request, turma_id):
+    """
+    View principal para listagem, cadastro, edição, exclusão e permissões dos projetos da turma.
+    """
     turma = get_object_or_404(Turma, idturma=turma_id)
     projetos = Projeto.objects.filter(turma=turma)
 
+    # Identificação do Usuário Logado via Sessão
     email_logado = request.session.get("usuario_email")
     usuario_logado = None
     if email_logado:
         try:
             usuario_logado = Usuario.objects.get(email=email_logado)
         except Usuario.DoesNotExist:
-            pass
+            usuario_logado = None
 
-    can_modify = (usuario_logado == turma.professor) if (usuario_logado and turma) else False
+    # Verifica se o usuário é o Professor da Turma
+    is_professor = False
+    if usuario_logado and turma.professor:
+        is_professor = (usuario_logado.idusuario == turma.professor.idusuario)
 
+    can_modify = is_professor
+
+    # =========================================================
+    # PROCESSAMENTO DE AÇÕES VIA POST
+    # =========================================================
     if request.method == "POST":
-        # Identifica se a requisição veio via AJAX (fetch do seu JavaScript)
-        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
-
-        if not can_modify:
-            msg = "Você não tem permissão para realizar esta ação."
-            if is_ajax:
-                return JsonResponse({"success": False, "message": msg}, status=403)
-            messages.error(request, msg)
-            return redirect("projetos_da_turma", turma_id=turma.idturma)
+        # Detecção flexível de requisição AJAX
+        header_xhr = request.headers.get("x-requested-with", "") or request.headers.get("X-Requested-With", "")
+        is_ajax = header_xhr.lower() == "xmlhttprequest"
 
         action = request.POST.get("action")
 
-        # ===== CADASTRAR PROJETO =====
+        # -----------------------------------------------------
+        # 1. CADASTRAR PROJETO
+        # -----------------------------------------------------
         if action == "cadastrar_projeto":
-            nome_projeto = request.POST.get("nome_projeto", "").strip()
-            descricao = request.POST.get("descricao", "")
-            imagem_file = request.FILES.get("imagem")
-            if nome_projeto:
-                projeto = Projeto(
-                    nome_projeto=nome_projeto, descricao=descricao, turma=turma
-                )
-                if imagem_file:
-                    projeto.imagem = imagem_file
-                projeto.save()
-                messages.success(request, f'Projeto "{nome_projeto}" cadastrado com sucesso.')
-            else:
-                messages.error(request, "O nome do projeto é obrigatório.")
+            if not is_professor:
+                msg = "Apenas o professor da turma pode cadastrar novos projetos."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=403)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
 
-        # ===== EDITAR PROJETO =====
+            nome_projeto = request.POST.get("nome_projeto", "").strip()
+            descricao = request.POST.get("descricao", "").strip()
+            imagem_file = request.FILES.get("imagem")
+
+            if not nome_projeto:
+                msg = "O nome do projeto é obrigatório."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=400)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            projeto = Projeto(
+                nome_projeto=nome_projeto,
+                descricao=descricao,
+                turma=turma
+            )
+            if imagem_file:
+                projeto.imagem = imagem_file
+
+            projeto.save()
+
+            msg = f'Projeto "{nome_projeto}" cadastrado com sucesso!'
+            messages.success(request, msg)
+            if is_ajax:
+                return JsonResponse({"success": True, "message": msg})
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+        # -----------------------------------------------------
+        # 2. EDITAR PROJETO
+        # -----------------------------------------------------
         elif action == "editar_projeto":
             projeto_id = request.POST.get("projeto_id")
+            
             try:
                 projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
-                projeto.nome_projeto = request.POST.get("nome_projeto", "").strip()
-                projeto.descricao = request.POST.get("descricao", "")
-                if request.FILES.get("imagem"):
-                    projeto.imagem = request.FILES["imagem"]
-                projeto.save()
-                messages.success(request, f'Projeto "{projeto.nome_projeto}" editado com sucesso.')
-            except Projeto.DoesNotExist:
-                messages.error(request, "Projeto não encontrado.")
-
-        # ===== EXCLUIR PROJETO =====
-        elif action == "excluir_projeto":
-            projeto_id = request.POST.get("projeto_id")
-            try:
-                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
-                nome = projeto.nome_projeto
-                projeto.delete()
-                messages.success(request, f'Projeto "{nome}" excluído com sucesso.')
-            except Projeto.DoesNotExist:
-                messages.error(request, "Projeto não encontrado.")
-
-        # ===== SALVAR ALUNOS DO PROJETO (REQUISIÇÃO AJAX) =====
-        elif action == "salvar_alunos_repositorio":
-            projeto_id = request.POST.get("projeto_id")
-            try:
-                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
-                alunos_selecionados = request.POST.getlist("alunos_edicao")
-                alunos_obj = Usuario.objects.filter(idusuario__in=alunos_selecionados)
-                projeto.alunos_edicao.set(alunos_obj)
-                projeto.save()
-                
-                msg = f'Alunos do projeto "{projeto.nome_projeto}" atualizados com sucesso.'
-                
-                # <--- 2. RETORNO COMPATÍVEL COM SEU JS--->
-                if is_ajax:
-                    return JsonResponse({"success": True, "message": msg})
-                
-                messages.success(request, msg)
-
-            except Projeto.DoesNotExist:
-                msg = "Projeto não encontrado."
+            except (Projeto.DoesNotExist, ValueError, TypeError):
+                msg = "Projeto não encontrado nesta turma."
+                messages.error(request, msg)
                 if is_ajax:
                     return JsonResponse({"success": False, "message": msg}, status=404)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            # Valida se tem permissão (Se é o professor OU aluno com permissão)
+            if not (is_professor or usuario_pode_editar_projeto(usuario_logado, projeto)):
+                msg = "Você não tem permissão para editar este projeto."
                 messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=403)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
 
-        else:
+            nome_novo = request.POST.get("nome_projeto", "").strip()
+            if not nome_novo:
+                msg = "O nome do projeto não pode ficar em branco."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=400)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            projeto.nome_projeto = nome_novo
+            projeto.descricao = request.POST.get("descricao", "").strip()
+
+            if request.FILES.get("imagem"):
+                projeto.imagem = request.FILES["imagem"]
+
+            projeto.save()
+
+            msg = f'Projeto "{projeto.nome_projeto}" editado com sucesso!'
+            messages.success(request, msg)
             if is_ajax:
-                return JsonResponse({"success": False, "message": "Ação inválida."}, status=400)
-            messages.error(request, "Ação inválida.")
+                return JsonResponse({"success": True, "message": msg})
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
 
-        return redirect("projetos_da_turma", turma_id=turma.idturma)
+        # -----------------------------------------------------
+        # 3. EXCLUIR PROJETO
+        # -----------------------------------------------------
+        elif action == "excluir_projeto":
+            projeto_id = request.POST.get("projeto_id")
 
+            try:
+                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+            except (Projeto.DoesNotExist, ValueError, TypeError):
+                msg = "Projeto não encontrado para exclusão."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=404)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            if not is_professor:
+                msg = "Apenas o professor da turma pode excluir projetos."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=403)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            nome_excluido = projeto.nome_projeto
+            projeto.delete()
+
+            msg = f'Projeto "{nome_excluido}" excluído com sucesso!'
+            messages.success(request, msg)
+            if is_ajax:
+                return JsonResponse({"success": True, "message": msg})
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+        # -----------------------------------------------------
+        # 4. SALVAR PERMISSÕES DE ALUNOS DO PROJETO
+        # -----------------------------------------------------
+        elif action == "salvar_alunos_repositorio":
+            if not is_professor:
+                msg = "Apenas o professor pode alterar as permissões dos alunos."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=403)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            projeto_id = request.POST.get("projeto_id")
+            try:
+                projeto = Projeto.objects.get(idprojeto=projeto_id, turma=turma)
+            except (Projeto.DoesNotExist, ValueError, TypeError):
+                msg = "Projeto não encontrado."
+                messages.error(request, msg)
+                if is_ajax:
+                    return JsonResponse({"success": False, "message": msg}, status=404)
+                return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+            alunos_selecionados = request.POST.getlist("alunos_edicao")
+            alunos_obj = Usuario.objects.filter(idusuario__in=alunos_selecionados)
+            projeto.alunos_edicao.set(alunos_obj)
+
+            msg = f'Permissões dos alunos para o projeto "{projeto.nome_projeto}" atualizadas com sucesso!'
+            messages.success(request, msg)
+            if is_ajax:
+                return JsonResponse({"success": True, "message": msg})
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+        # -----------------------------------------------------
+        # AÇÃO INVÁLIDA
+        # -----------------------------------------------------
+        else:
+            msg = "Ação solicitada é inválida."
+            messages.error(request, msg)
+            if is_ajax:
+                return JsonResponse({"success": False, "message": msg}, status=400)
+            return redirect("projetos_da_turma", turma_id=turma.idturma)
+
+    # GET Request: Renderização normal da página
     alunos_da_turma = [ut.id_usuario for ut in turma.usuariodaturma_set.all()]
 
     return render(
