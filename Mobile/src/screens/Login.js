@@ -9,19 +9,17 @@ import { API_ENDPOINTS } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const URL_BACKEND = API_ENDPOINTS.login;
+const URL_RECUPERAR_SENHA = `${URL_BACKEND.replace(/\/$/, '')}/recuperar-senha`;
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
-    const [lembrarDeMim, setLembrarDeMim] = useState(false); // 🆕 Estado para o Checkbox
+    const [lembrarDeMim, setLembrarDeMim] = useState(false);
 
     const Logo = require('../../assets/LOGOBRANCO.png');
 
-    // ==========================================
-    // 1. CARREGAR DADOS SALVOS AO ABRIR A TELA
-    // ==========================================
     useEffect(() => {
         carregarCredenciaisSalvas();
     }, []);
@@ -44,9 +42,6 @@ export default function LoginScreen({ navigation }) {
         }
     };
 
-    // ==========================================
-    // 2. EXECUTAR LOGIN E TRATAR SALVAMENTO
-    // ==========================================
     const handleLogin = async () => {
         if (email === '' || senha === '') {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
@@ -64,7 +59,6 @@ export default function LoginScreen({ navigation }) {
         }
 
         try {
-            // --- Lógica de Salvar / Limpar "Lembrar de Mim" ---
             if (lembrarDeMim) {
                 await AsyncStorage.setItem('lembrar_email', email);
                 await AsyncStorage.setItem('lembrar_senha', senha);
@@ -79,7 +73,6 @@ export default function LoginScreen({ navigation }) {
                 ]);
             }
 
-            // Envia os dados para o seu servidor
             const resposta = await fetch(URL_BACKEND, {
                 method: 'POST',
                 headers: {
@@ -116,9 +109,44 @@ export default function LoginScreen({ navigation }) {
         }
     };
 
+    const handleForgotPassword = () => {
+        Alert.prompt(
+            'Recuperar senha',
+            'Informe o e-mail cadastrado para receber as instruções.',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Enviar',
+                    onPress: async (emailRecuperacao) => {
+                        const emailLimpo = (emailRecuperacao || '').trim();
+                        if (!emailLimpo) {
+                            Alert.alert('Erro', 'Informe um e-mail válido.');
+                            return;
+                        }
+
+                        try {
+                            const resposta = await fetch(URL_RECUPERAR_SENHA, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: emailLimpo })
+                            });
+
+                            const dados = await resposta.json();
+                            Alert.alert(dados.sucesso ? 'Sucesso' : 'Erro', dados.mensagem || 'Não foi possível recuperar a senha.');
+                        } catch (error) {
+                            console.error('Erro ao recuperar senha:', error);
+                            Alert.alert('Erro', 'Não foi possível enviar a recuperação no momento.');
+                        }
+                    }
+                }
+            ],
+            'plain-text'
+        );
+    };
+
     return (
         <View style={{ flex: 1 }}>
-            <KeyboardAwareScrollView style={styles.tela} enableOnAndroid={true} extraScrollHeight={40}>
+            <KeyboardAwareScrollView style={styles.tela} contentContainerStyle={styles.scrollContent} enableOnAndroid={true} extraScrollHeight={40}>
                 <View style={styles.containerTotal}>
                     <View style={styles.header}>
                         <Image source={Logo} style={styles.Logo} />
@@ -128,7 +156,6 @@ export default function LoginScreen({ navigation }) {
                     <View style={styles.containerCenter}>
                         <Text style={styles.titulo}>Login</Text>
 
-                        {/* Seletor Aluno / Professor */}
                         <Text style={styles.labelTipo}>Você é:</Text>
                         <View style={styles.tipoContainer}>
                             <TouchableOpacity
@@ -172,6 +199,8 @@ export default function LoginScreen({ navigation }) {
                             placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
                         />
                         
                         <CustomInput
@@ -181,7 +210,6 @@ export default function LoginScreen({ navigation }) {
                             secureTextEntry
                         />
 
-                        {/* 🆕 Opção "Lembrar de mim" */}
                         <TouchableOpacity 
                             style={styles.lembrarContainer} 
                             activeOpacity={0.8}
@@ -193,6 +221,10 @@ export default function LoginScreen({ navigation }) {
                                 color={lembrarDeMim ? "#1459b3" : "#64748B"} 
                             />
                             <Text style={styles.lembrarText}>Lembrar de mim</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity activeOpacity={0.8} onPress={handleForgotPassword}>
+                            <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                         </TouchableOpacity>
 
                         <CustomButton title="Entrar" onPress={handleLogin}/>
@@ -216,6 +248,12 @@ const styles = StyleSheet.create({
     tela: {
         backgroundColor: '#1459b3',
     },
+    scrollContent: {
+        flexGrow: 1,
+    },
+    containerTotal: {
+        flexGrow: 1,
+    },
     header: {
         width: '100%',
         paddingBottom: paddingHeader,
@@ -227,17 +265,18 @@ const styles = StyleSheet.create({
         borderTopRightRadius: borderRadius,
         borderTopLeftRadius: borderRadius,
         backgroundColor: '#fafafa',
-        height: '100%',
         width: '100%',
+        flexGrow: 1,
         paddingTop: '12%',
-        paddingHorizontal: '8%', // Usamos horizontal para dar margem igual dos dois lados
-        alignItems: 'stretch',   // 🌟 Força todos os elementos a esticarem na mesma largura
+        paddingHorizontal: '8%',
+        alignItems: 'center',
     },
     titulo: {
         color: '#1459b3',
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        textAlign: 'center',
     },
     labelTipo: {
         color: '#64748B',
@@ -249,7 +288,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 10,
         marginBottom: 18,
-        width: '100%', // 🌟 Mesma largura dos inputs
+        width: '100%',
     },
     tipoBtn: {
         flex: 1,
@@ -276,13 +315,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 6,
-        marginBottom: 18,
-        alignSelf: 'flex-start', // Alinha a caixinha à esquerda no limite do campo
+        marginBottom: 10,
+        alignSelf: 'flex-start',
     },
     lembrarText: {
         marginLeft: 8,
         color: '#64748B',
         fontSize: 14,
         fontWeight: '600',
+    },
+    forgotPasswordText: {
+        color: '#1459b3',
+        fontSize: 14,
+        fontWeight: '700',
+        marginBottom: 16,
+        alignSelf: 'center',
     },
 });

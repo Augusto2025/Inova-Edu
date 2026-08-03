@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import { COLORS } from "../components/Cores"; 
 import { ThemeContext } from "../context/ThemeContext";
+import { useUser } from "../context/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
@@ -24,12 +25,12 @@ import * as Speech from 'expo-speech';
 export default function ConfiguracoesScreen({ navigation }) {
   // Puxando os novos estados do controle de fonte global
   const { isDarkMode, toggleDarkMode, fontSizeScale, alterarTamanhoFonte, obterNomeTamanhoFonte } = useContext(ThemeContext);
+  const { user } = useUser();
 
   const [push, setPush] = useState(false);
   const [email, setEmail] = useState(false);
   const [mensagens, setMensagens] = useState(false);
   const [eventos, setEventos] = useState(false);
-  const [usuario, setUsuario] = useState(null);
 
   const irParaPerfil = () => {
     navigation.navigate("Perfil");
@@ -71,35 +72,9 @@ export default function ConfiguracoesScreen({ navigation }) {
   };
 
   useEffect(() => {
-    const carregarUsuario = async () => {
-      try {
-        const idSalvo = await AsyncStorage.getItem('idUsuario');
-        if (!idSalvo) return;
-        const resp = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
-        if (!resp.ok) return;
-        const texto = await resp.text();
-        const dados = JSON.parse(texto);
-        if (dados.sucesso && dados.usuario) {
-          // Normaliza URL da imagem como em Perfil.js
-          let urlCompleta = dados.usuario.imagem;
-          if (urlCompleta && !urlCompleta.startsWith('http')) {
-            urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
-          }
-          setUsuario({
-            nome: dados.usuario.nome || '',
-            sobrenome: dados.usuario.sobrenome || '',
-            descricao: dados.usuario.descricao || '',
-            imagem: urlCompleta || null,
-            turma: dados.usuario.turma || ''
-          });
-        }
-      } catch (err) {
-        console.warn('Não foi possível carregar usuário:', err.message || err);
-      }
-    };
-
-    carregarUsuario();
-  }, []);
+    // Não precisa fazer fetch, pois o user já está no contexto
+    // que é atualizado globalmente
+  }, [user]);
 
   // Função que lê o resumo da tela em voz alta
   const executarTextoEmVozAlta = () => {
@@ -156,12 +131,14 @@ export default function ConfiguracoesScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
         <View style={styles.perfil}>
-          <Image
-            source={usuario && usuario.imagem ? { uri: usuario.imagem } : require("../../assets/pascal.jpg")}
-            style={styles.avatar}
-          />
-          <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>{usuario ? `${usuario.nome} ${usuario.sobrenome}`.trim() : 'Usuário'}</Text>
-          <Text style={[styles.email, { color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }]}>{usuario ? usuario.turma || usuario.descricao || '' : ''}</Text>
+          <View style={[styles.avatarWrapper, { borderColor: isDarkMode ? '#0D9FFF' : '#2d6cdf' }]}>
+            <Image
+              source={user && user.imagem ? { uri: user.imagem } : require("../../assets/pascal.jpg")}
+              style={styles.avatar}
+            />
+          </View>
+          <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>{user ? `${user.nome} ${user.sobrenome}`.trim() : 'Usuário'}</Text>
+          <Text style={[styles.email, { color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }]}>{user ? user.turma || user.descricao || '' : ''}</Text>
 
           <TouchableOpacity style={styles.perfilBtn} onPress={irParaPerfil}>
             <Text style={[styles.perfilBtnText, { fontSize: 14 * fontSizeScale }]}>Visualizar Perfil</Text>
@@ -219,7 +196,8 @@ export default function ConfiguracoesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   perfil: { alignItems: "center", marginBottom: 20, marginTop: 10 },
-  avatar: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, borderColor: "#2d6cdf" },
+  avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  avatar: { width: 120, height: 120, borderRadius: 60 },
   nome: { fontWeight: "bold", color: COLORS.primary, marginTop: 10 },
   email: { marginBottom: 5 },
   perfilBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, marginTop: 15 },

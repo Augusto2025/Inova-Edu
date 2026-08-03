@@ -7,13 +7,11 @@ import {
   Image,
   Animated,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Skeleton from "./Skeleton";
-
-// IMPORTE A SUA FOTO LOCAL AQUI
-import FotoPerfilLocal from "../../assets/pascal.jpg"; 
+import { useUser } from "../context/UserContext";
 
 // 1. IMPORTANDO O CONTEXTO DO TEMA
 import { ThemeContext } from "../context/ThemeContext";
@@ -41,6 +39,9 @@ export default function Header({
   const theme = context?.theme || { background: '#fff', card: '#FFFFFF', text: '#333333', border: '#E2E8F0' };
   const fontSizeScale = context?.fontSizeScale || 1;
   const isDarkMode = context?.isDarkMode || false;
+
+  // Pega a foto do usuário do contexto global
+  const { user } = useUser();
 
   // Cores dinâmicas para o Header
   const headerBgColor = isDarkMode ? theme.card : "#1459b3";
@@ -89,8 +90,15 @@ export default function Header({
                   borderRadius={(52 * fontSizeScale) / 2} 
                   style={{ marginRight: 12 }} 
                 />
+              ) : user?.imagem ? (
+                <Image 
+                  source={{ uri: user.imagem }} 
+                  style={[styles.profileImage, { borderColor: headerBgColor }]} 
+                />
               ) : (
-                <Image source={FotoPerfilLocal} style={[styles.profileImage, { borderColor: headerBgColor }]} />
+                <View style={[styles.profileImagePlaceholder, { borderColor: headerTextColor, backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                  <Ionicons name="person" size={26} color={headerTextColor} />
+                </View>
               )}
 
               <View style={styles.rightHeaderText}>
@@ -186,8 +194,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 6,
     zIndex: 2,
+    paddingTop: 0,
   }, 
-  logoRow: {}, 
+  logoRow: { marginTop: 0 }, 
   header: { 
     paddingBottom: 15, 
     paddingHorizontal: 22, 
@@ -198,6 +207,7 @@ const styles = StyleSheet.create({
   left: { flex: 1, marginRight: 10 },
   profileContainer: { flexDirection: "row", alignItems: "center" },
   profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2.5, borderColor: "rgba(255,255,255,0.5)" },
+  profileImagePlaceholder: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
   rightHeaderText: { flex: 1, justifyContent: 'center' },
   title: { fontWeight: "bold" },
   courseSubtitle: { marginTop: 2, fontWeight: "500" },
@@ -212,6 +222,6 @@ const styles = StyleSheet.create({
   notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
   badge: { position: "absolute", top: 5, right: 5, backgroundColor: "#ff4d67", justifyContent: "center", alignItems: "center" },
   badgeText: { color: "#fff", fontWeight: "bold" },
-  curveContainer: {color: "#fff",},
-  curve: { height: 45, borderTopLeftRadius: 30, borderTopRightRadius: 30, color: "#fff", },
+  curveContainer: { marginTop: -1, height: 24, overflow: 'hidden' },
+  curve: { height: 24, borderTopLeftRadius: 28, borderTopRightRadius: 28 },
 });

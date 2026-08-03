@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // Hook de recarregamento
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import BreadcrumbCard from '../components/BreadcrumbCard';
 import { Feather } from '@expo/vector-icons';
 import { COLORS } from "../components/Cores"; 
@@ -80,17 +81,17 @@ export default function ProjetosScreen({ route, navigation }) {
         escolherImagem={null} 
         nomeTela={"Projetos"} 
         temGoBack={true} 
-        telaDestino={"Turmas"} 
+        telaDestino={"Turmas"}
+        carregando={carregando}
       />
 
       <BreadcrumbCard titulo="Projetos:" itemSub={`Turma: ${codigoTurma}`} />
 
       {carregando ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>
-            Carregando projetos...
-          </Text>
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={100} borderRadius={18} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContent}>

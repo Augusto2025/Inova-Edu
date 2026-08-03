@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import { Feather } from '@expo/vector-icons';
 import BreadcrumbCard from '../components/BreadcrumbCard'; 
 import { COLORS } from "../components/Cores"; 
@@ -137,7 +138,7 @@ export default function RepositorioScreen({ route, navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} />
+      <Header nomeTela={"Repositório"} temGoBack={true} telaDestino={"Projetos"} carregando={loading} />
 
       <View style={{ flex: 1, backgroundColor: theme.background }}>
         <BreadcrumbCard 
@@ -146,9 +147,11 @@ export default function RepositorioScreen({ route, navigation }) {
         />
 
         {loading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={{ marginTop: 10, color: theme.text }}>Carregando arquivos...</Text>
+          <View style={{ flex: 1, padding: 20 }}>
+            <Skeleton width="100%" height={50} borderRadius={16} style={{ marginBottom: 16 }} />
+            {[1, 2, 3].map((item) => (
+              <Skeleton key={item} width="100%" height={80} borderRadius={18} style={{ marginBottom: 16 }} />
+            ))}
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.scrollContent}>

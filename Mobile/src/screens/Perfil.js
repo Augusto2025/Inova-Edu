@@ -11,24 +11,21 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker'; 
 import Header from "../components/Header";
+import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
 import { useTheme } from '../context/ThemeContext';
+import { useUser } from '../context/UserContext';
 
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+const RAW_BACKEND_URL = process.env.EXPO_PUBLIC_URL_BACKEND || 'https://inova-edu-api.onrender.com';
+const URL_BASE = RAW_BACKEND_URL.replace(/\/login$/, '').replace(/\/$/, '');
 
 export default function ProfileScreen() {
   const [carregando, setCarregando] = useState(true);
   const { theme, fontSizeScale } = useTheme();
+  const { user, carregarUsuario, atualizarPerfil, atualizarFoto } = useUser();
+  const usuarioExibicao = user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
   
-  // Dados do Usuário
-  const [user, setUser] = useState({
-    nome: "",
-    sobrenome: "",
-    descricao: "",
-    imagem: null,
-    turma: ""
-  });
-
+  // Estado local para dados que o Perfil precisa
   const [certificados, setCertificados] = useState([]);
   const [projetos, setProjetos] = useState([]);
 
@@ -40,6 +37,9 @@ export default function ProfileScreen() {
   const [certForm, setCertForm] = useState({ id: null, nome: "", descricao: "" });
   const [modalExcluirVisible, setModalExcluirVisible] = useState(false);
   const [certParaExcluir, setCertParaExcluir] = useState({ id: null, nome: "" });
+  // Estados de salvamento para os modais
+  const [savingPerfil, setSavingPerfil] = useState(false);
+  const [savingCert, setSavingCert] = useState(false);
 
   // --- FUNÇÕES DE CARREGAMENTO ---
   const carregarDadosPerfil = async () => {
@@ -62,22 +62,7 @@ export default function ProfileScreen() {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
-        // 1. Pega o texto que veio do banco
-        let urlCompleta = dados.usuario.imagem;
-
-        // 2. Se o texto existir e NÃO começar com "http", nós grudamos a base do Cloudinary nele
-        if (urlCompleta && !urlCompleta.startsWith('http')) {
-          urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
-        }
-
-        setUser({
-          nome: dados.usuario.nome || "Sem nome",
-          sobrenome: dados.usuario.sobrenome || "",
-          descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
-          imagem: urlCompleta || null, // Agora passa a URL certinha e completa!
-          turma: dados.usuario.turma || "Sem Turma Vinculada"
-        });
-        
+        // Carrega certificados e projetos
         setCertificados(dados.certificados || []);
         setProjetos(dados.projetos || []);
       } else {
@@ -93,13 +78,24 @@ export default function ProfileScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      carregarDadosPerfil();
+      const carregar = async () => {
+        // Recarrega dados do usuário do backend via contexto primeiro
+        await carregarUsuario();
+        // Depois carrega certificados e projetos locais
+        await carregarDadosPerfil();
+      };
+      carregar();
     }, [])
   );
 
   // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
   const alterarFotoPerfil = async () => {
     const idSalvo = await AsyncStorage.getItem('idUsuario');
+
+    if (!idSalvo) {
+      Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
+      return;
+    }
 
     Alert.alert(
       "Foto de Perfil",
@@ -115,7 +111,7 @@ export default function ProfileScreen() {
             }
 
             const resultado = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              mediaTypes: ['images'],
               allowsEditing: true,
               aspect: [1, 1],
               quality: 0.7,
@@ -128,29 +124,67 @@ export default function ProfileScreen() {
             try {
               setCarregando(true);
 
-              const formData = new FormData();
-              formData.append('file', {
-                uri: fotoLocalUri,
-                type: 'image/jpeg',
-                name: 'profile.jpg',
-              });
-              
-              formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-              const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
+              const hasCloudinaryConfig = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET && process.env.EXPO_PUBLIC_CLOUD_NAME;
 
-              const respostaCloudinary = await fetch(
-                `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                { method: 'POST', body: formData, headers: { 'Content-Type': 'multipart/form-data' } }
-              );
+              if (hasCloudinaryConfig) {
+                console.log("📤 Enviando para Cloudinary...");
+                const formData = new FormData();
+                formData.append('file', {
+                  uri: fotoLocalUri,
+                  type: 'image/jpeg',
+                  name: 'profile.jpg',
+                });
+                
+                formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+                const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
 
-              const dadosFoto = await respostaCloudinary.json();
-              if (!respostaCloudinary.ok) throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
+                const respostaCloudinary = await fetch(
+                  `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+                  { method: 'POST', body: formData, headers: { 'Content-Type': 'multipart/form-data' } }
+                );
 
-              const urlCloudinary = dadosFoto.secure_url;
-              await atualizarFotoNoBackend(idSalvo, urlCloudinary);
+                const dadosFoto = await respostaCloudinary.json();
+                if (!respostaCloudinary.ok) {
+                  console.error("❌ Erro Cloudinary:", dadosFoto);
+                  throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
+                }
+
+                const urlCloudinary = dadosFoto.secure_url;
+                console.log("✅ URL Cloudinary:", urlCloudinary);
+                await atualizarFotoNoBackend(idSalvo, urlCloudinary);
+              } else {
+                console.log("📤 Enviando para o servidor (sem Cloudinary)...");
+                // Upload da foto diretamente para o servidor
+                const formDataServer = new FormData();
+                
+                // No React Native, precisamos fazer assim:
+                formDataServer.append('file', {
+                  uri: fotoLocalUri,
+                  type: 'image/jpeg',
+                  name: 'profile.jpg',
+                });
+                formDataServer.append('idUsuario', idSalvo);
+
+                const respostaServidor = await fetch(`${URL_BASE}/perfil/upload-foto`, {
+                  method: 'POST',
+                  body: formDataServer,
+                });
+
+                const textosServidor = await respostaServidor.text();
+                const dadosServidor = JSON.parse(textosServidor);
+                
+                if (dadosServidor.sucesso) {
+                  console.log("✅ URL Servidor:", dadosServidor.imagem);
+                  await atualizarFotoNoBackend(idSalvo, dadosServidor.imagem);
+                } else {
+                  throw new Error(dadosServidor.mensagem || "Erro ao fazer upload no servidor");
+                }
+              }
 
             } catch (error) {
+              console.error("❌ Erro ao subir imagem:", error);
               Alert.alert("Erro ao subir imagem", error.message);
+            } finally {
               setCarregando(false);
             }
           }
@@ -164,6 +198,7 @@ export default function ProfileScreen() {
               await atualizarFotoNoBackend(idSalvo, null); 
             } catch (error) {
               Alert.alert("Erro ao remover foto", error.message);
+            } finally {
               setCarregando(false);
             }
           }
@@ -174,33 +209,84 @@ export default function ProfileScreen() {
   };
 
   const atualizarFotoNoBackend = async (idUsuario, urlImagem) => {
-    const respostaBackend = await fetch(`${URL_BASE}/perfil/atualizar-foto`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idUsuario, imagem: urlImagem })
-    });
+    try {
+      const respostaBackend = await fetch(`${URL_BASE}/perfil/atualizar-foto`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idUsuario, imagem: urlImagem })
+      });
 
-    const dadosBack = await respostaBackend.json();
+      const dadosBack = await respostaBackend.json();
 
-    if (dadosBack.sucesso) {
-      setUser({ ...user, imagem: urlImagem }); 
-      Alert.alert("Sucesso", "Foto de perfil updated!");
-    } else {
-      throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
+      if (dadosBack.sucesso) {
+        console.log("✅ Foto salva no backend:", urlImagem);
+        // Atualiza o contexto global de usuário
+        atualizarFoto(urlImagem);
+        // Recarrega dados completos do backend para garantir sincronização
+        await carregarUsuario();
+        Alert.alert("Sucesso", "Foto de perfil atualizada!");
+      } else {
+        throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
+      }
+    } catch (error) {
+      console.error("❌ Erro ao atualizar foto:", error);
+      throw error;
     }
-    setCarregando(false);
   };
 
   // --- FUNÇÕES DE AÇÃO DOS MODAIS ---
   const abrirEditarPerfil = () => {
-    setPerfilForm({ nome: user.nome, sobrenome: user.sobrenome, descricao: user.descricao });
+    if (!user) {
+      Alert.alert("Aguarde", "Os dados do perfil ainda estão sendo carregados.");
+      return;
+    }
+    setPerfilForm({ nome: usuarioExibicao.nome, sobrenome: usuarioExibicao.sobrenome, descricao: usuarioExibicao.descricao });
     setModalPerfilVisible(true);
   };
 
-  const salvarPerfil = () => {
-    setUser({ ...user, ...perfilForm });
-    setModalPerfilVisible(false);
-    Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+  const salvarPerfil = async () => {
+    try {
+      const idSalvo = await AsyncStorage.getItem('idUsuario');
+      if (!idSalvo) {
+        Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
+        return;
+      }
+      setSavingPerfil(true);
+      setCarregando(true);
+      const response = await fetch(`${URL_BASE}/perfil/atualizar-dados`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idUsuario: idSalvo,
+          nome: perfilForm.nome.trim(),
+          sobrenome: perfilForm.sobrenome.trim(),
+          descricao: perfilForm.descricao.trim()
+        })
+      });
+
+      const dados = await response.json();
+      if (!response.ok || !dados.sucesso) {
+        throw new Error(dados.mensagem || 'Erro ao salvar perfil.');
+      }
+
+      // Atualiza o contexto global de usuário
+      atualizarPerfil({
+        nome: perfilForm.nome.trim(),
+        sobrenome: perfilForm.sobrenome.trim(),
+        descricao: perfilForm.descricao.trim()
+      });
+      
+      // Recarrega dados completos do backend
+      await carregarUsuario();
+      
+      setModalPerfilVisible(false);
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
+    } catch (error) {
+      Alert.alert("Erro", error.message);
+    } finally {
+      setSavingPerfil(false);
+      setCarregando(false);
+    }
   };
 
   const abrirCriarCertificado = () => {
@@ -223,6 +309,7 @@ export default function ProfileScreen() {
     }
 
     try {
+      setSavingCert(true);
       if (modalCertModo === "Criar") {
         const response = await fetch(`${URL_BASE}/perfil/certificado`, {
           method: 'POST',
@@ -273,6 +360,9 @@ export default function ProfileScreen() {
       console.error("❌ Erro ao salvar certificado no banco:", error);
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
     }
+    finally {
+      setSavingCert(false);
+    }
   };
 
   const abrirExcluirCertificado = (cert) => {
@@ -308,15 +398,53 @@ export default function ProfileScreen() {
 
   if (carregando) {
     return (
-      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}> 
+        <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={true} />
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 18 }} showsVerticalScrollIndicator={false}>
+          <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}> 
+            <Skeleton width={105} height={105} borderRadius={55} style={{ alignSelf: 'center', marginBottom: 18 }} />
+            <Skeleton width="70%" height={22} borderRadius={10} style={{ alignSelf: 'center', marginBottom: 8 }} />
+            <Skeleton width="45%" height={16} borderRadius={8} style={{ alignSelf: 'center', marginBottom: 8 }} />
+            <Skeleton width="90%" height={14} borderRadius={8} style={{ alignSelf: 'center', marginBottom: 8 }} />
+            <Skeleton width="60%" height={42} borderRadius={16} style={{ alignSelf: 'center', marginTop: 12 }} />
+          </View>
+
+          <View style={styles.section}>
+            <View style={[styles.sectionHeader, { borderBottomColor: theme.border, borderBottomWidth: 1, paddingBottom: 10 }]}> 
+              <Skeleton width="45%" height={18} borderRadius={8} />
+              <Skeleton width={40} height={40} borderRadius={12} />
+            </View>
+            {[1, 2].map((item) => (
+              <View key={item} style={[styles.certCard, { backgroundColor: theme.card, borderColor: theme.border }]}> 
+                <Skeleton width={46} height={46} borderRadius={14} />
+                <View style={{ flex: 1, marginLeft: 14, justifyContent: 'center', gap: 8 }}>
+                  <Skeleton width="80%" height={16} borderRadius={8} />
+                  <Skeleton width="60%" height={12} borderRadius={8} />
+                </View>
+                <Skeleton width={36} height={36} borderRadius={12} />
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.section}>
+            <View style={[styles.sectionHeader, { borderBottomColor: theme.border, borderBottomWidth: 1, paddingBottom: 10 }]}> 
+              <Skeleton width="55%" height={18} borderRadius={8} />
+            </View>
+            {[1, 2].map((item) => (
+              <View key={item} style={[styles.projectCard, { backgroundColor: theme.card, borderColor: theme.border }]}> 
+                <Skeleton width="100%" height={18} borderRadius={10} style={{ marginBottom: 10 }} />
+                <Skeleton width="90%" height={14} borderRadius={10} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"}/>
+      <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={carregando} />
       
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         
@@ -324,8 +452,8 @@ export default function ProfileScreen() {
         <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}>
           <View style={styles.photoContainer}>
             <View style={[styles.profileImagePlaceholder, { backgroundColor: theme.background }]}>
-              {user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
-                <Image source={{ uri: user.imagem }} style={styles.profileImage} />
+              {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' ? (
+                <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
@@ -335,14 +463,14 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{user.nome} {user.sobrenome}</Text>
+          <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{usuarioExibicao.nome} {usuarioExibicao.sobrenome}</Text>
           
           <View style={[styles.turmaBadge, { backgroundColor: theme.card, borderColor: theme.border }]}>
             <Ionicons name="school-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
-            <Text style={[styles.turmaText, { color: theme.text, fontSize: 13 * fontSizeScale }]}>{user.turma}</Text>
+            <Text style={[styles.turmaText, { color: theme.text, fontSize: 13 * fontSizeScale }]}>{usuarioExibicao.turma}</Text>
           </View>
           
-          <Text style={[styles.userDesc, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{user.descricao}</Text>
+          <Text style={[styles.userDesc, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{usuarioExibicao.descricao}</Text>
 
           <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
             <Ionicons name="create-outline" size={18} color="white" />
@@ -364,8 +492,8 @@ export default function ProfileScreen() {
           
           {/* faltando o tema escuro */}
           {certificados.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="document-text-outline" size={32} color="#BBB" />
+            <View style={[styles.emptyContainer, { backgroundColor: theme.background, borderColor: theme.border }]}>
+              <Ionicons name="document-text-outline" size={32} color={theme.text === 'white' ? '#666' : '#BBB'} />
               <Text style={[styles.emptyText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nenhum certificado adicionado.</Text>
             </View>
           ) : (
@@ -403,8 +531,8 @@ export default function ProfileScreen() {
           </View>
           
           {projetos.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="code-slash" size={32} color="#BBB" />
+            <View style={[styles.emptyContainer, { backgroundColor: theme.background, borderColor: theme.border }]}>
+              <Ionicons name="code-slash" size={32} color={theme.text === 'white' ? '#666' : '#BBB'} />
               <Text style={[styles.emptyText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nenhum projeto vinculado a você.</Text>
             </View>
           ) : (
@@ -435,7 +563,7 @@ export default function ProfileScreen() {
       <Modal visible={modalPerfilVisible} transparent animationType="fade" onRequestClose={() => setModalPerfilVisible(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalPerfilVisible(false)}>
           <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Editar Perfil</Text>
                 <TouchableOpacity onPress={() => setModalPerfilVisible(false)} style={{ position: 'absolute', right: 20 }}>
@@ -446,21 +574,25 @@ export default function ProfileScreen() {
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
                   <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nome</Text>
-                  <TextInput placeholder="Digite seu nome..." value={perfilForm.nome} onChangeText={(text) => setPerfilForm({ ...perfilForm, nome: text })} style={styles.input} />
+                  <TextInput placeholder="Digite seu nome..." value={perfilForm.nome} onChangeText={(text) => setPerfilForm({ ...perfilForm, nome: text })} style={[styles.input, { backgroundColor: theme.background, color: theme.text }]} placeholderTextColor="#94A3B8" editable={!savingPerfil} />
                 </View>
 
                 <View style={styles.inputContainer}>
                   <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Sobrenome</Text>
-                  <TextInput placeholder="Digite seu sobrenome..." value={perfilForm.sobrenome} onChangeText={(text) => setPerfilForm({ ...perfilForm, sobrenome: text })} style={styles.input} />
+                  <TextInput placeholder="Digite seu sobrenome..." value={perfilForm.sobrenome} onChangeText={(text) => setPerfilForm({ ...perfilForm, sobrenome: text })} style={[styles.input, { backgroundColor: theme.background, color: theme.text }]} placeholderTextColor="#94A3B8" editable={!savingPerfil} />
                 </View>
 
                 <View style={styles.inputContainer}>
                   <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Bio / Descrição</Text>
-                  <TextInput placeholder="Fale um pouco sobre você..." value={perfilForm.descricao} onChangeText={(text) => setPerfilForm({ ...perfilForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={3} textAlignVertical="top" />
+                  <TextInput placeholder="Fale um pouco sobre você..." value={perfilForm.descricao} onChangeText={(text) => setPerfilForm({ ...perfilForm, descricao: text })} style={[styles.input, styles.inputMultiline, { backgroundColor: theme.background, color: theme.text }]} multiline numberOfLines={3} textAlignVertical="top" placeholderTextColor="#94A3B8" editable={!savingPerfil} />
                 </View>
 
-                <TouchableOpacity style={styles.saveBtn} onPress={salvarPerfil}>
-                  <Text style={styles.saveBtnText}>Salvar Alterações</Text>
+                <TouchableOpacity style={styles.saveBtn} onPress={salvarPerfil} disabled={savingPerfil} activeOpacity={0.8}>
+                  {savingPerfil ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text style={styles.saveBtnText}>Salvar Alterações</Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -472,7 +604,7 @@ export default function ProfileScreen() {
       <Modal visible={modalCertVisible} transparent animationType="fade" onRequestClose={() => setModalCertVisible(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalCertVisible(false)}>
           <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={styles.modalHeader}>
                 {/* 🛠️ CORREÇÃO REALIZADA AQUI: O texto condicional foi extraído do style */}
                 <Text style={styles.modalTitle}>{modalCertModo === "Criar" ? "Adicionar Certificado" : "Editar Certificado"}</Text>
@@ -484,16 +616,20 @@ export default function ProfileScreen() {
               <View style={styles.modalBody}>
                 <View style={styles.inputContainer}>
                   <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Nome do Certificado</Text>
-                  <TextInput placeholder="Ex: Curso de React Native" value={certForm.nome} onChangeText={(text) => setCertForm({ ...certForm, nome: text })} style={styles.input} />
+                  <TextInput placeholder="Ex: Curso de React Native" value={certForm.nome} onChangeText={(text) => setCertForm({ ...certForm, nome: text })} style={[styles.input, { backgroundColor: theme.background, color: theme.text }]} placeholderTextColor="#94A3B8" editable={!savingCert} />
                 </View>
 
                 <View style={styles.inputContainer}>
                   <Text style={[styles.inputLabel, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Descrição / Instituição</Text>
-                  <TextInput placeholder="Ex: Udemy - 40 horas" value={certForm.descricao} onChangeText={(text) => setCertForm({ ...certForm, descricao: text })} style={[styles.input, styles.inputMultiline]} multiline numberOfLines={2} textAlignVertical="top" />
+                  <TextInput placeholder="Ex: Udemy - 40 horas" value={certForm.descricao} onChangeText={(text) => setCertForm({ ...certForm, descricao: text })} style={[styles.input, styles.inputMultiline, { backgroundColor: theme.background, color: theme.text }]} multiline numberOfLines={2} textAlignVertical="top" placeholderTextColor="#94A3B8" editable={!savingCert} />
                 </View>
 
-                <TouchableOpacity style={styles.saveBtn} onPress={salvarCertificado}>
-                  <Text style={styles.saveBtnText}>{modalCertModo === "Criar" ? "Adicionar" : "Salvar"}</Text>
+                <TouchableOpacity style={styles.saveBtn} onPress={salvarCertificado} disabled={savingCert} activeOpacity={0.8}>
+                  {savingCert ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text style={styles.saveBtnText}>{modalCertModo === "Criar" ? "Adicionar" : "Salvar"}</Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -505,7 +641,7 @@ export default function ProfileScreen() {
       <Modal visible={modalExcluirVisible} transparent animationType="fade" onRequestClose={() => setModalExcluirVisible(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalExcluirVisible(false)}>
           <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={[styles.modalHeader, { backgroundColor: '#F44336' }]}>
                 <Text style={styles.modalTitle}>Excluir Certificado</Text>
                 <TouchableOpacity onPress={() => setModalExcluirVisible(false)} style={{ position: 'absolute', right: 20 }}>
@@ -515,7 +651,7 @@ export default function ProfileScreen() {
 
               <View style={styles.modalBody}>
                 <Text style={[styles.deleteConfirmText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
-                  Tem certeza de que deseja remover o certificado <Text style={{ fontWeight: 'bold', color: '#1E293B' }}>"{certParaExcluir.nome}"</Text>? Essa ação não pode ser desfeita.
+                  Tem certeza de que deseja remover o certificado <Text style={{ fontWeight: 'bold', color: theme.text }}>"{certParaExcluir.nome}"</Text>? Essa ação não pode ser desfeita.
                 </Text>
 
                 <View style={styles.deleteActionRow}>
@@ -540,13 +676,13 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   profileHeaderCard: { 
-    backgroundColor: 'white', marginHorizontal: 20, marginTop: 20, marginBottom: 10, borderRadius: 24, padding: 24, alignItems: 'center', 
+    backgroundColor: 'white', marginHorizontal: 20, marginTop: 20, marginBottom: 10, borderRadius: 24, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0',
     shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 4 
   },
   photoContainer: { position: 'relative', marginBottom: 12 },
   profileImagePlaceholder: { 
     width: 105, height: 105, borderRadius: 55, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', 
-    borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' 
+    borderWidth: 3, borderColor: '#0D9FFF', overflow: 'hidden' 
   },
   profileImage: { width: '100%', height: '100%', resizeMode: 'cover' }, 
   cameraBtn: { position: 'absolute', bottom: 2, right: 2, backgroundColor: COLORS.primary, borderRadius: 18, padding: 8, borderWidth: 3, borderColor: 'white', elevation: 3 },
@@ -561,14 +697,14 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center' },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1E293B' },
   plusBtn: { backgroundColor: COLORS.primary, padding: 6, borderRadius: 10 },
-  certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 16, borderRadius: 18, marginBottom: 12, alignItems: 'center', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
+  certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 16, borderRadius: 18, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
   certIconBadge: { width: 46, height: 46, borderRadius: 12, backgroundColor: '#EFF6FF', justifyContent: 'center', alignItems: 'center', marginRight: 14 },
   certInfo: { flex: 1, paddingRight: 8 },
   certTitle: { fontWeight: '600', fontSize: 15, color: '#1E293B' },
   certSub: { fontSize: 13, color: '#64748B', marginTop: 2 },
   certActionColumn: { flexDirection: 'column', gap: 8, justifyContent: 'center', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#F1F5F9', paddingLeft: 12 },
   miniActionBtn: { padding: 4 },
-  projectCard: { backgroundColor: 'white', padding: 20, borderRadius: 18, marginBottom: 12, shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
+  projectCard: { backgroundColor: 'white', padding: 20, borderRadius: 18, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
   projectMainInfo: { marginBottom: 14 },
   projectTitle: { fontWeight: '700', color: '#1E293B', fontSize: 16 },
   projectSub: { fontSize: 13, color: '#64748B', marginTop: 6, lineHeight: 18 },

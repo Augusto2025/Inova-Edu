@@ -40,8 +40,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@types/jest": "29.5.14",
     "expo-module-scripts": "^1.1.1",
     "tsconfig-paths": "^4.2.0"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=20 <21 || >=22 <23"
+  }
 }

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import Skeleton from "../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -154,7 +155,11 @@ export default function HomePainelProfessor({ navigation }) {
   if (carregando && painel.turmas.length === 0) {
     return (
       <View style={[styles.safe, styles.center, { backgroundColor: theme.dark ? theme.background : "#1459b3" }]}>
-        <ActivityIndicator size="large" color="#fff" />
+        <View style={{ width: "100%", padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={120} borderRadius={22} style={{ marginBottom: 16, backgroundColor: '#fff' }} />
+          ))}
+        </View>
       </View>
     );
   }

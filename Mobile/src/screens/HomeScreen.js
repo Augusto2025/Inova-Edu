@@ -18,6 +18,7 @@ import { COLORS } from "../components/Cores";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 import api, { API_ENDPOINTS } from "../services/api"; // Garanta que importou o API_ENDPOINTS
 import { useNotifications } from "../context/NotificationContext";
+import { useUser } from "../context/UserContext";
 import HomePainelProfessor from "./HomePainelProfessor";
 
 // Importação do Contexto de Tema (mesmo padrão usado no RepositorioScreen / HomePainelProfessor)
@@ -40,6 +41,9 @@ export default function HomeScreen({ navigation }) {
     dark: false,
   };
   const fontSizeScale = context?.fontSizeScale || 1;
+
+  // 🆕 Pega dados do usuário do contexto global
+  const { user } = useUser();
 
   // 🆕 Descobre se o usuário logado é Aluno ou Professor, pra decidir qual Home mostrar
   const [tipoUsuario, setTipoUsuario] = useState(null);
@@ -402,7 +406,7 @@ export default function HomeScreen({ navigation }) {
         nomeTela={
           carregando
             ? "Carregando..."
-            : `Olá, ${homeData.usuario?.nome || "Estudante"} 👋`
+            : `Olá, ${user?.nome || "Estudante"} 👋`
         }
         exibirPerfil={true}
         quantidadeNotificacoes={totalNovas}

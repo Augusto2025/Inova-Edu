@@ -71,4 +71,46 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/recuperar-senha", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      sucesso: false,
+      mensagem: "Informe um e-mail válido."
+    });
+  }
+
+  try {
+    const resultado = await pool.query(
+      'SELECT "idUsuario" FROM usuario WHERE "Email"=$1',
+      [email]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: "Não encontramos este e-mail cadastrado."
+      });
+    }
+
+    const novaSenha = `Inova${Math.floor(1000 + Math.random() * 9000)}`;
+    await pool.query(
+      'UPDATE usuario SET "Senha"=$1 WHERE "idUsuario"=$2',
+      [novaSenha, resultado.rows[0].idUsuario]
+    );
+
+    return res.json({
+      sucesso: true,
+      mensagem: `Uma nova senha temporária foi criada: ${novaSenha}`
+    });
+  } catch (err) {
+    console.error("Erro ao recuperar senha:", err);
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: "Não foi possível recuperar a senha no momento."
+    });
+  }
+});
+
 module.exports = router;

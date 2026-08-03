@@ -13,6 +13,7 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import { COLORS } from '../components/Cores';
 import styles from '../styles/Evento';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -115,7 +116,7 @@ export default function CalendarScreen() {
   return (
     // 3. MESCLANDO O ESTILO EXTERNO COM O FUNDO DINÂMICO
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Calendário"} />
+      <Header nomeTela={"Calendário"} carregando={loading} />
 
       {isProfessor && (
         <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>
@@ -124,9 +125,11 @@ export default function CalendarScreen() {
       )}
 
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#1459b3" />
-          <Text style={{ marginTop: 10, color: theme.text, fontSize: 16 * fontSizeScale }}>Buscando cronograma...</Text>
+        <View style={{ flex: 1, padding: 20 }}>
+          <Skeleton width="100%" height={220} borderRadius={20} style={{ marginBottom: 16 }} />
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={90} borderRadius={18} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>

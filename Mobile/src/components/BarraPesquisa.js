@@ -2,16 +2,19 @@ import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-export default function BarraPesquisa() {
+export default function BarraPesquisa({ value, onChangeText, placeholder = "Pesquisar", style }) {
     return (
-        <View style={styles.searchWrapper}>
+        <View style={[styles.searchWrapper, style]}>
             <View style={styles.searchContainer}>
                 <Ionicons name="search" size={20} color="#1e4f8a" />
 
                 <TextInput
-                placeholder="Pesquisar"
-                style={styles.input}
-                placeholderTextColor="#999"
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={onChangeText}
+                    style={styles.input}
+                    placeholderTextColor="#999"
+                    returnKeyType="search"
                 />
             </View>
         </View>

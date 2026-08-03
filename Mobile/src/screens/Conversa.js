@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Modal, TouchableWithoutFeedback, ActivityIndicator, Alert, Keyboard } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
+import Skeleton from "../components/Skeleton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 
@@ -184,7 +185,7 @@ export default function ConversaScreen({ navigation, route }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Conversa"} temGoBack={true} telaDestino={"Titulo"} />
+      <Header nomeTela={"Conversa"} temGoBack={true} telaDestino={"Titulo"} carregando={carregando} />
 
       <View style={styles.pathContainer}>
         <Text style={[styles.pathText, { color: theme.text }]}>{forumNome}</Text>
@@ -195,8 +196,10 @@ export default function ConversaScreen({ navigation, route }) {
       </View>
 
       {carregando ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={theme.primary} />
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={120} borderRadius={18} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <ScrollView

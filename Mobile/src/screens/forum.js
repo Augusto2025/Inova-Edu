@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback, ActivityIndicator, Alert } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
-import BarraPesquisa from "../components/BarraPesquisa";
+import Skeleton from '../components/Skeleton';
+import BarraPesquisa from '../components/BarraPesquisa';
 import { COLORS } from "../components/Cores";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Importação do hook
 import { useTheme } from '../context/ThemeContext';
 
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
-const URL_FORUM = URL_BASE.endsWith('/') ? `${URL_BASE}forum` : `${URL_BASE}/forum`;
+const RAW_BACKEND_URL = process.env.EXPO_PUBLIC_URL_BACKEND || 'https://inova-edu-api.onrender.com';
+const URL_BASE = RAW_BACKEND_URL.replace(/\/login$/, '').replace(/\/$/, '');
+const URL_FORUM = `${URL_BASE}/forum`;
   
 export default function ForumScreen({ navigation }) {
   // Consumindo o contexto
@@ -22,6 +24,7 @@ export default function ForumScreen({ navigation }) {
   const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
   // 🆕 Sabe se quem está logado é Professor, pra liberar editar/apagar de qualquer fórum (moderação)
   const [ehModerador, setEhModerador] = useState(false);
+  const [search, setSearch] = useState('');
 
   // 🆕 Modo de seleção múltipla, pra marcar vários fóruns e apagar de uma vez
   const [modoSelecao, setModoSelecao] = useState(false);
@@ -189,9 +192,18 @@ export default function ForumScreen({ navigation }) {
   };
 
   // 🆕 Aplica o filtro escolhido (Todos / Meus fóruns) antes de qualquer outra lógica de exibição
-  const topicosFiltrados = filtro === 'meus'
+  const topicosFiltrados = (filtro === 'meus'
     ? topicos.filter((item) => item.usuarioIdCriador === usuarioLogadoId)
-    : topicos;
+    : topicos
+  ).filter((item) => {
+    const termo = search.trim().toLowerCase();
+    if (!termo) return true;
+
+    const titulo = `${item.titulo || ''}`.toLowerCase();
+    const descricao = `${item.descricao || ''}`.toLowerCase();
+    const autor = `${item.autor || ''}`.toLowerCase();
+    return titulo.includes(termo) || descricao.includes(termo) || autor.includes(termo);
+  });
 
   // 🆕 Marca ou desmarca todos os fóruns visíveis (já filtrados) que o usuário pode gerenciar (dono ou moderador)
   const idsGerenciaveis = topicosFiltrados
@@ -268,8 +280,8 @@ export default function ForumScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Forum"} />
-      <BarraPesquisa />
+      <Header nomeTela={"Fórum"} carregando={carregando} />
+      <BarraPesquisa value={search} onChangeText={setSearch} placeholder="Buscar fórum" />
 
       {/* 🆕 Filtro: Todos os fóruns ou só os que eu criei */}
       {!carregando && topicos.length > 0 && !modoSelecao && (
@@ -321,16 +333,17 @@ export default function ForumScreen({ navigation }) {
       )}
 
       {carregando ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>Carregando fórum...</Text>
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={90} borderRadius={16} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: modoSelecao ? 90 : 0 }}>
           {topicosFiltrados.length === 0 ? (
             <View style={{ marginTop: 40, alignItems: 'center', paddingHorizontal: 20 }}>
               <Text style={{ color: theme.text, opacity: 0.6, textAlign: 'center', fontSize: 13 * fontSizeScale }}>
-                Você ainda não criou nenhum fórum.
+                Nenhum fórum encontrado.
               </Text>
             </View>
           ) : topicosFiltrados.map((item) => {

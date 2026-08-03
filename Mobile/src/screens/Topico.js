@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback, ActivityIndicator, Alert, FlatList, Keyboard } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
+import Skeleton from "../components/Skeleton";
 import BarraPesquisa from "../components/BarraPesquisa";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from "../components/Cores";
@@ -208,9 +209,7 @@ export default function TopicosScreen({ navigation, route }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Tópico"} temGoBack={true} telaDestino={"Fórum"} />
-      <BarraPesquisa />
-
+      <Header nomeTela={"Tópico"} temGoBack={true} telaDestino={"Fórum"} carregando={carregando} />
       {/* Caminho (Breadcrumb) com cor dinâmica */}
       <View style={styles.pathContainer}>
         <Text style={[styles.pathLabel, { color: theme.text }]}>Fórum</Text>
@@ -221,9 +220,10 @@ export default function TopicosScreen({ navigation, route }) {
       </View>
 
       {carregando ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={theme.primary} />
-          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>Carregando tópicos...</Text>
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3, 4].map((item) => (
+            <Skeleton key={item} width="100%" height={120} borderRadius={18} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <FlatList 

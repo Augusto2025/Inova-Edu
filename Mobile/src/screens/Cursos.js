@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // 1. Hook de recarregamento
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import styles from '../styles/Curso';
 import BarraPesquisa from '../components/BarraPesquisa';
 import { API_ENDPOINTS } from '../services/api';
@@ -37,7 +38,7 @@ export default function CursosScreen({ navigation }) {
       });
 
       const dados = await resposta.json(); 
-      setCursos(dados); 
+      setCursos(dados || []); 
       
     } catch (error) {
       console.error('Erro ao buscar cursos:', error);
@@ -58,29 +59,36 @@ export default function CursosScreen({ navigation }) {
     navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso });
   };
 
+  const cursosFiltrados = (cursos || []).filter((curso) => {
+    const termo = search.trim().toLowerCase();
+    if (!termo) return true;
+
+    const nome = `${curso.nome_curso || ''}`.toLowerCase();
+    return nome.includes(termo);
+  });
+
   return (
     // Fundo dinâmico aplicado ao container principal
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
+      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} carregando={carregando} />
       
-      <BarraPesquisa value={search} onChangeText={setSearch} />
+      <BarraPesquisa value={search} onChangeText={setSearch} placeholder="Buscar curso" />
 
       {carregando ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#1459b3" />
-          <Text style={{ marginTop: 10, color: theme.text, fontSize: 14 * fontSizeScale }}>
-            Buscando cursos...
-          </Text>
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={120} borderRadius={20} style={{ marginBottom: 16 }} />
+          ))}
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.listaCursos}>
-          {cursos.length === 0 ? (
+          {cursosFiltrados.length === 0 ? (
             <Text style={[styles.vazio, { color: theme.text, fontSize: 16 * fontSizeScale }]}>
               Nenhum resultado encontrado.
             </Text>
           ) : (
-            cursos.map((curso) => (
+            cursosFiltrados.map((curso) => (
               <TouchableOpacity 
                 key={curso.idcurso} 
                 // Card dinâmico (Cor de fundo se adapta ao modo escuro)
