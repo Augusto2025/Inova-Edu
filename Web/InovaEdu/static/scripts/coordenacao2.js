@@ -53,7 +53,11 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("cursoEdit").value = this.dataset.curso;
 
             // Professor da turma
-            document.getElementById("professorEdit").value = this.dataset.professor;
+            const professorSelect = document.getElementById("professorEdit");
+
+            console.log("Professor:", this.dataset.professor);
+
+            professorSelect.value = this.dataset.professor;
 
             // Abre o modal
             modalEditar.style.display = "flex";

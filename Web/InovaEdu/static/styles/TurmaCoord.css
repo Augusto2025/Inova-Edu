@@ -192,6 +192,8 @@
     color:#3067ff;
     cursor:pointer;
     transition:.3s;
+     position: relative;
+    right: -54px; /* move -54px para a direita */
 }
 
 .btn-ver-usuarios:hover{
@@ -206,8 +208,8 @@
     display:flex;
     justify-content:flex-end;
     gap:10px;
-    position: fixed;
-    left: 80%;
+    position: relative;
+    right: 67%; /* move 50px para a direita */
 }
 
 .btn-editar-turma,
@@ -825,6 +827,7 @@
     font-size:15px;
     outline:none;
     transition:.3s;
+     
 }
 
 .grupo-form input:focus,

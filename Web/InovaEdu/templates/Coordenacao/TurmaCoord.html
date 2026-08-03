@@ -81,10 +81,17 @@
 
                         <span class="acoes-geral_turma">
                             <!-- EDITAR -->
-                            <button type="button" class="btn-editar-turma" title="Editar turma"
-                                data-id="{{ turma.idturma }}" data-codigo="{{ turma.codigo_turma }}"
-                                data-turno="{{ turma.turno }}" data-ano="{{ turma.ano }}"
-                                data-curso="{{ turma.curso.idcurso }}">
+                            <button
+                                type="button"
+                                class="btn-editar-turma"
+                                title="Editar turma"
+                                data-id="{{ turma.idturma }}"
+                                data-codigo="{{ turma.codigo_turma }}"
+                                data-turno="{{ turma.turno }}"
+                                data-ano="{{ turma.ano }}"
+                                data-curso="{{ turma.curso.idcurso }}"
+                                data-professor="{{ turma.professor.idusuario|default:'' }}">
+
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
 
@@ -229,7 +236,7 @@
         </div>
             
             
-        {% comment %} EDITAR  {% endcomment %}
+        {% comment %} EDITAR TURMA  {% endcomment %}
         <div id="modalEditarTurma" class="modal">
             <div class="modal-conteudo modal-editar-turma">
 

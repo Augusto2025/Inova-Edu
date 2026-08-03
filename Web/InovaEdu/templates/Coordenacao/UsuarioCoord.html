@@ -164,12 +164,12 @@
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
 
-                  <button
+                  {% comment %} <button
                     class="btn-descricao icon-descricao"
                     data-descricao="{{ usuario.descricao|escapejs }}"
                   >
                     <i class="fa-solid fa-align-center"></i>
-                  </button>
+                  </button> {% endcomment %}
 
                   <button
                     type="button"
@@ -256,13 +256,13 @@
               />
             </div>
 
-            <div class="campo">
+            {% comment %} <div class="campo">
               <label>Descrição</label>
               <textarea
                 name="descricao"
                 placeholder="Breve resumo das responsabilidades ou perfil..."
               ></textarea>
-            </div>
+            </div> {% endcomment %}
 
             <div class="campo">
               <label>Tipo de Usuário</label>
@@ -360,7 +360,7 @@
           </div>
 
           <!-- Descrição -->
-          <div class="campo">
+          {% comment %} <div class="campo">
             <label for="descricaoEdit">Descrição</label>
             <textarea
               id="descricaoEdit"
@@ -368,7 +368,7 @@
               rows="4"
               placeholder="Lorem ipsum dolor sit amet..."
             ></textarea>
-          </div>
+          </div> {% endcomment %}
 
           <!-- Caso queira voltar a usar imagem -->
           {% comment %}

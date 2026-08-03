@@ -225,8 +225,8 @@
     display:flex;
     justify-content:flex-end;
     gap:10px;
-    position: fixed;
-    left: 76%;
+    position: relative;
+    right: 45%; /* move 50px para a direita */
 
 }
 
@@ -609,7 +609,7 @@
 
 .modal-conteudo form{
     padding:28px 30px 30px;
-    display:grid;
+    display:flex;
     grid-template-columns:1fr 1fr;
     gap:22px;
 }
@@ -642,10 +642,10 @@
     transition:.25s;
 }
 
-.modal-conteudo textarea{
+/* .modal-conteudo textarea{
     min-height:140px;
     resize:none;
-}
+} */
 
 .modal-conteudo input:focus,
 .modal-conteudo textarea:focus{
@@ -657,12 +657,12 @@
     BOTÕES
 ======================= */
 
-.modal-conteudo form::after{
+/* .modal-conteudo form::after{
     content:"";
     grid-column:1/-1;
     border-top:1px solid #ececec;
     margin-top:5px;
-}
+} */
 
 .modal-conteudo button{
     width:170px;

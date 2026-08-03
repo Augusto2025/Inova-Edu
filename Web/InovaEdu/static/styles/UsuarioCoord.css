@@ -391,8 +391,9 @@
     display:flex;
     justify-content:flex-end;
     gap:10px;
-    position: fixed;
-    left: 80%;
+    position: relative;
+    right: 70%; /* move 50px para a direita */
+   
 
 }
 

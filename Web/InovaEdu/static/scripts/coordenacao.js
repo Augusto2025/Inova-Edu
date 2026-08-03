@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("nomeEdit").value = this.dataset.nome;
             document.getElementById("SobrenomeEdit").value = this.dataset.sobrenome;
             document.getElementById("EmailEdit").value = this.dataset.email;
-            document.getElementById("descricaoEdit").value = this.dataset.descricao;
+            // document.getElementById("descricaoEdit").value = this.dataset.descricao;
             document.getElementById("tipoCadastroEdit").value = this.dataset.tipo;
 
             formEditar.action = `/usuarios/editar/${idusuario}/`;
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit_nome_curso").value = this.dataset.nome;
             document.getElementById("edit_data_inicio").value = this.dataset.inicio;
             document.getElementById("edit_data_final").value = this.dataset.final;
-            document.getElementById("edit_descricao_curso").value = this.dataset.descricao;
+            // document.getElementById("edit_descricao_curso").value = this.dataset.descricao;
 
             modal.classList.add("active");
         });
