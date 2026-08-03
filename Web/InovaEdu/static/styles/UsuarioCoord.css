@@ -23,28 +23,20 @@
     width:95%;
     max-width:50%;
     margin:20px auto;
-
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:18px;
 }
 
 .filtro-card{
-
     display:flex;
     align-items:center;
     gap:16px;
-
     background:#fff;
-
     padding:18px;
-
     border-radius:12px;
-
     border:1px solid #dce5f2;
-
     cursor:pointer;
-
     transition:.3s;
 }
 
@@ -59,12 +51,9 @@
 }
 
 .icone{
-
     width:48px;
     height:48px;
-
     border-radius:8px;
-
     display:flex;
     justify-content:center;
     align-items:center;
@@ -88,26 +77,17 @@
 }
 
 .info span{
-
     display:block;
-
     font-size:11px;
-
     font-weight:700;
-
     color:#666;
-
     text-transform:uppercase;
-
     letter-spacing:.5px;
 }
 
 .info h2{
-
     margin-top:4px;
-
     font-size:28px;
-
     color:#1f2d3d;
 }
 
@@ -206,7 +186,6 @@
 }
 
 .filtros-lista{
-
     display:flex;
     gap:15px;
     align-items:center;
@@ -214,74 +193,51 @@
 }
 
 .campo-pesquisa{
-
     width:330px;
     height:42px;
-
     display:flex;
     align-items:center;
-
     border:1px solid #d7dce5;
     border-radius:8px;
-
     padding:0 12px;
-
     background:#f8fafc;
 
 }
 
 .campo-pesquisa i{
-
     color:#8b97a7;
     margin-right:10px;
 
 }
 
 .campo-pesquisa input{
-
     width:100%;
-
     border:none;
     outline:none;
-
     background:none;
 
 }
 
 .select-tipo{
-
     height:42px;
-
     padding:0 14px;
-
     border:1px solid #d7dce5;
-
     border-radius:8px;
-
     background:#fff;
-
     cursor:pointer;
 
 }
 
 .btn-novo-usuario{
-
     display:flex;
     align-items:center;
     gap:8px;
-
     padding:12px 18px;
-
     background:#ff914d;
-
     color:#fff;
-
     text-decoration:none;
-
     border-radius:8px;
-
     font-weight:600;
-
     transition:.3s;
 
 }
@@ -340,33 +296,23 @@
 }
 
 .tabela-usuarios{
-
     width:100%;
-
     border-collapse:collapse;
-
     background:#fff;
-
 }
 
 .tabela-usuarios thead{
-
     background:#003b73;
     color:#fff;
     position: sticky;
     top: 0;
     z-index: 100;
-
 }
 
 .tabela-usuarios th{
-
     padding:18px;
-
     text-align:left;
-
     font-size:13px;
-
     text-transform:uppercase;
 
 }
@@ -382,7 +328,6 @@
 }
 
 .tabela-usuarios tbody tr:hover{
-
     background:#f8fbff;
 
 }
@@ -390,65 +335,47 @@
 /* Avatar */
 
 .avatar img{
-
     width:46px;
     height:46px;
-
     border-radius:50%;
-
     object-fit:cover;
-
 }
 
 .avatar-padrao{
-
     width:46px;
     height:46px;
-
     border-radius:50%;
-
     background:var(--azul-Senac);
-
     color:#fff;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     font-weight:bold;
-
 }
 
 /* Tipo */
 
 .tipo{
-
     padding:6px 14px;
-
     border-radius:30px;
-
     font-size:13px;
-
     font-weight:600;
 
 }
 
 .tipo.professor{
-
     background:#eaf3ff;
     color:#0d6efd;
 
 }
 
 .tipo.aluno{
-
     background:#fff3e8;
     color:#ff7b00;
 
 }
 
 .tipo.coordenador{
-
     background:#eaf9ef;
     color:#198754;
 
@@ -461,7 +388,6 @@
 
 
 .acoes-geral_usuario{
-
     display:flex;
     justify-content:flex-end;
     gap:10px;
@@ -471,52 +397,40 @@
 }
 
 .acoes-geral_usuario button{
-
     width:36px;
     height:36px;
-
     border:none;
-
     border-radius:8px;
-
     cursor:pointer;
-
     transition:.3s;
-
 }
 
 .btn-editar{
-
     background:#dbeafe;
     color:#2563eb;
 
 }
 
 .btn-descricao{
-
     background:#eef2ff;
     color:#4f46e5;
 
 }
 
 .btn-excluir{
-
     background:#fee2e2;
     color:#dc2626;
 
 }
 
 .acoes-geral_usuario button:hover{
-
     transform:scale(1.05);
 
 }
 
 .vazio{
-
     text-align:center;
     padding:40px;
-
 }
 
 /* MODAL DO CADASTRO DE USUARIO */
