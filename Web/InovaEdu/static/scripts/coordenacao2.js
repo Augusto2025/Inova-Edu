@@ -274,4 +274,137 @@ function removerAluno(index){
     atualizarListaSelecionados();
 }
 
+// ===============================
+// SALVAR ALUNOS DA TURMA
+// ===============================
+
+document.getElementById("btnSalvar").addEventListener("click", function () {
+
+    const turma = document.getElementById("idTurmaAtual").value;
+
+    fetch("/turma/salvar-alunos/", {
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/json",
+
+            "X-CSRFToken":document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+            ).value
+
+        },
+
+        body:JSON.stringify({
+
+            turma:turma,
+
+            usuarios:alunosSelecionados.map(a=>a.id)
+
+        })
+
+    })
+
+    .then(response=>response.json())
+
+    .then(data=>{
+
+        if(data.status=="ok"){
+
+            document.getElementById("mensagemSucesso").style.display="block";
+
+            setTimeout(()=>{
+
+                document.getElementById("mensagemSucesso").style.display="none";
+
+                document.getElementById("modalUsuariosTurma").style.display="none";
+
+            },1000);
+
+        }
+
+    });
+
+});
+
+
+
+
+
+
+
 // SALVAR OS USUARIOS DA TURMA
+// ===============================
+// ABRIR MODAL DE USUÁRIOS
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalUsuarios = document.getElementById("modalUsuariosTurma");
+    const btnCancelar = document.getElementById("cancelarUsuariosTurma");
+
+    document.querySelectorAll(".btn-ver-usuarios").forEach(btn => {
+
+        btn.addEventListener("click", function () {
+
+            const turmaId = this.dataset.turma;
+
+            // guarda a turma atual
+            document.getElementById("idTurmaAtual").value = turmaId;
+
+            // limpa a lista
+            alunosSelecionados = [];
+
+            atualizarListaSelecionados();
+
+            // busca os alunos já cadastrados
+            fetch(`/turma/listar-alunos/${turmaId}/`)
+            .then(response => response.json())
+            .then(data => {
+
+                data.alunos.forEach(idAluno => {
+
+                    const li = document.querySelector(
+                        `#listaAlunosBanco li[data-id="${idAluno}"]`
+                    );
+
+                    if(li){
+
+                        alunosSelecionados.push({
+                            id:idAluno,
+                            nome:li.querySelector("span").innerText
+                        });
+
+                    }
+
+                });
+
+                atualizarListaSelecionados();
+
+            });
+
+            modalUsuarios.style.display = "flex";
+
+        });
+
+    });
+
+    btnCancelar.addEventListener("click",function(){
+
+        modalUsuarios.style.display="none";
+
+    });
+
+    window.addEventListener("click",function(e){
+
+        if(e.target===modalUsuarios){
+
+            modalUsuarios.style.display="none";
+
+        }
+
+    });
+
+});
+

@@ -1,3 +1,4 @@
+from django.contrib.admindocs import views
 from django.shortcuts import render, redirect, get_object_or_404
 import resend
 from datetime import date
@@ -1572,37 +1573,48 @@ def excluir_turma(request, idturma):
     return redirect("TurmaCoord")
 
 
-def adicionar_alunos_turma(request):
 
-    if request.method == "POST":
 
-        dados = json.loads(request.body)
+def listar_alunos_turma(request, idturma):
 
-        turma = Turma.objects.get(idturma=dados["turma_id"])
+    alunos = UsuarioDaTurma.objects.filter(
+        id_turma_id=idturma
+    ).values_list(
+        "id_usuario_id",
+        flat=True
+    )
 
-        turma.alunos.clear()
+    return JsonResponse({
+        "alunos": list(alunos)
+    })
 
-        for id_aluno in dados["alunos"]:
 
-            aluno = Usuario.objects.get(idusuario=id_aluno)
 
-            turma.alunos.add(aluno)
-
-        return JsonResponse({"sucesso": True})
-
-    return JsonResponse({"sucesso": False})
-
+@require_POST
 def salvar_turma_usuario(request):
+
     dados = json.loads(request.body)
 
-    turma = Turma.objects.get(idturma=dados["turma_id"])
+    turma = Turma.objects.get(
+        idturma=dados["turma"]
+    )
 
-    turma.alunos.clear()
+    ids = dados["usuarios"]
 
-    turma.alunos.add(*dados["alunos"])
+    UsuarioDaTurma.objects.filter(
+        id_turma=turma
+    ).delete()
 
-    return JsonResponse({"sucesso": True})
+    for id_usuario in ids:
 
+        UsuarioDaTurma.objects.create(
+            id_turma=turma,
+            id_usuario=Usuario.objects.get(idusuario=id_usuario)
+        )
+
+    return JsonResponse({
+        "status": "ok"
+    })
 
 
 

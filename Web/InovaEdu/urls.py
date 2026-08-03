@@ -50,7 +50,24 @@ urlpatterns = [
     path("CursoCoord/", views.CursoCoord, name="CursoCoord"),
     
     
-    path("turma/salvar-alunos/",views.salvar_turma_usuario,name="salvar_turma_usuario",),
+    # path("turma/salvar-alunos/",views.salvar_turma_usuario,name="salvar_turma_usuario",),
+    path(
+        "turma/listar-alunos/<int:idturma>/",
+        views.listar_alunos_turma,
+        name="listar_alunos_turma",
+    ),
+
+    path(
+        "turma/salvar-alunos/",
+        views.salvar_turma_usuario,
+        name="salvar_turma_usuario",
+    ),
+    
+    
+    
+    
+    
+    
     
     
     
