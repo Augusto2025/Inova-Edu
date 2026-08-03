@@ -283,3 +283,31 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+
+// PESQUISA DE CURSO
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campoBusca = document.getElementById("pesquisarCurso");
+
+    campoBusca.addEventListener("keyup", function () {
+
+        let filtro = campoBusca.value.toLowerCase();
+
+        let cursos = document.querySelectorAll(".curso-item");
+
+        cursos.forEach(function (curso) {
+
+            let nomeCurso = curso.innerText.toLowerCase();
+
+            if (nomeCurso.includes(filtro)) {
+                curso.style.display = "";
+            } else {
+                curso.style.display = "none";
+            }
+
+        });
+
+    });
+
+});

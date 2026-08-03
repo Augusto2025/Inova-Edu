@@ -1337,10 +1337,17 @@ def UsuarioCoord(request):
 
         if acao == "cadastrar_usuario":
 
+            email = request.POST.get("email")
+
+            # Verifica se o e-mail já existe
+            if Usuario.objects.filter(email=email).exists():
+                messages.error(request, "Este e-mail já está cadastrado!")
+                return redirect("UsuariosCoord")
+
             Usuario.objects.create(
                 nome=request.POST.get("nome"),
                 sobrenome=request.POST.get("sobrenome"),
-                email=request.POST.get("email"),
+                email=email,
                 senha=request.POST.get("senha"),
                 descricao=request.POST.get("descricao"),
                 tipo=request.POST.get("tipoCadastro"),
@@ -1362,18 +1369,18 @@ def UsuarioCoord(request):
     
     elif filtro == "coordenador":
         usuarios = usuarios.filter(tipo__iexact="Coordenador")
-    
 
     context = {
         "usuarios": usuarios,
         "total_usuarios": Usuario.objects.count(),
         "total_professores": Usuario.objects.filter(tipo__iexact="Professor").count(),
         "total_alunos": Usuario.objects.filter(tipo__iexact="Aluno").count(),
-         "total_coordenadores": Usuario.objects.filter(tipo__iexact="Coordenador").count(),
+        "total_coordenadores": Usuario.objects.filter(tipo__iexact="Coordenador").count(),
         "filtro": filtro,
     }
 
     return render(request, "Coordenacao/UsuarioCoord.html", context)
+
 
 def excluir_usuario(request, idusuario):
     if request.method == "POST":

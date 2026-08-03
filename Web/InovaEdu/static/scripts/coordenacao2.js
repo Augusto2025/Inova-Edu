@@ -412,3 +412,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+// PESQUISA DE TURMA
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campoBuscaTurma = document.getElementById("pesquisarTurma");
+
+    campoBuscaTurma.addEventListener("input", function () {
+
+        let filtro = campoBuscaTurma.value.toLowerCase().trim();
+
+        let turmas = document.querySelectorAll(".turma-item");
+
+        turmas.forEach(function (turma) {
+
+            let dados = turma.innerText.toLowerCase();
+
+            if (dados.includes(filtro)) {
+                turma.style.display = "";
+            } else {
+                turma.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
