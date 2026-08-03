@@ -31,7 +31,7 @@
     overflow:hidden;
     box-shadow:0 5px 18px rgba(0,0,0,.08);
     position: relative;
-    top: 50px; /* sobe */
+    top: 40px; /* sobe */
     
     
 }
@@ -48,7 +48,7 @@
 
     padding:18px 22px;
 
-    border-radius:15px 15px 0 0;
+    /* border-radius:15px 15px 0 0; */
 
     border:1px solid #E5E7EB;
     border-bottom:none;
