@@ -1209,6 +1209,52 @@ def forum_blocos(request):
         }
     )
 
+def criar_forum(request):
+    email = request.session.get("usuario_email")
+    if not email:
+        return redirect("login")
+
+    try:
+        usuario = Usuario.objects.get(email=email)
+    except Usuario.DoesNotExist:
+        return redirect("login")
+
+    if request.method == "POST":
+        nome = request.POST.get("nome", "").strip()
+        titulo_topico = request.POST.get("titulo_topico", "").strip()
+        descricao_topico = request.POST.get("descricao_topico", "").strip()
+
+        # Validação de segurança no backend
+        meus_foruns_count = Forum.objects.filter(usuario__email=email).count()
+        if meus_foruns_count >= 5:
+            return redirect('forum_blocos')
+
+        # 1. Valida APENAS o nome do fórum (campo obrigatório)
+        if not nome:
+            messages.error(request, "Informe o nome do fórum.")
+            return redirect("forum_blocos")
+
+        # 2. Cria o Fórum
+        forum = Forum.objects.create(
+            nome=nome, 
+            data_criacao=timezone.now().date(), 
+            usuario=usuario
+        )
+
+        # 3. Cria o primeiro Tópico se preenchido
+        if titulo_topico:
+            Topico.objects.create(
+                forum=forum,
+                titulo=titulo_topico,
+                descricao=descricao_topico,
+                usuario=usuario,
+            )
+
+        messages.success(request, "Fórum criado com sucesso!")
+        return redirect("forum_blocos")
+
+    return redirect("forum_blocos")
+
 def editar_forum(request, forum_id):
     forum = get_object_or_404(Forum, pk=forum_id)
     email_logado = request.session.get("usuario_email")
@@ -1253,62 +1299,19 @@ def excluir_forum(request, forum_id):
 
     return redirect("forum_blocos")  # volta para a página principal
 
-
-def criar_forum(request):
-    email = request.session.get("usuario_email")
-    if not email:
-        return redirect("login")
-
-    try:
-        usuario = Usuario.objects.get(email=email)
-    except Usuario.DoesNotExist:
-        return redirect("login")
-
-    if request.method == "POST":
-        nome = request.POST.get("nome", "").strip()
-        titulo_topico = request.POST.get("titulo_topico", "").strip()
-        descricao_topico = request.POST.get("descricao_topico", "").strip()
-
-        meus_foruns_count = Forum.objects.filter(usuario__email=email).count()
-        if meus_foruns_count >= 5:
-            messages.error(request, "Você só pode ter no máximo 5 fóruns criados!")
-            return redirect('forum_blocos')
-
-        # ✅ 1. Valida APENAS o nome do fórum (que é o único campo obrigatório)
-        if not nome:
-            messages.error(request, "Informe o nome do fórum.")
-            return redirect("forum_blocos")
-
-        # 2️⃣ Cria o Fórum
-        forum = Forum.objects.create(
-            nome=nome, 
-            data_criacao=timezone.now().date(), 
-            usuario=usuario
-        )
-
-        # 3️⃣ Cria o primeiro Tópico APENAS se o usuário preencheu o título
-        if titulo_topico:
-            Topico.objects.create(
-                forum=forum,
-                titulo=titulo_topico,
-                descricao=descricao_topico,
-                usuario=usuario,
-            )
-
-        messages.success(request, "Fórum criado com sucesso!")
-        return redirect("forum_blocos")
-
-    # 🚫 Não renderiza template próprio (modal cuida disso)
-    return redirect("forum_blocos")
-
 def forum_topicos(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
+    usuario_email = request.session.get("usuario_email")
+    usuario = Usuario.objects.filter(email=usuario_email).first()
 
+    # Contagem de tópicos criados pelo usuário atual neste fórum
+    total_meus_topicos = 0
+    if usuario:
+        total_meus_topicos = Topico.objects.filter(forum=forum, usuario=usuario).count()
+
+    # Busca de tópicos do fórum
     query = request.GET.get("q", "").strip()
-
-    # Filtra os tópicos do fórum e carrega o usuário criador
-    topicos = Topico.objects.filter(forum=forum).select_related('usuario')
-
+    topicos = Topico.objects.filter(forum=forum)
     if query:
         topicos = topicos.filter(titulo__icontains=query)
 
@@ -1316,10 +1319,9 @@ def forum_topicos(request, idforum):
         "forum": forum,
         "topicos": topicos,
         "query": query,
+        "total_meus_topicos": total_meus_topicos,  # Passado para o template
     }
-
     return render(request, "AlunoProfessor/forum_topicos.html", context)
-
 
 def criar_topico(request, idforum):
     forum = get_object_or_404(Forum, idforum=idforum)
@@ -1327,6 +1329,12 @@ def criar_topico(request, idforum):
     usuario = get_object_or_404(Usuario, email=usuario_email)
 
     if request.method == "POST":
+        # Validação do limite de 3 tópicos no servidor
+        total_meus_topicos = Topico.objects.filter(forum=forum, usuario=usuario).count()
+        if total_meus_topicos >= 3:
+            messages.error(request, "Você já atingiu o limite de 3 tópicos neste fórum.")
+            return redirect("forum_topicos", idforum=forum.idforum)
+
         titulo = request.POST.get("titulo", "").strip()
         descricao = request.POST.get("descricao", "").strip()
 

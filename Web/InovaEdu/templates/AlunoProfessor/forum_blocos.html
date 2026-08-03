@@ -16,7 +16,7 @@
 
             {% block menssagem %}
                 {% include "partials/menssagem.html" %}
-            {% endblock  %}
+            {% endblock %}
 
             <header class="section-header">
                 <div class="rota">
@@ -119,7 +119,6 @@
                     {% endif %}
                 {% endfor %}
             </section>
-
 
             <!-- SEÇÃO 2: FÓRUNS DA COMUNIDADE -->
             <div class="section-title-divider" style="margin-top: 40px;">
@@ -229,6 +228,26 @@
         </div>
     </div>
 
+    <!-- MODAL AVISO DE LIMITE DE FÓRUNS (CAPACIDADE CHEIA) -->
+    <div id="modalLimiteForuns" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header header-danger">
+                <h2><i class="fa-solid fa-triangle-exclamation"></i> Limite Atingido</h2>
+                <button type="button" class="modal-close" id="fecharModalLimite">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 25px 20px;">
+                <i class="fa-solid fa-layer-group" style="font-size: 3rem; color: #e74c3c; margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px; color: #333;">Capacidade Máxima de Fóruns</h3>
+                <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+                    Você atingiu o limite de <strong>5 fóruns criados</strong>. Para criar um novo fórum, exclua um dos seus fóruns existentes.
+                </p>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button type="button" class="btn-secondary" id="btnEntendiLimite">Entendi</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL EDITAR FÓRUM -->
     <div id="modalEditarForum" class="modal-overlay">
         <div class="modal-content">
@@ -273,6 +292,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
+            const meusForunsCount = {{ meus_foruns_count|default:0 }};
+
             // --- FUNÇÃO PARA VERIFICAR E EXIBIR MENSAGENS VAZIAS ---
             function verificarEstadosVazios() {
                 const meusForuns = document.querySelectorAll('.card-meu-forum');
@@ -292,12 +313,33 @@
             const abrirModal = document.getElementById('abrirModalForum');
             const fecharModal = document.getElementById('fecharModalForum');
             const modalCriar = document.getElementById('modalCriarForum');
-        
-            if (abrirModal && modalCriar) {
-                abrirModal.addEventListener('click', () => modalCriar.classList.add('open'));
+            const modalLimite = document.getElementById('modalLimiteForuns');
+            const fecharLimite = document.getElementById('fecharModalLimite');
+            const btnEntendiLimite = document.getElementById('btnEntendiLimite');
+
+            function vincularAbrirModal() {
+                const btnAbrir = document.getElementById('abrirModalForum');
+                if (btnAbrir) {
+                    btnAbrir.addEventListener('click', () => {
+                        if (meusForunsCount >= 5) {
+                            if (modalLimite) modalLimite.classList.add('open');
+                        } else {
+                            if (modalCriar) modalCriar.classList.add('open');
+                        }
+                    });
+                }
             }
+
+            vincularAbrirModal();
+
             if (fecharModal && modalCriar) {
                 fecharModal.addEventListener('click', () => modalCriar.classList.remove('open'));
+            }
+            if (fecharLimite && modalLimite) {
+                fecharLimite.addEventListener('click', () => modalLimite.classList.remove('open'));
+            }
+            if (btnEntendiLimite && modalLimite) {
+                btnEntendiLimite.addEventListener('click', () => modalLimite.classList.remove('open'));
             }
 
             const modalEditar = document.getElementById('modalEditarForum');
@@ -339,7 +381,7 @@
             if(fecharEditar) fecharEditar.addEventListener('click', () => modalEditar.classList.remove('open'));
             if(fecharExcluir) fecharExcluir.addEventListener('click', () => modalExcluir.classList.remove('open'));
         
-            [modalCriar, modalEditar, modalExcluir].forEach(modal => {
+            [modalCriar, modalEditar, modalExcluir, modalLimite].forEach(modal => {
                 if (modal) {
                     modal.addEventListener('click', e => {
                         if(e.target === modal) modal.classList.remove('open');
@@ -400,11 +442,7 @@
                                     vincularEventosAcoes();
                                     inicializarVerMais();
                                     verificarEstadosVazios();
-
-                                    const novoAbrirModal = document.getElementById('abrirModalForum');
-                                    if (novoAbrirModal && modalCriar) {
-                                        novoAbrirModal.addEventListener('click', () => modalCriar.classList.add('open'));
-                                    }
+                                    vincularAbrirModal();
                                 }
                             })
                             .catch(err => console.error('Erro na busca do fórum:', err));

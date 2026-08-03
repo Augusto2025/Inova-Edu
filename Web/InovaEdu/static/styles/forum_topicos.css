@@ -249,6 +249,15 @@ body {
   color: #94a3b8;
 }
 
+.section-title-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 25px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(0, 70, 184, 0.12);
+}
+
 /* =========================
    RESPONSIVIDADE
 ========================= */
