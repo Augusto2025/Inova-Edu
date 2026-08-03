@@ -294,7 +294,25 @@
             
             const meusForunsCount = {{ meus_foruns_count|default:0 }};
 
-            // --- FUNÇÃO PARA VERIFICAR E EXIBIR MENSAGENS VAZIAS ---
+            // --- 1. FECHAMENTO GENÉRICO DE TODOS OS MODAIS (CORREÇÃO DO BOTÃO CANCELAR) ---
+            // Qualquer elemento com classe .modal-close ou .btn-secondary vai fechar o modal onde está inserido
+            document.querySelectorAll('.modal-close, .btn-secondary').forEach(button => {
+                button.addEventListener('click', () => {
+                    const modal = button.closest('.modal-overlay');
+                    if (modal) {
+                        modal.classList.remove('open');
+                    }
+                });
+            });
+
+            // Fechar ao clicar fora da caixa do modal (no overlay escuro)
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) modal.classList.remove('open');
+                });
+            });
+
+            // --- 2. MENSAGENS AMIGÁVEIS (ESTADOS VAZIOS) ---
             function verificarEstadosVazios() {
                 const meusForuns = document.querySelectorAll('.card-meu-forum');
                 const msgMeusForuns = document.getElementById('msg-sem-meus-foruns');
@@ -309,13 +327,9 @@
                 }
             }
 
-            // --- 1. GERENCIAMENTO DE MODAIS ---
-            const abrirModal = document.getElementById('abrirModalForum');
-            const fecharModal = document.getElementById('fecharModalForum');
+            // --- 3. ABRIR MODAL DE CRIAR / LIMITE ---
             const modalCriar = document.getElementById('modalCriarForum');
             const modalLimite = document.getElementById('modalLimiteForuns');
-            const fecharLimite = document.getElementById('fecharModalLimite');
-            const btnEntendiLimite = document.getElementById('btnEntendiLimite');
 
             function vincularAbrirModal() {
                 const btnAbrir = document.getElementById('abrirModalForum');
@@ -332,16 +346,7 @@
 
             vincularAbrirModal();
 
-            if (fecharModal && modalCriar) {
-                fecharModal.addEventListener('click', () => modalCriar.classList.remove('open'));
-            }
-            if (fecharLimite && modalLimite) {
-                fecharLimite.addEventListener('click', () => modalLimite.classList.remove('open'));
-            }
-            if (btnEntendiLimite && modalLimite) {
-                btnEntendiLimite.addEventListener('click', () => modalLimite.classList.remove('open'));
-            }
-
+            // --- 4. MODAIS DE EDITAR E EXCLUIR ---
             const modalEditar = document.getElementById('modalEditarForum');
             const modalExcluir = document.getElementById('modalExcluirForum');
             const formEditar = document.getElementById('formEditarForum');
@@ -350,7 +355,7 @@
             const inputNome = document.getElementById('inputNomeForum');
             const inputTitulo = document.getElementById('inputTituloTopico');
             const inputDescricao = document.getElementById('inputDescricaoTopico');
-        
+
             function vincularEventosAcoes() {
                 document.querySelectorAll('.btn-editar').forEach(btn => {
                     btn.onclick = (e) => {
@@ -374,22 +379,8 @@
 
             vincularEventosAcoes();
             verificarEstadosVazios();
-        
-            const fecharEditar = document.getElementById('fecharModalEditar');
-            const fecharExcluir = document.getElementById('fecharModalExcluir');
-        
-            if(fecharEditar) fecharEditar.addEventListener('click', () => modalEditar.classList.remove('open'));
-            if(fecharExcluir) fecharExcluir.addEventListener('click', () => modalExcluir.classList.remove('open'));
-        
-            [modalCriar, modalEditar, modalExcluir, modalLimite].forEach(modal => {
-                if (modal) {
-                    modal.addEventListener('click', e => {
-                        if(e.target === modal) modal.classList.remove('open');
-                    });
-                }
-            });
 
-            // --- 2. LÓGICA DE EXIBIR DE 12 EM 12 ---
+            // --- 5. LÓGICA DE EXIBIR DE 12 EM 12 ---
             function inicializarVerMais() {
                 const btnVerMais = document.getElementById('btnVerMaisForuns');
                 if (!btnVerMais) return;
@@ -411,7 +402,7 @@
 
             inicializarVerMais();
 
-            // --- 3. LÓGICA DE BUSCA AUTOMÁTICA EM TEMPO REAL ---
+            // --- 6. BUSCA AUTOMÁTICA EM TEMPO REAL ---
             const inputBusca = document.querySelector('input[name="q"]');
             const searchForm = document.querySelector('.search-form-wrapper');
             const mainWrapper = document.getElementById('foruns-main-wrapper');
