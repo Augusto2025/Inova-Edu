@@ -2,589 +2,503 @@ import customtkinter as ctk
 from tkinter import messagebox
 from datetime import datetime
 from controllers.forum_controller import ForumController
-# Garanta que essas constantes estejam importadas ou definidas no seu escopo global:
+
+# Paleta de Cores e Estilos
 AZUL_SENAC = "#004A8D"
-CINZA_SENAC = "#cbd5e1"
-BRANCO = "#ffffff"
+AZUL_HOVER = "#003566"
+BG_TELA = "#f8fafc"
+BG_HOVER = "#e2e8f0"
+CARD_BG = "#ffffff"
+TEXTO_ESCURO = "#0f172a"
+TEXTO_MUTED = "#64748b"
+BORDA_COLOR = "#e2e8f0"
+COR_ERRO = "#dc2626"
+
 
 class Forum(ctk.CTkFrame):
     def __init__(self, master=None):
-        super().__init__(master, fg_color="#f8fafc") 
+        super().__init__(master, fg_color=BG_TELA)
         self.janela = master
         self.controller = ForumController()
-        
-        self.azul = "#004A8D"
-        self.azul_hover = "#003566"
-        self.bg_lateral = "#ffffff"
-        self.view = "topics"
-        
-        self.f_bold = ("Segoe UI", 14, "bold")
-        self.f_norm = ("Segoe UI", 13)
-        self.f_small = ("Segoe UI", 11, "bold")
+
+        # Modos de Visualização: "hub" | "topics" | "messages"
+        self.view = "hub"
         
         self.current_forum_id = None
         self.current_forum_name = ""
         self.current_topic_id = None
         self.current_topic_title = ""
-        
+
+        # Tipografias
+        self.f_title = ("Segoe UI", 18, "bold")
+        self.f_subtitle = ("Segoe UI", 14, "bold")
+        self.f_bold = ("Segoe UI", 13, "bold")
+        self.f_norm = ("Segoe UI", 13)
+        self.f_small = ("Segoe UI", 11)
+
         self.setup_ui()
 
     def setup_ui(self):
+        """Estrutura base da interface"""
         from assets.header import HeaderPadrao
-        self.header = HeaderPadrao(self, titulo="Fórum de Discussões", comando_voltar=None)
+        self.header = HeaderPadrao(self, titulo="Fórum Acadêmico", comando_voltar=None)
 
-        # CONTAINER INFERIOR
-        container_corpo = ctk.CTkFrame(self, fg_color="transparent")
-        container_corpo.pack(fill="both", expand=True)
+        # Frame de ações acoplado diretamente ao Header
+        self.header_action_frame = ctk.CTkFrame(self.header, fg_color="transparent")
+        self.header_action_frame.pack(side="right", padx=20)
 
-        # 2. SIDEBAR ESTÁTICA (Esquerda)
-        self.side = ctk.CTkFrame(container_corpo, width=300, fg_color=self.bg_lateral, corner_radius=0)
-        self.side.pack(side="left", fill="y")
-        self.side.pack_propagate(False)
+        # 1. BARRA SUPERIOR (Apenas Breadcrumbs - Ajustada para eliminar o espaço em branco no topo)
+        self.top_bar = ctk.CTkFrame(self, fg_color="transparent", height=30)
+        self.top_bar.pack(fill="x", side="top", padx=25, pady=(4, 0))
         
-        ctk.CTkLabel(self.side, text="MEUS FÓRUNS", font=("Segoe UI", 11, "bold"), text_color="#64748b").pack(anchor="w", padx=25, pady=(25, 10))
-        
-        self.btn_new_f = ctk.CTkButton(self.side, text="+ Criar Novo Fórum", fg_color=self.azul, hover_color=self.azul_hover, font=self.f_bold, corner_radius=10, height=40)
-        self.btn_new_f.configure(command=self.toggle_formulario_forum)
-        self.btn_new_f.pack(fill="x", padx=20, pady=(0, 15))
-        
-        ctk.CTkFrame(self.side, height=1, fg_color="#e2e8f0").pack(fill="x", padx=20, pady=(10, 10))
-        
-        self.scroll_side = ctk.CTkScrollableFrame(self.side, fg_color="transparent")
-        self.scroll_side.pack(fill="both", expand=True, padx=8)
+        self.breadcrumb_frame = ctk.CTkFrame(self.top_bar, fg_color="transparent")
+        self.breadcrumb_frame.pack(side="left")
 
-        # 3. ÁREA DE CONTEÚDO PRINCIPAL (Direita)
-        self.main = ctk.CTkFrame(container_corpo, fg_color="transparent")
-        self.main.pack(side="right", fill="both", expand=True, padx=35, pady=20)
-        
-        # 4. BARRA DE CAMINHO (Breadcrumbs)
-        self.breadcrumb_frame = ctk.CTkFrame(self.main, fg_color="transparent")
-        self.breadcrumb_frame.pack(fill="x", pady=(0, 15))
-        
-        self.btn_new_t = ctk.CTkButton(self.breadcrumb_frame, text="+ Novo Tópico", height=32, fg_color=self.azul, hover_color=self.azul_hover, font=self.f_bold, corner_radius=8, command=self.toggle_formulario_topico)
-        
-        # Frame de Rolagem central
-        self.content = ctk.CTkScrollableFrame(self.main, fg_color="transparent")
-        self.content.pack(fill="both", expand=True, pady=(0, 15))
+        # 2. ÁREA CENTRAL DE CONTEÚDO (Com Rolagem)
+        self.main_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.main_container.pack(fill="both", expand=True, padx=25, pady=(5, 15))
 
-        # 5. CAIXA DE TEXTO INFERIOR (Chat)
-        self.reply_frame = ctk.CTkFrame(self.main, fg_color="#ffffff", height=70, corner_radius=12, border_width=1, border_color="#e2e8f0")
-        self.reply_entry = ctk.CTkTextbox(self.reply_frame, height=45, fg_color="transparent", font=self.f_norm, text_color="#334155")
+        # 3. CAIXA FIXA DE RESPOSTA NO RODAPÉ (Ativa apenas na view 'messages')
+        self.reply_frame = ctk.CTkFrame(self, fg_color="#ffffff", height=75, corner_radius=12, border_width=1, border_color=BORDA_COLOR)
+        
+        self.reply_entry = ctk.CTkTextbox(self.reply_frame, height=45, fg_color="transparent", font=self.f_norm, text_color=TEXTO_ESCURO)
         self.reply_entry.pack(side="left", fill="x", expand=True, padx=15, pady=10)
         
-        self.btn_send = ctk.CTkButton(self.reply_frame, text="Enviar", width=100, height=38, fg_color=self.azul, hover_color=self.azul_hover, font=self.f_bold, corner_radius=8, command=self.send_message)
+        self.btn_send = ctk.CTkButton(
+            self.reply_frame, text="Enviar Resposta", width=120, height=38,
+            fg_color=AZUL_SENAC, hover_color=AZUL_HOVER, font=self.f_bold,
+            corner_radius=8, command=self.send_message
+        )
         self.btn_send.pack(side="right", padx=15)
-
         self.setup_placeholder()
-        
-        foruns_iniciais = self.controller.listar_foruns()
-        if foruns_iniciais:
-            self.load_forum(foruns_iniciais[0]["idforum"], foruns_iniciais[0]["nome"])
-        else:
-            self.load_side_menu()
-            self.refresh_ui()
+
+        # Inicia na visão inicial (Hub)
+        self.show_hub()
 
     def setup_placeholder(self):
-        ph = "Digite sua mensagem..."
+        ph = "Escreva sua resposta aqui..."
+        self.reply_entry.delete("1.0", "end")
         self.reply_entry.insert("1.0", ph)
         self.reply_entry.bind("<FocusIn>", lambda e: self.reply_entry.delete("1.0", "end") if self.reply_entry.get("1.0", "end-1c") == ph else None)
         self.reply_entry.bind("<FocusOut>", lambda e: self.reply_entry.insert("1.0", ph) if not self.reply_entry.get("1.0", "end-1c").strip() else None)
 
-    def toggle_formulario_forum(self):
-        # 1. Configuração do Modal Principal 
-        modal = ctk.CTkToplevel(self.janela)
-        modal.title("Criar Novo Fórum")
-        modal.geometry("500x320")  
-        modal.grab_set()
-        modal.configure(fg_color="#f5f7fb")
-        modal.resizable(False, False)
-        modal.after(10, lambda: modal.focus_force())
+    # =========================================================================
+    # NAVEGAÇÃO, BREADCRUMBS E AÇÕES DO HEADER
+    # =========================================================================
+    def update_header_and_breadcrumbs(self):
+        """Atualiza a rota fluida e os botões de ação no Header"""
+        for w in self.breadcrumb_frame.winfo_children():
+            w.destroy()
+        for w in self.header_action_frame.winfo_children():
+            w.destroy()
 
-        # 2. Cabeçalho Customizado (Padrão Senac)
-        m_header = ctk.CTkFrame(modal, fg_color=self.azul, corner_radius=0, height=60)
-        m_header.pack(fill="x")
-        ctk.CTkLabel(m_header, text="📁 Novo Espaço de Discussão", font=ctk.CTkFont(size=16, weight="bold"), text_color="#ffffff").pack(pady=15)
+        # Nível 1: Hub
+        ctk.CTkButton(
+            self.breadcrumb_frame, text="🏠 Hub de Fóruns",
+            font=self.f_bold if self.view == "hub" else self.f_norm,
+            text_color=AZUL_SENAC if self.view == "hub" else TEXTO_MUTED,
+            fg_color="transparent", hover_color="#e2e8f0", width=10,
+            command=self.show_hub
+        ).pack(side="left")
 
-        # 3. Área de Conteúdo
-        content = ctk.CTkFrame(modal, fg_color="transparent")
-        content.pack(fill="both", expand=True, padx=40, pady=20)
+        # Nível 2: Categoria Selecionada
+        if self.view in ["topics", "messages"] and self.current_forum_name:
+            ctk.CTkLabel(self.breadcrumb_frame, text=" / ", font=self.f_norm, text_color="#94a3b8").pack(side="left")
+            ctk.CTkButton(
+                self.breadcrumb_frame, text=f"📁 {self.current_forum_name}",
+                font=self.f_bold if self.view == "topics" else self.f_norm,
+                text_color=AZUL_SENAC if self.view == "topics" else TEXTO_MUTED,
+                fg_color="transparent", hover_color="#e2e8f0", width=10,
+                command=lambda: self.show_forum(self.current_forum_id, self.current_forum_name)
+            ).pack(side="left")
 
-        # --- Campo: Nome do Fórum ---
-        ctk.CTkLabel(content, text="Nome do Fórum / Categoria:", font=ctk.CTkFont(weight="bold"), text_color=self.azul).pack(anchor="w", pady=(5, 2))
-        txt_forum = ctk.CTkEntry(content, fg_color="#ffffff", border_color="#cbd5e1", border_width=2, height=40, corner_radius=8, placeholder_text="Ex: Dúvidas Gerais, Avisos...")
-        txt_forum.pack(fill="x", pady=(0, 15))
+        # Nível 3: Tópico Aberto
+        if self.view == "messages" and self.current_topic_title:
+            ctk.CTkLabel(self.breadcrumb_frame, text=" / ", font=self.f_norm, text_color="#94a3b8").pack(side="left")
+            ctk.CTkLabel(self.breadcrumb_frame, text=f"💬 {self.current_topic_title}", font=self.f_bold, text_color=TEXTO_ESCURO).pack(side="left")
 
-        # --- Container Oculto para o Tópico Inicial ---
-        frame_topico_opcional = ctk.CTkFrame(content, fg_color="transparent")
-        
-        ctk.CTkLabel(frame_topico_opcional, text="Título do Tópico Inicial:", font=ctk.CTkFont(weight="bold"), text_color=self.azul).pack(anchor="w", pady=(5, 2))
-        txt_topico = ctk.CTkEntry(frame_topico_opcional, fg_color="#ffffff", border_color="#cbd5e1", border_width=2, height=40, corner_radius=8, placeholder_text="Ex: Boas-vindas ao Fórum!")
-        txt_topico.pack(fill="x", pady=(0, 15))
+        # Botão de Criar NO HEADER (Fundo transparente, texto e borda brancos)
+        if self.view == "hub":
+            ctk.CTkButton(
+                self.header_action_frame, text="+ Criar Novo Fórum",
+                fg_color="transparent", text_color="#ffffff", border_color="#ffffff", border_width=1,
+                hover_color=AZUL_HOVER, font=self.f_bold, corner_radius=8, height=34,
+                command=self.modal_novo_forum
+            ).pack(side="right")
+        elif self.view == "topics":
+            ctk.CTkButton(
+                self.header_action_frame, text="+ Criar Novo Tópico",
+                fg_color="transparent", text_color="#ffffff", border_color="#ffffff", border_width=1,
+                hover_color=AZUL_HOVER, font=self.f_bold, corner_radius=8, height=34,
+                command=self.modal_novo_topico
+            ).pack(side="right")
 
-        # 4. Lógica de Expansão Dinâmica do Checkbox
-        def alternar_campo_topico():
-            if chk_estado.get() == 1:
-                modal.geometry("500x430")
-                frame_topico_opcional.pack(fill="x", before=btn_container)
-            else:
-                frame_topico_opcional.pack_forget()
-                modal.geometry("500x320")
+    # =========================================================================
+    # NÍVEL 1: HUB CENTRAL DE FÓRUNS
+    # =========================================================================
+    def show_hub(self):
+        self.view = "hub"
+        self.current_forum_id = None
+        self.current_forum_name = ""
+        self.current_topic_id = None
+        self.current_topic_title = ""
 
-        # Checkbox Customizado
-        chk_estado = ctk.IntVar(value=0)
-        chk_criar_topico = ctk.CTkCheckBox(
-            content, 
-            text="Criar um tópico de abertura junto com este fórum", 
-            variable=chk_estado,
-            command=alternar_campo_topico,
-            font=ctk.CTkFont(size=12),
-            text_color="#475569",
-            fg_color=self.azul,
-            hover_color=self.azul_hover
-        )
-        chk_criar_topico.pack(anchor="w", pady=(0, 20))
+        self.reply_frame.pack_forget()
+        self.update_header_and_breadcrumbs()
+        self.render_hub_view()
 
-        # 5. Lógica de Envio Integrada com as funções do seu Controller
-        def salvar_forum_completo():
-            nome_forum = txt_forum.get().strip()
-            if not nome_forum:
-                return
+    def render_hub_view(self):
+        for w in self.main_container.winfo_children():
+            w.destroy()
 
-            # Agora 'resultado' será o ID (ex: 5) ou False
-            resultado = self.controller.cadastrar_forum(nome_forum)
+        sec_header = ctk.CTkFrame(self.main_container, fg_color="transparent")
+        sec_header.pack(fill="x", pady=(0, 15))
+        ctk.CTkLabel(sec_header, text="Categorias & Espaços de Discussão", font=self.f_title, text_color=TEXTO_ESCURO).pack(side="left")
+
+        foruns = self.controller.listar_foruns() or []
+
+        # Estado Vazio Amigável - Hub (Fundo Transparente)
+        if not foruns:
+            empty_box = ctk.CTkFrame(self.main_container, fg_color="transparent")
+            empty_box.pack(fill="x", pady=20, ipady=20)
             
-            if resultado and resultado is not True:
-                id_forum_vinculo = resultado
-                
-                # Se o checkbox estava marcado, cria o tópico usando o ID real
-                if chk_estado.get() == 1:
-                    nome_topico = txt_topico.get().strip() or "Tópico Geral"
-                    self.controller.cadastrar_topico(id_forum_vinculo, nome_topico)
-                
-                # Atualiza o menu lateral da View
-                self.load_side_menu()
-                
-                # Força a interface a abrir e focar o fórum recém-criado
-                self.load_forum(id_forum_vinculo, nome_forum)
-                
-                modal.destroy()
-
-        # 6. Botões de Rodapé
-        btn_container = ctk.CTkFrame(content, fg_color="transparent")
-        btn_container.pack(fill="x", side="bottom")
-
-        ctk.CTkButton(btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
-                      text_color="#475569", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
-
-        ctk.CTkButton(btn_container, text="Criar Fórum", fg_color=self.azul, hover_color=self.azul_hover, 
-                      text_color="#ffffff", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-                      command=salvar_forum_completo).pack(side="right", padx=(10, 0), expand=True, fill="x")
-
-    def toggle_formulario_topico(self):
-        # Validação básica de segurança: impede abrir o modal se nenhum fórum estiver ativo
-        if self.current_forum_id is None:
-            messagebox.showwarning("Aviso", "Selecione um fórum na barra lateral antes de criar um tópico.")
+            ctk.CTkLabel(empty_box, text="💬", font=("Segoe UI", 42)).pack(pady=(0, 8))
+            ctk.CTkLabel(empty_box, text="Nenhum Fórum Encontrado", font=self.f_title, text_color=TEXTO_ESCURO).pack()
+            ctk.CTkLabel(empty_box, text="Ainda não existem categorias criadas. Seja o primeiro a inaugurar um espaço de discussão!", font=self.f_norm, text_color=TEXTO_MUTED).pack(pady=(6, 16))
+            
+            ctk.CTkButton(
+                empty_box, text="+ Criar o Primeiro Fórum", fg_color=AZUL_SENAC, hover_color=AZUL_HOVER,
+                font=self.f_bold, corner_radius=8, height=36, width=200, command=self.modal_novo_forum
+            ).pack()
             return
 
-        # 1. Configuração do Modal Principal 
+        for f in foruns:
+            fid = f["idforum"]
+            fnome = f["nome"]
+            pode_gerenciar = f.get("pode_gerenciar") or f.get("autor_nome") == self.controller.nome_usuario_logado
+
+            card = ctk.CTkFrame(self.main_container, fg_color=CARD_BG, corner_radius=12, border_width=1, border_color=BORDA_COLOR)
+            card.pack(fill="x", pady=6)
+
+            left_info = ctk.CTkFrame(card, fg_color="transparent")
+            left_info.pack(side="left", padx=20, pady=16)
+
+            ctk.CTkLabel(left_info, text="📁", font=("Segoe UI", 22)).pack(side="left", padx=(0, 15))
+            
+            title_box = ctk.CTkFrame(left_info, fg_color="transparent")
+            title_box.pack(side="left")
+            ctk.CTkLabel(title_box, text=fnome, font=self.f_subtitle, text_color=TEXTO_ESCURO, anchor="w").pack(anchor="w")
+            ctk.CTkLabel(title_box, text="Espaço aberto para dúvidas e trocas de conhecimento", font=self.f_small, text_color=TEXTO_MUTED, anchor="w").pack(anchor="w")
+
+            right_actions = ctk.CTkFrame(card, fg_color="transparent")
+            right_actions.pack(side="right", padx=15)
+
+            if pode_gerenciar:
+                ctk.CTkButton(right_actions, text="✏️", width=32, height=32, fg_color="transparent", hover_color="#f1f5f9", command=lambda id=fid, n=fnome: self.modal_editar("forum", id, n)).pack(side="left", padx=2)
+                ctk.CTkButton(right_actions, text="🗑️", width=32, height=32, fg_color="transparent", hover_color="#fee2e2", text_color=COR_ERRO, command=lambda id=fid: self.modal_excluir("forum", id)).pack(side="left", padx=2)
+
+            ctk.CTkButton(
+                right_actions, text="Acessar Fórum →", fg_color="#e0f2fe", hover_color="#bae6fd",
+                text_color=AZUL_SENAC, font=self.f_bold, height=36, corner_radius=8,
+                command=lambda id=fid, n=fnome: self.show_forum(id, n)
+            ).pack(side="left", padx=(10, 0))
+
+    # =========================================================================
+    # NÍVEL 2: VISÃO DA CATEGORIA (Lista de Tópicos)
+    # =========================================================================
+    def show_forum(self, forum_id, forum_nome):
+        self.view = "topics"
+        self.current_forum_id = forum_id
+        self.current_forum_name = forum_nome
+        self.current_topic_id = None
+        self.current_topic_title = ""
+
+        self.reply_frame.pack_forget()
+        self.update_header_and_breadcrumbs()
+        self.render_topics_view()
+
+    def render_topics_view(self):
+        for w in self.main_container.winfo_children():
+            w.destroy()
+
+        topicos = self.controller.listar_topicos(self.current_forum_id) or []
+
+        header_card = ctk.CTkFrame(self.main_container, fg_color=AZUL_SENAC, corner_radius=12)
+        header_card.pack(fill="x", pady=(0, 15))
+        
+        info_sub = ctk.CTkFrame(header_card, fg_color="transparent")
+        info_sub.pack(fill="x", padx=20, pady=18)
+        
+        ctk.CTkLabel(info_sub, text=f"📁 {self.current_forum_name}", font=("Segoe UI", 20, "bold"), text_color="#ffffff").pack(anchor="w")
+        ctk.CTkLabel(info_sub, text=f"Exibindo {len(topicos)} tópico(s) cadastrado(s) nesta categoria", font=self.f_small, text_color="#bae6fd").pack(anchor="w")
+
+        # Estado Vazio Amigável - Tópicos (Fundo Transparente)
+        if not topicos:
+            empty = ctk.CTkFrame(self.main_container, fg_color="transparent")
+            empty.pack(fill="x", pady=20, ipady=20)
+            
+            ctk.CTkLabel(empty, text="📌", font=("Segoe UI", 42)).pack(pady=(0, 8))
+            ctk.CTkLabel(empty, text="Nenhum Tópico Criado Ainda", font=self.f_title, text_color=TEXTO_ESCURO).pack()
+            ctk.CTkLabel(empty, text=f"A categoria '{self.current_forum_name}' ainda não possui discussões abertas.", font=self.f_norm, text_color=TEXTO_MUTED).pack(pady=(6, 16))
+            
+            ctk.CTkButton(
+                empty, text="+ Iniciar Primeiro Tópico", fg_color=AZUL_SENAC, hover_color=AZUL_HOVER,
+                font=self.f_bold, corner_radius=8, height=36, width=200, command=self.modal_novo_topico
+            ).pack()
+            return
+
+        for t in topicos:
+            tid = t["idtopico"]
+            ttitulo = t["titulo"]
+            pode_gerenciar = t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado
+
+            card = ctk.CTkFrame(self.main_container, fg_color=CARD_BG, corner_radius=10, border_width=1, border_color=BORDA_COLOR)
+            card.pack(fill="x", pady=5)
+
+            left = ctk.CTkFrame(card, fg_color="transparent")
+            left.pack(side="left", padx=20, pady=14)
+
+            ctk.CTkLabel(left, text="💬", font=("Segoe UI", 16)).pack(side="left", padx=(0, 10))
+            ctk.CTkLabel(left, text=ttitulo, font=self.f_bold, text_color=TEXTO_ESCURO).pack(side="left")
+
+            right = ctk.CTkFrame(card, fg_color="transparent")
+            right.pack(side="right", padx=15)
+
+            if pode_gerenciar:
+                ctk.CTkButton(right, text="✏️", width=30, height=30, fg_color="transparent", hover_color="#f1f5f9", command=lambda id=tid, t=ttitulo: self.modal_editar("topic", id, t)).pack(side="left", padx=2)
+                ctk.CTkButton(right, text="🗑️", width=30, height=30, fg_color="transparent", hover_color="#fee2e2", text_color=COR_ERRO, command=lambda id=tid: self.modal_excluir("topic", id)).pack(side="left", padx=2)
+
+            ctk.CTkButton(
+                right, text="Abrir Tópico →", fg_color="transparent", hover_color="#f0f9ff",
+                text_color=AZUL_SENAC, font=self.f_bold, height=32,
+                command=lambda id=tid, t=ttitulo: self.show_thread(id, t)
+            ).pack(side="left", padx=(5, 0))
+
+    # =========================================================================
+    # NÍVEL 3: THREAD DA CONVERSA (Chat de Mensagens)
+    # =========================================================================
+    def show_thread(self, topic_id, topic_titulo):
+        self.view = "messages"
+        self.current_topic_id = topic_id
+        self.current_topic_title = topic_titulo
+
+        self.reply_frame.pack(fill="x", side="bottom", padx=25, pady=(0, 15))
+        self.update_header_and_breadcrumbs()
+        self.render_thread_view()
+
+    def render_thread_view(self):
+        for w in self.main_container.winfo_children():
+            w.destroy()
+
+        mensagens = self.controller.listar_mensagens(self.current_topic_id) or []
+
+        top_title = ctk.CTkFrame(self.main_container, fg_color="transparent")
+        top_title.pack(fill="x", pady=(0, 15))
+        ctk.CTkLabel(top_title, text=f"📌 {self.current_topic_title}", font=self.f_title, text_color=TEXTO_ESCURO).pack(anchor="w")
+
+        # Estado Vazio Amigável - Mensagens (Fundo Transparente)
+        if not mensagens:
+            msg_empty = ctk.CTkFrame(self.main_container, fg_color="transparent")
+            msg_empty.pack(fill="x", pady=20, ipady=20)
+            
+            ctk.CTkLabel(msg_empty, text="✨", font=("Segoe UI", 42)).pack(pady=(0, 8))
+            ctk.CTkLabel(msg_empty, text="Sua conversa começa aqui!", font=self.f_title, text_color=TEXTO_ESCURO).pack()
+            ctk.CTkLabel(msg_empty, text="Ainda não há respostas nesta discussão. Escreva sua dúvida ou mensagem na caixa abaixo!", font=self.f_norm, text_color=TEXTO_MUTED).pack(pady=(6, 0))
+            return
+
+        for m in mensagens:
+            autor = m.get("autor_nome", "Usuário")
+            is_me = (autor == self.controller.nome_usuario_logado)
+
+            raw_data = m.get("Data_criacao") or m.get("data_criacao")
+            data_formatada = ""
+            if raw_data:
+                try:
+                    data_formatada = raw_data.strftime("%d/%m/%Y %H:%M") if hasattr(raw_data, "strftime") else str(raw_data)[:16].replace("-", "/")
+                except:
+                    data_formatada = ""
+
+            if is_me:
+                fg_balao, cor_texto, cor_autor, align, txt_autor = AZUL_SENAC, "#ffffff", "#bae6fd", "e", f"{autor} (Você)"
+                cor_hora = "#cbd5e1"
+            else:
+                fg_balao, cor_texto, cor_autor, align, txt_autor = CARD_BG, TEXTO_ESCURO, TEXTO_MUTED, "w", autor
+                cor_hora = TEXTO_MUTED
+
+            linha = ctk.CTkFrame(self.main_container, fg_color="transparent")
+            linha.pack(fill="x", pady=6)
+
+            balao = ctk.CTkFrame(linha, fg_color=fg_balao, corner_radius=12, border_width=1, border_color=AZUL_SENAC if is_me else BORDA_COLOR)
+            balao.pack(anchor=align, padx=5)
+
+            top_bar = ctk.CTkFrame(balao, fg_color="transparent")
+            top_bar.pack(fill="x", padx=14, pady=(8, 2))
+
+            ctk.CTkLabel(top_bar, text=txt_autor, font=self.f_bold, text_color=cor_autor).pack(side="left")
+
+            if is_me:
+                mid = m["idmensagem"]
+                mcont = m["conteudo"]
+                ctk.CTkButton(top_bar, text="excluir", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color="#b91c1c", text_color="#fca5a5", command=lambda id=mid: self.modal_excluir("message", id)).pack(side="right", padx=(5, 0))
+                ctk.CTkButton(top_bar, text="editar", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color=AZUL_HOVER, text_color="#e0f2fe", command=lambda id=mid, c=mcont: self.modal_editar("message", id, c)).pack(side="right")
+
+            ctk.CTkLabel(balao, text=m["conteudo"], font=self.f_norm, text_color=cor_texto, wraplength=600, justify="left").pack(anchor="w", padx=14, pady=(2, 4))
+
+            if data_formatada:
+                bot_bar = ctk.CTkFrame(balao, fg_color="transparent")
+                bot_bar.pack(fill="x", padx=14, pady=(0, 6))
+                ctk.CTkLabel(bot_bar, text=data_formatada, font=("Segoe UI", 9, "italic"), text_color=cor_hora).pack(side="right")
+
+    def send_message(self):
+        txt = self.reply_entry.get("1.0", "end-1c").strip()
+        if txt and txt != "Escreva sua resposta aqui...":
+            if self.current_topic_id is not None:
+                if self.controller.enviar_mensagem(self.current_topic_id, txt):
+                    self.reply_entry.delete("1.0", "end")
+                    self.setup_placeholder()
+                    self.render_thread_view()
+                else:
+                    messagebox.showerror("Erro", "Não foi possível enviar a mensagem.")
+
+    # =========================================================================
+    # MODAIS CUSTOMIZADOS
+    # =========================================================================
+    def modal_novo_forum(self):
         modal = ctk.CTkToplevel(self.janela)
-        modal.title("Criar Novo Tópico")
-        modal.geometry("500x280")  # Tamanho ideal para um campo + botões
+        modal.title("Novo Fórum")
+        modal.geometry("480x280")
         modal.grab_set()
         modal.configure(fg_color="#f5f7fb")
         modal.resizable(False, False)
-        modal.after(10, lambda: modal.focus_force())
 
-        # 2. Cabeçalho Customizado (Seguindo o padrão azul do app)
-        m_header = ctk.CTkFrame(modal, fg_color=self.azul, corner_radius=0, height=60)
-        m_header.pack(fill="x")
-        ctk.CTkLabel(m_header, text="💬 Novo Tópico de Discussão", font=ctk.CTkFont(size=16, weight="bold"), text_color="#ffffff").pack(pady=15)
+        m_head = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=55)
+        m_head.pack(fill="x")
+        ctk.CTkLabel(m_head, text="📁 Novo Espaço de Discussão", font=self.f_subtitle, text_color="#ffffff").pack(pady=15)
 
-        # 3. Área de Conteúdo interna
-        content = ctk.CTkFrame(modal, fg_color="transparent")
-        content.pack(fill="both", expand=True, padx=40, pady=20)
+        body = ctk.CTkFrame(modal, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=30, pady=20)
 
-        # --- Campo: Título do Tópico ---
-        ctk.CTkLabel(content, text="Título do Novo Tópico:", font=ctk.CTkFont(weight="bold"), text_color=self.azul).pack(anchor="w", pady=(5, 5))
-        
-        txt_topico = ctk.CTkEntry(
-            content, 
-            fg_color="#ffffff", 
-            border_color="#cbd5e1", 
-            border_width=2, 
-            height=40, 
-            corner_radius=8, 
-            placeholder_text="Ex: Dúvidas sobre o projeto integrador..."
-        )
-        txt_topico.pack(fill="x", pady=(0, 20))
-        txt_topico.focus_set()
+        ctk.CTkLabel(body, text="Nome do Fórum / Categoria:", font=self.f_bold, text_color=AZUL_SENAC).pack(anchor="w", pady=(0, 5))
+        txt_name = ctk.CTkEntry(body, fg_color="#ffffff", border_color="#cbd5e1", height=40, corner_radius=8, placeholder_text="Ex: Banco de Dados, Programação...")
+        txt_name.pack(fill="x", pady=(0, 20))
+        txt_name.focus_set()
 
-        # 4. Lógica de Envio Integrada com o Controller
-        def salvar_topico_modal():
-            titulo_topico = txt_topico.get().strip()
-            if not titulo_topico:
-                return
+        def salvar():
+            nome = txt_name.get().strip()
+            if nome:
+                if self.controller.cadastrar_forum(nome):
+                    self.show_hub()
+                    modal.destroy()
 
-            # Executa o cadastro passando o ID do fórum atual guardado na View
-            if self.controller.cadastrar_topico(self.current_forum_id, titulo_topico):
-                # Recarrega a área central com o novo tópico listado
-                self.refresh_ui()
-                modal.destroy()
-            else:
-                messagebox.showerror("Erro", "Não foi possível cadastrar o tópico. Tente novamente.")
+        btns = ctk.CTkFrame(body, fg_color="transparent")
+        btns.pack(fill="x", side="bottom")
 
-        # 5. Botões de Ação no Rodapé do Modal
-        btn_container = ctk.CTkFrame(content, fg_color="transparent")
-        btn_container.pack(fill="x", side="bottom")
+        ctk.CTkButton(btns, text="Cancelar", fg_color="#e2e8f0", text_color=TEXTO_ESCURO, hover_color="#cbd5e1", height=38, command=modal.destroy).pack(side="left", expand=True, fill="x", padx=(0, 5))
+        ctk.CTkButton(btns, text="Criar Fórum", fg_color=AZUL_SENAC, text_color="#ffffff", hover_color=AZUL_HOVER, height=38, command=salvar).pack(side="right", expand=True, fill="x", padx=(5, 0))
 
-        # Botão Cancelar
-        ctk.CTkButton(
-            btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
-            text_color="#475569", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-            command=modal.destroy
-        ).pack(side="left", padx=(0, 10), expand=True, fill="x")
+    def modal_novo_topico(self):
+        if self.current_forum_id is None:
+            return
 
-        # Botão Criar Tópico
-        ctk.CTkButton(
-            btn_container, text="Criar Tópico", fg_color=self.azul, hover_color=self.azul_hover, 
-            text_color="#ffffff", height=38, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-            command=salvar_topico_modal
-        ).pack(side="right", padx=(10, 0), expand=True, fill="x")
+        modal = ctk.CTkToplevel(self.janela)
+        modal.title("Novo Tópico")
+        modal.geometry("480x280")
+        modal.grab_set()
+        modal.configure(fg_color="#f5f7fb")
+        modal.resizable(False, False)
 
-    def salvar_item_inline(self, tipo):
-        if tipo == "topic":
-            val = self.entry_topico_titulo.get().strip()
-            if val and self.current_forum_id is not None:
-                if self.controller.cadastrar_topico(self.current_forum_id, val):
-                    self.toggle_formulario_topico()
-                    self.refresh_ui()
+        m_head = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=55)
+        m_head.pack(fill="x")
+        ctk.CTkLabel(m_head, text="💬 Novo Tópico de Discussão", font=self.f_subtitle, text_color="#ffffff").pack(pady=15)
 
-    def editar_item(self, tipo, item_id, valor_atual):
+        body = ctk.CTkFrame(modal, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=30, pady=20)
+
+        ctk.CTkLabel(body, text="Título do Novo Tópico:", font=self.f_bold, text_color=AZUL_SENAC).pack(anchor="w", pady=(0, 5))
+        txt_title = ctk.CTkEntry(body, fg_color="#ffffff", border_color="#cbd5e1", height=40, corner_radius=8, placeholder_text="Ex: Dúvida sobre a entrega do Projeto...")
+        txt_title.pack(fill="x", pady=(0, 20))
+        txt_title.focus_set()
+
+        def salvar():
+            titulo = txt_title.get().strip()
+            if titulo:
+                if self.controller.cadastrar_topico(self.current_forum_id, titulo):
+                    self.render_topics_view()
+                    modal.destroy()
+
+        btns = ctk.CTkFrame(body, fg_color="transparent")
+        btns.pack(fill="x", side="bottom")
+
+        ctk.CTkButton(btns, text="Cancelar", fg_color="#e2e8f0", text_color=TEXTO_ESCURO, hover_color="#cbd5e1", height=38, command=modal.destroy).pack(side="left", expand=True, fill="x", padx=(0, 5))
+        ctk.CTkButton(btns, text="Criar Tópico", fg_color=AZUL_SENAC, text_color="#ffffff", hover_color=AZUL_HOVER, height=38, command=salvar).pack(side="right", expand=True, fill="x", padx=(5, 0))
+
+    def modal_editar(self, tipo, item_id, valor_atual):
         modal = ctk.CTkToplevel(self.janela)
         modal.title("Editar Registro")
-        modal.geometry("500x280")
+        modal.geometry("480x280")
         modal.grab_set()
         modal.configure(fg_color="#f5f7fb")
         modal.resizable(False, False)
-        modal.after(10, lambda: modal.focus_force())
 
-        m_header = ctk.CTkFrame(modal, fg_color=self.azul, corner_radius=0, height=60)
-        m_header.pack(fill="x")
-        
-        titulo_modal = "📝 Editar Fórum" if tipo == "forum" else ("💬 Editar Tópico" if tipo == "topic" else "✍️ Editar Mensagem")
-        ctk.CTkLabel(m_header, text=titulo_modal, font=ctk.CTkFont(size=16, weight="bold"), text_color="#ffffff").pack(pady=15)
+        m_head = ctk.CTkFrame(modal, fg_color=AZUL_SENAC, corner_radius=0, height=55)
+        m_head.pack(fill="x")
+        ctk.CTkLabel(m_head, text="📝 Editar Registro", font=self.f_subtitle, text_color="#ffffff").pack(pady=15)
 
-        content = ctk.CTkFrame(modal, fg_color="transparent")
-        content.pack(fill="both", expand=True, padx=40, pady=20)
+        body = ctk.CTkFrame(modal, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=30, pady=20)
 
-        prompt_txt = "Novo nome do fórum:" if tipo == "forum" else ("Novo título do tópico:" if tipo == "topic" else "Nova mensagem:")
-        ctk.CTkLabel(content, text=prompt_txt, font=ctk.CTkFont(weight="bold"), text_color=self.azul).pack(anchor="w", pady=(5, 5))
-        
-        txt_input = ctk.CTkEntry(content, fg_color="#ffffff", border_color="#cbd5e1", border_width=2, height=40, corner_radius=8)
+        ctk.CTkLabel(body, text="Novo Texto:", font=self.f_bold, text_color=AZUL_SENAC).pack(anchor="w", pady=(0, 5))
+        txt_input = ctk.CTkEntry(body, fg_color="#ffffff", border_color="#cbd5e1", height=40, corner_radius=8)
         txt_input.pack(fill="x", pady=(0, 20))
         txt_input.insert(0, valor_atual)
         txt_input.focus_set()
 
-        def confirmar_edicao():
-            novo_valor = txt_input.get().strip()
-            if novo_valor and novo_valor != valor_atual:
-                sucesso = False
+        def salvar():
+            val = txt_input.get().strip()
+            if val and val != valor_atual:
                 if tipo == "forum":
-                    sucesso = self.controller.editar_forum(item_id, novo_valor)
-                    if sucesso: self.load_side_menu()
+                    if self.controller.editar_forum(item_id, val): self.show_hub()
                 elif tipo == "topic":
-                    sucesso = self.controller.editar_topico(item_id, novo_valor)
-                    if sucesso: self.refresh_ui()
+                    if self.controller.editar_topico(item_id, val): self.render_topics_view()
                 elif tipo == "message":
-                    sucesso = self.controller.editar_mensagem(item_id, novo_valor)
-                    if sucesso: self.refresh_ui()
+                    if self.controller.editar_mensagem(item_id, val): self.render_thread_view()
             modal.destroy()
 
-        btn_container = ctk.CTkFrame(content, fg_color="transparent")
-        btn_container.pack(fill="x", side="bottom")
+        btns = ctk.CTkFrame(body, fg_color="transparent")
+        btns.pack(fill="x", side="bottom")
 
-        ctk.CTkButton(btn_container, text="Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", 
-                      text_color="#475569", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-                      command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
+        ctk.CTkButton(btns, text="Cancelar", fg_color="#e2e8f0", text_color=TEXTO_ESCURO, hover_color="#cbd5e1", height=38, command=modal.destroy).pack(side="left", expand=True, fill="x", padx=(0, 5))
+        ctk.CTkButton(btns, text="Salvar Alterações", fg_color=AZUL_SENAC, text_color="#ffffff", hover_color=AZUL_HOVER, height=38, command=salvar).pack(side="right", expand=True, fill="x", padx=(5, 0))
 
-        ctk.CTkButton(btn_container, text="Salvar Alterações", fg_color=self.azul, hover_color="#0f172a", 
-                      text_color="#ffffff", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"),
-                      command=confirmar_edicao).pack(side="right", padx=(10, 0), expand=True, fill="x")
-
-    def excluir_item(self, tipo, item_id):
+    def modal_excluir(self, tipo, item_id):
         modal = ctk.CTkToplevel(self.janela)
         modal.title("Confirmar Exclusão")
-        modal.geometry("450x240")
+        modal.geometry("420x220")
         modal.grab_set()
         modal.configure(fg_color="#f5f7fb")
         modal.resizable(False, False)
-        modal.after(10, lambda: modal.focus_force())
 
-        COR_ALERTA = "#dc2626"
-        m_header = ctk.CTkFrame(modal, fg_color=COR_ALERTA, corner_radius=0, height=60)
-        m_header.pack(fill="x")
-        ctk.CTkLabel(m_header, text="⚠️ Atenção: Ação Irreversível", font=ctk.CTkFont(size=16, weight="bold"), text_color="#ffffff").pack(pady=15)
+        m_head = ctk.CTkFrame(modal, fg_color=COR_ERRO, corner_radius=0, height=55)
+        m_head.pack(fill="x")
+        ctk.CTkLabel(m_head, text="⚠️ Atenção: Confirmar Exclusão", font=self.f_subtitle, text_color="#ffffff").pack(pady=15)
 
-        content = ctk.CTkFrame(modal, fg_color="transparent")
-        content.pack(fill="both", expand=True, padx=35, pady=20)
+        body = ctk.CTkFrame(modal, fg_color="transparent")
+        body.pack(fill="both", expand=True, padx=25, pady=15)
 
-        termo_traduzido = "este fórum" if tipo == "forum" else ("este tópico" if tipo == "topic" else "esta mensagem")
-        lbl_msg = ctk.CTkLabel(content, text=f"Tem certeza que deseja apagar {termo_traduzido} permanentemente?\nEsta ação não poderá ser desfeita.", font=ctk.CTkFont(size=13), text_color="#1e293b", justify="center", wraplength=380)
-        lbl_msg.pack(pady=(10, 25))
+        termo = "este fórum" if tipo == "forum" else ("este tópico" if tipo == "topic" else "esta mensagem")
+        ctk.CTkLabel(body, text=f"Tem certeza de que deseja apagar {termo}?\nEsta ação é permanente.", font=self.f_norm, text_color=TEXTO_ESCURO, justify="center").pack(pady=(5, 15))
 
-        def confirmar_exclusao():
-            sucesso = False
+        def confirmar():
             if tipo == "forum":
-                sucesso = self.controller.excluir_forum(item_id)
-                if sucesso:
-                    self.current_forum_id = None
-                    self.current_forum_name = ""
-                    foruns = self.controller.listar_foruns()
-                    if foruns: self.load_forum(foruns[0]["idforum"], foruns[0]["nome"])
-                    else:
-                        self.load_side_menu()
-                        self.refresh_ui()
+                if self.controller.excluir_forum(item_id): self.show_hub()
             elif tipo == "topic":
-                sucesso = self.controller.excluir_topico(item_id)
-                if sucesso: self.go_back()
+                if self.controller.excluir_topico(item_id): self.render_topics_view()
             elif tipo == "message":
-                sucesso = self.controller.excluir_mensagem(item_id)
-                if sucesso: self.refresh_ui()
+                if self.controller.excluir_mensagem(item_id): self.render_thread_view()
             modal.destroy()
 
-        btn_container = ctk.CTkFrame(content, fg_color="transparent")
-        btn_container.pack(fill="x", side="bottom")
+        btns = ctk.CTkFrame(body, fg_color="transparent")
+        btns.pack(fill="x", side="bottom")
 
-        ctk.CTkButton(btn_container, text="Não, Cancelar", fg_color="#e2e8f0", hover_color="#cbd5e1", text_color="#475569", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"), command=modal.destroy).pack(side="left", padx=(0, 10), expand=True, fill="x")
-        ctk.CTkButton(btn_container, text="Sim, Apagar", fg_color=COR_ALERTA, hover_color="#b91c1c", text_color="#ffffff", height=35, corner_radius=8, font=ctk.CTkFont(weight="bold"), command=confirmar_exclusao).pack(side="right", padx=(10, 0), expand=True, fill="x")
-
-    def load_side_menu(self):
-        for w in self.scroll_side.winfo_children(): 
-            w.destroy()
-            
-        foruns = self.controller.listar_foruns()
-        
-        # MENSAGEM AMIGÁVEL: Se não houver nenhum fórum cadastrado no banco
-        if not foruns:
-            msg_frame = ctk.CTkFrame(self.scroll_side, fg_color="transparent")
-            msg_frame.pack(fill="x", pady=30, padx=10)
-            
-            ctk.CTkLabel(msg_frame, text="📭", font=("Segoe UI", 24)).pack(pady=(0, 5))
-            ctk.CTkLabel(
-                msg_frame, 
-                text="Nenhum fórum encontrado.\nCrie um espaço acima para\ncomeçar a interagir!", 
-                font=("Segoe UI", 11, "italic"), 
-                text_color="#64748b", 
-                justify="center"
-            ).pack(fill="x")
-            return  # Corta a execução para não quebrar o loop
-
-        # Loop original caso existam fóruns
-        for f in foruns:
-            act = (f["idforum"] == self.current_forum_id)
-            linha_f = ctk.CTkFrame(self.scroll_side, fg_color="transparent")
-            linha_f.pack(fill="x", pady=3)
-            
-            btn = ctk.CTkButton(
-                linha_f, text=f"  #  {f['nome']}", anchor="w", 
-                fg_color="#e0f2fe" if act else "transparent", 
-                text_color=self.azul if act else "#475569", 
-                font=self.f_bold if act else self.f_norm,
-                hover_color="#f1f5f9", height=40, corner_radius=8,
-                command=lambda fid=f["idforum"], fn=f["nome"]: self.load_forum(fid, fn)
-            )
-            btn.pack(side="left", fill="x", expand=True)
-
-            if f.get("pode_gerenciar") or f.get("autor_nome") == self.controller.nome_usuario_logado:
-                ctk.CTkButton(linha_f, text="✏️", width=26, height=26, fg_color="transparent", hover_color="#e2e8f0", command=lambda fid=f["idforum"], fn=f["nome"]: self.editar_item("forum", fid, fn)).pack(side="right", padx=2)
-                ctk.CTkButton(linha_f, text="🗑️", width=26, height=26, fg_color="transparent", hover_color="#fee2e2", text_color="#ef4444", command=lambda fid=f["idforum"]: self.excluir_item("forum", fid)).pack(side="right", padx=2)
-
-    def update_breadcrumbs(self):
-        for w in self.breadcrumb_frame.winfo_children():
-            if w != self.btn_new_t: w.destroy()
-            
-        btn_home = ctk.CTkButton(self.breadcrumb_frame, text="Fóruns", font=self.f_norm, text_color="#64748b", fg_color="transparent", width=10, hover_color="#f1f5f9")
-        btn_home.pack(side="left")
-        
-        if self.current_forum_name:
-            ctk.CTkLabel(self.breadcrumb_frame, text=" / ", font=self.f_norm, text_color="#cbd5e1").pack(side="left")
-            estado_botao = "normal" if self.view == "messages" else "disabled"
-            
-            btn_f = ctk.CTkButton(
-                self.breadcrumb_frame, text=self.current_forum_name, 
-                font=self.f_bold if self.view == "topics" else self.f_norm, 
-                text_color=self.azul if self.view == "topics" else "#64748b", 
-                fg_color="transparent", width=10, hover_color="#f1f5f9",  
-                state=estado_botao, command=self.go_back
-            )
-            btn_f.pack(side="left")
-            
-        if self.view == "messages" and self.current_topic_title:
-            ctk.CTkLabel(self.breadcrumb_frame, text=" / ", font=self.f_norm, text_color="#cbd5e1").pack(side="left")
-            ctk.CTkLabel(self.breadcrumb_frame, text=self.current_topic_title, font=self.f_bold, text_color="#0f172a").pack(side="left")
-
-    def load_forum(self, forum_id, forum_nome):
-        self.current_forum_id = forum_id
-        self.current_forum_name = forum_nome
-        self.view = "topics"
-        
-        self.btn_new_t.pack(side="right")
-        self.reply_frame.pack_forget()
-        
-        self.update_breadcrumbs()
-        self.refresh_ui()
-        self.load_side_menu()
-
-    def go_back(self):
-        if self.current_forum_id and self.current_forum_name:
-            self.load_forum(self.current_forum_id, self.current_forum_name)
-
-    def refresh_ui(self):
-        # 1. Limpa tudo o que existe na área de conteúdo central
-        for w in self.content.winfo_children(): 
-            w.destroy()
-        
-        # --- CASO GLOBAL: Nenhum Fórum Selecionado (ou nenhum fórum existente) ---
-        if self.current_forum_id is None:
-            # Desativa o botão de criar tópicos já que não há fórum pai
-            self.btn_new_t.pack_forget()
-            self.reply_frame.pack_forget()
-            
-            msg_global = ctk.CTkFrame(self.content, fg_color="transparent")
-            msg_global.pack(fill="both", expand=True, pady=80)
-            
-            ctk.CTkLabel(msg_global, text="👋 Welcome!", font=("Segoe UI", 38)).pack(pady=(0, 10))
-            ctk.CTkLabel(
-                msg_global, 
-                text="Nenhum fórum selecionado no momento.\n\nEscolha um canal na barra lateral esquerda para visualizar os tópicos\nou clique em '+ Criar Novo Fórum' se estiver começando agora!", 
-                font=("Segoe UI", 13, "italic"), 
-                text_color="#64748b", 
-                justify="center"
-            ).pack(fill="x")
-            return  # Corta a execução aqui
-
-        # --- MODO VISUALIZAÇÃO: TÓPICOS (Fórum Selecionado) ---
-        if self.view == "topics":
-            topicos = self.controller.listar_topicos(self.current_forum_id)
-            
-            # Mensagem amigável caso o fórum exista mas não tenha tópicos
-            if not topicos:
-                msg_main = ctk.CTkFrame(self.content, fg_color="transparent")
-                msg_main.pack(fill="both", expand=True, pady=60)
-                
-                ctk.CTkLabel(msg_main, text="💬", font=("Segoe UI", 36)).pack(pady=(0, 10))
-                ctk.CTkLabel(
-                    msg_main, 
-                    text="Este fórum ainda não possui tópicos de discussão.\nClique em '+ Novo Tópico' ali em cima para iniciar uma conversa!", 
-                    font=("Segoe UI", 13, "italic"), 
-                    text_color="#64748b", 
-                    justify="center"
-                ).pack(fill="x")
-                return
-
-            # Renderização normal dos cartões de tópicos
-            for t in topicos:
-                card = ctk.CTkFrame(self.content, fg_color="#ffffff", corner_radius=10, border_width=1, border_color="#f1f5f9")
-                card.pack(fill="x", pady=6)
-                ctk.CTkLabel(card, text=t['titulo'], font=self.f_bold, text_color="#1e293b").pack(side="left", padx=20, pady=18)
-                
-                btn_ver = ctk.CTkButton(card, text="Abrir Tópico →", width=110, height=32, fg_color="transparent", text_color=self.azul, hover_color="#f0f9ff", font=self.f_bold, corner_radius=6)
-                btn_ver.configure(command=lambda tid=t['idtopico'], tt=t['titulo']: self.load_topic(tid, tt))
-                btn_ver.pack(side="right", padx=20)
-                
-                if t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado:
-                    ctk.CTkButton(card, text="🗑️", width=30, height=32, fg_color="transparent", hover_color="#fee2e2", text_color="#ef4444", command=lambda tid=t['idtopico']: self.excluir_item("topic", tid)).pack(side="right", padx=5)
-                    ctk.CTkButton(card, text="✏️", width=30, height=32, fg_color="transparent", hover_color="#e2e8f0", command=lambda tid=t['idtopico'], tt=t['titulo']: self.editar_item("topic", tid, tt)).pack(side="right")
-        
-        # --- MODO VISUALIZAÇÃO: MENSAGENS (Chat do Tópico Aberto) ---
-        else:
-            if self.current_topic_id is not None:
-                mensagens = self.controller.listar_mensagens(self.current_topic_id)
-                
-                if not mensagens:
-                    msg_chat = ctk.CTkFrame(self.content, fg_color="transparent")
-                    msg_chat.pack(fill="both", expand=True, pady=60)
-                    
-                    ctk.CTkLabel(msg_chat, text="✨", font=("Segoe UI", 36)).pack(pady=(0, 10))
-                    ctk.CTkLabel(
-                        msg_chat, 
-                        text="Seja o primeiro a responder!\nDigite sua mensagem na caixa abaixo e clique em Enviar.", 
-                        font=("Segoe UI", 13, "italic"), 
-                        text_color="#64748b", 
-                        justify="center"
-                    ).pack(fill="x")
-                    return
-
-                for m in mensagens:
-                    autor = m['autor_nome']
-                    is_me = (autor == self.controller.nome_usuario_logado)
-                    
-                    # --- FORMATAÇÃO DA DATA E HORA ---
-                    raw_data = m.get('Data_criacao') or m.get('data_criacao')
-                    data_formatada = ""
-                    
-                    if raw_data:
-                        try:
-                            if hasattr(raw_data, 'strftime'):
-                                data_formatada = raw_data.strftime('%d/%m/%Y %H:%M')
-                            else:
-                                data_formatada = str(raw_data)[:16].replace('-', '/')
-                        except:
-                            data_formatada = ""
-
-                    if is_me:
-                        fg_balao, cor_texto, cor_autor, alinhamento, txt_autor, border_color = self.azul, "#ffffff", "#bae6fd", "e", f"{autor} (Você)", self.azul
-                        cor_hora = "#cbd5e1"  # Cinza bem claro para contrastar no fundo azul
-                    else:
-                        fg_balao, cor_texto, cor_autor, alinhamento, txt_autor, border_color = "#f1f5f9", "#1e293b", "#64748b", "w", autor, "#f1f5f9"
-                        cor_hora = "#64748b"  # Cinza escuro para o fundo claro
-
-                    linha_frame = ctk.CTkFrame(self.content, fg_color="transparent")
-                    linha_frame.pack(fill="x", pady=5)
-                    
-                    balao = ctk.CTkFrame(linha_frame, fg_color=fg_balao, corner_radius=14, border_width=1, border_color=border_color)
-                    balao.pack(anchor=alinhamento, padx=10)
-                    
-                    # 1. BARRA SUPERIOR (Nome do Autor + Botões de Ação)
-                    top_bar = ctk.CTkFrame(balao, fg_color="transparent")
-                    top_bar.pack(fill="x", padx=14, pady=(8,0))
-                    
-                    ctk.CTkLabel(top_bar, text=txt_autor, font=self.f_small, text_color=cor_autor).pack(side="left")
-                    
-                    if is_me:
-                        ctk.CTkButton(top_bar, text="excluir", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color="#b91c1c", text_color="#fca5a5", command=lambda mid=m['idmensagem']: self.excluir_item("message", mid)).pack(side="right", padx=(5, 0))
-                        ctk.CTkButton(top_bar, text="editar", width=10, height=14, font=("Segoe UI", 10), fg_color="transparent", hover_color=self.azul_hover, text_color="#e0f2fe", command=lambda mid=m['idmensagem'], cont=m['conteudo']: self.editar_item("message", mid, cont)).pack(side="right")
-                    
-                    # 2. CONTEÚDO DA MENSAGEM
-                    ctk.CTkLabel(balao, text=m['conteudo'], font=self.f_norm, text_color=cor_texto, wraplength=550, justify="left").pack(anchor="w", padx=14, pady=(2, 2))
-
-                    # 3. BARRA INFERIOR (Data e Hora posicionadas abaixo do texto)
-                    if data_formatada:
-                        bottom_bar = ctk.CTkFrame(balao, fg_color="transparent")
-                        bottom_bar.pack(fill="x", padx=14, pady=(0, 6))
-                        
-                        # Alinha a hora sempre no canto inferior direito do balão para um visual polido
-                        ctk.CTkLabel(bottom_bar, text=data_formatada, font=("Segoe UI", 9, "italic"), text_color=cor_hora).pack(side="right")
-
-    def load_topic(self, topic_id, topic_titulo):
-        self.current_topic_id = topic_id
-        self.current_topic_title = topic_titulo
-        self.view = "messages"
-        
-        self.btn_new_t.pack_forget()
-        self.reply_frame.pack(fill="x", pady=(10, 0))
-        self.update_breadcrumbs()
-        self.refresh_ui()
-
-    def send_message(self):
-        txt = self.reply_entry.get("1.0", "end-1c").strip()
-        if txt and txt != "Digite sua mensagem...":
-            if self.current_topic_id is not None:
-                sucesso = self.controller.enviar_mensagem(self.current_topic_id, txt)
-                if sucesso:
-                    self.reply_entry.delete("1.0", "end")
-                    self.setup_placeholder()
-                    self.refresh_ui()
-                else:
-                    messagebox.showerror("Erro", "Não foi possível enviar a mensagem. Tente novamente.")
+        ctk.CTkButton(btns, text="Cancelar", fg_color="#e2e8f0", text_color=TEXTO_ESCURO, hover_color="#cbd5e1", height=36, command=modal.destroy).pack(side="left", expand=True, fill="x", padx=(0, 5))
+        ctk.CTkButton(btns, text="Sim, Apagar", fg_color=COR_ERRO, text_color="#ffffff", hover_color="#b91c1c", height=36, command=confirmar).pack(side="right", expand=True, fill="x", padx=(5, 0))
