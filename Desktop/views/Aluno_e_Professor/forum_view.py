@@ -43,11 +43,11 @@ class Forum(ctk.CTkFrame):
         from assets.header import HeaderPadrao
         self.header = HeaderPadrao(self, titulo="Fórum Acadêmico", comando_voltar=None)
 
-        # Frame de ações acoplado diretamente ao Header
+        # Container de Ações no Header
         self.header_action_frame = ctk.CTkFrame(self.header, fg_color="transparent")
         self.header_action_frame.pack(side="right", padx=20)
 
-        # 1. BARRA SUPERIOR (Apenas Breadcrumbs - Ajustada para eliminar o espaço em branco no topo)
+        # 1. BARRA SUPERIOR (Apenas Breadcrumbs)
         self.top_bar = ctk.CTkFrame(self, fg_color="transparent", height=30)
         self.top_bar.pack(fill="x", side="top", padx=25, pady=(4, 0))
         
@@ -86,7 +86,7 @@ class Forum(ctk.CTkFrame):
     # NAVEGAÇÃO, BREADCRUMBS E AÇÕES DO HEADER
     # =========================================================================
     def update_header_and_breadcrumbs(self):
-        """Atualiza a rota fluida e os botões de ação no Header"""
+        """Atualiza a rota fluida e os botões de ação do Header"""
         for w in self.breadcrumb_frame.winfo_children():
             w.destroy()
         for w in self.header_action_frame.winfo_children():
@@ -117,7 +117,7 @@ class Forum(ctk.CTkFrame):
             ctk.CTkLabel(self.breadcrumb_frame, text=" / ", font=self.f_norm, text_color="#94a3b8").pack(side="left")
             ctk.CTkLabel(self.breadcrumb_frame, text=f"💬 {self.current_topic_title}", font=self.f_bold, text_color=TEXTO_ESCURO).pack(side="left")
 
-        # Botão de Criar NO HEADER (Fundo transparente, texto e borda brancos)
+        # Botão de Criar no Header
         if self.view == "hub":
             ctk.CTkButton(
                 self.header_action_frame, text="+ Criar Novo Fórum",
@@ -134,7 +134,7 @@ class Forum(ctk.CTkFrame):
             ).pack(side="right")
 
     # =========================================================================
-    # NÍVEL 1: HUB CENTRAL DE FÓRUNS
+    # NÍVEL 1: HUB CENTRAL DE FÓRUNS (Com Separação: Meus vs Outros)
     # =========================================================================
     def show_hub(self):
         self.view = "hub"
@@ -152,12 +152,12 @@ class Forum(ctk.CTkFrame):
             w.destroy()
 
         sec_header = ctk.CTkFrame(self.main_container, fg_color="transparent")
-        sec_header.pack(fill="x", pady=(0, 15))
+        sec_header.pack(fill="x", pady=(0, 10))
         ctk.CTkLabel(sec_header, text="Categorias & Espaços de Discussão", font=self.f_title, text_color=TEXTO_ESCURO).pack(side="left")
 
         foruns = self.controller.listar_foruns() or []
 
-        # Estado Vazio Amigável - Hub (Fundo Transparente)
+        # Estado Vazio
         if not foruns:
             empty_box = ctk.CTkFrame(self.main_container, fg_color="transparent")
             empty_box.pack(fill="x", pady=20, ipady=20)
@@ -172,10 +172,15 @@ class Forum(ctk.CTkFrame):
             ).pack()
             return
 
-        for f in foruns:
+        # Separação: Meus Fóruns vs Outros Fóruns
+        meus_foruns = [f for f in foruns if f.get("pode_gerenciar") or f.get("autor_nome") == self.controller.nome_usuario_logado]
+        outros_foruns = [f for f in foruns if f not in meus_foruns]
+
+        def criar_card_forum(f):
             fid = f["idforum"]
             fnome = f["nome"]
-            pode_gerenciar = f.get("pode_gerenciar") or f.get("autor_nome") == self.controller.nome_usuario_logado
+            autor = f.get("autor_nome", "")
+            pode_gerenciar = f.get("pode_gerenciar") or autor == self.controller.nome_usuario_logado
 
             card = ctk.CTkFrame(self.main_container, fg_color=CARD_BG, corner_radius=12, border_width=1, border_color=BORDA_COLOR)
             card.pack(fill="x", pady=6)
@@ -188,7 +193,9 @@ class Forum(ctk.CTkFrame):
             title_box = ctk.CTkFrame(left_info, fg_color="transparent")
             title_box.pack(side="left")
             ctk.CTkLabel(title_box, text=fnome, font=self.f_subtitle, text_color=TEXTO_ESCURO, anchor="w").pack(anchor="w")
-            ctk.CTkLabel(title_box, text="Espaço aberto para dúvidas e trocas de conhecimento", font=self.f_small, text_color=TEXTO_MUTED, anchor="w").pack(anchor="w")
+            
+            desc = f"Criado por você" if pode_gerenciar else f"Criado por: {autor}" if autor else "Espaço aberto para dúvidas e trocas de conhecimento"
+            ctk.CTkLabel(title_box, text=desc, font=self.f_small, text_color=TEXTO_MUTED, anchor="w").pack(anchor="w")
 
             right_actions = ctk.CTkFrame(card, fg_color="transparent")
             right_actions.pack(side="right", padx=15)
@@ -203,8 +210,21 @@ class Forum(ctk.CTkFrame):
                 command=lambda id=fid, n=fnome: self.show_forum(id, n)
             ).pack(side="left", padx=(10, 0))
 
+        # Renderiza Meus Fóruns
+        if meus_foruns:
+            ctk.CTkLabel(self.main_container, text="👤 Meus Fóruns", font=self.f_subtitle, text_color=AZUL_SENAC, anchor="w").pack(fill="x", pady=(5, 5))
+            for f in meus_foruns:
+                criar_card_forum(f)
+
+        # Renderiza Outros Fóruns
+        if outros_foruns:
+            pad_top = 20 if meus_foruns else 5
+            ctk.CTkLabel(self.main_container, text="🌐 Outros Fóruns", font=self.f_subtitle, text_color=AZUL_SENAC, anchor="w").pack(fill="x", pady=(pad_top, 5))
+            for f in outros_foruns:
+                criar_card_forum(f)
+
     # =========================================================================
-    # NÍVEL 2: VISÃO DA CATEGORIA (Lista de Tópicos)
+    # NÍVEL 2: VISÃO DA CATEGORIA (Com Separação: Meus Tópicos vs Outros)
     # =========================================================================
     def show_forum(self, forum_id, forum_nome):
         self.view = "topics"
@@ -232,7 +252,7 @@ class Forum(ctk.CTkFrame):
         ctk.CTkLabel(info_sub, text=f"📁 {self.current_forum_name}", font=("Segoe UI", 20, "bold"), text_color="#ffffff").pack(anchor="w")
         ctk.CTkLabel(info_sub, text=f"Exibindo {len(topicos)} tópico(s) cadastrado(s) nesta categoria", font=self.f_small, text_color="#bae6fd").pack(anchor="w")
 
-        # Estado Vazio Amigável - Tópicos (Fundo Transparente)
+        # Estado Vazio
         if not topicos:
             empty = ctk.CTkFrame(self.main_container, fg_color="transparent")
             empty.pack(fill="x", pady=20, ipady=20)
@@ -247,10 +267,15 @@ class Forum(ctk.CTkFrame):
             ).pack()
             return
 
-        for t in topicos:
+        # Separação: Meus Tópicos vs Outros Tópicos
+        meus_topicos = [t for t in topicos if t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado]
+        outros_topicos = [t for t in topicos if t not in meus_topicos]
+
+        def criar_card_topico(t):
             tid = t["idtopico"]
             ttitulo = t["titulo"]
-            pode_gerenciar = t.get("pode_gerenciar") or t.get("autor_nome") == self.controller.nome_usuario_logado
+            autor = t.get("autor_nome", "")
+            pode_gerenciar = t.get("pode_gerenciar") or autor == self.controller.nome_usuario_logado
 
             card = ctk.CTkFrame(self.main_container, fg_color=CARD_BG, corner_radius=10, border_width=1, border_color=BORDA_COLOR)
             card.pack(fill="x", pady=5)
@@ -259,7 +284,12 @@ class Forum(ctk.CTkFrame):
             left.pack(side="left", padx=20, pady=14)
 
             ctk.CTkLabel(left, text="💬", font=("Segoe UI", 16)).pack(side="left", padx=(0, 10))
-            ctk.CTkLabel(left, text=ttitulo, font=self.f_bold, text_color=TEXTO_ESCURO).pack(side="left")
+            
+            info_box = ctk.CTkFrame(left, fg_color="transparent")
+            info_box.pack(side="left")
+            ctk.CTkLabel(info_box, text=ttitulo, font=self.f_bold, text_color=TEXTO_ESCURO, anchor="w").pack(anchor="w")
+            if autor and not pode_gerenciar:
+                ctk.CTkLabel(info_box, text=f"Criado por: {autor}", font=self.f_small, text_color=TEXTO_MUTED, anchor="w").pack(anchor="w")
 
             right = ctk.CTkFrame(card, fg_color="transparent")
             right.pack(side="right", padx=15)
@@ -273,6 +303,19 @@ class Forum(ctk.CTkFrame):
                 text_color=AZUL_SENAC, font=self.f_bold, height=32,
                 command=lambda id=tid, t=ttitulo: self.show_thread(id, t)
             ).pack(side="left", padx=(5, 0))
+
+        # Renderiza Meus Tópicos
+        if meus_topicos:
+            ctk.CTkLabel(self.main_container, text="👤 Meus Tópicos", font=self.f_subtitle, text_color=AZUL_SENAC, anchor="w").pack(fill="x", pady=(5, 5))
+            for t in meus_topicos:
+                criar_card_topico(t)
+
+        # Renderiza Outros Tópicos
+        if outros_topicos:
+            pad_top = 20 if meus_topicos else 5
+            ctk.CTkLabel(self.main_container, text="🌐 Outros Tópicos", font=self.f_subtitle, text_color=AZUL_SENAC, anchor="w").pack(fill="x", pady=(pad_top, 5))
+            for t in outros_topicos:
+                criar_card_topico(t)
 
     # =========================================================================
     # NÍVEL 3: THREAD DA CONVERSA (Chat de Mensagens)
@@ -296,7 +339,7 @@ class Forum(ctk.CTkFrame):
         top_title.pack(fill="x", pady=(0, 15))
         ctk.CTkLabel(top_title, text=f"📌 {self.current_topic_title}", font=self.f_title, text_color=TEXTO_ESCURO).pack(anchor="w")
 
-        # Estado Vazio Amigável - Mensagens (Fundo Transparente)
+        # Estado Vazio
         if not mensagens:
             msg_empty = ctk.CTkFrame(self.main_container, fg_color="transparent")
             msg_empty.pack(fill="x", pady=20, ipady=20)
