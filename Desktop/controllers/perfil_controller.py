@@ -204,11 +204,21 @@ class ProfileController:
             id_usuario = perfil['usuario'].get('idusuario') or perfil['usuario'].get('idUsuario')
 
             if operacao == 'EXCLUIR':
-                if messagebox.askyesno("Confirmar", "Deseja mesmo excluir este certificado?"):
-                    self.model.excluir_certificado(cert_id, id_usuario)
+                if not cert_id:
+                    messagebox.showwarning("Aviso", "Identificador do certificado não encontrado.")
+                    return
+
+                if messagebox.askyesno("Confirmar Exclusão", "Deseja mesmo excluir este certificado?"):
+                    sucesso = self.model.excluir_certificado(cert_id, id_usuario)
+                    if sucesso:
+                        messagebox.showinfo("Sucesso", "Certificado excluído com sucesso!")
+                    else:
+                        messagebox.showerror("Erro", "Falha ao excluir o certificado do banco de dados.")
             
+            # Recarrega a interface com os certificados atualizados
             self.inicializar_perfil() 
         except Exception as e:
+            print(f"[CONTROLLER ERRO EXCLUIR] {e}")
             messagebox.showerror("Erro", f"Erro na operação: {e}")
 
     def notificar_erro_sessao(self):

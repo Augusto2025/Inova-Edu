@@ -313,7 +313,8 @@ class UserProfileSystem(ctk.CTkFrame):
             desc = cert.get('descricao') or "Sem descrição disponível"
             inicio = cert.get('data_inicio') or "--"
             fim = cert.get('data_final') or "--"
-            id_c = cert.get('idcertificado') or cert.get('idCertificado')
+            # Mude esta linha no renderizar_certificados:
+            id_c = cert.get('idcertificado') or cert.get('idCertificado') or cert.get('id_certificado') or cert.get('id')
             
             card = ctk.CTkFrame(grid, fg_color=BRANCO, corner_radius=15, border_width=1, border_color="#E2E8F0")
             card.grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="nsew")
