@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, 
-  TouchableOpacity, SafeAreaView, ActivityIndicator, Alert,
+  TouchableOpacity, ActivityIndicator, Alert,
   Modal, TextInput, TouchableWithoutFeedback,
   Image,
   Linking
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, FontAwesome5, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker'; 
+import * as FileSystem from 'expo-file-system/legacy';
 import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
-
-const RAW_BACKEND_URL = process.env.EXPO_PUBLIC_URL_BACKEND || 'https://inova-edu-api.onrender.com';
-const URL_BASE = RAW_BACKEND_URL.replace(/\/login$/, '').replace(/\/$/, '');
+import { RAW_BACKEND_URL, URL_BASE } from '../config/backend';
 
 export default function ProfileScreen() {
   const [carregando, setCarregando] = useState(true);
@@ -114,33 +114,58 @@ export default function ProfileScreen() {
               mediaTypes: ['images'],
               allowsEditing: true,
               aspect: [1, 1],
-              quality: 0.7,
+              quality: 0.3, // Reduzir bastante a qualidade para evitar payload grande
+              base64: true, // Adicionar base64
             });
 
             if (resultado.canceled) return;
 
-            const fotoLocalUri = resultado.assets[0].uri;
+            const { uri: fotoLocalUriRaw, type: assetType, fileName: assetName, base64: base64Data } = resultado.assets[0];
+            const fileName = assetName || 'profile.jpg';
+            const fileExtension = fileName.split('.').pop()?.toLowerCase();
+            const mimeType = assetType && assetType.includes('/')
+              ? assetType
+              : fileExtension === 'png'
+                ? 'image/png'
+                : fileExtension === 'gif'
+                  ? 'image/gif'
+                  : fileExtension === 'jpg' || fileExtension === 'jpeg'
+                    ? 'image/jpeg'
+                    : 'application/octet-stream';
+
+            console.log('📸 Upload de imagem:', {
+              fileName,
+              assetType,
+              hasBase64: !!base64Data,
+              mimeType,
+            });
 
             try {
               setCarregando(true);
 
               const hasCloudinaryConfig = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET && process.env.EXPO_PUBLIC_CLOUD_NAME;
+              const isLocalBackend = URL_BASE.includes('localhost') || URL_BASE.includes('127.0.0.1') || URL_BASE.includes('192.168.');
 
               if (hasCloudinaryConfig) {
                 console.log("📤 Enviando para Cloudinary...");
-                const formData = new FormData();
-                formData.append('file', {
-                  uri: fotoLocalUri,
-                  type: 'image/jpeg',
-                  name: 'profile.jpg',
-                });
-                
-                formData.append('upload_preset', process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+
                 const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
+                const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+                const cloudinaryForm = new FormData();
+
+                cloudinaryForm.append('file', {
+                  uri: fotoLocalUri,
+                  type: mimeType,
+                  name: fileName,
+                });
+                cloudinaryForm.append('upload_preset', UPLOAD_PRESET);
 
                 const respostaCloudinary = await fetch(
                   `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                  { method: 'POST', body: formData, headers: { 'Content-Type': 'multipart/form-data' } }
+                  {
+                    method: 'POST',
+                    body: cloudinaryForm,
+                  }
                 );
 
                 const dadosFoto = await respostaCloudinary.json();
@@ -153,28 +178,41 @@ export default function ProfileScreen() {
                 console.log("✅ URL Cloudinary:", urlCloudinary);
                 await atualizarFotoNoBackend(idSalvo, urlCloudinary);
               } else {
-                console.log("📤 Enviando para o servidor (sem Cloudinary)...");
-                // Upload da foto diretamente para o servidor
-                const formDataServer = new FormData();
-                
-                // No React Native, precisamos fazer assim:
-                formDataServer.append('file', {
-                  uri: fotoLocalUri,
-                  type: 'image/jpeg',
-                  name: 'profile.jpg',
-                });
-                formDataServer.append('idUsuario', idSalvo);
+                console.log("📤 Enviando para backend via /perfil/upload-foto...");
 
+                if (!base64Data) {
+                  throw new Error('Não foi possível obter os dados da imagem.');
+                }
+
+                const mimeType = assetType === 'image' ? 'image/jpeg' : assetType || 'image/jpeg';
+                
                 const respostaServidor = await fetch(`${URL_BASE}/perfil/upload-foto`, {
                   method: 'POST',
-                  body: formDataServer,
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                  },
+                  body: JSON.stringify({
+                    idUsuario: idSalvo,
+                    fileName,
+                    mimeType,
+                    base64: base64Data,
+                  }),
                 });
 
-                const textosServidor = await respostaServidor.text();
-                const dadosServidor = JSON.parse(textosServidor);
-                
+                console.log("📊 Status da resposta:", respostaServidor.status);
+
+                if (respostaServidor.status < 200 || respostaServidor.status >= 300) {
+                  const errorText = await respostaServidor.text();
+                  console.error('❌ Erro no upload backend:', respostaServidor.status, errorText);
+                  throw new Error(`Upload falhou: ${respostaServidor.status}`);
+                }
+
+                const dadosServidor = await respostaServidor.json();
+                console.log("📦 Resposta do servidor:", dadosServidor);
+
                 if (dadosServidor.sucesso) {
-                  console.log("✅ URL Servidor:", dadosServidor.imagem);
+                  console.log("✅ Foto atualizada com sucesso");
                   await atualizarFotoNoBackend(idSalvo, dadosServidor.imagem);
                 } else {
                   throw new Error(dadosServidor.mensagem || "Erro ao fazer upload no servidor");

@@ -21,8 +21,7 @@ import * as Sharing from 'expo-sharing';
 
 // Importação do Contexto de Tema (Obrigatório para o modo escuro)
 import { ThemeContext } from '../context/ThemeContext';
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 export default function RepositorioScreen({ route, navigation }) {
   // AQUI ESTÁ A CORREÇÃO! Puxando as configurações visuais do app.

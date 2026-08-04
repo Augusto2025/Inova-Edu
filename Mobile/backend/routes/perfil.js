@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db'); // Conexão com o Postgres
+const fs = require('fs');
+const path = require('path');
 
 // =================================================================
 // 1. GET: Buscar todos os dados do perfil de um usuário específico
@@ -81,13 +83,49 @@ router.put('/atualizar-foto', async (req, res) => {
     }
 
     try {
+        // Se for uma data URL base64, precisamos converter para URL normal
+        let imagemUrl = imagem;
+
+        // Verificar se é uma data URL
+        if (imagem && imagem.startsWith('data:')) {
+            console.log('📥 Recebendo imagem base64 para salvar.');
+            const match = imagem.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
+            if (!match) {
+                throw new Error('Formato de imagem base64 inválido.');
+            }
+
+            const mimeType = match[1];
+            const base64Data = match[2];
+            const extension = mimeType.split('/')[1] || 'jpg';
+            const randomId = `${idUsuario}_${Date.now()}`;
+            const uploadsDir = path.join(__dirname, '../uploads');
+
+            // Criar diretório se não existir
+            if (!fs.existsSync(uploadsDir)) {
+              fs.mkdirSync(uploadsDir, { recursive: true });
+            }
+
+            const fileName = `${randomId}.${extension}`;
+            const filePath = path.join(uploadsDir, fileName);
+
+            const buffer = Buffer.from(base64Data, 'base64');
+            console.log(`📁 Salvando arquivo ${fileName} (${buffer.length} bytes)`);
+            fs.writeFileSync(filePath, buffer);
+
+            // URL relativa e absoluta para armazenar no banco (frontend precisa de URL absoluta)
+            const relativeUrl = `/uploads/${fileName}`;
+            const absoluteUrl = `${req.protocol}://${req.get('host')}${relativeUrl}`;
+            imagemUrl = absoluteUrl;
+            console.log(`✅ Arquivo salvo: ${relativeUrl} -> ${absoluteUrl}`);
+        }
+
         const query = `
             UPDATE usuario
             SET imagem_usuario = $1
             WHERE "idUsuario" = $2
         `;
         
-        const resultado = await pool.query(query, [imagem, idUsuario]);
+        const resultado = await pool.query(query, [imagemUrl, idUsuario]);
 
         if (resultado.rowCount === 0) {
             return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado para atualizar." });
@@ -96,12 +134,65 @@ router.put('/atualizar-foto', async (req, res) => {
         return res.json({
             sucesso: true,
             mensagem: "Foto de perfil atualizada com sucesso!",
-            novaUrl: imagem
+            imagem: imagemUrl
         });
 
     } catch (err) {
-        console.error("❌ Erro ao atualizar foto no banco:", err.message);
-        return res.status(500).json({ sucesso: false, message: "Erro interno ao salvar imagem." });
+        console.error("❌ Erro ao atualizar foto no banco:", err.stack || err.message);
+        return res.status(500).json({ sucesso: false, message: "Erro interno ao salvar imagem.", erro: err.message, stack: err.stack });
+    }
+});
+
+// =================================================================
+// 2.1 POST: Upload de foto via base64 para backend local
+// =================================================================
+// URL: /perfil/upload-foto
+router.post('/upload-foto', async (req, res) => {
+    const { idUsuario, base64, fileName, mimeType } = req.body;
+
+    if (!idUsuario) {
+        return res.status(400).json({ sucesso: false, mensagem: "ID do usuário é obrigatório." });
+    }
+
+    if (!base64) {
+        return res.status(400).json({ sucesso: false, mensagem: "Base64 da imagem é obrigatório." });
+    }
+
+    try {
+        const uploadsDir = path.join(__dirname, '../uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const extension = mimeType?.split('/')?.[1] || fileName?.split('.')?.pop() || 'jpg';
+        const safeFileName = `${idUsuario}_${Date.now()}.${extension}`;
+        const filePath = path.join(uploadsDir, safeFileName);
+        const relativeFileUrl = `/uploads/${safeFileName}`;
+        const absoluteFileUrl = `${req.protocol}://${req.get('host')}${relativeFileUrl}`;
+
+        const buffer = Buffer.from(base64, 'base64');
+        fs.writeFileSync(filePath, buffer);
+        console.log(`✅ Arquivo salvo no backend local: ${relativeFileUrl} -> ${absoluteFileUrl}`);
+
+        const query = `
+            UPDATE usuario
+            SET imagem_usuario = $1
+            WHERE "idUsuario" = $2
+        `;
+        const resultado = await pool.query(query, [absoluteFileUrl, idUsuario]);
+
+        if (resultado.rowCount === 0) {
+            return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado para atualizar." });
+        }
+
+        return res.json({
+            sucesso: true,
+            mensagem: "Foto de perfil atualizada com sucesso!",
+            imagem: absoluteFileUrl
+        });
+    } catch (err) {
+        console.error('❌ Erro no upload de foto local:', err.stack || err.message);
+        return res.status(500).json({ sucesso: false, message: 'Erro interno ao salvar imagem.', erro: err.message });
     }
 });
 

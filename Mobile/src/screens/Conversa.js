@@ -5,10 +5,10 @@ import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
+import { URL_BASE } from '../config/backend';
 
 const COLORS = { primary: "#0e68d6" };
 
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 const URL_MENSAGEM = URL_BASE.endsWith('/') ? `${URL_BASE}conversa` : `${URL_BASE}/conversa`;
 
 export default function ConversaScreen({ navigation, route }) {

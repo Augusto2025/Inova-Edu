@@ -116,7 +116,7 @@ export default function CalendarScreen() {
   return (
     // 3. MESCLANDO O ESTILO EXTERNO COM O FUNDO DINÂMICO
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Calendário"} carregando={loading} />
+      <Header nomeTela={"Calendário"} temGoBack={true} carregando={loading} />
 
       {isProfessor && (
         <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>

@@ -16,8 +16,7 @@ import { COLORS } from "../components/Cores";
 import { ThemeContext } from "../context/ThemeContext";
 import { useUser } from "../context/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 // Importando o motor de voz do Expo
 import * as Speech from 'expo-speech';
@@ -126,16 +125,24 @@ export default function ConfiguracoesScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: CoresTema.fundo }]}>
-      <Header nomeTela={"Configurações"} />
+      <Header nomeTela={"Configurações"} temGoBack={true} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        
         <View style={styles.perfil}>
           <View style={[styles.avatarWrapper, { borderColor: isDarkMode ? '#0D9FFF' : '#2d6cdf' }]}>
-            <Image
-              source={user && user.imagem ? { uri: user.imagem } : require("../../assets/pascal.jpg")}
-              style={styles.avatar}
-            />
+            {user && user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
+              <Image source={{ uri: user.imagem }} style={styles.avatar} />
+            ) : (
+              <View style={[
+                styles.avatarPlaceholder,
+                {
+                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9',
+                  borderColor: isDarkMode ? '#94A3B8' : '#2d6cdf',
+                },
+              ]}>
+                <Ionicons name="person" size={60} color={isDarkMode ? '#94A3B8' : '#64748B'} />
+              </View>
+            )}
           </View>
           <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>{user ? `${user.nome} ${user.sobrenome}`.trim() : 'Usuário'}</Text>
           <Text style={[styles.email, { color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }]}>{user ? user.turma || user.descricao || '' : ''}</Text>
@@ -198,6 +205,7 @@ const styles = StyleSheet.create({
   perfil: { alignItems: "center", marginBottom: 20, marginTop: 10 },
   avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
   avatar: { width: 120, height: 120, borderRadius: 60 },
+  avatarPlaceholder: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
   nome: { fontWeight: "bold", color: COLORS.primary, marginTop: 10 },
   email: { marginBottom: 5 },
   perfilBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, marginTop: 15 },

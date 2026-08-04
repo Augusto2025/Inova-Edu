@@ -8,10 +8,10 @@ import {
   Image,
   Modal,
   TextInput,
-  SafeAreaView,
   ActivityIndicator,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native'; // Hook de recarregamento
 import Header from '../components/Header';
 import Skeleton from '../components/Skeleton';
@@ -22,8 +22,7 @@ import styles from '../styles/Projeto';
 
 // Importação do Contexto de Tema e Acessibilidade
 import { ThemeContext } from '../context/ThemeContext';
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 export default function ProjetosScreen({ route, navigation }) {
   // Puxando as variáveis globais

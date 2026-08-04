@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 export const useEventos = () => {
     const [events, setEvents] = useState([]);
