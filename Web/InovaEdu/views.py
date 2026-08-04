@@ -33,30 +33,32 @@ load_dotenv()
 
 
 def login(request):
+    # ele pega o que tem dentro do form
     if request.method == "GET":
         return render(request, "login.html", {"erro": "", "email": "", "senha": ""})
 
+    #  transforma o que tinha nos inputs em dados
     Email = request.POST.get("email")
     Senha = request.POST.get("senha")
 
-    # 1. Busca o usuário APENAS pelo e-mail
-    usuario = Usuario.objects.filter(email=Email).first()
+    # utiliza do usuário somente o email e a senha
+    usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
 
-    # 2. Verifica se o usuário existe E se a senha digitada bate com o hash no banco
-    if usuario and check_password(Senha, usuario.senha):
+    # verificar se o usuario é professor aluno ou coordenador
+    if usuario:
+        # pegando pelo email
         request.session["usuario_email"] = usuario.email
-        
         if usuario.tipo == "Coordenador":
             return redirect("home_Coordenacao")
-        elif usuario.tipo in ["Aluno", "Professor"]:
+        elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
             return redirect("home")
-            
-    # Se o usuário não existir OU a senha estiver errada
-    return render(
-        request,
-        "login.html",
-        {"erro": "Usuário ou senha inválidos.", "email": Email, "senha": ""},
-    )
+    # se ele não for, ele manda um erro e volta pro login
+    else:
+        return render(
+            request,
+            "login.html",
+            {"erro": "Usuário ou senha inválidos.", "email": Email, "senha": ""},
+        )
 
 
 from .tokens import token_generator
@@ -204,8 +206,6 @@ def perfil(request):
         'turma': turma
     })
 
-from django.contrib.auth.hashers import make_password, check_password
-
 @require_POST
 def atualizar_perfil_ajax(request):
     email_sessao = request.session.get("usuario_email")
@@ -247,9 +247,9 @@ def atualizar_perfil_ajax(request):
 
         usuario.descricao = bio
 
-        # 4. Alteração de Senha
+        # 4. Alteração de Senha (salvando em texto puro)
         if nova_senha:
-            usuario.senha = make_password(nova_senha)
+            usuario.senha = nova_senha
 
         # 5. Trata a Foto de Perfil
         foto_attr = 'imagem' if hasattr(usuario, 'imagem') else 'foto'
