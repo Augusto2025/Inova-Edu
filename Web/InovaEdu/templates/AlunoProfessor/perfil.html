@@ -27,11 +27,11 @@
                         <img src="{% static 'img/default_user.png' %}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
                     {% endif %}
 
-                    <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()" title="Alterar foto">
+                    {% comment %} <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()" title="Alterar foto">
                         <i class="fas fa-camera"></i>
                     </div>
 
-                    <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)"> {% endcomment %}
                 </div>
 
                 <!-- INFORMAÇÕES DO USUÁRIO -->
@@ -205,27 +205,61 @@
             </div>
 
             <div class="modal-body">
+                <!-- Seção de Foto de Perfil -->
+                <div class="profile-photo-section">
+                    <div class="photo-actions">
+                        <div class="profile-photo-container">
+                            <img id="edit-profile-photo-preview" src="{% if usuario.imagem %}{{ usuario.imagem.url }}{% else %}{% static 'img/default_user.png' %}{% endif %}" alt="Foto de perfil" class="profile-photo">
+                        </div>
+                        <label for="edit-foto-input" class="btn-change-photo">
+                            <i class="fas fa-camera"></i> Alterar Foto
+                        </label>
+                        <input type="file" id="edit-foto-input" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
+                        
+                        <button type="button" class="btn-remove-photo" onclick="removeProfilePhoto()">
+                            <i class="fas fa-trash-alt"></i> Remover Foto
+                        </button>
+                    </div>
+                </div>
+
                 <form id="formEditarPerfil" onsubmit="event.preventDefault(); saveProfile();">
+                    
+
                     <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" name="nome" id="edit-nome" value="{{ usuario.nome }}" maxlength="20" required>
+                        <label for="edit-email">E-mail</label>
+                        <input type="email" name="email" id="edit-email" value="{{ usuario.email }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Sobrenome</label>
-                        <input type="text" name="sobrenome" id="edit-sobrenome" value="{{ usuario.sobrenome }}" maxlength="20" required>
+                        <label for="edit-bio">Descrição / Bio</label>
+                        <textarea maxlength="150" name="descricao" id="edit-bio" rows="3">{{ usuario.descricao }}</textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>Bio</label>
-                        <textarea maxlength="100" name="descricao" id="edit-bio">{{ usuario.descricao }}</textarea>
+                    <!-- Checkbox Trocar Senha -->
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-container">
+                            <span>Deseja alterar a sua senha?</span>
+                            <input type="checkbox" id="toggle-change-password" onchange="togglePasswordFields()">
+                        </label>
+                    </div>
+
+                    <!-- Campos de Senha (Ocultos por padrão) -->
+                    <div id="password-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="edit-senha-atual">Senha Atual</label>
+                            <input type="password" name="senha_atual" id="edit-senha-atual" placeholder="Digite sua senha atual">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-nova-senha">Nova Senha</label>
+                            <input type="password" name="nova_senha" id="edit-nova-senha" placeholder="Digite a nova senha">
+                        </div>
                     </div>
                 </form>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
-                <button type="button" onclick="saveProfile()" class="save-btn">Salvar</button>
+                <button type="button" onclick="saveProfile()" class="save-btn">Salvar Alterações</button>
             </div>
         </div>
     </div>

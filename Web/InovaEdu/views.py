@@ -1,3 +1,4 @@
+import cloudinary
 from django.shortcuts import render, redirect, get_object_or_404
 import resend
 from datetime import date
@@ -32,32 +33,30 @@ load_dotenv()
 
 
 def login(request):
-    # ele pega o que tem dentro do form
     if request.method == "GET":
         return render(request, "login.html", {"erro": "", "email": "", "senha": ""})
 
-    #  transforma o que tinha nos inputs em dados
     Email = request.POST.get("email")
     Senha = request.POST.get("senha")
 
-    # utiliza do usuário somente o email e a senha
-    usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
+    # 1. Busca o usuário APENAS pelo e-mail
+    usuario = Usuario.objects.filter(email=Email).first()
 
-    # verificar se o usuario é professor aluno ou coordenador
-    if usuario:
-        # pegando pelo email
+    # 2. Verifica se o usuário existe E se a senha digitada bate com o hash no banco
+    if usuario and check_password(Senha, usuario.senha):
         request.session["usuario_email"] = usuario.email
+        
         if usuario.tipo == "Coordenador":
             return redirect("home_Coordenacao")
-        elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
+        elif usuario.tipo in ["Aluno", "Professor"]:
             return redirect("home")
-    # se ele não for, ele manda um erro e volta pro login
-    else:
-        return render(
-            request,
-            "login.html",
-            {"erro": "Usuário ou senha inválidos.", "email": Email, "senha": ""},
-        )
+            
+    # Se o usuário não existir OU a senha estiver errada
+    return render(
+        request,
+        "login.html",
+        {"erro": "Usuário ou senha inválidos.", "email": Email, "senha": ""},
+    )
 
 
 from .tokens import token_generator
@@ -205,162 +204,236 @@ def perfil(request):
         'turma': turma
     })
 
+from django.contrib.auth.hashers import make_password, check_password
+
 @require_POST
 def atualizar_perfil_ajax(request):
-    email = request.session.get("usuario_email")
+    email_sessao = request.session.get("usuario_email")
 
-    if not email:
-        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
+    if not email_sessao:
+        msg = "Usuário não autenticado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=403)
 
     try:
-        usuario = Usuario.objects.get(email=email)
+        usuario = Usuario.objects.get(email=email_sessao)
     except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+        msg = "Usuário não encontrado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=404)
 
     try:
-        data = json.loads(request.body)
+        novo_email = request.POST.get("email", "").strip()
+        bio = request.POST.get("bio", "").strip()
+        senha_atual = request.POST.get("senha_atual", "").strip()
+        nova_senha = request.POST.get("nova_senha", "").strip()
+        remover_foto = request.POST.get("remover_foto") == "true"
 
-        nome = data.get("nome", "").strip()
-        sobrenome = data.get("sobrenome", "").strip()
-        bio = data.get("bio", "").strip()
+        # 1. Validação de campos obrigatórios
+        if not novo_email:
+            msg = "E-mail é obrigatório."
+            messages.warning(request, msg)
+            return JsonResponse({"message": msg}, status=400)
 
-        if not nome or not sobrenome:
-            return JsonResponse(
-                {"message": "Nome e sobrenome são obrigatórios."}, status=400
-            )
+        # 2. Validação e atualização de E-mail
+        if novo_email != usuario.email:
+            if Usuario.objects.filter(email=novo_email).exclude(pk=usuario.pk).exists():
+                msg = "Este e-mail já está em uso por outra conta."
+                messages.error(request, msg)
+                return JsonResponse({"message": msg}, status=400)
+            
+            usuario.email = novo_email
+            request.session["usuario_email"] = novo_email
 
-        usuario.nome = nome
-        usuario.sobrenome = sobrenome
         usuario.descricao = bio
+
+        # 4. Alteração de Senha
+        if nova_senha:
+            usuario.senha = make_password(nova_senha)
+
+        # 5. Trata a Foto de Perfil
+        foto_attr = 'imagem' if hasattr(usuario, 'imagem') else 'foto'
+        foto_obj = getattr(usuario, foto_attr)
+        nova_foto = request.FILES.get('foto')
+
+        # Se solicitou remover ou se enviou uma foto nova, apaga a antiga no Cloudinary
+        if (remover_foto or nova_foto) and foto_obj:
+            try:
+                if hasattr(foto_obj, 'public_id') and foto_obj.public_id:
+                    cloudinary.uploader.destroy(foto_obj.public_id)
+            except Exception as e:
+                print(f"Aviso: Não foi possível deletar a imagem antiga no Cloudinary: {e}")
+
+        if remover_foto:
+            setattr(usuario, foto_attr, None)
+        elif nova_foto:
+            setattr(usuario, foto_attr, nova_foto)
+
         usuario.save()
 
-        return JsonResponse({"message": "Perfil atualizado com sucesso!"})
+        # Resgate da URL da foto para retorno
+        foto_obj_atualizada = getattr(usuario, foto_attr)
+        foto_url = foto_obj_atualizada.url if foto_obj_atualizada else "/static/img/default_user.png"
 
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "JSON inválido."}, status=400)
+        msg = "Perfil atualizado com sucesso!"
+        messages.success(request, msg)
+
+        return JsonResponse({
+            "message": msg,
+            "nome": usuario.nome,
+            "sobrenome": usuario.sobrenome,
+            "bio": usuario.descricao,
+            "foto_url": foto_url
+        }, status=200)
 
     except Exception as e:
-        return JsonResponse({"message": str(e)}, status=500)
+        msg = f"Erro interno ao atualizar perfil: {str(e)}"
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=500)
 
 
 @require_POST
 def upload_foto(request):
-    if request.method != "POST":
-        return JsonResponse({"message": "Método não permitido."}, status=405)
-
     email = request.session.get("usuario_email")
 
     if not email:
-        return JsonResponse({"message": "Usuário não autenticado."}, status=403)
+        msg = "Usuário não autenticado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=403)
 
     try:
         usuario = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado."}, status=404)
+        msg = "Usuário não encontrado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=404)
 
     foto = request.FILES.get("foto")
 
     if not foto:
-        return JsonResponse({"message": "Nenhuma imagem enviada."}, status=400)
+        msg = "Nenhuma imagem foi enviada."
+        messages.warning(request, msg)
+        return JsonResponse({"message": msg}, status=400)
 
     try:
-        usuario.imagem = foto
+        foto_attr = 'imagem' if hasattr(usuario, 'imagem') else 'foto'
+        setattr(usuario, foto_attr, foto)
         usuario.save()
 
-        return JsonResponse({"foto_url": usuario.imagem.url})
+        msg = "Foto de perfil atualizada com sucesso!"
+        messages.success(request, msg)
+
+        foto_obj = getattr(usuario, foto_attr)
+        return JsonResponse({"message": msg, "foto_url": foto_obj.url}, status=200)
 
     except Exception as e:
-        return JsonResponse({"message": str(e)}, status=500)
+        msg = f"Erro ao enviar foto: {str(e)}"
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=500)
 
 
 def salvar_certificado(request):
-
     email = request.session.get("usuario_email")
 
     if not email:
-        return JsonResponse({"message": "Usuário não autenticado"}, status=403)
+        msg = "Usuário não autenticado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=403)
 
     try:
         usuario = Usuario.objects.get(email=email)
     except Usuario.DoesNotExist:
-        return JsonResponse({"message": "Usuário não encontrado"}, status=404)
+        msg = "Usuário não encontrado."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=404)
 
+    try:
+        # =========================
+        # CRIAR OU EDITAR (POST)
+        # =========================
+        if request.method == "POST":
+            data = json.loads(request.body)
 
-    # =========================
-    # CRIAR OU EDITAR
-    # =========================
-    if request.method == "POST":
+            cert_id = data.get("id")
+            nome = data.get("nome", "").strip()
+            descricao = data.get("descricao", "").strip()
+            data_inicio = data.get("data_inicio") or None
+            data_final = data.get("data_final") or None
 
-        data = json.loads(request.body)
+            if not nome:
+                msg = "O nome do certificado é obrigatório."
+                messages.warning(request, msg)
+                return JsonResponse({"message": msg}, status=400)
 
-        cert_id = data.get("id")
-        nome = data.get("nome")
-        descricao = data.get("descricao")
-        data_inicio = data.get("data_inicio")
-        data_final = data.get("data_final")
+            # EDITAR
+            if cert_id:
+                try:
+                    certificado = Certificado.objects.get(
+                        idcertificado=cert_id,
+                        usuario=usuario
+                    )
 
-        # EDITAR
-        if cert_id:
+                    certificado.nome = nome
+                    certificado.descricao = descricao
+                    certificado.data_inicio = data_inicio
+                    certificado.data_final = data_final
+                    certificado.save()
+
+                    msg = "Certificado atualizado com sucesso!"
+                    messages.success(request, msg)
+                    return JsonResponse({"message": msg}, status=200)
+                
+                except Certificado.DoesNotExist:
+                    msg = "Certificado não encontrado."
+                    messages.error(request, msg)
+                    return JsonResponse({"message": msg}, status=404)
+
+            # CRIAR
+            else:
+                Certificado.objects.create(
+                    nome=nome,
+                    descricao=descricao,
+                    data_inicio=data_inicio,
+                    data_final=data_final,
+                    usuario=usuario
+                )
+
+                msg = "Certificado criado com sucesso!"
+                messages.success(request, msg)
+                return JsonResponse({"message": msg}, status=200)
+
+        # =========================
+        # EXCLUIR (DELETE)
+        # =========================
+        if request.method == "DELETE":
+            data = json.loads(request.body)
+            cert_id = data.get("id")
+
             try:
                 certificado = Certificado.objects.get(
                     idcertificado=cert_id,
                     usuario=usuario
                 )
 
-                certificado.nome = nome
-                certificado.descricao = descricao
-                certificado.data_inicio = data_inicio
-                certificado.data_final = data_final
-                certificado.save()
+                certificado.delete()
 
-                messages.success(request, "Certificado autualizado com sucesso!")
-                return JsonResponse({"message": "Certificado atualizado"})
+                msg = "Certificado excluído com sucesso!"
+                messages.success(request, msg)
+                return JsonResponse({"message": msg}, status=200)
             
             except Certificado.DoesNotExist:
-                messages.error(request, "Certificado não encontrado")
-                return JsonResponse({"message": "Certificado não encontrado"}, status=404)
+                msg = "Certificado não encontrado."
+                messages.error(request, msg)
+                return JsonResponse({"message": msg}, status=404)
 
-        # CRIAR
-        else:
+        msg = "Método HTTP não permitido."
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=405)
 
-            Certificado.objects.create(
-                nome=nome,
-                descricao=descricao,
-                data_inicio=data_inicio,
-                data_final=data_final,
-                usuario=usuario
-            )
-
-            messages.success(request, "Certificado criado com sucesso!")
-            return JsonResponse({"message": "Certificado criado"})
-
-
-    # =========================
-    # EXCLUIR
-    # =========================
-    if request.method == "DELETE":
-
-        data = json.loads(request.body)
-
-        cert_id = data.get("id")
-
-        try:
-            certificado = Certificado.objects.get(
-                idcertificado=cert_id,
-                usuario=usuario
-            )
-
-            certificado.delete()
-
-            messages.success(request, "Certificado excluído com sucesso!")
-            return JsonResponse({"message": "Certificado excluído"})
-        
-        except Certificado.DoesNotExist:
-            messages.error(request, "Certificado não encontrado")
-            return JsonResponse({"message": "Certificado não encontrado"}, status=404)
-
-
-    return JsonResponse({"message": "Método não permitido"}, status=405)
+    except Exception as e:
+        msg = f"Erro no processamento do certificado: {str(e)}"
+        messages.error(request, msg)
+        return JsonResponse({"message": msg}, status=500)
 
 
 def turmas(request, curso_id):
