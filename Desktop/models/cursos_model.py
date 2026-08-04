@@ -8,14 +8,13 @@ class CursosModel:
             conn = conectar()
             cursor = conn.cursor()
             
-            # Aplicando aspas duplas nos nomes de colunas com maiúsculas/CamelCase
-            # O PostgreSQL diferencia "Nome_curso" de "nome_curso"
+            # COALESCE + NULLIF garante o tratamento tanto para valores NULL quanto para textos vazios ('')
             query = """
                 SELECT 
                     "idCurso", 
                     "Nome_curso", 
                     "imagem_curso", 
-                    "Descricao_curso", 
+                    COALESCE(NULLIF(TRIM("Descricao_curso"), ''), 'Sem descrição disponivel') AS "Descricao_curso", 
                     "Data_inicio", 
                     "Data_final" 
                 FROM curso
