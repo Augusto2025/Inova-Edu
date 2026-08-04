@@ -206,6 +206,55 @@
   text-align: center;
   padding: 40px;
 }
+
+
+
+
+
+/* Responsivo */
+@media (max-width: 768px){
+
+    .barra-superior-lista{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtros-lista-curso{
+        width: 100%;
+    }
+
+    .btn-add-geral{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ========================= */
 /* MODAL */
 /* ========================= */

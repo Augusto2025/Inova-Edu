@@ -56,113 +56,114 @@
             <!-- Lista -->
             <section class="lista-curso-conteudo">
 
-            <ul>
-                <!-- Cabeçalho -->
-                <li class="curso-cabecalho">
-                    <span>Nome</span>
-                    <span>Início</span>
-                    <span>Término</span>
-                    <span>Ações</span>
-                </li>
+                <ul>
+                    <!-- Cabeçalho -->
+                    <li class="curso-cabecalho">
+                        <span>Nome</span>
+                        <span>Início</span>
+                        <span>Término</span>
+                        <span>Ações</span>
+                    </li>
 
-                {% for curso in cursos %}
+                    {% for curso in cursos %}
 
-                <!-- Curso -->
-                <li class="curso-item">
-                    <span>{{ curso.nome_curso }}</span>
-                    <span>{{ curso.data_inicio|date:"d/m/Y" }}</span>
-                    <span>{{ curso.data_final|date:"d/m/Y" }}</span>
+                    <!-- Curso -->
+                    <li class="curso-item">
+                        <span>{{ curso.nome_curso }}</span>
+                        <span>{{ curso.data_inicio|date:"d/m/Y" }}</span>
+                        <span>{{ curso.data_final|date:"d/m/Y" }}</span>
 
-                    <div class="acoes-geral_usuario">
-
-                        <button
-                            type="button"
-                            class="btn-editar"
-                            data-id="{{ curso.idcurso }}"
-                            data-nome="{{ curso.nome_curso }}"
-                            data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
-                            data-final="{{ curso.data_final|date:'Y-m-d' }}"
-                            data-descricao="{{ curso.descricao_curso }}">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-
-                        {% comment %} <button
-                            class="btn-descricao icon-descricao"
-                            data-descricao="{{ curso.descricao_curso|escapejs }}">
-                            <i class="fa-solid fa-align-center"></i>
-                        </button> {% endcomment %}
-
-                        <form method="POST" action="{% url 'excluir_curso' curso.idcurso %}" class="form-excluir-curso">
-                            {% csrf_token %}
+                        <div class="acoes-geral_usuario">
 
                             <button
                                 type="button"
-                                class="btn-excluir abrir-modal-excluir"
+                                class="btn-editar"
                                 data-id="{{ curso.idcurso }}"
-                                data-nome="{{ curso.nome }}">
-                                <i class="fa-solid fa-trash"></i>
+                                data-nome="{{ curso.nome_curso }}"
+                                data-inicio="{{ curso.data_inicio|date:'Y-m-d' }}"
+                                data-final="{{ curso.data_final|date:'Y-m-d' }}"
+                                data-descricao="{{ curso.descricao_curso }}">
+                                <i class="fa-solid fa-pen-to-square"></i>
                             </button>
+
+                            {% comment %} <button
+                                class="btn-descricao icon-descricao"
+                                data-descricao="{{ curso.descricao_curso|escapejs }}">
+                                <i class="fa-solid fa-align-center"></i>
+                            </button> {% endcomment %}
+
+                            <form method="POST" action="{% url 'excluir_curso' curso.idcurso %}" class="form-excluir-curso">
+                                {% csrf_token %}
+
+                                <button
+                                    type="button"
+                                    class="btn-excluir abrir-modal-excluir"
+                                    data-id="{{ curso.idcurso }}"
+                                    data-nome="{{ curso.nome }}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="curso-vazio">
+                        Nenhum curso cadastrado.
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <!-- MODAL CADASTRO CURSO -->
+                <div id="modalCadastroCurso" class="modal">
+                    <div class="modal-conteudo">
+                        
+                        <div class="titulo_lista_curso">
+
+                            <h2>
+                                <i class="fa-solid fa-user-plus"></i>
+                                Cadastro Curso
+                            </h2>
+
+                            <span class="fechar" id="fecharModalCurso">&times;</span>
+                        </div>
+
+                        <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <label for="nome_curso">Nome do Curso</label>
+                            <input type="text" id="nome_curso" name="nome_curso" placeholder="Ex: Tecnico em..." >
+
+                            <div class="datas">
+
+                                <div>
+                                    <label for="data_inicio">Data de Início</label>
+                                    <input type="date" id="data_inicio" name="data_inicio" placeholder="Ex: 00-00-0000">
+                                </div>
+
+                                <div>
+                                    <label for="data_final">Data de Término</label>
+                                    <input type="date" id="data_final" name="data_final" placeholder="Ex: 00-00-0000">
+                                </div>
+
+                            </div>
+
+                            {% comment %} <label for="descricao_curso">Descrição</label>
+                            <textarea id="descricao_curso" name="descricao_curso" placeholder="Breve resumo do curso..."></textarea> {% endcomment %}
+
+                            <div class="botoes-modal">
+
+                                <button type="button" id="cancelarModalCurso" class="btn-cancelar">
+                                    Cancelar
+                                </button>
+
+                                <button type="submit" class="btn-salvar">
+                                    Salvar Curso
+                                </button>
+
+                            </div>
                         </form>
                     </div>
-                </li>
-                {% empty %}
-                <li class="curso-vazio">
-                    Nenhum curso cadastrado.
-                </li>
-                {% endfor %}
-            </ul>
-
-            <!-- MODAL CADASTRO CURSO -->
-            <div id="modalCadastroCurso" class="modal">
-                <div class="modal-conteudo">
-                    
-                    <div class="titulo_lista_curso">
-
-                        <h2>
-                            <i class="fa-solid fa-user-plus"></i>
-                            Cadastro Curso
-                        </h2>
-
-                        <span class="fechar" id="fecharModalCurso">&times;</span>
-                    </div>
-
-                    <form action="{% url 'criar_curso' %}" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-
-                        <label for="nome_curso">Nome do Curso</label>
-                        <input type="text" id="nome_curso" name="nome_curso" placeholder="Ex: Tecnico em..." >
-
-                        <div class="datas">
-
-                            <div>
-                                <label for="data_inicio">Data de Início</label>
-                                <input type="date" id="data_inicio" name="data_inicio" placeholder="Ex: 00-00-0000">
-                            </div>
-
-                            <div>
-                                <label for="data_final">Data de Término</label>
-                                <input type="date" id="data_final" name="data_final" placeholder="Ex: 00-00-0000">
-                            </div>
-
-                        </div>
-
-                        {% comment %} <label for="descricao_curso">Descrição</label>
-                        <textarea id="descricao_curso" name="descricao_curso" placeholder="Breve resumo do curso..."></textarea> {% endcomment %}
-
-                        <div class="botoes-modal">
-
-                            <button type="button" id="cancelarModalCurso" class="btn-cancelar">
-                                Cancelar
-                            </button>
-
-                            <button type="submit" class="btn-salvar">
-                                Salvar Curso
-                            </button>
-
-                        </div>
-                    </form>
                 </div>
-            </div>
+            </section>
         </section>
 
         {% comment %} MODAL EDITAR CURSO {% endcomment %}

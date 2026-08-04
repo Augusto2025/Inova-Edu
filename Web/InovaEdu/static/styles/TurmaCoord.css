@@ -167,10 +167,37 @@
 .turma-item span {
   font-size: 15px;
 }
+/* Responsivo */
+@media (max-width: 768px){
 
-/* ============================
-   USUÁRIOS
-============================ */
+    .barra-superior-lista{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .filtros-lista{
+        width: 100%;
+    }
+
+    .busca-geral{
+        width: 100%;
+    }
+
+    .busca-geral input{
+        width: 100%;
+    }
+
+    .btn-add-geral{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+}
+
+/* ======================================================== */
 
 .turma-usuarios {
   display: flex;
