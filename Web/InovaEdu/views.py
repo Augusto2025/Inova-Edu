@@ -1482,6 +1482,7 @@ def editar_curso(request):
 
         curso.save()
         print("SALVO COM SUCESSO")
+        messages.success(request, "Curso atualizado com sucesso!")
 
     # ✅ continua na mesma página
     return redirect("CursoCoord")
@@ -1564,7 +1565,7 @@ def editar_turma(request):
 
         turma.save()
 
-        messages.success(request, "Editado com sucesso!")
+        messages.success(request, "Turma atualizada com sucesso!")
 
     return redirect("TurmaCoord")
 
