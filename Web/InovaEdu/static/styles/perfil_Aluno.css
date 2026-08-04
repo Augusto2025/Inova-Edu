@@ -443,6 +443,95 @@ h1, h2, h3, h4, p, span, button, a {
     padding: 16px;
 }
 
+/* Seção de Foto de Perfil no Modal */
+.profile-photo-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--card-border, #E2E8F0);
+}
+
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-photo-container {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--azul-Senac, #004580);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-change-photo {
+    background: var(--azul-Senac, #004580);
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.82em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-change-photo:hover {
+    opacity: 0.9;
+}
+
+.btn-remove-photo {
+    background: transparent;
+    border: none;
+    color: #DC2626;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-remove-photo:hover {
+    text-decoration: underline;
+}
+
+/* Checkbox Trocar Senha */
+.checkbox-group {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border, #E2E8F0);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88em;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--azul-Senac, #004580);
+    cursor: pointer;
+}
+
 .modal.active {
     display: flex;
 }

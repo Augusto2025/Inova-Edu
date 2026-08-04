@@ -1,22 +1,28 @@
 // perfil.js
-console.log('Script do perfil carregado!');
 
 // Pegar o token CSRF
 const csrftokenElement = document.getElementById('csrf-token');
-const csrftoken = csrftokenElement ? csrftokenElement.value : '';
+const csrftoken = csrftokenElement ? csrftokenElement.value : getCookie('csrftoken');
 
-// Configuração para requisições AJAX
+// Configuração padrão para requisições AJAX JSON
 const headers = {
     'X-CSRFToken': csrftoken,
     'Content-Type': 'application/json',
 };
 
-// Elementos do DOM
+// Variáveis de controle de Estado da Foto
+let removerFotoFlag = false;
+let fotoOriginalUrl = '';
+
+// Elementos Globais do DOM
 const loadingOverlay = document.getElementById('loading-overlay');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 
-// Funções de utilidade
+// =========================
+// FUNÇÕES UTILITÁRIAS
+// =========================
+
 function showLoading() {
     if (loadingOverlay) loadingOverlay.classList.add('active');
 }
@@ -40,7 +46,6 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Helper para travar/destravar botões durante requisições AJAX
 function setButtonLoading(btn, isLoading, loadingText = 'Salvar') {
     if (!btn) return;
     if (isLoading) {
@@ -55,91 +60,76 @@ function setButtonLoading(btn, isLoading, loadingText = 'Salvar') {
     }
 }
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 // =========================
-// PERFIL
+// PERFIL & FOTO DE PERFIL
 // =========================
 
 function openProfileModal() {
-    console.log('Abrindo modal de perfil');
     const modal = document.getElementById('profile-modal');
-    if (modal) {
-        modal.classList.add('active');
-    } else {
-        console.error('Modal de perfil não encontrado');
+    const preview = document.getElementById('edit-profile-photo-preview');
+    
+    if (preview) {
+        fotoOriginalUrl = preview.src;
     }
+    
+    removerFotoFlag = false;
+    if (modal) modal.classList.add('active');
 }
 
 function closeProfileModal() {
     const modal = document.getElementById('profile-modal');
+    const preview = document.getElementById('edit-profile-photo-preview');
+    const inputFoto = document.getElementById('edit-foto-input');
+    const checkSenha = document.getElementById('toggle-change-password');
+    const passwordFields = document.getElementById('password-fields');
+
+    // Restaura preview original e reseta os campos de senha
+    if (preview && fotoOriginalUrl) preview.src = fotoOriginalUrl;
+    if (inputFoto) inputFoto.value = '';
+    if (checkSenha) checkSenha.checked = false;
+    if (passwordFields) passwordFields.style.display = 'none';
+
+    const editSenhaAtual = document.getElementById('edit-senha-atual');
+    const editNovaSenha = document.getElementById('edit-nova-senha');
+    if (editSenhaAtual) editSenhaAtual.value = '';
+    if (editNovaSenha) editNovaSenha.value = '';
+
+    removerFotoFlag = false;
+
     if (modal) modal.classList.remove('active');
 }
 
-async function saveProfile() {
-    console.log('=== saveProfile iniciado ===');
-    
-    const btnSave = document.querySelector('#profile-modal .save-btn') || document.querySelector('#profile-modal button[type="submit"]');
-    if (btnSave && btnSave.disabled) return; // Evita duplo clique
-
-    const nome = document.getElementById('edit-nome')?.value.trim();
-    const sobrenome = document.getElementById('edit-sobrenome')?.value.trim();
-    const bio = document.getElementById('edit-bio')?.value.trim();
-
-    if (!nome || !sobrenome) {
-        showToast('Nome e sobrenome são obrigatórios!', 'error');
-        return;
-    }
-
-    setButtonLoading(btnSave, true, 'Salvando');
-    showLoading();
-
-    try {
-        const url = '/api/atualizar-perfil/';
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                nome: nome,
-                sobrenome: sobrenome,
-                bio: bio
-            })
-        });
-
-        const responseText = await response.text();
-        
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (e) {
-            console.error('Erro ao parsear JSON:', e);
-            showToast('Erro no servidor. Verifique o console.', 'error');
-            return;
+function togglePasswordFields() {
+    const checkbox = document.getElementById('toggle-change-password');
+    const fields = document.getElementById('password-fields');
+    if (checkbox && fields) {
+        fields.style.display = checkbox.checked ? 'block' : 'none';
+        if (!checkbox.checked) {
+            const editSenhaAtual = document.getElementById('edit-senha-atual');
+            const editNovaSenha = document.getElementById('edit-nova-senha');
+            if (editSenhaAtual) editSenhaAtual.value = '';
+            if (editNovaSenha) editNovaSenha.value = '';
         }
-
-        if (response.ok) {
-            const profileName = document.getElementById('profile-name');
-            const profileBio = document.getElementById('profile-bio');
-            
-            if (profileName) profileName.textContent = nome + ' ' + sobrenome;
-            if (profileBio) profileBio.textContent = bio || 'Sem descrição cadastrada.';
-            
-            closeProfileModal();
-            showToast('Perfil atualizado com sucesso!');
-        } else {
-            showToast(data.message || 'Erro ao salvar perfil', 'error');
-        }
-    } catch (error) {
-        console.error('Erro detalhado:', error);
-        showToast('Erro ao salvar perfil. Tente novamente.', 'error');
-    } finally {
-        setButtonLoading(btnSave, false);
-        hideLoading();
     }
 }
 
-async function updateProfilePhoto(event) {
-    console.log('=== updateProfilePhoto iniciado ===');
-    
+// Preview local da imagem selecionada (sem enviar para o backend ainda)
+function updateProfilePhoto(event) {
     const fileInput = event.target;
     const file = fileInput.files[0];
     
@@ -157,14 +147,74 @@ async function updateProfilePhoto(event) {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('foto', file);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const editPreview = document.getElementById('edit-profile-photo-preview');
+        if (editPreview) editPreview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    
+    removerFotoFlag = false;
+}
 
-    fileInput.disabled = true;
+// Marca a foto para remoção e exibe a imagem padrão temporariamente
+function removeProfilePhoto() {
+    const editPreview = document.getElementById('edit-profile-photo-preview');
+    const inputFoto = document.getElementById('edit-foto-input');
+    
+    if (editPreview) editPreview.src = '/static/img/default_user.png';
+    if (inputFoto) inputFoto.value = '';
+    
+    removerFotoFlag = true;
+}
+
+async function saveProfile() {
+    const btnSave = document.querySelector('#profile-modal .save-btn');
+    if (btnSave && btnSave.disabled) return;
+
+    const email = document.getElementById('edit-email')?.value.trim();
+    const bio = document.getElementById('edit-bio')?.value.trim();
+    const querTrocarSenha = document.getElementById('toggle-change-password')?.checked;
+    const senhaAtual = document.getElementById('edit-senha-atual')?.value;
+    const novaSenha = document.getElementById('edit-nova-senha')?.value;
+    const fotoInput = document.getElementById('edit-foto-input');
+
+    if (!email) {
+        showToast('O e-mail é obrigatório!', 'error');
+        return;
+    }
+
+    if (querTrocarSenha && (!senhaAtual || !novaSenha)) {
+        showToast('Preencha a senha atual e a nova senha.', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('bio', bio);
+
+    // Garante o envio dos campos ocultos de nome e sobrenome para validação do backend
+    const nomeInput = document.getElementById('edit-nome');
+    const sobrenomeInput = document.getElementById('edit-sobrenome');
+    if (nomeInput) formData.append('nome', nomeInput.value);
+    if (sobrenomeInput) formData.append('sobrenome', sobrenomeInput.value);
+
+    if (querTrocarSenha) {
+        formData.append('senha_atual', senhaAtual);
+        formData.append('nova_senha', novaSenha);
+    }
+
+    if (removerFotoFlag) {
+        formData.append('remover_foto', 'true');
+    } else if (fotoInput && fotoInput.files[0]) {
+        formData.append('foto', fotoInput.files[0]);
+    }
+
+    setButtonLoading(btnSave, true, 'Salvando');
     showLoading();
 
     try {
-        const response = await fetch('/api/upload-foto/', {
+        const response = await fetch('/api/atualizar-perfil/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken
@@ -172,29 +222,25 @@ async function updateProfilePhoto(event) {
             body: formData
         });
 
-        const responseText = await response.text();
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (e) {
-            console.error('Erro ao parsear JSON:', e);
-            showToast('Erro no servidor. Verifique o console.', 'error');
-            return;
-        }
+        const data = await response.json();
 
         if (response.ok) {
+            const profileBio = document.getElementById('profile-bio');
             const profilePhoto = document.getElementById('profile-photo');
-            if (profilePhoto) profilePhoto.src = data.foto_url;
-            showToast('Foto atualizada com sucesso!');
+            
+            if (profileBio) profileBio.textContent = data.bio || 'Sem descrição cadastrada.';
+            if (profilePhoto && data.foto_url) profilePhoto.src = data.foto_url;
+            
+            closeProfileModal();
+            showToast(data.message || 'Perfil atualizado com sucesso!');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            showToast(data.message || 'Erro ao fazer upload da foto', 'error');
+            showToast(data.message || 'Erro ao salvar perfil', 'error');
         }
     } catch (error) {
-        console.error('Erro detalhado:', error);
-        showToast('Erro ao fazer upload da foto. Tente novamente.', 'error');
+        showToast('Erro ao salvar perfil. Tente novamente.', 'error');
     } finally {
-        fileInput.disabled = false;
-        fileInput.value = ''; // Limpar input para poder re-selecionar o mesmo arquivo se quiser
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
@@ -263,6 +309,7 @@ async function saveCurso() {
             method: method,
             headers: headers,
             body: JSON.stringify({
+                id: currentCursoId,
                 nome: nome,
                 descricao: descricao,
                 data_inicio: dataInicio || null,
@@ -274,14 +321,11 @@ async function saveCurso() {
 
         if (response.ok) {
             showToast(currentCursoId ? 'Curso atualizado com sucesso!' : 'Curso adicionado com sucesso!');
-            setTimeout(() => {
-                location.reload();
-            }, 1200);
+            setTimeout(() => location.reload(), 1200);
         } else {
             showToast(data.message || 'Erro ao salvar curso', 'error');
         }
     } catch (error) {
-        console.error('Erro:', error);
         showToast('Erro ao salvar curso. Tente novamente.', 'error');
     } finally {
         setButtonLoading(btnSave, false);
@@ -375,7 +419,6 @@ async function saveCertificado() {
         }
 
     } catch (error) {
-        console.error(error);
         showToast("Erro ao salvar certificado", "error");
     } finally {
         setButtonLoading(btnSave, false);
@@ -389,12 +432,13 @@ function openDeleteModal(id, nome) {
     if (nameElem) nameElem.innerText = nome;
 
     const modal = document.getElementById("confirm-delete-modal");
-    if (modal) modal.style.display = "flex";
+    if (modal) modal.classList.add("active");
 }
 
 function closeDeleteModal() {
     const modal = document.getElementById("confirm-delete-modal");
-    if (modal) modal.style.display = "none";
+    if (modal) modal.classList.remove("active");
+    certificadoParaExcluir = null;
 }
 
 async function confirmDeleteCertificado() {
@@ -426,10 +470,27 @@ async function confirmDeleteCertificado() {
         }
 
     } catch (error) {
-        console.error(error);
         showToast("Erro ao excluir certificado", "error");
     } finally {
         setButtonLoading(btnDelete, false);
         hideLoading();
     }
 }
+
+// =========================
+// EVENT LISTENERS GLOBAIS
+// =========================
+
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+    }
+});
+
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+});
