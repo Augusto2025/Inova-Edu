@@ -112,9 +112,11 @@ router.put('/atualizar-foto', async (req, res) => {
             console.log(`📁 Salvando arquivo ${fileName} (${buffer.length} bytes)`);
             fs.writeFileSync(filePath, buffer);
 
-            // URL relativa para armazenar no banco
-            imagemUrl = `/uploads/${fileName}`;
-            console.log(`✅ Arquivo salvo: ${imagemUrl}`);
+            // URL relativa e absoluta para armazenar no banco (frontend precisa de URL absoluta)
+            const relativeUrl = `/uploads/${fileName}`;
+            const absoluteUrl = `${req.protocol}://${req.get('host')}${relativeUrl}`;
+            imagemUrl = absoluteUrl;
+            console.log(`✅ Arquivo salvo: ${relativeUrl} -> ${absoluteUrl}`);
         }
 
         const query = `
@@ -165,18 +167,19 @@ router.post('/upload-foto', async (req, res) => {
         const extension = mimeType?.split('/')?.[1] || fileName?.split('.')?.pop() || 'jpg';
         const safeFileName = `${idUsuario}_${Date.now()}.${extension}`;
         const filePath = path.join(uploadsDir, safeFileName);
-        const fileUrl = `/uploads/${safeFileName}`;
+        const relativeFileUrl = `/uploads/${safeFileName}`;
+        const absoluteFileUrl = `${req.protocol}://${req.get('host')}${relativeFileUrl}`;
 
         const buffer = Buffer.from(base64, 'base64');
         fs.writeFileSync(filePath, buffer);
-        console.log(`✅ Arquivo salvo no backend local: ${fileUrl}`);
+        console.log(`✅ Arquivo salvo no backend local: ${relativeFileUrl} -> ${absoluteFileUrl}`);
 
         const query = `
             UPDATE usuario
             SET imagem_usuario = $1
             WHERE "idUsuario" = $2
         `;
-        const resultado = await pool.query(query, [fileUrl, idUsuario]);
+        const resultado = await pool.query(query, [absoluteFileUrl, idUsuario]);
 
         if (resultado.rowCount === 0) {
             return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado para atualizar." });
@@ -185,7 +188,7 @@ router.post('/upload-foto', async (req, res) => {
         return res.json({
             sucesso: true,
             mensagem: "Foto de perfil atualizada com sucesso!",
-            imagem: fileUrl
+            imagem: absoluteFileUrl
         });
     } catch (err) {
         console.error('❌ Erro no upload de foto local:', err.stack || err.message);
