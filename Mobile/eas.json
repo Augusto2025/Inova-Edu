@@ -2,7 +2,8 @@
   "build": {
     "preview": {
       "env": {
-        "EXPO_PUBLIC_URL_BACKEND": "https://inova-edu-api.onrender.com"
+        "EXPO_PUBLIC_URL_BACKEND": "https://inova-edu-api.onrender.com",
+        "EXPO_USE_LOCAL_BACKEND": "true"
       },
       "android": {
         "buildType": "apk"

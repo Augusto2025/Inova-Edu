@@ -1,24 +1,21 @@
 import axios from 'axios';
-
-// Adiciona um valor padrão '|| ""' para evitar chamar .replace em undefined
-const rawUrl = process.env.EXPO_PUBLIC_URL_BACKEND || "https://inova-edu-api.onrender.com";
-const BASE_URL = rawUrl.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: URL_BASE,
 });
 
 export const API_ENDPOINTS = {
-  login: `${BASE_URL}/login`,
-  cursos: `${BASE_URL}/cursos`,
-  eventos: `${BASE_URL}/eventos`,
-  forum: `${BASE_URL}/forum`,
-  perfil: `${BASE_URL}/perfil`,
-  turmas: `${BASE_URL}/turmas`,
-  projetos: `${BASE_URL}/projetos`,
-  repositorio: `${BASE_URL}/repositorio`,
-  repositorioSearch: `${BASE_URL}/repositorio/search`,
-  home: `${BASE_URL}/home`,
+  login: `${URL_BASE}/login`,
+  cursos: `${URL_BASE}/cursos`,
+  eventos: `${URL_BASE}/eventos`,
+  forum: `${URL_BASE}/forum`,
+  perfil: `${URL_BASE}/perfil`,
+  turmas: `${URL_BASE}/turmas`,
+  projetos: `${URL_BASE}/projetos`,
+  repositorio: `${URL_BASE}/repositorio`,
+  repositorioSearch: `${URL_BASE}/repositorio/search`,
+  home: `${URL_BASE}/home`,
 };
 
 export default api;

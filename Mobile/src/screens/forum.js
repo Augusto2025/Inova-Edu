@@ -6,12 +6,11 @@ import Skeleton from '../components/Skeleton';
 import BarraPesquisa from '../components/BarraPesquisa';
 import { COLORS } from "../components/Cores";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { URL_BASE } from '../config/backend';
 
 // Importação do hook
 import { useTheme } from '../context/ThemeContext';
 
-const RAW_BACKEND_URL = process.env.EXPO_PUBLIC_URL_BACKEND || 'https://inova-edu-api.onrender.com';
-const URL_BASE = RAW_BACKEND_URL.replace(/\/login$/, '').replace(/\/$/, '');
 const URL_FORUM = `${URL_BASE}/forum`;
   
 export default function ForumScreen({ navigation }) {
@@ -280,9 +279,7 @@ export default function ForumScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header nomeTela={"Fórum"} carregando={carregando} />
-      <BarraPesquisa value={search} onChangeText={setSearch} placeholder="Buscar fórum" />
-
+      <Header nomeTela={"Fórum"} temGoBack={true} carregando={carregando} />
       {/* 🆕 Filtro: Todos os fóruns ou só os que eu criei */}
       {!carregando && topicos.length > 0 && !modoSelecao && (
         <View style={styles.filtroRow}>

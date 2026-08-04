@@ -20,8 +20,7 @@ import BarraPesquisa from '../components/BarraPesquisa';
 
 // 2. Importação do Contexto de Tema e Acessibilidade
 import { ThemeContext } from '../context/ThemeContext';
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
+import { URL_BASE } from '../config/backend';
 
 export default function TurmasScreen({ route, navigation }) {
   // Puxando as variáveis globais

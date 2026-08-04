@@ -1,10 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { URL_BASE } from '../config/backend';
 
 export const UserContext = createContext();
-
-const RAW_BACKEND_URL = process.env.EXPO_PUBLIC_URL_BACKEND || 'https://inova-edu-api.onrender.com';
-const URL_BASE = RAW_BACKEND_URL.replace(/\/login$/, '').replace(/\/$/, '');
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);

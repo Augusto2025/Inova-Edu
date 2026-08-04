@@ -20,8 +20,18 @@ const conversaRoutes = require('./routes/conversa');
 const perfilRoutes = require('./routes/perfil');
 const notificationsRoutes = require('./routes/notifications');
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
+
+// Log simples de todas as requisições para facilitar debug de rotas
+app.use((req, res, next) => {
+  console.log(`--> ${req.method} ${req.path}`);
+  next();
+});
+
+// Servir arquivos estáticos da pasta uploads
+app.use('/uploads', express.static('uploads'));
 
 // 2. Encaminha as chamadas para os arquivos certos
 app.use('/login', authRoutes);

@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { URL_BASE } from '../config/backend';
 
 export const NotificationContext = createContext();
 
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 const URL_NOTIFICATIONS = URL_BASE.endsWith('/') ? `${URL_BASE}notifications` : `${URL_BASE}/notifications`;
 
 export const NotificationProvider = ({ children }) => {

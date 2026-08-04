@@ -7,9 +7,8 @@ import BarraPesquisa from "../components/BarraPesquisa";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from "../components/Cores";
 import { useTheme } from '../context/ThemeContext';
+import { URL_BASE } from '../config/backend';
 
-
-const URL_BASE = process.env.EXPO_PUBLIC_URL_BACKEND.replace('/login', '');
 const URL_TOPICO = URL_BASE.endsWith('/') ? `${URL_BASE}topico` : `${URL_BASE}/topico`;
 
 export default function TopicosScreen({ navigation, route }) {
