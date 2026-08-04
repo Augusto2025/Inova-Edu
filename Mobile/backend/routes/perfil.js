@@ -4,6 +4,11 @@ const pool = require('../config/db'); // Conexão com o Postgres
 const fs = require('fs');
 const path = require('path');
 
+const buildPublicUrl = (req, relativePath) => {
+    const baseUrl = (process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || process.env.EXPO_PUBLIC_URL_BACKEND || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+    return `${baseUrl}${relativePath.startsWith('/') ? relativePath : `/${relativePath}`}`;
+};
+
 // =================================================================
 // 1. GET: Buscar todos os dados do perfil de um usuário específico
 // =================================================================
@@ -114,7 +119,7 @@ router.put('/atualizar-foto', async (req, res) => {
 
             // URL relativa e absoluta para armazenar no banco (frontend precisa de URL absoluta)
             const relativeUrl = `/uploads/${fileName}`;
-            const absoluteUrl = `${req.protocol}://${req.get('host')}${relativeUrl}`;
+            const absoluteUrl = buildPublicUrl(req, relativeUrl);
             imagemUrl = absoluteUrl;
             console.log(`✅ Arquivo salvo: ${relativeUrl} -> ${absoluteUrl}`);
         }
@@ -168,7 +173,7 @@ router.post('/upload-foto', async (req, res) => {
         const safeFileName = `${idUsuario}_${Date.now()}.${extension}`;
         const filePath = path.join(uploadsDir, safeFileName);
         const relativeFileUrl = `/uploads/${safeFileName}`;
-        const absoluteFileUrl = `${req.protocol}://${req.get('host')}${relativeFileUrl}`;
+        const absoluteFileUrl = buildPublicUrl(req, relativeFileUrl);
 
         const buffer = Buffer.from(base64, 'base64');
         fs.writeFileSync(filePath, buffer);
