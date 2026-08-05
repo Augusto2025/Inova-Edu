@@ -86,11 +86,11 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
 
-                            {% comment %} <button
+                           <button
                                 class="btn-descricao icon-descricao"
                                 data-descricao="{{ curso.descricao_curso|escapejs }}">
                                 <i class="fa-solid fa-align-center"></i>
-                            </button> {% endcomment %}
+                            </button> 
 
                             <form method="POST" action="{% url 'excluir_curso' curso.idcurso %}" class="form-excluir-curso">
                                 {% csrf_token %}
@@ -146,8 +146,8 @@
 
                             </div>
 
-                            {% comment %} <label for="descricao_curso">Descrição</label>
-                            <textarea id="descricao_curso" name="descricao_curso" placeholder="Breve resumo do curso..."></textarea> {% endcomment %}
+                            <label for="descricao_curso">Descrição</label>
+                            <textarea id="descricao_curso" name="descricao_curso" placeholder="Breve resumo do curso..."></textarea>
 
                             <div class="botoes-modal">
 
@@ -193,8 +193,8 @@
                         {% comment %} <label>Imagem do Curso:</label>
                         <input type="file" id="edit_imagem" name="imagem" accept="image/*"> {% endcomment %}
 
-                        {% comment %} <label>Descrição:</label>
-                        <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea> {% endcomment %}
+                        <label>Descrição:</label>
+                        <textarea id="edit_descricao_curso" name="descricao_curso" rows="4"></textarea> 
 
                         <div class="acoes-modal">
                             <button type="button" id="cancelarEditarCurso" class="btn-cancelar">
