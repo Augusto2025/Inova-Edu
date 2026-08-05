@@ -171,7 +171,7 @@
   justify-content: flex-end;
   gap: 10px;
   position: relative;
-  right: 45%; /* move 50px para a direita */
+  right: 30%; /* move 50px para a direita */
 }
 
 .acoes-geral_usuario button {
