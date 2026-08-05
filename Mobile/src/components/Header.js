@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -42,6 +42,17 @@ export default function Header({
 
   // Pega a foto do usuário do contexto global
   const { user } = useUser();
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+
+  const isValidImageUri = (uri) => {
+    return typeof uri === 'string' && uri.trim() !== '' && uri.trim().toLowerCase() !== 'null' && /^https?:\/\//i.test(uri.trim());
+  };
+
+  const avatarUri = isValidImageUri(user?.imagem) ? user.imagem.trim() : null;
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [avatarUri]);
 
   // Cores dinâmicas para o Header
   const headerBgColor = isDarkMode ? theme.card : "#1459b3";
@@ -76,7 +87,7 @@ export default function Header({
 
   return (
     <SafeAreaView edges={["top"]} style={[styles.wrapper, { backgroundColor: headerBgColor }]}> 
-      <StatusBar translucent backgroundColor={headerBgColor} barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
+      <StatusBar translucent={false} backgroundColor={headerBgColor} barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
       <View style={[styles.header, { backgroundColor: headerBgColor }]}>
         
         {exibirPerfil ? (
@@ -89,10 +100,11 @@ export default function Header({
                   borderRadius={(52 * fontSizeScale) / 2} 
                   style={{ marginRight: 12 }} 
                 />
-              ) : user?.imagem ? (
+              ) : avatarUri && !avatarLoadFailed ? (
                 <Image 
-                  source={{ uri: user.imagem }} 
+                  source={{ uri: avatarUri }} 
                   style={[styles.profileImage, { borderColor: headerBgColor }]} 
+                  onError={() => setAvatarLoadFailed(true)}
                 />
               ) : (
                 <View style={[styles.profileImagePlaceholder, { borderColor: headerTextColor, backgroundColor: 'rgba(255,255,255,0.1)' }]}>

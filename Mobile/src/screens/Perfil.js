@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, 
   TouchableOpacity, ActivityIndicator, Alert,
@@ -24,6 +24,11 @@ export default function ProfileScreen() {
   const { theme, fontSizeScale } = useTheme();
   const { user, carregarUsuario, atualizarPerfil, atualizarFoto } = useUser();
   const usuarioExibicao = user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [usuarioExibicao.imagem]);
   
   // Estado local para dados que o Perfil precisa
   const [certificados, setCertificados] = useState([]);
@@ -62,7 +67,6 @@ export default function ProfileScreen() {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
-        // Carrega certificados e projetos
         setCertificados(dados.certificados || []);
         setProjetos(dados.projetos || []);
       } else {
@@ -79,9 +83,7 @@ export default function ProfileScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const carregar = async () => {
-        // Recarrega dados do usuário do backend via contexto primeiro
         await carregarUsuario();
-        // Depois carrega certificados e projetos locais
         await carregarDadosPerfil();
       };
       carregar();
@@ -114,8 +116,8 @@ export default function ProfileScreen() {
               mediaTypes: ['images'],
               allowsEditing: true,
               aspect: [1, 1],
-              quality: 0.3, // Reduzir bastante a qualidade para evitar payload grande
-              base64: true, // Adicionar base64
+              quality: 0.3, 
+              base64: true,
             });
 
             if (resultado.canceled) return;
@@ -133,28 +135,18 @@ export default function ProfileScreen() {
                     ? 'image/jpeg'
                     : 'application/octet-stream';
 
-            console.log('📸 Upload de imagem:', {
-              fileName,
-              assetType,
-              hasBase64: !!base64Data,
-              mimeType,
-            });
-
             try {
               setCarregando(true);
 
               const hasCloudinaryConfig = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET && process.env.EXPO_PUBLIC_CLOUD_NAME;
-              const isLocalBackend = URL_BASE.includes('localhost') || URL_BASE.includes('127.0.0.1') || URL_BASE.includes('192.168.');
 
               if (hasCloudinaryConfig) {
-                console.log("📤 Enviando para Cloudinary...");
-
                 const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
                 const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
                 const cloudinaryForm = new FormData();
 
                 cloudinaryForm.append('file', {
-                  uri: fotoLocalUri,
+                  uri: fotoLocalUriRaw,
                   type: mimeType,
                   name: fileName,
                 });
@@ -170,21 +162,17 @@ export default function ProfileScreen() {
 
                 const dadosFoto = await respostaCloudinary.json();
                 if (!respostaCloudinary.ok) {
-                  console.error("❌ Erro Cloudinary:", dadosFoto);
                   throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
                 }
 
                 const urlCloudinary = dadosFoto.secure_url;
-                console.log("✅ URL Cloudinary:", urlCloudinary);
                 await atualizarFotoNoBackend(idSalvo, urlCloudinary);
               } else {
-                console.log("📤 Enviando para backend via /perfil/upload-foto...");
-
                 if (!base64Data) {
                   throw new Error('Não foi possível obter os dados da imagem.');
                 }
 
-                const mimeType = assetType === 'image' ? 'image/jpeg' : assetType || 'image/jpeg';
+                const finalMime = assetType === 'image' ? 'image/jpeg' : assetType || 'image/jpeg';
                 
                 const respostaServidor = await fetch(`${URL_BASE}/perfil/upload-foto`, {
                   method: 'POST',
@@ -195,24 +183,18 @@ export default function ProfileScreen() {
                   body: JSON.stringify({
                     idUsuario: idSalvo,
                     fileName,
-                    mimeType,
+                    mimeType: finalMime,
                     base64: base64Data,
                   }),
                 });
 
-                console.log("📊 Status da resposta:", respostaServidor.status);
-
                 if (respostaServidor.status < 200 || respostaServidor.status >= 300) {
-                  const errorText = await respostaServidor.text();
-                  console.error('❌ Erro no upload backend:', respostaServidor.status, errorText);
                   throw new Error(`Upload falhou: ${respostaServidor.status}`);
                 }
 
                 const dadosServidor = await respostaServidor.json();
-                console.log("📦 Resposta do servidor:", dadosServidor);
 
                 if (dadosServidor.sucesso) {
-                  console.log("✅ Foto atualizada com sucesso");
                   await atualizarFotoNoBackend(idSalvo, dadosServidor.imagem);
                 } else {
                   throw new Error(dadosServidor.mensagem || "Erro ao fazer upload no servidor");
@@ -257,10 +239,7 @@ export default function ProfileScreen() {
       const dadosBack = await respostaBackend.json();
 
       if (dadosBack.sucesso) {
-        console.log("✅ Foto salva no backend:", urlImagem);
-        // Atualiza o contexto global de usuário
         atualizarFoto(urlImagem);
-        // Recarrega dados completos do backend para garantir sincronização
         await carregarUsuario();
         Alert.alert("Sucesso", "Foto de perfil atualizada!");
       } else {
@@ -307,14 +286,12 @@ export default function ProfileScreen() {
         throw new Error(dados.mensagem || 'Erro ao salvar perfil.');
       }
 
-      // Atualiza o contexto global de usuário
       atualizarPerfil({
         nome: perfilForm.nome.trim(),
         sobrenome: perfilForm.sobrenome.trim(),
         descricao: perfilForm.descricao.trim()
       });
       
-      // Recarrega dados completos do backend
       await carregarUsuario();
       
       setModalPerfilVisible(false);
@@ -340,7 +317,6 @@ export default function ProfileScreen() {
   };
 
   const salvarCertificado = async () => {
-    // Validação simples para não salvar em branco
     if (!certForm.nome.trim()) {
       Alert.alert("Erro", "O nome do certificado é obrigatório.");
       return;
@@ -353,7 +329,7 @@ export default function ProfileScreen() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            usuarioId: user.idUsuario, // Certifique-se de usar a variável que guarda o ID do usuário logado
+            usuarioId: user.idUsuario, 
             nome: certForm.nome, 
             descricao: certForm.descricao 
           }),
@@ -362,7 +338,6 @@ export default function ProfileScreen() {
         const dados = await response.json();
 
         if (dados.sucesso) {
-          // Atualiza a tela usando o ID REAL gerado pelo banco de dados (Postgres)
           setCertificados([...certificados, dados.certificado]);
           Alert.alert("Sucesso", "Certificado adicionado ao banco!");
         } else {
@@ -370,7 +345,6 @@ export default function ProfileScreen() {
         }
 
       } else {
-        // 📝 ATUALIZA NO BANCO DE DADOS (PUT)
         const response = await fetch(`${URL_BASE}/perfil/certificado/${certForm.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -383,7 +357,6 @@ export default function ProfileScreen() {
         const dados = await response.json();
 
         if (dados.sucesso) {
-          // Atualiza o estado na tela refletindo a mudança real do banco
           setCertificados(certificados.map(c => c.id === certForm.id ? { ...c, ...certForm } : c));
           Alert.alert("Sucesso", "Certificado atualizado com sucesso!");
         } else {
@@ -391,14 +364,12 @@ export default function ProfileScreen() {
         }
       }
 
-      // Fecha o modal após o sucesso da requisição
       setModalCertVisible(false);
 
     } catch (error) {
       console.error("❌ Erro ao salvar certificado no banco:", error);
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
-    }
-    finally {
+    } finally {
       setSavingCert(false);
     }
   };
@@ -410,18 +381,14 @@ export default function ProfileScreen() {
 
   const confirmarExclusao = async () => {
     try {
-      // ⚠️ ATENÇÃO: Substitua pelo endereço do seu servidor (o mesmo usado no salvar)
       const response = await fetch(`${URL_BASE}/perfil/certificado/${certParaExcluir.id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        // Se o seu backend exigir o usuarioId no DELETE, descomente a linha abaixo:
-        // body: JSON.stringify({ usuarioId: user.idUsuario }) 
       });
 
       const dados = await response.json();
 
       if (dados.sucesso) {
-        // Remove da tela somente se o banco confirmar a exclusão
         setCertificados(certificados.filter(c => c.id !== certParaExcluir.id));
         setModalExcluirVisible(false);
         Alert.alert("Sucesso", "Certificado removido do banco!");
@@ -436,10 +403,10 @@ export default function ProfileScreen() {
 
   if (carregando) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}> 
+      <View style={[styles.container, { backgroundColor: theme.background }]}> 
         <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={true} />
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 10, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
-          <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}> 
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 0, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
+          <View style={[styles.profileHeaderCard, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}> 
             <Skeleton width={105} height={105} borderRadius={55} style={{ alignSelf: 'center', marginBottom: 18 }} />
             <Skeleton width="70%" height={22} borderRadius={10} style={{ alignSelf: 'center', marginBottom: 8 }} />
             <Skeleton width="45%" height={16} borderRadius={8} style={{ alignSelf: 'center', marginBottom: 8 }} />
@@ -476,22 +443,22 @@ export default function ProfileScreen() {
             ))}
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={carregando} />
       
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 10, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 0, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         
         {/* CARD PRINCIPAL DO PERFIL */}
-        <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}>
+        <View style={[styles.profileHeaderCard, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}> 
           <View style={styles.photoContainer}>
             <View style={[styles.profileImagePlaceholder, { backgroundColor: theme.background }]}>
-              {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' ? (
-                <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} />
+              {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' && !avatarLoadFailed ? (
+                <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} resizeMode="cover" onError={() => setAvatarLoadFailed(true)} />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
@@ -528,7 +495,6 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           
-          {/* faltando o tema escuro */}
           {certificados.length === 0 ? (
             <View style={[styles.emptyContainer, { backgroundColor: theme.background, borderColor: theme.border }]}>
               <Ionicons name="document-text-outline" size={32} color={theme.text === 'white' ? '#666' : '#BBB'} />
@@ -581,7 +547,6 @@ export default function ProfileScreen() {
                   <Text style={[styles.projectSub, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{proj.descricao || "Sem descrição disponível."}</Text>
                 </View>
                 
-                {/* ✅ SISTEMA DE LINK REDIRECIONÁVEL ATIVADO */}
                 <TouchableOpacity 
                   style={styles.repoLinkBtn} 
                   activeOpacity={0.7}
@@ -638,13 +603,12 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </Modal>
 
-      {/* 2. MODAL CERTIFICADO (CORRIGIDO) */}
+      {/* 2. MODAL CERTIFICADO */}
       <Modal visible={modalCertVisible} transparent animationType="fade" onRequestClose={() => setModalCertVisible(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalCertVisible(false)}>
           <TouchableWithoutFeedback>
             <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
               <View style={styles.modalHeader}>
-                {/* 🛠️ CORREÇÃO REALIZADA AQUI: O texto condicional foi extraído do style */}
                 <Text style={styles.modalTitle}>{modalCertModo === "Criar" ? "Adicionar Certificado" : "Editar Certificado"}</Text>
                 <TouchableOpacity onPress={() => setModalCertVisible(false)} style={{ position: 'absolute', right: 20 }}>
                   <Feather name="x" size={20} color="white" />
@@ -689,15 +653,20 @@ export default function ProfileScreen() {
 
               <View style={styles.modalBody}>
                 <Text style={[styles.deleteConfirmText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
-                  Tem certeza de que deseja remover o certificado <Text style={{ fontWeight: 'bold', color: theme.text }}>"{certParaExcluir.nome}"</Text>? Essa ação não pode ser desfeita.
+                  Tem certeza de que deseja excluir o certificado <Text style={{ fontWeight: 'bold' }}>{certParaExcluir.nome}</Text>?
                 </Text>
 
-                <View style={styles.deleteActionRow}>
-                  <TouchableOpacity style={[styles.saveBtn, styles.btnCancelar]} onPress={() => setModalExcluirVisible(false)}>
-                    <Text style={[styles.saveBtnText, { color: '#64748B' }]}>Cancelar</Text>
+                <View style={{ flexDirection: 'row', gap: 12, marginTop: 20 }}>
+                  <TouchableOpacity 
+                    style={[styles.saveBtn, { backgroundColor: '#94A3B8', flex: 1 }]} 
+                    onPress={() => setModalExcluirVisible(false)}
+                  >
+                    <Text style={styles.saveBtnText}>Cancelar</Text>
                   </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.saveBtn, styles.btnConfirmarExcluir]} onPress={confirmarExclusao}>
+                  <TouchableOpacity 
+                    style={[styles.saveBtn, { backgroundColor: '#F44336', flex: 1 }]} 
+                    onPress={confirmarExclusao}
+                  >
                     <Text style={styles.saveBtnText}>Excluir</Text>
                   </TouchableOpacity>
                 </View>
@@ -706,64 +675,236 @@ export default function ProfileScreen() {
           </TouchableWithoutFeedback>
         </TouchableOpacity>
       </Modal>
-
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  profileHeaderCard: { 
-    backgroundColor: 'white', marginHorizontal: 20, marginTop: 20, marginBottom: 10, borderRadius: 24, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0',
-    shadowColor: "#0F172A", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 4 
+  container: {
+    flex: 1,
   },
-  photoContainer: { position: 'relative', marginBottom: 12 },
-  profileImagePlaceholder: { 
-    width: 105, height: 105, borderRadius: 55, backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center', 
-    borderWidth: 3, borderColor: '#0D9FFF', overflow: 'hidden' 
+  profileHeaderCard: {
+    padding: 20,
+    margin: 16,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  profileImage: { width: '100%', height: '100%', resizeMode: 'cover' }, 
-  cameraBtn: { position: 'absolute', bottom: 2, right: 2, backgroundColor: COLORS.primary, borderRadius: 18, padding: 8, borderWidth: 3, borderColor: 'white', elevation: 3 },
-  userName: { fontSize: 22, fontWeight: '700', color: '#1E293B', textAlign: 'center' },
-  turmaBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EFF6FF', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, marginTop: 8 },
-  turmaText: { color: COLORS.primary, fontSize: 12, fontWeight: '600' },
-  userDesc: { textAlign: 'center', color: '#64748B', marginTop: 14, fontSize: 14, lineHeight: 21, paddingHorizontal: 10 },
-  editProfileBtn: { flexDirection: 'row', backgroundColor: COLORS.primary, marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 16, alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center' },
-  editProfileBtnText: { color: 'white', fontWeight: '600', fontSize: 15 },
-  section: { paddingHorizontal: 20, marginTop: 25 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  titleRow: { flexDirection: 'row', alignItems: 'center' },
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1E293B' },
-  plusBtn: { backgroundColor: COLORS.primary, padding: 6, borderRadius: 10 },
-  certCard: { backgroundColor: 'white', flexDirection: 'row', padding: 16, borderRadius: 18, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: '#E2E8F0', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
-  certIconBadge: { width: 46, height: 46, borderRadius: 12, backgroundColor: '#EFF6FF', justifyContent: 'center', alignItems: 'center', marginRight: 14 },
-  certInfo: { flex: 1, paddingRight: 8 },
-  certTitle: { fontWeight: '600', fontSize: 15, color: '#1E293B' },
-  certSub: { fontSize: 13, color: '#64748B', marginTop: 2 },
-  certActionColumn: { flexDirection: 'column', gap: 8, justifyContent: 'center', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#F1F5F9', paddingLeft: 12 },
-  miniActionBtn: { padding: 4 },
-  projectCard: { backgroundColor: 'white', padding: 20, borderRadius: 18, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0', shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
-  projectMainInfo: { marginBottom: 14 },
-  projectTitle: { fontWeight: '700', color: '#1E293B', fontSize: 16 },
-  projectSub: { fontSize: 13, color: '#64748B', marginTop: 6, lineHeight: 18 },
-  repoLinkBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', gap: 4, paddingVertical: 4 },
-  repoLinkText: { color: COLORS.primary, fontWeight: '600', fontSize: 14 },
-  emptyContainer: { backgroundColor: '#F1F5F9', borderRadius: 16, padding: 20, alignItems: 'center', justifyContent: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: '#CBD5E1', marginTop: 5 },
-  emptyText: { color: '#64748B', fontStyle: 'italic', textAlign: 'center', marginTop: 8, fontSize: 13 },
-
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.55)', justifyContent: 'center', padding: 20 },
-  modalContent: { backgroundColor: 'white', borderRadius: 24, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10 },
-  modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', padding: 20, alignItems: 'center', justifyContent: 'center' },
-  modalTitle: { color: 'white', fontSize: 18, fontWeight: '700' },
-  modalBody: { padding: 24 },
-  inputContainer: { marginBottom: 16 },
-  inputLabel: { fontSize: 14, fontWeight: "600", color: "#334155", marginBottom: 6, paddingLeft: 2 },
-  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 14, padding: 14, color: '#1E293B', backgroundColor: '#F8FAFC', fontSize: 15 },
-  inputMultiline: { minHeight: 70 },
-  saveBtn: { backgroundColor: COLORS.primary, padding: 15, borderRadius: 14, alignItems: 'center', marginTop: 10, justifyContent: 'center' },
-  saveBtnText: { color: 'white', fontWeight: '700', fontSize: 15 },
-  deleteConfirmText: { fontSize: 15, color: '#475569', textAlign: 'center', lineHeight: 22, marginBottom: 20 },
-  deleteActionRow: { flexDirection: 'row', gap: 12 },
-  btnCancelar: { flex: 1, backgroundColor: '#E2E8F0', marginTop: 0 },
-  btnConfirmarExcluir: { flex: 1, backgroundColor: '#F44336', marginTop: 0 }
+  photoContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  profileImagePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+  },
+  cameraBtn: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: COLORS.primary,
+    padding: 8,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userName: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  turmaBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  turmaText: {
+    fontWeight: '500',
+  },
+  userDesc: {
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 10,
+  },
+  editProfileBtn: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    gap: 8,
+  },
+  editProfileBtnText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  section: {
+    marginHorizontal: 16,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+  },
+  plusBtn: {
+    backgroundColor: COLORS.primary,
+    padding: 6,
+    borderRadius: 8,
+  },
+  emptyContainer: {
+    padding: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  emptyText: {
+    textAlign: 'center',
+  },
+  certCard: {
+    flexDirection: 'row',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  certIconBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  certInfo: {
+    flex: 1,
+  },
+  certTitle: {
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  certSub: {
+    opacity: 0.7,
+  },
+  certActionColumn: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  miniActionBtn: {
+    padding: 6,
+  },
+  projectCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  projectMainInfo: {
+    marginBottom: 12,
+  },
+  projectTitle: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  projectSub: {
+    opacity: 0.8,
+  },
+  repoLinkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  repoLinkText: {
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    padding: 16,
+    backgroundColor: COLORS.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalBody: {
+    padding: 20,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  input: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  inputMultiline: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  saveBtn: {
+    backgroundColor: COLORS.primary,
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveBtnText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  deleteConfirmText: {
+    textAlign: 'center',
+  },
 });

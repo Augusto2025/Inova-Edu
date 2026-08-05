@@ -13,6 +13,19 @@ export const UserProvider = ({ children }) => {
     carregarUsuario();
   }, []);
 
+  const isValidImageValue = (value) => {
+    return typeof value === 'string' && value.trim() !== '' && value.trim().toLowerCase() !== 'null';
+  };
+
+  const normalizeImageUrl = (value) => {
+    if (!isValidImageValue(value)) return null;
+    const trimmed = value.trim();
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    if (/^\/\//.test(trimmed)) return `https:${trimmed}`;
+    if (/^\//.test(trimmed)) return `${URL_BASE}${trimmed}`;
+    return `https://res.cloudinary.com/dw0pxfap3/${trimmed}`;
+  };
+
   const carregarUsuario = async () => {
     try {
       setCarregando(true);
@@ -33,18 +46,14 @@ export const UserProvider = ({ children }) => {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
-        let urlCompleta = dados.usuario.imagem;
-
-        if (urlCompleta && !urlCompleta.startsWith('http')) {
-          urlCompleta = `https://res.cloudinary.com/dw0pxfap3/${urlCompleta}`;
-        }
+        const urlCompleta = normalizeImageUrl(dados.usuario.imagem);
 
         const novoUser = {
           idUsuario: dados.usuario.idUsuario || idSalvo,
           nome: dados.usuario.nome || "Sem nome",
           sobrenome: dados.usuario.sobrenome || "",
           descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
-          imagem: urlCompleta || null,
+          imagem: urlCompleta,
           turma: dados.usuario.turma || "Sem Turma Vinculada"
         };
         
@@ -70,9 +79,10 @@ export const UserProvider = ({ children }) => {
 
   // Atualiza foto especificamente e persiste no estado
   const atualizarFoto = (urlImagem) => {
+    const normalized = normalizeImageUrl(urlImagem);
     setUser((prev) => {
       if (!prev) return prev;
-      return { ...prev, imagem: urlImagem };
+      return { ...prev, imagem: normalized };
     });
   };
 

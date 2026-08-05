@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ThemeProvider } from './src/context/ThemeContext';
 import { NotificationProvider } from './src/context/NotificationContext';
@@ -29,8 +30,9 @@ export default function App() {
     <ThemeProvider>
       <UserProvider>
         <NotificationProvider>
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <SafeAreaProvider>
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen}/>
             <Stack.Screen name="Main" component={TabRoutes}/>
             <Stack.Screen name="Profile" component={ProfilePage}/>
@@ -46,6 +48,7 @@ export default function App() {
             <Stack.Screen name="Eventos" component={CalendarScreen}/>
           </Stack.Navigator>
           </NavigationContainer>
+          </SafeAreaProvider>
         </NotificationProvider>
       </UserProvider>
     </ThemeProvider>
