@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   Image,
   Animated,
+  StatusBar,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Skeleton from "./Skeleton";
 import { useUser } from "../context/UserContext";
 
@@ -31,7 +32,6 @@ export default function Header({
   subtitulo = "Tec. Desenvolvimento de Sistemas", // 🆕 permite customizar o texto abaixo do nome (ex: "Professor")
 }) {
   const navigation = useNavigation();
-  const insets = useSafeAreaInsets();
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // 2. RESGATANDO AS VARIÁVEIS DE TEMA COM PROTEÇÃO (FALLBACK)
@@ -75,9 +75,8 @@ export default function Header({
   };
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: headerBgColor }]}>
-      <View style={[styles.logoRow, { backgroundColor: headerBgColor, height: insets.top + 22 }]} />
-
+    <SafeAreaView edges={["top"]} style={[styles.wrapper, { backgroundColor: headerBgColor }]}> 
+      <StatusBar translucent backgroundColor={headerBgColor} barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
       <View style={[styles.header, { backgroundColor: headerBgColor }]}>
         
         {exibirPerfil ? (
@@ -183,7 +182,7 @@ export default function Header({
           <View style={[styles.curve, { backgroundColor: theme.background }]} />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -192,6 +191,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'stretch',
     overflow: 'hidden',
+    paddingTop: 0,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -199,7 +199,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
     paddingTop: 0,
   }, 
-  logoRow: { width: '100%', alignSelf: 'stretch', marginTop: 0 }, 
   header: { 
     width: '100%',
     alignSelf: 'stretch',
