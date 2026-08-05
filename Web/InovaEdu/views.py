@@ -1543,7 +1543,6 @@ def HomeCoord(request):
 
 
 
-
 def UsuarioCoord(request):
 
     if request.method == "POST":
@@ -1594,7 +1593,7 @@ def UsuarioCoord(request):
         "filtro": filtro,
     }
 
-    return render(request, "Coordenacao/UsuariosCoord.html", context)
+    return render(request, "Coordenacao/UsuarioCoord.html", context)
 
 
 def listar_alunos(request):
