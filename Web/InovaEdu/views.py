@@ -1594,6 +1594,7 @@ def UsuarioCoord(request):
         "filtro": filtro,
     }
 
+    return render(request, "Coordenacao/UsuariosCoord.html", context)
 
 
 def listar_alunos(request):
