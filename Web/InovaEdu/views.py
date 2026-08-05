@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import cloudinary
-=======
-from django.contrib.admindocs import views
->>>>>>> coordenacao_refinamento
 from django.shortcuts import render, redirect, get_object_or_404
 import resend
 from datetime import date
@@ -1598,7 +1594,6 @@ def UsuarioCoord(request):
         "filtro": filtro,
     }
 
-<<<<<<< HEAD
 
 
 def listar_alunos(request):
@@ -1651,9 +1646,6 @@ def homePage(request):
     # Exemplo na sua view do Django:
     cursos = Curso.objects.all().order_by('-idcurso')[:3]
     return render(request, "homePage.html", {"cursos": cursos})
-=======
-    return render(request, "Coordenacao/UsuarioCoord.html", context)
->>>>>>> coordenacao_refinamento
 
 
 def excluir_usuario(request, idusuario):
