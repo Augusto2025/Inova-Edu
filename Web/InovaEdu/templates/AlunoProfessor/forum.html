@@ -34,21 +34,6 @@
 
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- Forum Header: título + tópico atual -->
 <div class="forum-header">
     <div class="forum-info">
@@ -122,10 +107,7 @@
     <form method="POST" class="chat-input-area" id="chat-form">
         {% csrf_token %}
         <input type="text" name="conteudo" placeholder="Digite sua mensagem..." autocomplete="off" required>
-        
-        
-
-
+    
         <button type="button" id="btn-cancelar" class="btn-secondary hidden" onclick="cancelarEdicao()" style="background: #6c757d; margin-right: 5px;">
             Cancelar
         </button>
