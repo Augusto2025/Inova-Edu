@@ -1,0 +1,204 @@
+/* ===========================
+   NAVBAR
+=========================== */
+
+:root {
+    --azul-principal: #004A8D;
+    --azul-secundario: #0066C5;
+    --azul-escuro: #003566;
+    --branco: #FFFFFF;
+    --cinza-claro: #F4F6F9;
+    --cinza: #D9D9D9;
+      --fonte-principal: "Arial", sans-serif;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--fonte-principal);
+}
+
+.navbar{
+    width: 100%;
+    height: 75px;
+    background: var(--azul-principal);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 45px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.15);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+/* Logo */
+
+.nav-logo img{
+    height: 85px;
+    transition: .3s;
+}
+
+.nav-logo img:hover{
+    transform: scale(1.08);
+}
+
+/* Menu */
+
+.nav-menu{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+}
+
+.nav-menu li{
+    list-style: none;
+}
+
+.nav-menu a{
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: .3s;
+}
+
+.nav-menu a:hover{
+    background: rgba(255,255,255,.18);
+}
+
+.nav-menu a.active{
+    background: white;
+    color: var(--azul-principal);
+}
+
+/* Botões */
+
+.nav-actions{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-perfil,
+.btn-sair{
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn-perfil{
+    background: rgba(255,255,255,.15);
+    color: white;
+}
+
+.btn-perfil:hover{
+    background: rgba(255,255,255,.25);
+}
+
+.btn-sair{
+    background: white;
+    color: var(--azul-principal);
+}
+
+.btn-sair:hover{
+    background: #f2f2f2;
+    transform: translateY(-2px);
+}
+
+/* Botão Menu */
+
+.menu-toggle{
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* ===========================
+   RESPONSIVO
+=========================== */
+
+@media (max-width:900px){
+
+    .navbar{
+        padding: 0 20px;
+        height: 70px;
+    }
+
+    .menu-toggle{
+        display: block;
+    }
+
+    .nav-menu{
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--azul-principal);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        display: none;
+        padding: 15px 0;
+    }
+
+    .nav-menu.active{
+        display: flex;
+    }
+
+    .nav-menu li{
+        width: 100%;
+    }
+
+    .nav-menu a{
+        display: block;
+        width: 100%;
+        padding: 15px 25px;
+        border-radius: 0;
+    }
+
+    .nav-menu a:hover{
+        background: rgba(255,255,255,.15);
+    }
+
+    .nav-actions{
+        display: none;
+    }
+
+}
+
+
+/* TITULOS DAS PAG */
+.topo-pagina{
+    color:var(--azul-secundario);
+    width:95%;
+    max-width:85%;
+    margin:35px auto;
+   
+}
+
+.topo-pagina h1{
+    margin:0;
+    font-size:36px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.topo-pagina p{
+    margin-top:10px;
+    font-size:17px;
+    opacity:.9;
+}
