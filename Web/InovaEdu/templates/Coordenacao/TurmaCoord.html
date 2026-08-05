@@ -1,0 +1,372 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Turma</title>
+
+    <link
+      rel="stylesheet"
+      href="{% static 'styles/navbar_coordenacao.css' %}"
+    />
+    <link rel="stylesheet" href="{% static 'styles/TurmaCoord.css' %}" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+    <body>
+        {% include 'partials/navbar_Coordenacao.html' %}
+
+        <section class="topo-pagina">
+            <div>
+                <h1><i class="fa-solid fa-graduation-cap"></i> Turma</h1>
+                <p>Cadastre, edite e gerencie todos os turmas da instituição.</p>
+            </div>
+        </section>
+
+
+        <section class="lista_conteudo container-turma lista-turma" id="listaTurma">
+            <!-- Barra Superior -->
+            <div class="barra-superior-lista">
+
+                <div class="filtros-lista">
+
+                    <!-- Pesquisa -->
+                    <div class="busca-geral">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="pesquisarTurma"
+                            placeholder="Buscar pela Turma..."
+                        >
+                    </div>
+
+                </div>
+                <!-- Botão -->
+                <a href="#" class="btn-add-geral" id="abrirModalTurma">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Novo Turma
+                </a>
+
+            </div>
+
+            <section class="lista-turma-conteudo">
+                <ul>
+                    <li class="turma-cabecalho">
+                        <span>Código</span>
+                        <span>Turno</span>
+                        <span>Ano</span>
+                        <span>Curso</span>
+                        <span>Usuários da Turma</span>
+                        <span class="turma-acoes">Ações</span>
+                    </li>
+
+                    {% for turma in turmas %}
+                    <li class="turma-item">
+                        <span>{{ turma.codigo_turma }}</span>
+                        <span>{{ turma.turno }}</span>
+                        <span>{{ turma.ano }}</span>
+                        <span>{{ turma.curso.nome_curso }}</span>
+                        <span class="turma-usuarios">
+                            <button type="button" class="btn-ver-usuarios" title="Ver usuários da turma"
+                                data-turma="{{ turma.idturma }}" data-usuarios='{{ turma.usuarios_json|escapejs }}'>
+                                <i class="fa-solid fa-user-plus"></i>
+                            </button>
+                        </span>
+
+
+                        <span class="acoes-geral_turma">
+                            <!-- EDITAR -->
+                            <button
+                                type="button"
+                                class="btn-editar-turma"
+                                title="Editar turma"
+                                data-id="{{ turma.idturma }}"
+                                data-codigo="{{ turma.codigo_turma }}"
+                                data-turno="{{ turma.turno }}"
+                                data-ano="{{ turma.ano }}"
+                                data-curso="{{ turma.curso.idcurso }}"
+                                data-professor="{{ turma.professor.idusuario|default:'' }}">
+
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+
+                            <!-- EXCLUIR -->
+                            <form action="{% url 'excluir_turma' turma.idturma %}" method="POST"
+                                class="form-excluir-turma">
+                                {% csrf_token %}
+
+                               <button
+                                    type="button"
+                                    class="btn-excluir-turma abrir-modal-excluir-turma"
+                                    data-id="{{ turma.idturma }}"
+                                    data-codigo="{{ turma.codigo_turma }}"
+                                    title="Excluir turma">
+
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </span>
+                    </li>
+
+                    {% empty %}
+                    <li class="turma-vazia">
+                        <span>Nenhuma turma cadastrada.</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+
+
+            {% comment %}ADICIONAR OS ALUNOS {% endcomment %}
+            <div id="modalUsuariosTurma" class="modal-usuarios">
+                <div class="modal-usuarios-box">
+
+                    <div class="modal-usuarios-topo">
+                        <h3>Adicionar alunos</h3>
+                        
+
+                    <!-- PESQUISA -->
+                    <div class="modal-usuarios-busca">
+                        <input type="text" id="buscarAlunoModal" placeholder="Digite o nome do aluno...">
+                    </div>
+
+                    <!-- LISTA DO BANCO -->
+                    <div class="modal-usuarios-lista">
+                        <ul id="listaAlunosBanco">
+                            {% for aluno in alunos %}
+                            <li data-id="{{ aluno.idusuario }}">
+                                <span>{{ aluno.nome }} {{ aluno.sobrenome }}</span>
+
+                                <button type="button" class="btn-add-aluno">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- ALUNOS SELECIONADOS -->
+                    <div class="modal-usuarios-selecionados ">
+                        <h3>Alunos adicionados</h3>
+                        <ul id="listaSelecionados"></ul>
+                    </div>
+
+                    <div class="modal-usuarios-footer">
+                            <button type="button" class="btn-cancelar-modal" id="cancelarUsuariosTurma">
+                            Cancelar
+                        </button>
+
+                        <button type="button" id="btnSalvar" class="btn-salvar-alunos">
+                            Salvar alunos
+                        </button>
+                    </div>
+
+                    <p id="mensagemSucesso" style="display:none; color:green;">salvo com sucesso</p>
+
+                    <input type="hidden" id="idTurmaAtual" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                </div>
+
+            </div>
+            
+        </section>
+        {% comment %} CADASTRO DE TURMA {% endcomment %}
+        <div id="modalCadastroTurma" class="modal" style="display:none;">
+            <div class="modal-conteudo">
+
+                
+                <div class="titulo_lista_turma">
+                    <i class="fa-solid fa-users"></i>
+                    <p>Cadastro Turma</p>
+                    <span class="fechar" id="fecharModalTurma">&times;</span>
+                </div>
+
+                <form action="{% url 'criar_turma' %}" method="POST">
+                    {% csrf_token %}
+
+                    <label>Código da Turma</label>
+                    <input type="text" name="codigo_turma" placeholder="Ex: TDS-2026-01" required>
+
+                    <label>Turno</label>
+                    <input type="text" name="turno" placeholder="Ex: Manhã">
+
+                    <label>Ano</label>
+                    <input type="number" name="ano" placeholder="2026" required>
+
+                    <label>Curso</label>
+                    <select name="curso_id" required>
+                        <option value="">Selecione um curso</option>
+                        {% for curso in cursos %}
+                            <option value="{{ curso.idcurso }}">
+                                {{ curso.nome_curso }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Professor</label>
+                    <select name="professor_id" required>
+                        <option value="">Selecione um professor</option>
+
+                        {% for professor in professores %}
+                            <option value="{{ professor.idusuario }}">
+                                {{ professor.nome }} {{ professor.sobrenome }}
+                            </option>
+                        {% empty %}
+                            <option disabled>Nenhum professor cadastrado</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="acoes-modal">
+                        <button type="button" id="cancelarModalTurma" class="btn-cancelar">
+                            Cancelar
+                        </button>
+                        
+                        <button type="submit" class="btn-salvar">
+                            Salvar Turma
+                        </button>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+            
+            
+        {% comment %} EDITAR TURMA  {% endcomment %}
+        <div id="modalEditarTurma" class="modal">
+            <div class="modal-conteudo modal-editar-turma">
+
+                <span id="fecharEditarTurma" class="fechar">&times;</span>
+
+                <div class="titulo_lista_editar_turma">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <p>Editar Turma</p>
+                </div>
+
+                <form method="POST" action="{% url 'editar_turma' %}" class="form-editar-turma">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="idturma" id="idTurmaEdit">
+
+                    <div class="grupo-form">
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo_turma" id="codigoTurmaEdit" required>
+                    </div>
+
+                    <div class="grupo-form">
+                        <label>Turno</label>
+                        <input type="text" name="turno" id="turnoEdit">
+                    </div>
+
+                    <div class="grupo-form">
+                        <label>Ano</label>
+                        <input type="number" name="ano" id="anoEdit">
+                    </div>
+
+                    <div class="grupo-form">
+                        <label>Curso</label>
+                        <select name="curso" id="cursoEdit">
+                            {% for curso in cursos %}
+                            <option value="{{ curso.idcurso }}">
+                                {{ curso.nome_curso }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="grupo-form campo-inteiro">
+                        <label>Professor</label>
+                        <select name="professor_id" id="professorEdit" required>
+                            {% for professor in professores %}
+                                <option value="{{ professor.idusuario }}"
+                                    {% if turma.professor_id == professor.idusuario %}selected{% endif %}>
+                                    {{ professor.nome }} {{ professor.sobrenome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="acoes-modal">
+                        <button type="button" id="cancelarEditarTurma" class="btn-cancelar">Cancela </button>
+
+                        <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+        {% comment %} Excluir {% endcomment %}
+        <div id="modalExcluirTurma" class="modal-excluir-turma">
+
+            <div class="modal-excluir-turma-conteudo">
+
+                <h2>Excluir turma</h2>
+
+                <p id="textoExcluirTurma"></p>
+
+                <form id="formExcluirTurma"
+                    method="POST" 
+                    data-url="{% url 'excluir_turma' 0 %}">
+
+                    {% csrf_token %}
+
+                    <button type="button" id="cancelarExcluirTurma" class="btn-cancelar-turma">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-confirmar-excluir-turma">
+                        Excluir
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% if messages %}
+            <div class="toast-container">
+                {% for message in messages %}
+                    <div class="toast {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <script>
+
+            document.addEventListener("DOMContentLoaded", () => {
+
+                const toast = document.querySelector(".toast");
+
+                if (toast) {
+
+                    setTimeout(() => {
+
+                        toast.style.transition = ".4s";
+                        toast.style.opacity = "0";
+                        toast.style.transform = "translateX(120%)";
+
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 400);
+
+                    }, 3000);
+
+                }
+
+            });
+        
+        </script>
+
+        {% comment %} <script src="{% static 'scripts/coordenacao.js' %}"></script> {% endcomment %}
+        <script src="{% static 'scripts/coordenacao2.js' %}"></script>
+    </body>
+</html>
