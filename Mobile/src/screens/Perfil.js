@@ -438,7 +438,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}> 
         <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={true} />
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 18 }} showsVerticalScrollIndicator={false}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 10, paddingBottom: 40, gap: 18 }} showsVerticalScrollIndicator={false}>
           <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}> 
             <Skeleton width={105} height={105} borderRadius={55} style={{ alignSelf: 'center', marginBottom: 18 }} />
             <Skeleton width="70%" height={22} borderRadius={10} style={{ alignSelf: 'center', marginBottom: 8 }} />
@@ -484,7 +484,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header nomeTela="Perfil" temGoBack={true} telaDestino={"Config"} carregando={carregando} />
       
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: 10, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         
         {/* CARD PRINCIPAL DO PERFIL */}
         <View style={[styles.profileHeaderCard, { backgroundColor: theme.card }]}>

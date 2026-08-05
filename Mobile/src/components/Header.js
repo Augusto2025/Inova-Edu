@@ -189,6 +189,9 @@ export default function Header({
 
 const styles = StyleSheet.create({
   wrapper: {
+    width: '100%',
+    alignSelf: 'stretch',
+    overflow: 'hidden',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -196,8 +199,10 @@ const styles = StyleSheet.create({
     zIndex: 2,
     paddingTop: 0,
   }, 
-  logoRow: { marginTop: 0 }, 
+  logoRow: { width: '100%', alignSelf: 'stretch', marginTop: 0 }, 
   header: { 
+    width: '100%',
+    alignSelf: 'stretch',
     paddingBottom: 15, 
     paddingHorizontal: 22, 
     flexDirection: "row", 
