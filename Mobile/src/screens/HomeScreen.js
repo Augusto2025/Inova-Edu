@@ -12,6 +12,7 @@ import {
   Keyboard
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
 import { COLORS } from "../components/Cores";
@@ -43,7 +44,7 @@ export default function HomeScreen({ navigation }) {
   const fontSizeScale = context?.fontSizeScale || 1;
 
   // 🆕 Pega dados do usuário do contexto global
-  const { user } = useUser();
+  const { user, carregarUsuario } = useUser();
 
   // 🆕 Descobre se o usuário logado é Aluno ou Professor, pra decidir qual Home mostrar
   const [tipoUsuario, setTipoUsuario] = useState(null);
@@ -99,6 +100,12 @@ export default function HomeScreen({ navigation }) {
       ]),
     ).start();
   }, [pulseAnim]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      carregarUsuario();
+    }, [carregarUsuario])
+  );
 
   // Função que busca os dados em tempo real da API na nuvem
   async function carregarHome() {

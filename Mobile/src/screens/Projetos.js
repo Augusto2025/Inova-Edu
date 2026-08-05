@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native'; // Hook de recarregamento
 import Header from '../components/Header';
 import Skeleton from '../components/Skeleton';
@@ -71,8 +70,8 @@ export default function ProjetosScreen({ route, navigation }) {
   };
 
   return (
-    // Fundo dinâmico da tela
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    // View comum para preencher de ponta a ponta sem o espaçamento automático do SafeAreaView
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.dark} />
       
       <Header 
@@ -93,7 +92,7 @@ export default function ProjetosScreen({ route, navigation }) {
           ))}
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={[styles.scrollContent, { paddingTop: 0 }]}>
           {projetos.length === 0 ? (
             <Text style={[styles.vazio, { color: theme.text, fontSize: 16 * fontSizeScale }]}>
               Nenhum projeto cadastrado para esta turma.
@@ -177,6 +176,6 @@ export default function ProjetosScreen({ route, navigation }) {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
