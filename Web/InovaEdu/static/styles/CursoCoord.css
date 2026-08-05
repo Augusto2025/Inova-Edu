@@ -136,7 +136,7 @@
 }
 
 .curso-cabecalho {
-  background: #003f88;
+  background: var(--azul-Senac);
   color: #fff;
   font-weight: 600;
   padding: 16px 25px;
