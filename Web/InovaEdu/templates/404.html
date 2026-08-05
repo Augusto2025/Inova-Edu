@@ -2,9 +2,16 @@
 {% load static %}
 
 {% block content %}
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+
+    {% if usuario.tipo == "Aluno" %}
+        {% block header %}
+            {% include "partials/header.html" %}
+        {% endblock %}
+    {% else %}
+        {% include "partials/navbar_Coordenacao.html" %}
+    {% endif %}
+
+
     
     <link rel="stylesheet" href="{% static 'styles/global.css' %}">
     <style>
@@ -35,9 +42,15 @@
             A página ou diretório que você tentou acessar não existe ou foi movido.
         </p>
 
-        <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
-            <i class="fa-solid fa-house"></i> Voltar para a home
-        </a>
+        {% if usuario.tipo == "Aluno" %}
+            <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                <i class="fa-solid fa-house"></i> Voltar para a home
+            </a>
+        {% else %}
+            <a href="{% url "HomeCoord" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                <i class="fa-solid fa-house"></i> Voltar para a home
+            </a>
+        {% endif %}
     </div>
 
 {% include "partials/footer.html" %}

@@ -2,9 +2,14 @@
 {% load static %}
 
 {% block content %}
-    {% block header %}
-        {% include "partials/header.html" %}    
-    {% endblock %}
+    {% if usuario.tipo == "Aluno" %}
+        {% block header %}
+            {% include "partials/header.html" %}
+        {% endblock %}
+    {% else %}
+        {% include "partials/navbar_Coordenacao.html" %}
+    {% endif %}
+
     <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
     <style>
@@ -45,8 +50,16 @@
             <a href="javascript:history.back()" class="btn-action btn-secondary" style="text-decoration: none;">
                 <i class="fa-solid fa-arrow-left"></i> Voltar à Página Anterior
             </a>
-            <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
-                <i class="fa-solid fa-house"></i> Ir para o Início
+
+            {% if usuario.tipo == "Aluno" %}
+                <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-house"></i> Ir para o Início
+                </a>
+            {% else %}
+                <a href="{% url "HomeCoord" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-house"></i> Ir para o Início
+                </a>
+            {% endif %}
             </a>
         </div>
     </div>
