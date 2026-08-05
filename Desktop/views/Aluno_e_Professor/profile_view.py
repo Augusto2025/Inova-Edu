@@ -5,6 +5,10 @@ import os
 from views.Aluno_e_Professor.editar_view import EditarPerfilView
 from models.sessao import UsuarioSessao
 from controllers.perfil_controller import ProfileController
+from PIL import Image, ImageTk
+import urllib.request
+import io
+import threading
 
 # Constantes de Estilo
 AZUL_SENAC = "#004A8D"
@@ -47,14 +51,8 @@ class UserProfileSystem(ctk.CTkFrame):
             sidebar(self.janela)
 
     def render_header(self):
-        self.header = ctk.CTkFrame(self, fg_color=AZUL_SENAC, height=80, corner_radius=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
-
-        ctk.CTkLabel(
-            self.header, text="Perfil Acadêmico", 
-            font=("Roboto", 22, "bold"), text_color=BRANCO
-        ).pack(side="left", padx=30)
+        from assets.header import HeaderPadrao
+        self.header = HeaderPadrao(self, titulo="Perfil do Usuário", comando_voltar=None)
 
         # SUBSTITUÍDO: Botão Atualizar -> Botão Editar Perfil
         ctk.CTkButton(
@@ -97,9 +95,12 @@ class UserProfileSystem(ctk.CTkFrame):
         header_layout = ctk.CTkFrame(profile_card, fg_color="transparent")
         header_layout.pack(fill="x", padx=25, pady=25)
 
-        self.lbl_foto = ctk.CTkLabel(header_layout, text="👤", font=("Arial", 50),
-                                     width=100, height=100, fg_color="#F1F5F9", corner_radius=50)
-        self.lbl_foto.pack(side="left")
+        self.borda_foto = ctk.CTkFrame(header_layout, width=100, height=100, fg_color=AZUL_SENAC)
+        self.borda_foto.pack(side="left", padx=(0, 30))
+        self.borda_foto.pack_propagate(False)
+        
+        self.lbl_foto = ctk.CTkLabel(self.borda_foto, text="👤", font=("Arial", 40), width=92, height=92, fg_color=BRANCO)
+        self.lbl_foto.place(relx=0.5, rely=0.5, anchor="center")
 
         info_frame = ctk.CTkFrame(header_layout, fg_color="transparent")
         info_frame.pack(side="left", padx=25, fill="both", expand=True)
@@ -113,6 +114,51 @@ class UserProfileSystem(ctk.CTkFrame):
         self.lbl_descricao_usuario = ctk.CTkLabel(info_frame, text="", font=("Roboto", 14), text_color="#64748B", wraplength=600, justify="left")
         self.lbl_descricao_usuario.pack(anchor="w", pady=5)
 
+    # --- NOVOS MÉTODOS PARA CARREGAMENTO ASSÍNCRONO DA IMAGEM ---
+
+    def carregar_foto_cloudinary_async(self, url_imagem):
+        """Baixa os bytes da imagem remota sem travar os elementos visuais do Tkinter"""
+        def thread_task():
+            try:
+                # Efetua a requisição web
+                with urllib.request.urlopen(url_imagem) as url_resposta:
+                    dados_imagem = url_resposta.read()
+                
+                # Abre o fluxo de bytes via Pillow
+                imagem_pil = Image.open(io.BytesIO(dados_imagem))
+                
+                # Instancia o renderizador otimizado do CustomTkinter
+                ctk_img = ctk.CTkImage(light_image=imagem_pil, dark_image=imagem_pil, size=(100, 100))
+                
+                # Retorna a alteração visual com segurança para a thread principal do tkinter
+                self.janela.after(0, lambda: self.aplicar_foto(ctk_img))
+            except Exception as e:
+                print(f"[CLOUDINARY] Erro ao baixar avatar: {e}")
+
+        # Dispara a busca paralela
+        threading.Thread(target=thread_task, daemon=True).start()
+
+    def aplicar_foto(self, ctk_img):
+        """Remove o texto '👤' e aplica o objeto de imagem gerado com segurança"""
+        try:
+            # Verifica se o widget do CustomTkinter e o label interno do Tkinter ainda existem na tela
+            if self.winfo_exists() and hasattr(self, 'lbl_foto') and self.lbl_foto.winfo_exists():
+                self.lbl_foto.configure(image=ctk_img, text="")
+                self.lbl_foto._image = ctk_img  # Mantém a referência na memória
+        except Exception as e:
+            # Silencia o erro caso a janela tenha sido fechada no exato milissegundo da transição
+            print(f"[PROFILE] Download concluído após o fechamento da tela: {e}")
+
+    # --- ADAPTADO: ADICIONADO O ARGUMENTO url_foto NO FINAL ---
+    def atualizar_dados_principais(self, nome, sobrenome, descricao, turma_nome, url_foto=None):
+        self.lbl_nome_usuario.configure(text=f"{nome} {sobrenome}")
+        self.lbl_descricao_usuario.configure(text=descricao if descricao else "Estudante Senac")
+        self.lbl_badge_turma.configure(text=f" {turma_nome} ", fg_color=AZUL_SENAC)
+        
+        # Dispara o download automático se houver um link válido apontando para a internet
+        if url_foto and str(url_foto).startswith("http"):
+            self.carregar_foto_cloudinary_async(url_foto)
+
     def render_visual_sections(self):
         self.create_section_title("🎓 Meus Certificados", is_accordion=True)
         
@@ -121,7 +167,7 @@ class UserProfileSystem(ctk.CTkFrame):
         self.cert_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
         self.cert_container.pack(fill="x", pady=10) 
 
-        self.create_section_title("📊 Projetos Ativos", is_accordion=False)
+        self.create_section_title("📊 Meus Projetos", is_accordion=False)
         self.proj_container = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")
         self.proj_container.pack(fill="x", pady=10)
 
@@ -267,7 +313,8 @@ class UserProfileSystem(ctk.CTkFrame):
             desc = cert.get('descricao') or "Sem descrição disponível"
             inicio = cert.get('data_inicio') or "--"
             fim = cert.get('data_final') or "--"
-            id_c = cert.get('idcertificado') or cert.get('idCertificado')
+            # Mude esta linha no renderizar_certificados:
+            id_c = cert.get('idcertificado') or cert.get('idCertificado') or cert.get('id_certificado') or cert.get('id')
             
             card = ctk.CTkFrame(grid, fg_color=BRANCO, corner_radius=15, border_width=1, border_color="#E2E8F0")
             card.grid(row=i // 3, column=i % 3, padx=10, pady=10, sticky="nsew")
@@ -306,10 +353,13 @@ class UserProfileSystem(ctk.CTkFrame):
                                             width=80, height=28, corner_radius=15, command=self.toggle_formulario)
             self.btn_toggle.pack(side="right")
 
-    def atualizar_dados_principais(self, nome, sobrenome, descricao, turma_nome):
+    def atualizar_dados_principais(self, nome, sobrenome, descricao, turma_nome, url_foto=None):
         self.lbl_nome_usuario.configure(text=f"{nome} {sobrenome}")
         self.lbl_descricao_usuario.configure(text=descricao if descricao else "Estudante Senac")
         self.lbl_badge_turma.configure(text=f" {turma_nome} ", fg_color=AZUL_SENAC)
+        
+        if url_foto and str(url_foto).startswith("http"):
+            self.carregar_foto_cloudinary_async(url_foto)
 
 if __name__ == "__main__":
     app = ctk.CTk()

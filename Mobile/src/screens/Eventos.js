@@ -1,34 +1,98 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  ActivityIndicator,
+  Alert,
+  StyleSheet // 1. IMPORTAÇÃO CORRIGIDA AQUI
+} from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import { COLORS } from '../components/Cores';
 import styles from '../styles/Evento';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaskInput from "react-native-mask-input";
+
+
+import { useEventos } from '../hooks/eventos';
+import { ThemeContext } from '../context/ThemeContext';
 
 export default function CalendarScreen() {
+  // 2. PUXANDO AS VARIÁVEIS GLOBAIS DE ACESSIBILIDADE E TEMA
+  const { theme, fontSizeScale } = useContext(ThemeContext);
+
+  const { events, loading, salvarEvento, excluirEvento } = useEventos();
+
   const [selected, setSelected] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [eventSelected, setEventSelected] = useState(null);
+  const [modalAddVisible, setModalAddVisible] = useState(false);
+  const [novoEvento, setNovoEvento] = useState({ title: '', date: '', time: '', local: '', description: '' });
 
-  // Dados com horário e descrição
-  const events = [
-    { id: 1, title: 'Palestra: Inovação', date: '2026-04-10', day: '10', month: 'ABR', time: '19:00', local: 'Auditório', description: 'Uma palestra incrível sobre as novas tecnologias no setor educacional em 2026.' },
-    { id: 2, title: 'Reunião de Pais', date: '2026-04-01', day: '01', month: 'ABR', time: '08:30', local: 'Sala 05', description: 'Alinhamento semestral com os responsáveis sobre o desempenho dos alunos.' },
-    { id: 3, title: 'Entrega de Notas', date: '2026-03-25', day: '25', month: 'MAR', time: '14:00', local: 'Online', description: 'Publicação oficial das notas no portal do aluno.' },
-  ];
+  const [idUsuarioLogado, setIdUsuarioLogado] = useState(null);
+  const [isProfessor, setIsProfessor] = useState(false);
+
+  useEffect(() => {
+    const carregarDadosUsuario = async () => {
+      const id = await AsyncStorage.getItem('idUsuario');
+      const tipoUsuario = await AsyncStorage.getItem('tipo');
+
+      setIdUsuarioLogado(id);
+      if (tipoUsuario === 'Professor') setIsProfessor(true);
+    };
+    carregarDadosUsuario();
+  }, []);
+
+  const handleSalvar = () => {
+    salvarEvento(novoEvento, () => {
+      setModalAddVisible(false);
+      setNovoEvento({ title: '', date: '', time: '', local: '', description: '' });
+    });
+  };
+
+  const habilitarEdicao = (evento) => {
+    setNovoEvento({
+      id: evento.id,
+      title: evento.title,
+      date: evento.date,
+      time: evento.time,
+      local: evento.local,
+      description: evento.description
+    });
+    setModalVisible(false);
+    setModalAddVisible(true);
+  };
+
+  const confirmarExclusao = (idEvento) => {
+    Alert.alert("Confirmar", "Deseja realmente excluir este evento?", [
+      { text: "Cancelar" },
+      { text: "Sim", onPress: () => excluirEvento(idEvento, () => setModalVisible(false)) }
+    ]);
+  };
 
   const getEventStatusColor = (eventDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const evDate = new Date(eventDate);
-    evDate.setHours(0, 0, 0, 0);
+    const evDate = new Date(eventDate + 'T00:00:00');
 
     if (evDate.getTime() === today.getTime()) return '#FFD700';
     return evDate > today ? '#4CAF50' : '#F44336';
   };
 
-  // Função para abrir o modal ao clicar no dia ou card
+  const obterInfoData = (dataStr) => {
+    if (!dataStr) return { dia: '00', mes: 'IND' };
+    const partes = dataStr.split('-');
+    const meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    const mesIndex = parseInt(partes[1], 10) - 1;
+    return { dia: partes[2], mes: meses[mesIndex] || 'ERR' };
+  };
+
   const handleOpenEvent = (dateString) => {
     const foundEvent = events.find(e => e.date === dateString);
     if (foundEvent) {
@@ -38,103 +102,243 @@ export default function CalendarScreen() {
     setSelected(dateString);
   };
 
+  const mapearMarcacoesCalendario = () => {
+    const marcacoes = {};
+    events.forEach(ev => {
+      marcacoes[ev.date] = { marked: true, dotColor: getEventStatusColor(ev.date) };
+    });
+    if (selected) {
+      marcacoes[selected] = { ...marcacoes[selected], selected: true, selectedColor: '#1459b3' };
+    }
+    return marcacoes;
+  };
+
   return (
-    <View style={styles.container}>
-      <Header nomeTela={"Calendário"} />
+    // 3. MESCLANDO O ESTILO EXTERNO COM O FUNDO DINÂMICO
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Header nomeTela={"Calendário"} temGoBack={true} carregando={loading} />
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
-        <View style={styles.calendarContainer}>
-          <Calendar
-            onDayPress={day => handleOpenEvent(day.dateString)}
-            markedDates={{
-              [selected]: { selected: true, selectedColor: '#1459b3' },
-              '2026-05-10': { marked: true, dotColor: '#4CAF50' },
-              '2026-05-01': { marked: true, dotColor: '#FFD700' },
-            }}
-            theme={{
-              // Círculo azul no dia de hoje
-              todayBackgroundColor: '#1459b3',
-              todayTextColor: '#ffffff',
-              arrowColor: '#1459b3',
-              monthTextColor: '#1459b3',
-              textMonthFontWeight: 'bold',
-              selectedDayBackgroundColor: '#1459b3',
-            }}
-          />
+      {isProfessor && (
+        <TouchableOpacity style={styles.fab} onPress={() => setModalAddVisible(true)}>
+          <Ionicons name="add" size={28} color="white" />
+        </TouchableOpacity>
+      )}
+
+      {loading ? (
+        <View style={{ flex: 1, padding: 20 }}>
+          <Skeleton width="100%" height={220} borderRadius={20} style={{ marginBottom: 16 }} />
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={90} borderRadius={18} style={{ marginBottom: 16 }} />
+          ))}
         </View>
+      ) : (
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
 
-        <View style={styles.eventSection}>
-          <Text style={styles.eventSectionTitle}>Eventos do Mês</Text>
-          
-          {events.map(event => {
-            const statusColor = getEventStatusColor(event.date);
-            return (
-              <TouchableOpacity 
-                key={event.id} 
-                style={styles.eventCard} 
-                onPress={() => handleOpenEvent(event.date)}
-              >
-                <View style={[styles.dateBadge, { borderColor: statusColor }]}>
-                   <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
-                      <Text style={styles.monthText}>{event.month}</Text>
-                   </View>
-                   <View style={styles.dateBadgeBottom}>
-                      <Text style={[styles.dayText, { color: '#333' }]}>{event.day}</Text>
-                   </View>
-                </View>
+          <View style={styles.calendarContainer}>
+            <Calendar
+              onDayPress={day => handleOpenEvent(day.dateString)}
+              markedDates={mapearMarcacoesCalendario()}
+              // 4. ADAPTANDO AS CORES DO COMPONENTE CALENDÁRIO AO MODO ESCURO
+              theme={{
+                calendarBackground: theme.card,
+                textSectionTitleColor: theme.text,
+                dayTextColor: theme.text,
+                todayBackgroundColor: '#1459b3',
+                todayTextColor: '#ffffff',
+                arrowColor: '#1459b3',
+                monthTextColor: '#1459b3',
+                textMonthFontWeight: 'bold',
+                selectedDayBackgroundColor: '#1459b3',
+              }}
+            />
+          </View>
 
-                <View style={styles.eventInfo}>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
-                  <Text style={styles.eventTimeInfo}>
-                    <Ionicons name="time-outline" size={12} /> {event.time} • {event.local}
-                  </Text>
-                </View>
-                <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </ScrollView>
+          <View style={styles.eventSection}>
+            <Text style={[styles.eventSectionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>
+              Eventos Cadastrados
+            </Text>
 
-      {/* MODAL DE DETALHES */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+            {events.length === 0 ? (
+              <Text style={{ textAlign: 'center', color: '#94A3B8', marginTop: 20, fontStyle: 'italic', fontSize: 14 * fontSizeScale }}>
+                Nenhum evento agendado no momento.
+              </Text>
+            ) : (
+              events.map(event => {
+                const statusColor = getEventStatusColor(event.date);
+                const infoData = obterInfoData(event.date);
+
+                return (
+                  <TouchableOpacity
+                    key={event.id}
+                    // 5. MUDANDO O FUNDO E BORDA DO CARD DINAMICAMENTE
+                    style={[styles.eventCard, { backgroundColor: theme.card, borderColor: theme.border }]}
+                    onPress={() => handleOpenEvent(event.date)}
+                  >
+                    <View style={[styles.dateBadge, { borderColor: statusColor }]}>
+                      <View style={[styles.dateBadgeTop, { backgroundColor: statusColor }]}>
+                        <Text style={styles.monthText}>{infoData.mes}</Text>
+                      </View>
+                      <View style={[styles.dateBadgeBottom, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.dayText, { color: theme.text }]}>{infoData.dia}</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.eventInfo}>
+                      <Text style={[styles.eventTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]} numberOfLines={1}>
+                        {event.title}
+                      </Text>
+                      <Text style={[styles.eventTimeInfo, { color: '#94A3B8', fontSize: 14 * fontSizeScale }]}>
+                        <Ionicons name="time-outline" size={14 * fontSizeScale} /> {event.time} • {event.local}
+                      </Text>
+                    </View>
+                    <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </View>
+        </ScrollView>
+      )}
+
+      {/* Modal de Cadastro/Edição */}
+      <Modal visible={modalAddVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+            <View style={[styles.modalHeader, { backgroundColor: '#1459b3' }]}>
+              <Text style={[styles.modalTitle, { fontSize: 20 * fontSizeScale }]}>
+                {novoEvento.id ? "Editar Evento" : "Novo Evento"}
+              </Text>
+              <TouchableOpacity onPress={() => {
+                setNovoEvento({ title: '', date: '', time: '', local: '', description: '' });
+                setModalAddVisible(false);
+              }}>
+                <Ionicons name="close-circle" size={30} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              {/* Adaptando os TextInputs para não ficarem invisíveis no Modo Escuro */}
+              <TextInput
+                value={novoEvento.title}
+                placeholder="Nome do evento"
+                placeholderTextColor="#94A3B8"
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.background,
+                    color: theme.text,
+                    fontSize: 16 * fontSizeScale,
+                  },
+                ]}
+                onChangeText={t => setNovoEvento({ ...novoEvento, title: t })}
+              />
+
+              <MaskInput
+                value={novoEvento.date}
+                onChangeText={(masked) =>
+                  setNovoEvento({ ...novoEvento, date: masked })
+                }
+                mask={[/\d/, /\d/, "/", /\d/, /\d/, "/", /\d/, /\d/, /\d/, /\d/]}
+                placeholder="DD/MM/AAAA"
+                placeholderTextColor="#94A3B8"
+                keyboardType="numeric"
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.background,
+                    color: theme.text,
+                    fontSize: 16 * fontSizeScale,
+                  },
+                ]}
+              />
+
+              <MaskInput
+                value={novoEvento.time}
+                onChangeText={(masked) =>
+                  setNovoEvento({ ...novoEvento, time: masked })
+                }
+                mask={[/\d/, /\d/, ":", /\d/, /\d/]}
+                placeholder="HH:MM"
+                placeholderTextColor="#94A3B8"
+                keyboardType="numeric"
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.background,
+                    color: theme.text,
+                    fontSize: 16 * fontSizeScale,
+                  },
+                ]}
+              />
+              <TextInput
+                value={novoEvento.local}
+                placeholder="Local"
+                placeholderTextColor="#94A3B8"
+                style={[styles.input, { backgroundColor: theme.background, color: theme.text, fontSize: 16 * fontSizeScale }]}
+                onChangeText={t => setNovoEvento({ ...novoEvento, local: t })}
+              />
+              <TextInput
+                value={novoEvento.description}
+                placeholder="Descrição"
+                placeholderTextColor="#94A3B8"
+                style={[styles.input, { height: 80, textAlignVertical: 'top', backgroundColor: theme.background, color: theme.text, fontSize: 16 * fontSizeScale }]}
+                multiline
+                onChangeText={t => setNovoEvento({ ...novoEvento, description: t })}
+              />
+
+              <TouchableOpacity style={styles.saveBtn} onPress={handleSalvar}>
+                <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal de Detalhes */}
+      <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
             <View style={[styles.modalHeader, { backgroundColor: eventSelected ? getEventStatusColor(eventSelected.date) : '#1459b3' }]}>
-              <Text style={styles.modalTitle}>{eventSelected?.title}</Text>
+              <Text style={[styles.modalTitle, { fontSize: 20 * fontSizeScale }]}>{eventSelected?.title}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Ionicons name="close-circle" size={30} color="white" />
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.modalBody}>
               <View style={styles.modalInfoRow}>
-                <Ionicons name="calendar-outline" size={20} color="#1459b3" />
-                <Text style={styles.modalInfoText}>Data: {eventSelected?.date.split('-').reverse().join('/')}</Text>
+                <Ionicons name="calendar-outline" size={20 * fontSizeScale} color="#1459b3" />
+                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Data: {eventSelected?.date.split('-').reverse().join('/')}</Text>
               </View>
               <View style={styles.modalInfoRow}>
-                <Ionicons name="time-outline" size={20} color="#1459b3" />
-                <Text style={styles.modalInfoText}>Horário: {eventSelected?.time}</Text>
+                <Ionicons name="time-outline" size={20 * fontSizeScale} color="#1459b3" />
+                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Horário: {eventSelected?.time}</Text>
               </View>
               <View style={styles.modalInfoRow}>
-                <Ionicons name="location-outline" size={20} color="#1459b3" />
-                <Text style={styles.modalInfoText}>Local: {eventSelected?.local}</Text>
+                <Ionicons name="location-outline" size={20 * fontSizeScale} color="#1459b3" />
+                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Local: {eventSelected?.local}</Text>
               </View>
-              
-              <Text style={styles.descriptionTitle}>Descrição:</Text>
-              <Text style={styles.descriptionText}>{eventSelected?.description}</Text>
-              
-              <TouchableOpacity 
-                style={styles.closeButton} 
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>Fechar</Text>
-              </TouchableOpacity>
+
+              <Text style={[styles.descriptionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>Descrição:</Text>
+              <Text style={[styles.descriptionText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{eventSelected?.description || "Sem descrição informada."}</Text>
+
+              {isProfessor && parseInt(idUsuarioLogado) === parseInt(eventSelected?.usuario_id) && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+                  <TouchableOpacity
+                    style={[styles.closeButton, { backgroundColor: '#FF9800', flex: 0.48 }]}
+                    onPress={() => habilitarEdicao(eventSelected)}
+                  >
+                    <Text style={[styles.closeButtonText, { fontSize: 16 * fontSizeScale }]}>Editar</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.closeButton, { backgroundColor: '#d32f2f', flex: 0.48 }]}
+                    onPress={() => confirmarExclusao(eventSelected.id)}
+                  >
+                    <Text style={[styles.closeButtonText, { fontSize: 16 * fontSizeScale }]}>Excluir</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           </View>
         </View>

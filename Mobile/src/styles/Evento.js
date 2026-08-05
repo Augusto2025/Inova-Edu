@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import { COLORS } from "../components/Cores";
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: COLORS.backgroundCard },
   calendarContainer: { backgroundColor: '#FFF', margin: 15, borderRadius: 20, padding: 10, elevation: 4 },
   eventSection: { paddingHorizontal: 20 },
   eventSectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: COLORS.primary },
@@ -36,7 +36,41 @@ const styles = StyleSheet.create({
   descriptionTitle: { fontWeight: 'bold', marginTop: 15, fontSize: 16, color: '#333' },
   descriptionText: { marginTop: 5, fontSize: 14, color: '#666', lineHeight: 20 },
   closeButton: { backgroundColor: '#1459b3', marginTop: 20, padding: 12, borderRadius: 10, alignItems: 'center' },
-  closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 }
+  closeButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  saveBtn: {
+    backgroundColor: '#1459b3',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveBtnText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#1469b3',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 10,
+    zIndex: 999,  
+},
 });
 
 export default styles;

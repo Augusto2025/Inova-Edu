@@ -12,7 +12,7 @@ import CursosScreen from '../screens/Cursos';
 import TurmasScreen from '../screens/Turmas';
 import ProjetosScreen from '../screens/Projetos';
 import RepositorioScreen from '../screens/Repositorio';
-import TituloScreen from '../screens/Titulo';
+import TituloScreen from '../screens/Topico';
 import ConversaScreen from '../screens/Conversa';
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from '../screens/Perfil';
@@ -23,6 +23,9 @@ const Tab = createBottomTabNavigator();
 export default function TabRoutes() {
   return (
     <Tab.Navigator
+      // 🆕 Garante que, ao entrar no "Main" (logo após o login), a tela inicial seja a Home,
+      // independente da ordem em que as abas aparecem na barra abaixo.
+      initialRouteName="Home"
       backBehavior="history"
       screenOptions={({ route }) => ({
         headerShown: false,

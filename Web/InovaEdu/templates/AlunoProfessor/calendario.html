@@ -3,17 +3,19 @@
 
 {% block content %}
   <link rel="stylesheet" href="{% static 'styles/calendario.css' %}" />
+  <link rel="stylesheet" href="{% static 'styles/global.css' %}">
   
   {% include "partials/header.html" %}
 
-  {% comment %} <div class="rota">Página: Calendário</div> {% endcomment %}
-
+  {% include "partials/menssagem.html" %}
+  
   <section class="calendar-container">
-    <!-- Sidebar com meses -->
+
+    <!-- Sidebar com meses (Mini-Painel Lateral) -->
     <aside class="sidebar">
       <div class="year-controls">
         <button id="prev-year">&lt;</button>
-        <span id="year-display">2025</span>
+        <span id="year-display">2026</span>
         <button id="next-year">&gt;</button>
       </div>
 
@@ -54,7 +56,7 @@
       </footer>
     </main>
 
-    <!-- Eventos do mês -->
+    <!-- Eventos do mês (Painel de Timeline de Agendas) -->
     <section class="event-panel">
       <h3>Eventos do mês</h3>
       <div id="event-list">
@@ -63,24 +65,62 @@
     </section>
   </section>
 
-  <!-- MODAL -->
+  <!-- MODAL DE EVENTO -->
   <div id="eventModal" class="modal hidden">
     <div class="modal-content">
 
+      <!-- Cabeçalho Azul com Ícone -->
       <div class="modal-header">
-        <h2 id="modal-nome"></h2>
-        <span class="modal-close">&times;</span>
+        <div class="modal-header-title">
+          <i class="fa-solid fa-calendar-check header-icon"></i>
+          <h2 id="modal-nome">Detalhes do Evento</h2>
+        </div>
+        <button type="button" class="modal-close" onclick="closeEventModal()">&times;</button>
       </div>
+
+      <!-- Corpo Branco com Ícones nos Rótulos -->
       <div class="modal-body">
-        <p><strong>Data:</strong> <span id="modal-date"></span></p>
-        <p><strong>Horário:</strong> <span id="modal-hour"></span></p>
-        <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
-        <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
-        <div id="modal-footer-btns" class="hidden" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-          <button id="btn-editar-evento" class="btn-create" style="background: orange;width: 96%;border: none;">Editar</button>
-          <a id="btn-excluir-evento" href="#" class="btn-create" style="background: red;" onclick="return confirm('Excluir evento?')">Excluir</a>
+        <div class="modal-info-group">
+          <div class="modal-info-item">
+            <span class="info-label">
+              <i class="fa-regular fa-calendar-days"></i> Data
+            </span>
+            <span id="modal-date" class="info-value"></span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="info-label">
+              <i class="fa-regular fa-clock"></i> Horário
+            </span>
+            <span id="modal-hour" class="info-value"></span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="info-label">
+              <i class="fa-solid fa-align-left"></i> Descrição
+            </span>
+            <span id="modal-descricao" class="info-value"></span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="info-label">
+              <i class="fa-solid fa-location-dot"></i> Endereço
+            </span>
+            <span id="modal-endereco" class="info-value"></span>
+          </div>
+        </div>
+
+        <!-- Botões de Ação com Ícones -->
+        <div id="modal-footer-btns" class="modal-footer hidden">
+          <button type="button" id="btn-editar-evento" class="btn-modal btn-edit" onclick="openEditEventModal()">
+            <i class="fa-solid fa-pen-to-square"></i> Editar
+          </button>
+          <button type="button" id="btn-excluir-evento" class="btn-modal btn-delete" onclick="confirmDeleteEvent()">
+            <i class="fa-solid fa-trash-can"></i> Excluir
+          </button>
         </div>
       </div>
+
     </div>
   </div>
 

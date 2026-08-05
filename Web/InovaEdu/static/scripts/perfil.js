@@ -1,21 +1,28 @@
 // perfil.js
-console.log('Script do perfil carregado!');
 
 // Pegar o token CSRF
-const csrftoken = document.getElementById('csrf-token').value;
+const csrftokenElement = document.getElementById('csrf-token');
+const csrftoken = csrftokenElement ? csrftokenElement.value : getCookie('csrftoken');
 
-// Configuração para requisições AJAX
+// Configuração padrão para requisições AJAX JSON
 const headers = {
     'X-CSRFToken': csrftoken,
     'Content-Type': 'application/json',
 };
 
-// Elementos do DOM
+// Variáveis de controle de Estado da Foto
+let removerFotoFlag = false;
+let fotoOriginalUrl = '';
+
+// Elementos Globais do DOM
 const loadingOverlay = document.getElementById('loading-overlay');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 
-// Funções de utilidade
+// =========================
+// FUNÇÕES UTILITÁRIAS
+// =========================
+
 function showLoading() {
     if (loadingOverlay) loadingOverlay.classList.add('active');
 }
@@ -39,139 +46,175 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Funções do Perfil
-function openProfileModal() {
-    console.log('Abrindo modal de perfil');
-    const modal = document.getElementById('profile-modal');
-    if (modal) {
-        modal.classList.add('active');
+function setButtonLoading(btn, isLoading, loadingText = 'Salvar') {
+    if (!btn) return;
+    if (isLoading) {
+        btn.dataset.originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}...`;
     } else {
-        console.error('Modal de perfil não encontrado');
+        btn.disabled = false;
+        if (btn.dataset.originalHtml) {
+            btn.innerHTML = btn.dataset.originalHtml;
+        }
     }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// =========================
+// PERFIL & FOTO DE PERFIL
+// =========================
+
+function openProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    const preview = document.getElementById('edit-profile-photo-preview');
+    
+    if (preview) {
+        fotoOriginalUrl = preview.src;
+    }
+    
+    removerFotoFlag = false;
+    if (modal) modal.classList.add('active');
 }
 
 function closeProfileModal() {
     const modal = document.getElementById('profile-modal');
+    const preview = document.getElementById('edit-profile-photo-preview');
+    const inputFoto = document.getElementById('edit-foto-input');
+    const checkSenha = document.getElementById('toggle-change-password');
+    const passwordFields = document.getElementById('password-fields');
+
+    // Restaura preview original e reseta os campos de senha
+    if (preview && fotoOriginalUrl) preview.src = fotoOriginalUrl;
+    if (inputFoto) inputFoto.value = '';
+    if (checkSenha) checkSenha.checked = false;
+    if (passwordFields) passwordFields.style.display = 'none';
+
+    const editSenhaAtual = document.getElementById('edit-senha-atual');
+    const editNovaSenha = document.getElementById('edit-nova-senha');
+    if (editSenhaAtual) editSenhaAtual.value = '';
+    if (editNovaSenha) editNovaSenha.value = '';
+
+    removerFotoFlag = false;
+
     if (modal) modal.classList.remove('active');
 }
 
-async function saveProfile() {
-    console.log('=== saveProfile iniciado ===');
-    
-    const nome = document.getElementById('edit-nome')?.value.trim();
-    const sobrenome = document.getElementById('edit-sobrenome')?.value.trim();
-    const bio = document.getElementById('edit-bio')?.value.trim();
-
-    console.log('Dados do formulário:', { nome, sobrenome, bio });
-
-    if (!nome || !sobrenome) {
-        console.log('Erro: nome ou sobrenome vazio');
-        showToast('Nome e sobrenome são obrigatórios!', 'error');
-        return;
-    }
-
-    showLoading();
-
-    try {
-        const url = '/api/atualizar-perfil/';
-        console.log('Fazendo POST para:', url);
-        console.log('Headers:', headers);
-        console.log('Body:', JSON.stringify({ nome, sobrenome, bio }));
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                nome: nome,
-                sobrenome: sobrenome,
-                bio: bio
-            })
-        });
-
-        console.log('Resposta status:', response.status);
-        console.log('Resposta headers:', response.headers);
-        
-        const responseText = await response.text();
-        console.log('Resposta texto:', responseText);
-        
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (e) {
-            console.error('Erro ao parsear JSON:', e);
-            console.log('Resposta não é JSON válido');
-            showToast('Erro no servidor. Verifique o console.', 'error');
-            hideLoading();
-            return;
+function togglePasswordFields() {
+    const checkbox = document.getElementById('toggle-change-password');
+    const fields = document.getElementById('password-fields');
+    if (checkbox && fields) {
+        fields.style.display = checkbox.checked ? 'block' : 'none';
+        if (!checkbox.checked) {
+            const editSenhaAtual = document.getElementById('edit-senha-atual');
+            const editNovaSenha = document.getElementById('edit-nova-senha');
+            if (editSenhaAtual) editSenhaAtual.value = '';
+            if (editNovaSenha) editNovaSenha.value = '';
         }
-
-        console.log('Resposta data:', data);
-
-        if (response.ok) {
-            const profileName = document.getElementById('profile-name');
-            const profileBio = document.getElementById('profile-bio');
-            
-            if (profileName) profileName.textContent = nome + ' ' + sobrenome;
-            if (profileBio) profileBio.textContent = bio || 'Sem descrição cadastrada.';
-            
-            closeProfileModal();
-            showToast('Perfil atualizado com sucesso!');
-        } else {
-            showToast(data.message || 'Erro ao salvar perfil', 'error');
-        }
-    } catch (error) {
-        console.error('Erro detalhado:', error);
-        console.log('Tipo do erro:', error.name);
-        console.log('Mensagem:', error.message);
-        showToast('Erro ao salvar perfil. Tente novamente.', 'error');
-    } finally {
-        hideLoading();
     }
 }
 
-async function updateProfilePhoto(event) {
-    console.log('=== updateProfilePhoto iniciado ===');
+// Preview local da imagem selecionada (sem enviar para o backend ainda)
+function updateProfilePhoto(event) {
+    const fileInput = event.target;
+    const file = fileInput.files[0];
     
-    const file = event.target.files[0];
-    
-    if (!file) {
-        console.log('Nenhum arquivo selecionado');
-        return;
-    }
-    
-    console.log('Arquivo selecionado:', {
-        nome: file.name,
-        tipo: file.type,
-        tamanho: file.size + ' bytes'
-    });
+    if (!file) return;
     
     if (!file.type.startsWith('image/')) {
-        console.log('Tipo de arquivo inválido:', file.type);
         showToast('Por favor, selecione uma imagem válida!', 'error');
+        fileInput.value = '';
         return;
     }
     
     if (file.size > 5 * 1024 * 1024) {
-        console.log('Arquivo muito grande:', file.size);
         showToast('A imagem deve ter no máximo 5MB!', 'error');
+        fileInput.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const editPreview = document.getElementById('edit-profile-photo-preview');
+        if (editPreview) editPreview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    
+    removerFotoFlag = false;
+}
+
+// Marca a foto para remoção e exibe a imagem padrão temporariamente
+function removeProfilePhoto() {
+    const editPreview = document.getElementById('edit-profile-photo-preview');
+    const inputFoto = document.getElementById('edit-foto-input');
+    
+    if (editPreview) editPreview.src = '/static/img/default_user.png';
+    if (inputFoto) inputFoto.value = '';
+    
+    removerFotoFlag = true;
+}
+
+async function saveProfile() {
+    const btnSave = document.querySelector('#profile-modal .save-btn');
+    if (btnSave && btnSave.disabled) return;
+
+    const email = document.getElementById('edit-email')?.value.trim();
+    const bio = document.getElementById('edit-bio')?.value.trim();
+    const querTrocarSenha = document.getElementById('toggle-change-password')?.checked;
+    const senhaAtual = document.getElementById('edit-senha-atual')?.value;
+    const novaSenha = document.getElementById('edit-nova-senha')?.value;
+    const fotoInput = document.getElementById('edit-foto-input');
+
+    if (!email) {
+        showToast('O e-mail é obrigatório!', 'error');
+        return;
+    }
+
+    if (querTrocarSenha && (!senhaAtual || !novaSenha)) {
+        showToast('Preencha a senha atual e a nova senha.', 'error');
         return;
     }
 
     const formData = new FormData();
-    formData.append('foto', file);
+    formData.append('email', email);
+    formData.append('bio', bio);
 
-    console.log('FormData criado');
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
+    // Garante o envio dos campos ocultos de nome e sobrenome para validação do backend
+    const nomeInput = document.getElementById('edit-nome');
+    const sobrenomeInput = document.getElementById('edit-sobrenome');
+    if (nomeInput) formData.append('nome', nomeInput.value);
+    if (sobrenomeInput) formData.append('sobrenome', sobrenomeInput.value);
+
+    if (querTrocarSenha) {
+        formData.append('senha_atual', senhaAtual);
+        formData.append('nova_senha', novaSenha);
     }
 
+    if (removerFotoFlag) {
+        formData.append('remover_foto', 'true');
+    } else if (fotoInput && fotoInput.files[0]) {
+        formData.append('foto', fotoInput.files[0]);
+    }
+
+    setButtonLoading(btnSave, true, 'Salvando');
     showLoading();
 
     try {
-        const url = '/api/upload-foto/';
-        console.log('Fazendo POST para:', url);
-        
-        const response = await fetch(url, {
+        const response = await fetch('/api/atualizar-perfil/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken
@@ -179,71 +222,58 @@ async function updateProfilePhoto(event) {
             body: formData
         });
 
-        console.log('Resposta status:', response.status);
-        console.log('Resposta headers:', response.headers);
-        
-        const responseText = await response.text();
-        console.log('Resposta texto:', responseText);
-        
-        let data;
-        try {
-            data = JSON.parse(responseText);
-        } catch (e) {
-            console.error('Erro ao parsear JSON:', e);
-            showToast('Erro no servidor. Verifique o console.', 'error');
-            hideLoading();
-            return;
-        }
-
-        console.log('Resposta data:', data);
+        const data = await response.json();
 
         if (response.ok) {
+            const profileBio = document.getElementById('profile-bio');
             const profilePhoto = document.getElementById('profile-photo');
-            if (profilePhoto) profilePhoto.src = data.foto_url;
-            showToast('Foto atualizada com sucesso!');
             
-            // Limpar o input para poder selecionar o mesmo arquivo novamente
-            event.target.value = '';
+            if (profileBio) profileBio.textContent = data.bio || 'Sem descrição cadastrada.';
+            if (profilePhoto && data.foto_url) profilePhoto.src = data.foto_url;
+            
+            closeProfileModal();
+            showToast(data.message || 'Perfil atualizado com sucesso!');
+            setTimeout(() => location.reload(), 1000);
         } else {
-            showToast(data.message || 'Erro ao fazer upload da foto', 'error');
+            showToast(data.message || 'Erro ao salvar perfil', 'error');
         }
     } catch (error) {
-        console.error('Erro detalhado:', error);
-        showToast('Erro ao fazer upload da foto. Tente novamente.', 'error');
+        showToast('Erro ao salvar perfil. Tente novamente.', 'error');
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
 
+// =========================
+// CURSOS
+// =========================
 
-// Funções de Cursos
 let currentCursoId = null;
 
 function openCursoModal() {
-    console.log('Abrindo modal de curso');
     currentCursoId = null;
     const modalTitle = document.getElementById('curso-modal-title');
     if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Curso';
     
-    document.getElementById('curso-nome').value = '';
-    document.getElementById('curso-descricao').value = '';
-    document.getElementById('curso-data-inicio').value = '';
-    document.getElementById('curso-data-fim').value = '';
+    if (document.getElementById('curso-nome')) document.getElementById('curso-nome').value = '';
+    if (document.getElementById('curso-descricao')) document.getElementById('curso-descricao').value = '';
+    if (document.getElementById('curso-data-inicio')) document.getElementById('curso-data-inicio').value = '';
+    if (document.getElementById('curso-data-fim')) document.getElementById('curso-data-fim').value = '';
     
     const modal = document.getElementById('curso-modal');
     if (modal) modal.classList.add('active');
 }
 
 function openEditCursoModal(id, nome, descricao, dataInicio, dataFim) {
-    console.log('Abrindo modal de edição de curso:', id);
     currentCursoId = id;
     const modalTitle = document.getElementById('curso-modal-title');
     if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-edit"></i> Editar Curso';
     
-    document.getElementById('curso-nome').value = nome || '';
-    document.getElementById('curso-descricao').value = descricao || '';
-    document.getElementById('curso-data-inicio').value = dataInicio || '';
-    document.getElementById('curso-data-fim').value = dataFim || '';
+    if (document.getElementById('curso-nome')) document.getElementById('curso-nome').value = nome || '';
+    if (document.getElementById('curso-descricao')) document.getElementById('curso-descricao').value = descricao || '';
+    if (document.getElementById('curso-data-inicio')) document.getElementById('curso-data-inicio').value = dataInicio || '';
+    if (document.getElementById('curso-data-fim')) document.getElementById('curso-data-fim').value = dataFim || '';
     
     const modal = document.getElementById('curso-modal');
     if (modal) modal.classList.add('active');
@@ -256,6 +286,9 @@ function closeCursoModal() {
 }
 
 async function saveCurso() {
+    const btnSave = document.querySelector('#curso-modal .save-btn') || document.querySelector('#curso-modal button[type="submit"]');
+    if (btnSave && btnSave.disabled) return;
+
     const nome = document.getElementById('curso-nome')?.value.trim();
     const descricao = document.getElementById('curso-descricao')?.value.trim();
     const dataInicio = document.getElementById('curso-data-inicio')?.value;
@@ -266,6 +299,7 @@ async function saveCurso() {
         return;
     }
 
+    setButtonLoading(btnSave, true, 'Salvar');
     showLoading();
 
     try {
@@ -275,6 +309,7 @@ async function saveCurso() {
             method: method,
             headers: headers,
             body: JSON.stringify({
+                id: currentCursoId,
                 nome: nome,
                 descricao: descricao,
                 data_inicio: dataInicio || null,
@@ -286,116 +321,87 @@ async function saveCurso() {
 
         if (response.ok) {
             showToast(currentCursoId ? 'Curso atualizado com sucesso!' : 'Curso adicionado com sucesso!');
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
+            setTimeout(() => location.reload(), 1200);
         } else {
             showToast(data.message || 'Erro ao salvar curso', 'error');
-            hideLoading();
         }
     } catch (error) {
-        console.error('Erro:', error);
         showToast('Erro ao salvar curso. Tente novamente.', 'error');
-        hideLoading();
-    }
-}
-
-async function deleteCertificado(id) {
-
-    if (!confirm("Deseja excluir este certificado?")) return;
-
-    showLoading();
-
-    try {
-
-        const response = await fetch("/api/certificados/", {
-            method: "DELETE",
-            headers: headers,
-            body: JSON.stringify({
-                id: id
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            showToast("Certificado excluído!");
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            showToast(data.message || "Erro ao excluir", "error");
-        }
-
-    } catch (error) {
-        console.error(error);
-        showToast("Erro ao excluir certificado", "error");
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
-
-// Fechar modais com tecla ESC
 
 // =========================
 // CERTIFICADOS
 // =========================
 
 let currentCertificadoId = null;
+let certificadoParaExcluir = null;
 
 function openCertificadoModal() {
-
     currentCertificadoId = null;
 
-    document.getElementById("certificado-nome").value = "";
-    document.getElementById("certificado-descricao").value = "";
-    document.getElementById("certificado-data-inicio").value = "";
-    document.getElementById("certificado-data-fim").value = "";
+    if (document.getElementById("certificado-nome")) document.getElementById("certificado-nome").value = "";
+    if (document.getElementById("certificado-descricao")) document.getElementById("certificado-descricao").value = "";
+    if (document.getElementById("certificado-data-inicio")) document.getElementById("certificado-data-inicio").value = "";
+    if (document.getElementById("certificado-data-fim")) document.getElementById("certificado-data-fim").value = "";
 
-    document.getElementById("certificado-modal-title").innerHTML =
-        '<i class="fas fa-plus-circle"></i> Adicionar Certificado';
+    const titleElem = document.getElementById("certificado-modal-title");
+    if (titleElem) {
+        titleElem.innerHTML = '<i class="fas fa-plus-circle"></i> Adicionar Certificado';
+    }
 
-    document.getElementById("certificado-modal").classList.add("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.add("active");
 }
 
 function closeCertificadoModal() {
-    document.getElementById("certificado-modal").classList.remove("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.remove("active");
 }
 
 function openEditCertificadoModal(id, nome, descricao, inicio, fim) {
-
     currentCertificadoId = id;
 
-    document.getElementById("certificado-nome").value = nome || "";
-    document.getElementById("certificado-descricao").value = descricao || "";
-    document.getElementById("certificado-data-inicio").value = inicio || "";
-    document.getElementById("certificado-data-fim").value = fim || "";
+    if (document.getElementById("certificado-nome")) document.getElementById("certificado-nome").value = nome || "";
+    if (document.getElementById("certificado-descricao")) document.getElementById("certificado-descricao").value = descricao || "";
+    if (document.getElementById("certificado-data-inicio")) document.getElementById("certificado-data-inicio").value = inicio || "";
+    if (document.getElementById("certificado-data-fim")) document.getElementById("certificado-data-fim").value = fim || "";
 
-    document.getElementById("certificado-modal-title").innerHTML =
-        '<i class="fas fa-edit"></i> Editar Certificado';
+    const titleElem = document.getElementById("certificado-modal-title");
+    if (titleElem) {
+        titleElem.innerHTML = '<i class="fas fa-edit"></i> Editar Certificado';
+    }
 
-    document.getElementById("certificado-modal").classList.add("active");
+    const modal = document.getElementById("certificado-modal");
+    if (modal) modal.classList.add("active");
 }
 
 async function saveCertificado() {
+    const btnSave = document.querySelector('#certificado-modal .save-btn') || document.querySelector('#certificado-modal button[type="submit"]');
+    if (btnSave && btnSave.disabled) return;
 
-    const nome = document.getElementById("certificado-nome").value.trim();
-    const descricao = document.getElementById("certificado-descricao").value.trim();
-    const dataInicio = document.getElementById("certificado-data-inicio").value;
-    const dataFim = document.getElementById("certificado-data-fim").value;
+    const nome = document.getElementById("certificado-nome")?.value.trim();
+    const descricao = document.getElementById("certificado-descricao")?.value.trim();
+    const dataInicio = document.getElementById("certificado-data-inicio")?.value;
+    const dataFim = document.getElementById("certificado-data-fim")?.value;
 
     if (!nome) {
         showToast("Digite o nome do certificado", "error");
         return;
     }
 
+    setButtonLoading(btnSave, true, 'Salvando');
     showLoading();
 
     try {
-
         const response = await fetch("/api/certificados/", {
             method: "POST",
             headers: headers,
             body: JSON.stringify({
-                id: currentCertificadoId,   // 👈 envia o ID se for edição
+                id: currentCertificadoId,
                 nome: nome,
                 descricao: descricao,
                 data_inicio: dataInicio,
@@ -408,35 +414,83 @@ async function saveCertificado() {
         if (response.ok) {
             showToast("Certificado salvo!");
             setTimeout(() => location.reload(), 1200);
+        } else {
+            showToast(data.message || "Erro ao salvar certificado", "error");
         }
 
     } catch (error) {
-        console.error(error);
-        showToast("Erro ao salvar", "error");
+        showToast("Erro ao salvar certificado", "error");
     } finally {
+        setButtonLoading(btnSave, false);
         hideLoading();
     }
 }
 
-let certificadoParaExcluir = null;
-
 function openDeleteModal(id, nome) {
-
     certificadoParaExcluir = id;
+    const nameElem = document.getElementById("certificado-nome-delete");
+    if (nameElem) nameElem.innerText = nome;
 
-    document.getElementById("certificado-nome-delete").innerText = nome;
-
-    document.getElementById("confirm-delete-modal").style.display = "flex";
+    const modal = document.getElementById("confirm-delete-modal");
+    if (modal) modal.classList.add("active");
 }
 
 function closeDeleteModal() {
-    document.getElementById("confirm-delete-modal").style.display = "none";
+    const modal = document.getElementById("confirm-delete-modal");
+    if (modal) modal.classList.remove("active");
+    certificadoParaExcluir = null;
 }
 
-function confirmDeleteCertificado() {
+async function confirmDeleteCertificado() {
+    if (!certificadoParaExcluir) return;
 
-    deleteCertificado(certificadoParaExcluir);
+    const btnDelete = document.querySelector('#confirm-delete-modal .delete-btn') || document.querySelector('#confirm-delete-modal button[type="submit"]');
+    if (btnDelete && btnDelete.disabled) return;
 
-    closeDeleteModal();
+    setButtonLoading(btnDelete, true, 'Excluindo');
+    showLoading();
+
+    try {
+        const response = await fetch("/api/certificados/", {
+            method: "DELETE",
+            headers: headers,
+            body: JSON.stringify({
+                id: certificadoParaExcluir
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showToast("Certificado excluído!");
+            closeDeleteModal();
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast(data.message || "Erro ao excluir", "error");
+        }
+
+    } catch (error) {
+        showToast("Erro ao excluir certificado", "error");
+    } finally {
+        setButtonLoading(btnDelete, false);
+        hideLoading();
+    }
 }
 
+// =========================
+// EVENT LISTENERS GLOBAIS
+// =========================
+
+window.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+    }
+});
+
+window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+});

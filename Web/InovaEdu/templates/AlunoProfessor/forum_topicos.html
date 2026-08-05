@@ -2,149 +2,314 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
     <link rel="stylesheet" href="{% static 'styles/forum_topicos.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
     {% include "partials/header.html" %}
 
-    <div class="barra-topo">
-        <div class="rota" style="display: flex; justify-content: space-between; align-items: center;">
-            <p>
-                Página:
-                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a> >
-                {{ forum.nome }}
-            </p>
-            <div class="acoes-topo">
-                <button id="abrirModalTopico" class="botao-criar-forum" type="button">
-                    + Criar Tópico
+    <div class="container">
+
+        {% include "partials/menssagem.html" %}
+        
+        <header class="section-header">
+            <div class="rota">
+                <span>Página:</span>
+                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a>
+                <span>></span>
+                <span>{{ forum.nome }}</span>
+            </div>
+            
+            <div class="header-top-bar">
+                <div class="titulo">
+                    <h1 class="main-title">Tópicos: {{ forum.nome }}</h1>
+                </div>
+                <!-- BOTÃO DE NOVO TÓPICO COM VERIFICAÇÃO DE LIMITE -->
+                <button id="abrirModalTopico" 
+                        class="btn-criar-topico" 
+                        type="button" 
+                        data-atingiu-limite="{% if total_meus_topicos >= 3 %}true{% else %}false{% endif %}">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Novo Tópico</span>
                 </button>
             </div>
+        </header>
+
+        <section class="search-container">
+            <form method="get" action="{% url 'forum_topicos' forum.idforum %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder="Digite o nome do Tópico..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+            </form>
+        </section>
+    </div> 
+
+    <main class="container">
+    
+        <!-- ================= SEÇÃO 1: MEUS TÓPICOS ================= -->
+        <div class="section-title-divider">
+            <i class="fa-solid fa-user-gear"></i>
+            <h2>Meus Tópicos</h2>
         </div>
-    </div>
 
-    <div class="titulo">
-        <p>Tópicos do fórum</p>
-    </div>
+        <div class="lista-topicos" id="sec-meus-topicos">
+            <!-- MENSAGEM AMIGÁVEL SE NÃO HOUVER MEUS TÓPICOS -->
+            <div class="no-results" id="msg-sem-meus-topicos" style="display: none;">
+                <i class="fa-regular fa-folder-open no-results-icon"></i>
+                <p>Você ainda não criou nenhum tópico neste fórum.</p>
+                <p>Clique em <strong>"Novo Tópico"</strong> no topo para iniciar sua primeira discussão!</p>
+            </div>
 
-    <div class="grid-topicos">
-        {% if topicos %}
             {% for topico in topicos %}
-                <div class="card-topico">
-                    <div class="card-content">
-                        <h3 class="titulo-topico">{{ topico.titulo }}</h3>
-                        {% if topico.descricao %}
-                            <p class="resumo-topico">{{ topico.descricao }}</p>
-                        {% endif %}
-                    </div>
+                {% if request.session.usuario_email == topico.usuario.email %}
+                    <article class="item-topico card-meu-topico">
+                        <div class="topico-info">
+                            <div class="topico-icon">
+                                <i class="fa-regular fa-comments"></i>
+                            </div>
+                            <div class="topico-detalhes">
+                                <h3 class="titulo-topico">
+                                    <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}">
+                                        {{ topico.titulo }}
+                                    </a>
+                                </h3>
+                                {% if topico.descricao %}
+                                    <p class="resumo-topico">{{ topico.descricao }}</p>
+                                {% endif %}
 
-                    <div style="display: flex; flex-direction: column; justify-content: center;"> 
-                        <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
-                            Entrar na Conversa
-                        </a>
-        
-                        {% if request.session.usuario_email == topico.usuario.email %}
+                                <div class="topico-meta">
+                                    {% if topico.usuario %}
+                                        <span class="meta-pill">
+                                            <i class="fa-solid fa-user"></i>
+                                            {{ topico.usuario.nome|default:topico.usuario.email }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="topico-acoes-wrapper">
+                            <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                                Entrar na Conversa <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+
                             <div class="acoes-forum">
                                 <button class="btn-editar-topico"
                                         data-topico-id="{{ topico.idtopico }}"
                                         data-topico-titulo="{{ topico.titulo }}"
-                                        data-topico-descricao="{{ topico.descricao|default_if_none:'' }}">
+                                        data-topico-descricao="{{ topico.descricao|default_if_none:'' }}"
+                                        title="Editar Tópico">
                                     <i class="fas fa-pen"></i>
                                 </button>
                                 <button class="btn-excluir-topico"
-                                        data-topico-id="{{ topico.idtopico }}">
+                                        data-topico-id="{{ topico.idtopico }}"
+                                        title="Excluir Tópico">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                        {% endif %}
-                    </div>
-                </div>
+                        </div>
+                    </article>
+                {% endif %}
             {% endfor %}
-        {% else %}
-            <p class="sem-topicos">Nenhum tópico encontrado neste fórum.</p>
-        {% endif %}
-    </div>
+        </div>
 
-    <!-- MODAL CRIAR TÓPICO -->
+        <!-- ================= SEÇÃO 2: TÓPICOS DA COMUNIDADE ================= -->
+        <div class="section-title-divider" style="margin-top: 40px;">
+            <i class="fa-solid fa-users"></i>
+            <h2>Tópicos da Comunidade</h2>
+        </div>
+
+        <div class="lista-topicos" id="sec-comunidade-topicos">
+            <!-- MENSAGEM AMIGÁVEL SE NÃO HOUVER TÓPICOS DA COMUNIDADE -->
+            <div class="no-results" id="msg-sem-comunidade-topicos" style="display: none;">
+                <i class="fa-solid fa-users-slash no-results-icon"></i>
+                <p>Nenhum tópico da comunidade foi encontrado neste fórum.</p>
+                <p>Seja o primeiro a movimentar o fórum criando um novo tópico!</p>
+            </div>
+
+            {% for topico in topicos %}
+                {% if request.session.usuario_email != topico.usuario.email %}
+                    <article class="item-topico card-comunidade-topico">
+                        <div class="topico-info">
+                            <div class="topico-icon">
+                                <i class="fa-regular fa-comments"></i>
+                            </div>
+                            <div class="topico-detalhes">
+                                <h3 class="titulo-topico">
+                                    <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}">
+                                        {{ topico.titulo }}
+                                    </a>
+                                </h3>
+                                {% if topico.descricao %}
+                                    <p class="resumo-topico">{{ topico.descricao }}</p>
+                                {% endif %}
+
+                                <div class="topico-meta">
+                                    {% if topico.usuario %}
+                                        <span class="meta-pill">
+                                            <i class="fa-solid fa-user"></i>
+                                            {{ topico.usuario.nome|default:topico.usuario.email }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="topico-acoes-wrapper">
+                            <a href="{% url 'forum' forum.idforum %}?topico={{ topico.idtopico }}" class="botao-ver-topico">
+                                Entrar na Conversa <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Verifica se há Meus Tópicos e exibe a mensagem amigável caso esteja vazio
+            const meusTopicos = document.querySelectorAll('.card-meu-topico');
+            const msgMeusTopicos = document.getElementById('msg-sem-meus-topicos');
+            if (msgMeusTopicos) {
+                msgMeusTopicos.style.display = (meusTopicos.length === 0) ? 'flex' : 'none';
+            }
+
+            // Verifica se há Tópicos da Comunidade e exibe a mensagem amigável caso esteja vazio
+            const comunidadeTopicos = document.querySelectorAll('.card-comunidade-topico');
+            const msgComunidadeTopicos = document.getElementById('msg-sem-comunidade-topicos');
+            if (msgComunidadeTopicos) {
+                msgComunidadeTopicos.style.display = (comunidadeTopicos.length === 0) ? 'flex' : 'none';
+            }
+        });
+    </script>
+
+    <!-- MODAIS -->
+    
+    <!-- 1. MODAL CRIAR TÓPICO -->
     <div id="modalCriarTopico" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Criar novo tópico</h2>
-                {% comment %} <button id="fecharModalTopico" class="close-button">&times;</button> {% endcomment %}
+                <h2><i class="fa-solid fa-circle-plus"></i> Criar Tópico</h2>
+                <button type="button" class="modal-close" id="fecharModalCriar">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="formCriarTopico" method="POST" action="{% url 'criar_topico' forum.idforum %}">
                     {% csrf_token %}
                     <label>Título do tópico</label>
-                    <input name="titulo" required maxlength="100">
+                    <input name="titulo" required maxlength="50" placeholder="Ex: Dúvidas sobre a aula">
 
-                    <label>Descrição</label>
-                    <textarea name="descricao" maxlength="500" placeholder="Opcional"></textarea>
-
+                    <label>Descrição do tópico</label>
+                    <textarea name="descricao" maxlength="150" placeholder="Ex: Descreva o assunto da discussão"></textarea>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn-primary" form="formCriarTopico">Criar</button>
+                <button type="submit" form="formCriarTopico" class="btn-primary">Criar</button>
                 <button type="button" id="fecharModalTopico" class="btn-secondary">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL EDITAR TÓPICO -->
-    <div id="modalEditarTopico" class="modal-overlay">
+    <!-- 2. MODAL AVISO DE LIMITE DE TÓPICOS (NOVO) -->
+    <div id="modalLimiteTopicos" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Tópico</h2>
-                {% comment %} <button id="fecharModalEditarTopico" class="close-button">&times;</button> {% endcomment %}
+            <div class="modal-header" style="background-color: #f59e0b;">
+                <h2><i class="fa-solid fa-triangle-exclamation"></i> Limite Atingido</h2>
+                <button type="button" class="modal-close" id="fecharModalLimite">&times;</button>
             </div>
-            <div class="modal-body">
-                <form method="POST" id="formEditarTopico">
-                    {% csrf_token %}
-                    <label>Título do tópico</label>
-                    <input type="text" name="titulo" id="inputTituloTopico" required>
-
-                    <label>Descrição</label>
-                    <textarea name="descricao" id="inputDescricaoTopico" maxlength="500"></textarea>
-
-                </form>
+            <div class="modal-body" style="text-align: center; padding: 25px 20px;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 48px; color: #f59e0b; margin-bottom: 12px;"></i>
+                <p style="color: #4b5563; font-size: 1rem; line-height: 1.5;">
+                    Você já atingiu o limite máximo de <strong>3 tópicos</strong> neste fórum.
+                </p>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn-primary" form="formEditarTopico">Salvar</button>
-                <button type="button" id="fecharModalEditarTopico" class="btn-secondary">Cancelar</button>
+                <button type="button" id="btnEntendiLimite" class="btn-primary" style="background-color: #f59e0b;">Entendi</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL EXCLUIR TÓPICO -->
-    <div id="modalExcluirTopico" class="modal-overlay">
+    <!-- 3. MODAL EDITAR TÓPICO -->
+    <div id="modalEditarTopico" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Confirmar Exclusão</h2>
-                {% comment %} <button id="fecharModalExcluirTopico" class="close-button">&times;</button> {% endcomment %}
+                <h2><i class="fa-solid fa-pen-to-square"></i> Editar Tópico</h2>
+                <button type="button" class="modal-close" id="fecharModalEditar">&times;</button>
             </div>
-            <p class="modal-body">Tem certeza que deseja excluir este tópico?</p>
-            <form method="POST" id="formExcluirTopico">
-                {% csrf_token %}
-                <div class="modal-footer">
-                    <button type="submit" class="btn-primary">Sim, excluir</button>
-                    <button type="button" id="fecharModalExcluirTopico" class="btn-secondary">Cancelar</button>
-                </div>
-            </form>
+            <div class="modal-body">
+                <form method="POST" id="formEditarTopico">
+                    {% csrf_token %}
+                    <label>Título do Tópico:</label>
+                    <input type="text" name="titulo" id="inputTituloTopico" required maxlength="50">
+
+                    <label>Descrição do Tópico:</label>
+                    <textarea name="descricao" id="inputDescricaoTopico" maxlength="150"></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-primary" form="formEditarTopico">Salvar</button>
+                <button type="button" id="fecharModalEditarBtn" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODAL EXCLUIR TÓPICO (HEADER RED / DANGER) -->
+    <div id="modalExcluirTopico" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header header-danger">
+                <h2><i class="fa-solid fa-triangle-exclamation"></i> Excluir Tópico</h2>
+                <button type="button" class="modal-close" id="fecharModalExcluir">&times;</button>
+            </div>
+            <p style="padding: 15px 20px 0 20px; color: #555;">Tem certeza que deseja excluir este tópico?</p>
+            <div class="modal-body">
+                <form method="POST" id="formExcluirTopico">
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn-danger" form="formExcluirTopico">Sim, excluir</button>
+                <button type="button" id="fecharModalExcluirBtn" class="btn-secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // MODAL CRIAR
+        // --- BOTÃO E MODAIS DE CRIAÇÃO / LIMITE ---
         const abrirModal = document.getElementById('abrirModalTopico');
-        const fecharModal = document.getElementById('fecharModalTopico');
         const modalCriar = document.getElementById('modalCriarTopico');
+        const modalLimite = document.getElementById('modalLimiteTopicos');
 
-        abrirModal?.addEventListener('click', () => modalCriar.classList.add('open'));
-        fecharModal?.addEventListener('click', () => modalCriar.classList.remove('open'));
-        modalCriar?.addEventListener('click', e => { if (e.target === modalCriar) modalCriar.classList.remove('open'); });
+        if (abrirModal) {
+            abrirModal.addEventListener('click', () => {
+                const atingiuLimite = abrirModal.dataset.atingiuLimite === 'true';
+                if (atingiuLimite && modalLimite) {
+                    modalLimite.classList.add('open');
+                } else if (modalCriar) {
+                    modalCriar.classList.add('open');
+                }
+            });
+        }
 
-        // MODAL EDITAR / EXCLUIR
+        // Fechar Modal Criar
+        const fecharModalCriarX = document.getElementById('fecharModalCriar');
+        const fecharModalCriarBtn = document.getElementById('fecharModalTopico');
+        if (fecharModalCriarX && modalCriar) fecharModalCriarX.addEventListener('click', () => modalCriar.classList.remove('open'));
+        if (fecharModalCriarBtn && modalCriar) fecharModalCriarBtn.addEventListener('click', () => modalCriar.classList.remove('open'));
+
+        // Fechar Modal Limite
+        const fecharModalLimiteX = document.getElementById('fecharModalLimite');
+        const btnEntendiLimite = document.getElementById('btnEntendiLimite');
+        if (fecharModalLimiteX && modalLimite) fecharModalLimiteX.addEventListener('click', () => modalLimite.classList.remove('open'));
+        if (btnEntendiLimite && modalLimite) btnEntendiLimite.addEventListener('click', () => modalLimite.classList.remove('open'));
+
+        // --- MODAIS EDITAR E EXCLUIR ---
         const modalEditar = document.getElementById('modalEditarTopico');
         const modalExcluir = document.getElementById('modalExcluirTopico');
         const formEditar = document.getElementById('formEditarTopico');
@@ -154,28 +319,42 @@
 
         // EDITAR
         document.querySelectorAll('.btn-editar-topico').forEach(btn => {
-            btn.addEventListener('click', () => {
-                inputTitulo.value = btn.dataset.topicoTitulo;
-                inputDescricao.value = btn.dataset.topicoDescricao || '';
-                formEditar.action = `/topico/editar/${btn.dataset.topicoId}/`;
-                modalEditar.classList.add('open');
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (inputTitulo) inputTitulo.value = btn.dataset.topicoTitulo || '';
+                if (inputDescricao) inputDescricao.value = btn.dataset.topicoDescricao || '';
+                if (formEditar) formEditar.action = `/topico/editar/${btn.dataset.topicoId}/`;
+                if (modalEditar) modalEditar.classList.add('open');
             });
         });
 
         // EXCLUIR
         document.querySelectorAll('.btn-excluir-topico').forEach(btn => {
-            btn.addEventListener('click', () => {
-                formExcluir.action = `/topico/excluir/${btn.dataset.topicoId}/`;
-                modalExcluir.classList.add('open');
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (formExcluir) formExcluir.action = `/topico/excluir/${btn.dataset.topicoId}/`;
+                if (modalExcluir) modalExcluir.classList.add('open');
             });
         });
 
-        // FECHAR MODAIS
-        document.getElementById('fecharModalEditarTopico')?.addEventListener('click', () => modalEditar.classList.remove('open'));
-        document.getElementById('fecharModalExcluirTopico')?.addEventListener('click', () => modalExcluir.classList.remove('open'));
+        // FECHAR EDITAR
+        document.querySelectorAll('#fecharModalEditar, #fecharModalEditarBtn').forEach(btn => {
+            btn.addEventListener('click', () => modalEditar?.classList.remove('open'));
+        });
 
-        modalEditar?.addEventListener('click', e => { if (e.target === modalEditar) modalEditar.classList.remove('open'); });
-        modalExcluir?.addEventListener('click', e => { if (e.target === modalExcluir) modalExcluir.classList.remove('open'); });
+        // FECHAR EXCLUIR
+        document.querySelectorAll('#fecharModalExcluir, #fecharModalExcluirBtn').forEach(btn => {
+            btn.addEventListener('click', () => modalExcluir?.classList.remove('open'));
+        });
+
+        // FECHAR AO CLICAR FORA
+        [modalCriar, modalLimite, modalEditar, modalExcluir].forEach(modal => {
+            if (modal) {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) modal.classList.remove('open');
+                });
+            }
+        });
     });
     </script>
 

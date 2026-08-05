@@ -3,36 +3,49 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android"
+    "start": "set EXPO_NO_DOTSLASH=1 && expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.15.9",
     "@react-navigation/native": "^7.2.2",
     "@react-navigation/native-stack": "^7.14.10",
     "@react-navigation/stack": "^7.8.9",
+    "axios": "^1.18.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "expo": "~56.0.5",
-    "expo-build-properties": "~56.0.15",
-    "expo-file-system": "~56.0.7",
-    "expo-image-picker": "~56.0.14",
-    "expo-print": "~56.0.3",
-    "expo-sharing": "~56.0.14",
-    "expo-status-bar": "~56.0.4",
+    "expo": "^57.0.9",
+    "expo-build-properties": "~57.0.8",
+    "expo-file-system": "~57.0.1",
+    "expo-font": "~57.0.1",
+    "expo-image-picker": "~57.0.7",
+    "expo-print": "~57.0.1",
+    "expo-sharing": "~57.0.8",
+    "expo-speech": "~57.0.1",
+    "expo-status-bar": "~57.0.1",
     "express": "^5.2.1",
     "lucide-react": "^1.7.0",
     "pg": "^8.21.0",
     "react": "19.2.3",
-    "react-native": "0.85.3",
+    "react-native": "^0.86.2",
     "react-native-calendars": "^1.1314.0",
+    "react-native-gesture-handler": "~2.32.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-mask-input": "^1.2.3",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.2"
+    "react-native-screens": "~4.26.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "@types/jest": "29.5.14",
+    "expo-module-scripts": "^1.1.1",
+    "tsconfig-paths": "^4.2.0"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=20 <21 || >=22 <23"
+  }
 }

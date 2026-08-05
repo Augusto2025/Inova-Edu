@@ -137,3 +137,26 @@ class PerfilModel:
         finally:
             if cursor: cursor.close()
             if conexao: conexao.close()
+
+    def excluir_certificado(self, id_certificado, id_usuario=None):
+        """Exclui o certificado do banco de dados respeitando o nome exato da coluna idCertificado."""
+        conn = None
+        try:
+            conn = conectar()
+            with conn.cursor() as cursor:
+                # Usa o nome exato com aspas duplas conforme o padrão do seu banco
+                sql = """
+                    DELETE FROM certificado 
+                    WHERE "idCertificado" = %s
+                """
+                cursor.execute(sql, (id_certificado,))
+                conn.commit()
+                return cursor.rowcount > 0
+        except Exception as e:
+            print(f"[MODEL ERRO EXCLUIR CERTIFICADO] {e}")
+            if conn:
+                conn.rollback()
+            return False
+        finally:
+            if conn:
+                conn.close()

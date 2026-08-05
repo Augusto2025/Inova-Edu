@@ -1,87 +1,65 @@
-import React, {
-  createContext,
-  useState,
-} from "react";
+import React, { createContext, useState, useEffect, useContext } from 'react'; // Importado useContext
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const ThemeContext =
-  createContext();
+export const ThemeContext = createContext();
 
-export function ThemeProvider({
-  children
-}) {
+export const ThemeProvider = ({ children }) => {
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [fontSizeScale, setFontSizeScale] = useState(1.0); 
 
-  const [modoEscuro, setModoEscuro] =
-    useState(false);
+    useEffect(() => {
+        const loadSettings = async () => {
+            const savedTheme = await AsyncStorage.getItem('isDarkMode');
+            const savedFont = await AsyncStorage.getItem('fontSizeScale');
+            if (savedTheme !== null) setIsDarkMode(JSON.parse(savedTheme));
+            if (savedFont !== null) setFontSizeScale(JSON.parse(savedFont));
+        };
+        loadSettings();
+    }, []);
 
-  // TEMA CLARO
-  const lightTheme = {
-  fundo: "#F5F7FA",
-  card: "#FFFFFF",
-  texto: "#111",
-  subtexto: "#666",
-  borda: "#DDD",
-  input: "#ECECEC",
+    const toggleDarkMode = async () => {
+        const newValue = !isDarkMode;
+        setIsDarkMode(newValue);
+        await AsyncStorage.setItem('isDarkMode', JSON.stringify(newValue));
+    };
 
-  azul: "#2155f3",
+    const alterarTamanhoFonte = async () => {
+        let novaEscala = 1.0;
+        if (fontSizeScale === 1.0) novaEscala = 1.2;
+        else if (fontSizeScale === 1.2) novaEscala = 1.4;
+        else novaEscala = 1.0;
 
-  textoHeader: "#FFF",
-  subtextoHeader: "#DDE7FF",
+        setFontSizeScale(novaEscala);
+        await AsyncStorage.setItem('fontSizeScale', JSON.stringify(novaEscala));
+    };
+
+    const obterNomeTamanhoFonte = () => {
+        if (fontSizeScale === 1.0) return "Normal";
+        if (fontSizeScale === 1.2) return "Grande";
+        return "Muito Grande";
+    };
+
+    const theme = {
+        background: isDarkMode ? '#121212' : '#F8FAFC',
+        card: isDarkMode ? '#1E1E1E' : '#FFFFFF',
+        text: isDarkMode ? '#E2E8F0' : '#1E293B',
+        primary: '#1459b3',
+        border: isDarkMode ? '#2D3748' : '#EEE',
+    };
+
+    return (
+        <ThemeContext.Provider value={{ 
+            isDarkMode, 
+            toggleDarkMode, 
+            fontSizeScale, 
+            alterarTamanhoFonte, 
+            obterNomeTamanhoFonte, 
+            theme 
+        }}>
+            {children}
+        </ThemeContext.Provider>
+    );
 };
 
-const darkTheme = {
-  fundo: "#081120",
-  card: "#162235",
-  texto: "#FFFFFF",
-  subtexto: "#AAB4C3",
-  borda: "#26374D",
-  input: "#314158",
-
-  azul: "#0D1B2E",
-
-  textoHeader: "#FFFFFF",
-  subtextoHeader: "#AAB4C3",
-};
-  const temaClaro = {
-    fundo: "#f5f7fb",
-    card: "#ffffff",
-    texto: "#111111",
-    subtexto: "#666666",
-    borda: "#dddddd",
-    input: "#f1f1f1",
-    azul: "#2155f3",
-  };
-
-  // TEMA ESCURO
-  const temaEscuro = {
-    fundo: "#0f172a",
-    card: "#1e293b",
-    texto: "#ffffff",
-    subtexto: "#94a3b8",
-    borda: "#334155",
-    input: "#334155",
-    azul: "#0f172a",
-
-
-
-  };
-
-  return (
-
-    <ThemeContext.Provider
-      value={{
-        modoEscuro,
-        setModoEscuro,
-        tema: modoEscuro
-          ? temaEscuro
-          : temaClaro,
-
-    
-      }}
-    >
-
-      {children}
-
-    </ThemeContext.Provider>
-
-  );
-}
+// ADICIONE ESTA LINHA ABAIXO:
+export const useTheme = () => useContext(ThemeContext);

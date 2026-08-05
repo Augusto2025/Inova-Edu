@@ -1,140 +1,171 @@
-{% extends "base.html" %}
 {% load static %}
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inova Edu</title>
 
-{% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/home_Aluno.css' %}">
+    <link
+      rel="stylesheet"
+      href="{% static 'styles/home.css' %}"
+    />
+  </head>
 
-    {% block header %}
-        {% include "partials/header.html" %}
-    {% endblock %}
+  <body>
+    <section class="hero">
+      <!-- Ondas Tecnológicas Senoidais (Fluxo de dados em nuvem) -->
+      <div class="ondas-container">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="onda onda-1">
+          <path d="M0,192 C280,256 560,128 840,160 C1120,192 1260,288 1440,224 L1440,320 L0,320 Z" fill="none" stroke="rgba(255, 255, 255, 0.86)" stroke-width="2" stroke-dasharray="5, 5"></path>
+        </svg>
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="onda onda-2">
+          <path d="M0,128 C360,224 720,96 1080,192 C1260,240 1380,160 1440,128 L1440,320 L0,320 Z" fill="none" stroke="rgba(255, 146, 3, 0.67)" stroke-width="1.5"></path>
+        </svg>
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="onda onda-3">
+          <path d="M0,224 C400,128 800,256 1200,160 C1320,128 1400,192 1440,224 L1440,320 L0,320 Z" fill="none" stroke="rgba(220, 220, 220, 0.86)" stroke-width="3"></path>
+        </svg>
+      </div>
 
-    <!-- campo de rota: indica em qual página está -->
-    <div class="rota">Página: Cursos
+      <!-- Área fixa com mensagem de Boas-Vindas -->
+      <div class="hero-info">
+        <span class="saudacao">Olá! {{ usuario.nome }}, boas-vindas ao seu espaço acadêmico.</span>
+        <h1>Inova Edu<br /></h1>
+        <h3>Repositórios Acadêmicos Reunidos</h3>
 
-        <img id="filtroBtn" class="filtro_icone" src="{% static 'img/Filtro.png' %}" alt="filtro">
-    </div>
-
-    <div class="titulo">
-        <p>Cursos</p>
-    </div>
-
-    
-    {% if curso|length == 0 %}
-        <p style="margin: 20px; text-align:center;">
-            Nenhum resultado encontrado.
+        <p>
+          O objetivo deste repositório acadêmico é reunir, organizar e
+          disponibilizar os Projetos Integradores desenvolvidos pelos alunos do
+          Senac.
         </p>
-    {% endif %}
+      </div>
+    </section>
 
-    
-    <aside class="sidebar-filtro" id="sidebarFiltro">
-        <h3 style="text-align: center; color: #004A8D;">Filtros</h3>
+    <section class="hearder-meio">
+      <div class="links-meio">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'cursos' %}">Cursos</a>
+        <a href="{% url 'forum_blocos' %}">Fórum</a>
+        <a href="{% url 'calendario' %}">Eventos</a>
+        <a href="{% url 'perfil' %}">Perfil</a>
+      </div>
+    </section>
 
-        <form method="get" action="{% url 'home' %}">
+    <!-- CONTAINER BENTO (FÓRUNS + EVENTOS) -->
+    <div class="dashboard-bento">
+      
+      {% comment %} FORUNS RECENTES {% endcomment %}
+      <section class="foruns-home">
+        <div class="titulo-secao">
+          <h2>Fóruns Recentes</h2>
+          <p>Confira os últimos fóruns criados pela comunidade.</p>
+        </div>
 
-            <!-- PESQUISA -->
-            <input class="pesquisa"
-                name="q"
-                type="search"
-                placeholder="Pesquisar"
-                value="{{ query }}">
-
-            {% comment %} {% if query %}
-                <a style="color:#004A8D" href="{% url 'home' %}">Limpar</a>
-            {% endif %} {% endcomment %}
-
-            <!-- DATA INÍCIO -->
-            <div class="campo-filtro">
-                <label>Data de início:</label>
-                <input type="date" name="inicio" value="{{ request.GET.inicio }}">
-            </div>
-
-            <!-- DATA FINAL -->
-            <div class="campo-filtro">
-                <label>Data final:</label>
-                <input type="date" name="fim" value="{{ request.GET.fim }}">
-            </div>
-
-            <!-- ORDENAÇÃO -->
-            <div class="campo-filtro">
-                <label>Ordenar por:</label>
-                <select name="ordenar">
-                    <option value="">Padrão</option>
-                    <option value="asc" {% if request.GET.ordenar == 'asc' %}selected{% endif %}>A → Z</option>
-                    <option value="desc" {% if request.GET.ordenar == 'desc' %}selected{% endif %}>Z → A</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-aplicar">Aplicar filtros</button>
-        </form>
-    </aside>
-
-
-    <main class="blocos">
-        {% for Curso in curso %}
-        {% if Curso.imagem %}
-            <section class="cards_curso">
-                <img class="imagem_curso" src="{{ Curso.imagem.url }}" alt="Imagem do curso" />
-                <p>{{ Curso.nome_curso }}</p>
-                <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
-            </section>
+        {% if foruns_recentes %}
+        <div class="cards-foruns">
+          {% for forum in foruns_recentes %}
+          <a href="{% url 'forum' forum.idforum %}" class="card-forum">
+            <div class="icone-card">💬</div>
+            <h3>{{ forum.nome }}</h3>
+            <p>
+              {% if forum.usuario %} {{ forum.usuario }} {% else %} Administrador {% endif %}
+            </p>
+            <span>{{ forum.data_criacao|date:"d/m/Y" }}</span>
+          </a>
+          {% endfor %}
+        </div>
         {% else %}
-            <section class="cards_curso2">
-                <p>{{ Curso.nome_curso }}</p>
-                <div class="borda"></div>
-                <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
-            </section>
-            <style>
-                .cards_curso2 {
-                    justify-content: center;
-                    background: white;
-                    flex-direction: column;
-                    width: 300px;
-                    height: 275px;
-                    border-radius: 18px;
-                    padding-bottom: 20px;
-                    box-shadow: var(--shadow);
-                    transition: transform 0.20s ease, box-shadow 0.20s ease;
-                }
-
-                .cards_curso2:hover {
-                    transform: translateY(-6px);
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-                }
-
-                .cards_curso2 p {
-                    margin: 18px 15px 5px 15px;
-                    color: var(--azul-Senac);
-                    font-size: 17px;
-                    font-weight: 600;
-                }
-
-                .Botao_entrar_curso{
-                    margin: 0%;
-                    margin-top: 20px;
-                    justify-self: end;
-                }
-            </style>
+        <div class="cards-foruns">
+          <div class="card-forum estado-vazio-animado">
+            <div class="icone-card animar-esvaziado">📭</div>
+            <h3>Nenhum Fórum</h3>
+            <p>Os fóruns aparecerão aqui quando forem criados.</p>
+          </div>
+        </div>
         {% endif %}
+      </section>
+
+      {% comment %} EVENTOS RECENTES {% endcomment %}
+      <section class="eventos-home">
+        <div class="titulo-eventos">
+          <h2>Eventos Próximos</h2>
+          <p>Confira os próximos eventos da comunidade.</p>
+        </div>
+
+        {% if eventos_proximos %}
+        <div class="cards-eventos">
+          {% for evento in eventos_proximos %}
+          <div class="card-evento">
+            <div class="data-evento">
+              <span class="dia">{{ evento.data_do_evento|date:"d" }}</span>
+              <span class="mes">{{ evento.data_do_evento|date:"M"|upper }}</span>
+            </div>
+
+            <div class="info-evento">
+              <h3>{{ evento.nome_do_evento }}</h3>
+              <p>📅 {{ evento.data_do_evento|date:"d/m/Y" }}</p>
+              <p>🕒 {{ evento.hora_do_evento|time:"H:i" }}</p>
+              <p class="endereco">📍 {{ evento.endereco }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="sem-eventos">
+          <div class="card-vazio estado-vazio-animado">
+            <div class="icone animar-esvaziado">📅</div>
+            <h3>Nenhum evento agendado</h3>
+            <p>Quando houver eventos eles aparecerão aqui.</p>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+
+    </div>
+
+    {% comment %} CURSOS RECENTES {% endcomment %}
+    <section class="cursos-recentes">
+      <div class="titulo-curso">
+        <h2>Cursos Recentes</h2>
+        <p>Confira os cursos disponíveis na plataforma.</p>
+      </div>
+
+      {% if cursos_recentes %}
+      <div class="cards-cursos">
+        {% for curso in cursos_recentes %}
+        <div class="card-curso">
+          
+          <div class="imagem-curso">
+            {% if curso.imagem %}
+            <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}" />
+            {% else %}
+            <div class="sem-imagem">📚</div>
+            {% endif %}
+          </div>
+
+          <div class="conteudo-curso">
+            <h3>{{ curso.nome_curso }}</h3>
+            <p>{{ curso.descricao_curso|truncatechars:120 }}</p>
+            <a class="btn-entrar" href="{% url 'turmas' curso_id=curso.idcurso %}">Entrar</a>
+          </div>
+
+        </div>
         {% endfor %}
-    </main>   
+      </div>
+      {% else %}
+      <div class="sem-cursos">
+        <div class="card-vazio estado-vazio-animado">
+          <div class="icone animar-esvaziado">📚</div>
+          <h3>Nenhum curso cadastrado</h3>
+        </div>
+      </div>
+      {% endif %}
+    </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const filtroBtn = document.getElementById('filtroBtn');
-            const sidebar = document.getElementById('sidebarFiltro');
-
-            if (filtroBtn && sidebar) {
-                filtroBtn.addEventListener('click', () => {
-                    sidebar.classList.toggle('open');
-                });
-            }
-        });
-    </script>
-
-{% endblock %}
-
-{% block footer %}
-    {% include "partials/footer.html" %}
-{% endblock %}
+    <script src="{% static 'scripts/HomeAlunoProfessor.js' %}"></script>
+    
+    {% block footer %}
+      {% include "partials/footer.html" %}
+    {% endblock %}
+  </body>
+</html>

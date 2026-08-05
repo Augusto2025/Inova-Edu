@@ -1,0 +1,237 @@
+/* ===========================================================
+   VARIÁVEIS INSTITUCIONAIS
+   =========================================================== */
+:root {
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8fafc;
+    color: var(--text-main);
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 20px;
+}
+
+/* ===========================================================
+   CABEÇALHO, ROTAS E TÍTULOS
+   =========================================================== */
+
+
+/* =========================================================== */
+
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sidebar-title {
+    text-align: center;
+    color: var(--azul-Senac);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+
+
+/* ===========================================================
+   GRID DE CURSOS E CARDS (NOVO VISUAL)
+   =========================================================== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    width: 100%;
+    margin-bottom: 45px;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-image {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 15px;
+    text-align: center;
+}
+
+.card-image h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    z-index: 2;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+/* Fallback elegante em gradiente caso o curso venha sem imagem do banco */
+.img-fallback-gradient {
+    background: linear-gradient(135deg, #002347 0%, #004A8D 100%);
+}
+
+.card-content {
+    padding: 9px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+
+
+.card-content h3 {
+    font-size: 1.2rem;
+    color: var(--azul-Senac);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.card-content p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.borda {
+    width: 45px;
+    height: 3px;
+    background: var(--laranja-Senac);
+    margin-bottom: 18px;
+    border-radius: 2px;
+}
+
+.Botao_entrar_curso {
+    display: block;
+    background-color: var(--azul-Senac);
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: max-content;
+    transition: background 0.2s ease;
+}
+
+.Botao_entrar_curso:hover {
+    background-color: var(--azul-Senac-hover);
+}
+
+/* ===================================
+   CARD "VER MAIS CURSOS"
+=================================== */
+.card-ver-mais {
+  background: rgba(0, 70, 184, 0.04);
+  border: 2px dashed var(--azul-Senac);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 280px;
+}
+
+.card-ver-mais:hover{
+  background: rgba(72, 130, 196, 0.08);
+  border-color: #f7941d;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(120, 156, 215, 0.12);
+}
+
+.card-ver-mais-content {
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.icone-ver-mais {
+  width: 52px;
+  height: 52px;
+  background: #0046b8;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 70, 184, 0.25);
+}
+
+.card-ver-mais:hover .icone-ver-mais {
+  background: #f7941d;
+  transform: scale(1.1) rotate(90deg);
+}
+
+.card-ver-mais-content h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--azul-Senac);
+  transition: color 0.3s ease;
+}
+
+.card-ver-mais-content p {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+
+/* ===========================================================
+   RESPONSIVIDADE (MOBILE)
+   =========================================================== */
+@media (max-width: 650px) {
+    .search-form-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-search {
+        width: 100%;
+        text-align: center;
+    }
+
+    .sidebar-filtro {
+        position: static;
+        width: 100%;
+        margin-top: 15px;
+        box-shadow: none;
+    }
+}

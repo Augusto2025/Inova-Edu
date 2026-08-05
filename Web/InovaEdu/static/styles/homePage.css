@@ -1,171 +1,434 @@
-/* Importação de fontes */
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Sanchez:ital@0;1&display=swap');
-
-/* Variáveis para facilitar a manutenção de cores */
-:root {
-    --primary-blue: #004A8D;
-    --accent-orange: #F7941D;
-    --light-bg: #f8f9fa;
-    --white: #ffffff;
-    --text-gray: #555555;
-    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
-}
-
+/* =================================
+   1. RESET & VARIÁVEIS
+================================= */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Red Hat Text', sans-serif; /* Atualizado para a fonte moderna importada */
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+:root {
+    --azul-senac: #004A8D;
+    --azul-escuro: #003366;
+    --laranja-senac: #ff8c2a;
+    --laranja-hover: #e07418;
+    --fundo-pagina: #f8fafc;
+    --texto-principal: #1e293b;
+    --texto-mutado: #64748b;
+    --cinza-borda: #e2e8f0;
+    --branco: #ffffff;
+
+    /* Aliases e variáveis auxiliares */
+    --white: #ffffff;
+    --accent-orange: #ff8c2a;
 }
 
 body {
-    background: var(--light-bg);
-    color: var(--primary-blue);
+    background-color: var(--fundo-pagina);
+    color: var(--texto-principal);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
-/* Seções Parallax */
-.parallax {
-    height: 75vh;
-    /* background-attachment: fixed; */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+/* =================================
+   2. NAVBAR
+================================= */
+.navbar-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--azul-senac);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 20px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;  
-    padding: 40px 0;                 
-    color: white;
-    text-align: center;
-    position: relative;
-    
-    /* Camada de escurecimento para garantir leitura do texto */
-    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3);
 }
 
-.parallax h1, .parallax h2 {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(5px); /* Efeito de vidro moderno */
-    padding: 20px 40px;
-    border-radius: 15px;
-    font-size: clamp(1.5rem, 5vw, 3rem); /* Fonte responsiva */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--branco);
     font-weight: 700;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 18px;
 }
 
-.logo {
-    margin-bottom: 20px;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+.nav-logo img {
+    width: 35px;
+    height: auto;
 }
 
-/* Botão de Login Flutuante */
-.botoeslogin {
-    position: fixed;      
-    top: 20px;            
-    right: 20px;          
-    z-index: 9999;        
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--laranja-senac);
 }
 
 .btn-acao {
-    display: flex;        
-    align-items: center;
-    gap: 10px;             
-    padding: 12px 28px;
-    font-size: 16px;
-    border-radius: 50px; /* Botão estilo pílula */
+    background: var(--laranja-senac);
+    color: var(--branco);
+    padding: 8px 18px;
+    border-radius: 8px;
     text-decoration: none;
-    color: white;
     font-weight: 600;
-    background-color: var(--primary-blue);
-    box-shadow: 0 4px 15px rgba(0, 74, 141, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
 }
 
 .btn-acao:hover {
-    background-color: #155a80;
+    background: var(--laranja-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 74, 141, 0.4);
 }
 
-/* Seções de Conteúdo */
-section {
-    padding: 100px 20px;
-    max-width: 1100px;
-    margin: auto;
+/* =================================
+   3. HERO PARALLAX & BUSCA
+================================= */
+.parallax {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.hero-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 60px;
+    text-align: center;
+    color: var(--branco);
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(0, 30, 60, 0.75) 0%, rgba(0, 15, 30, 0.85) 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-content .logo {
+    margin-bottom: 15px;
+}
+
+.hero-content h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.hero-content h2 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.hero-search-form {
+    margin-top: 20px;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--branco);
+    border-radius: 50px;
+    padding: 6px 8px 6px 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.search-icon {
+    color: #94a3b8;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.search-input-wrapper input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 15px;
+    color: var(--texto-principal);
+}
+
+.btn-search-hero {
+    background: var(--azul-senac);
+    color: var(--branco);
+    border: none;
+    padding: 12px 26px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-search-hero:hover {
+    background: var(--azul-escuro);
+}
+
+/* =================================
+   4. SEÇÃO DE RECURSOS (CARDS GRID)
+================================= */
+.container-secao {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
 }
 
 .titulo-secao {
-    font-size: 2.2rem;
-    font-weight: 700;
+    font-size: 2rem;
+    color: var(--azul-senac);
     text-align: center;
-    margin-bottom: 10px;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
 .descricao {
     text-align: center;
-    font-size: 1.1rem;
-    margin-bottom: 50px;
-    color: var(--text-gray);
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+    color: var(--texto-mutado);
+    font-size: 1rem;
+    margin-bottom: 40px;
 }
 
-/* Grade de Cards */
-.cards {
+.cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
 }
 
 .card {
-    background: var(--white);
-    padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: var(--shadow-soft);
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px;
+    padding: 25px;
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
 }
 
-.card i {
-    color: var(--accent-orange);
-    margin-bottom: 20px;
-    background: rgba(247, 148, 29, 0.1);
-    padding: 15px;
-    border-radius: 50%;
+.card-icon {
+    width: 55px;
+    height: 55px;
+    background: #eef6ff;
+    color: var(--azul-senac);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 15px;
 }
 
 .card h3 {
-    margin-bottom: 12px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    color: var(--texto-principal);
+    margin-bottom: 8px;
 }
 
 .card p {
-    color: var(--text-gray);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    color: var(--texto-mutado);
 }
 
-/* ==========================
-   CARROSSEL DE CURSOS
-========================== */
-.secao-cursos {
-    padding: 100px 5%;
+/* =================================
+   5. PARALLAX COM ROADMAP
+================================= */
+.parallax-stats {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+}
+
+.roadmap-overlay {
+    background: rgba(0, 51, 102, 0.90);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 50px 40px;
+    border-radius: 20px;
+    max-width: 1000px;
+    width: 100%;
     text-align: center;
-    /* background: #f1f4f9; */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.parallax-title {
+    color: var(--branco);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.parallax-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    margin-bottom: 35px;
+}
+
+/* Grade horizontal dos passos no Parallax */
+.parallax-roadmap {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    position: relative;
+}
+
+.roadmap-step {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.roadmap-step:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Ícones das Etapas */
+.step-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Conteúdo da Etapa */
+.step-content h3 {
+    color: var(--branco);
+    font-size: 1.2rem;
+    margin: 10px 0 6px;
+}
+
+.step-content p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+/* Etiquetas de Status */
+.step-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* ESTADOS DAS ETAPAS */
+
+/* 1. Concluído */
+.roadmap-step.concluido .step-badge {
+    background: #28a745;
+    color: var(--branco);
+}
+
+.tag-concluido {
+    background: rgba(40, 167, 69, 0.25);
+    color: #4cd964;
+    border: 1px solid rgba(76, 217, 100, 0.3);
+}
+
+/* 2. Em Andamento (Laranja Destaque Senac) */
+.roadmap-step.em-andamento {
+    background: rgba(255, 140, 42, 0.15);
+    border-color: var(--laranja-senac);
+}
+
+.roadmap-step.em-andamento .step-badge {
+    background: var(--laranja-senac);
+    color: var(--branco);
+    box-shadow: 0 0 0 4px rgba(255, 140, 42, 0.3);
+}
+
+.tag-andamento {
+    background: var(--laranja-senac);
+    color: var(--branco);
+}
+
+/* 3. Em Breve */
+.roadmap-step.em-breve .step-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tag-breve {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* =================================
+   6. CARROSSEL DE CURSOS
+================================= */
+.secao-cursos {
+    background: #f1f5f9;
 }
 
 .carousel-container {
     position: relative;
     display: flex;
     align-items: center;
-    margin-top: 40px;
 }
 
 .carousel {
@@ -175,261 +438,297 @@ section {
 
 .carousel-track {
     display: flex;
-    gap: 25px;
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    gap: 20px;
 }
 
 .curso-card {
-    flex: 0 0 calc(33.333% - 20px);
-    max-width: calc(33.333% - 20px);
-    background: var(--white);
-    border-radius: 18px;
-    box-shadow: var(--shadow-soft);
-    padding-bottom: 25px;
+    min-width: calc(33.333% - 14px);
+    flex-shrink: 0;
+    background: var(--branco);
+    border-radius: 14px;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    border: 1px solid var(--cinza-borda);
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 
-.curso-card:hover {
-    transform: scale(1.02);
+.curso-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--azul-senac);
+    color: var(--branco);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
 }
 
 .curso-card img {
     width: 100%;
-    height: 180px;
+    height: 160px;
     object-fit: cover;
 }
 
-.curso-card h3 {
-    margin: 20px 15px 8px;
-    color: var(--primary-blue);
-    font-size: 1.3rem;
+.curso-info {
+    padding: 20px;
 }
 
-.curso-card p {
-    font-size: 0.9rem;
-    padding: 0 20px;
-    color: var(--text-gray);
+.curso-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--azul-senac);
 }
 
-/* Botões do Carrossel */
+.curso-info p {
+    font-size: 0.88rem;
+    color: var(--texto-mutado);
+}
+
 .carousel-btn {
-    background: var(--primary-blue);
-    color: var(--white);
-    border: none;
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    color: var(--azul-senac);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    font-size: 16px;
     z-index: 10;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
 }
 
 .carousel-btn:hover {
-    background: var(--accent-orange);
-    transform: translateY(-50%) scale(1.1);
+    background: var(--azul-senac);
+    color: var(--branco);
 }
 
-.carousel-btn.prev { left: -25px; }
-.carousel-btn.next { right: -25px; }
+.carousel-btn.prev { margin-right: 10px; }
+.carousel-btn.next { margin-left: 10px; }
 
-/* ==========================
-   SEÇÃO DE DOWNLOAD
-========================== */
-.secao-download {
-    padding: 100px 20px;
-    /* background-color: var(--white); */
+.sem-cursos{
+    margin: auto;
+    color: var(--texto-mutado);
+    font-size: larger;
+}
+
+/* =================================
+   7. SEÇÃO DOWNLOAD
+================================= */
+.download-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.download-box {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 30px;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.download-icon {
+    font-size: 40px;
+    color: var(--azul-senac);
+    margin-bottom: 15px;
+}
+
+.download-box h3 {
+    margin-bottom: 6px;
+}
+
+.download-box p {
+    color: var(--texto-mutado);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--azul-senac);
+    color: var(--branco);
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.btn-download:hover {
+    background: var(--azul-escuro);
 }
 
 .mobile-buttons {
     display: flex;
+    gap: 10px;
 }
 
-.download-container {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 40px;
-    flex-wrap: wrap;
+.btn-store {
+    background: #1e293b;
+    font-size: 13px;
+    padding: 10px 12px;
 }
 
-.download-box {
-    background: var(--light-bg);
-    padding: 40px;
-    border-radius: 25px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    width: 100%;
-    max-width: 400px;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid rgba(0,0,0,0.02);
+.btn-store:hover {
+    background: #0f172a;
 }
 
-.download-box:hover {
-    transform: translateY(-5px);
-    background: var(--white);
-    box-shadow: var(--shadow-soft);
+/* =================================
+   8. FOOTER ESTRUTURADO
+================================= */
+.footer-site {
+    background: var(--azul-senac);
+    color: #94a3b8;
+    padding-top: 50px;
 }
 
-.download-box i {
-    /* color: var(--primary-blue); */
-    /* margin-bottom: 20px; */
-    opacity: 0.8;
-}
-
-.btn-download {
-    display: inline-block;
-    padding: 14px 24px;
-    background-color: var(--primary-blue);
-    color: white;
-    text-decoration: none;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    margin: 8px;
-}
-
-.btn-download:hover {
-    background-color: var(--accent-orange);
-    transform: scale(1.05);
-}
-
-/* ==========================
-   FOOTER
-========================== */
-footer {
-    text-align: center;
-    padding: 80px 20px 40px;
-    background: var(--primary-blue);
-    color: white;
-}
-
-.links {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 60px;
-    width: 100%;
+.footer-container {
     max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
 }
 
-.links-senac, .ferramentas, .pessoal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 180px;
+.footer-column h4 {
+    color: var(--branco);
+    font-size: 1.1rem;
+    margin-bottom: 15px;
 }
 
-.links-senac p, .ferramentas p, .pessoal p {
-    font-size: 1.2rem;
-    font-family: "Sanchez", serif;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--accent-orange);
-}
-
-.links a {
-    font-family: "Sanchez", serif;
-    color: rgba(255,255,255,0.8);
+.footer-column a {
+    display: block;
+    color: #94a3b8;
     text-decoration: none;
-    margin: 6px 0;
-    font-size: 0.95rem;
-    transition: all 0.2s;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    transition: color 0.2s;
 }
 
-.links a:hover {
-    color: var(--accent-orange);
-    transform: translateX(3px);
+.footer-column a:hover {
+    color: var(--laranja-senac);
 }
 
-footer p {
-    margin-top: 50px;
+.footer-subhead {
     font-size: 0.85rem;
-    opacity: 0.9;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 30px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
 }
 
-/* Definição da Animação */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px); /* Começa 30px abaixo */
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0); /* Sobe para a posição original */
-    }
+.link-destaque {
+    color: var(--laranja-senac) !important;
+    font-weight: 600;
 }
 
-@keyframes titleGlow {
-    0% { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
-    50% { text-shadow: 0 0 20px rgba(255,255,255,0.6); }
-    100% { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+.btn-feedback {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 140, 42, 0.15);
+    color: var(--laranja-senac) !important;
+    border: 1px solid var(--laranja-senac);
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-top: 5px;
+    font-weight: 600;
 }
 
-/* Aplicação no H1 */
-.titulo-animado, #titulo-animado {
-    display: inline-block;
-    opacity: 0; /* Começa invisível para a animação funcionar */
-    animation: 
-        fadeInUp 1.2s ease-out forwards, 
-        titleGlow 3s ease-in-out infinite;
-    animation-delay: 0.5s; /* Espera um pouco antes de começar */
+.btn-feedback:hover {
+    background: var(--laranja-senac);
+    color: var(--branco) !important;
 }
 
-/* ==========================
-   RESPONSIVIDADE
-========================== */
-@media (max-width: 1024px) {
+.footer-bottom {
+    border-top: 1px solid #244477;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.85rem;
+}
+
+/* =================================
+   9. RESPONSIVIDADE (MEDIA QUERIES)
+================================= */
+
+/* Tablets (<= 992px) */
+@media (max-width: 992px) {
     .curso-card {
-        flex: 0 0 calc(50% - 20px);
-        max-width: calc(50% - 20px);
+        min-width: calc(50% - 10px);
     }
 }
 
-@media (max-width: 900px) {
-    .group {
-        flex-direction: column;
-        gap: 40px;
-    }
-}
-
-@media (max-width: 600px) {
-    .curso-card {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    .parallax { height: 60vh; }
-    .titulo-secao { font-size: 1.8rem; }
-}
-
+/* Smartphones (<= 768px) */
 @media (max-width: 768px) {
-    #subtitulo-animado{
+    .nav-links {
         display: none;
     }
 
-    .download-container {
-        flex-direction: column;
-        align-items: center;
+    .hero-content h1 {
+        font-size: 1.7rem;
     }
-    .carousel-btn { display: none; } /* Esconde setas em mobile para usar scroll */
-    .carousel { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .hero-content h2 {
+        font-size: 1rem;
+    }
+
+    .search-input-wrapper {
+        flex-direction: column;
+        border-radius: 12px;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .search-input-wrapper input {
+        text-align: center;
+    }
+
+    .btn-search-hero {
+        width: 100%;
+        border-radius: 8px;
+    }
+
+    .parallax-stats {
+        padding: 50px 15px;
+        background-attachment: scroll;
+    }
+
+    .roadmap-overlay {
+        padding: 30px 15px;
+    }
+
+    .parallax-title {
+        font-size: 1.5rem;
+    }
+
+    .parallax-roadmap {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .curso-card {
+        min-width: 100%;
+    }
+
+    .mobile-buttons {
+        flex-direction: column;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
 }

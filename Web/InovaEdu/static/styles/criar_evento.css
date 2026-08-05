@@ -6,15 +6,20 @@
   --azul-Senac: #004A8D;
   --cinza-Senac: #D9D9D9;
 }
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 .criar-evento-container{
-  max-width:720px;
-  min-height: calc(73vh - 90px);
+  width: 40%;
   margin: 80px auto;
   padding: 24px;
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(11,22,50,0.06);
+  box-shadow: 2px 2px 25px rgba(11, 22, 50, 0.35);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -43,6 +48,10 @@
 
 .erro{ color:#b70303; background: #fff0f0; padding:8px; border-radius:6px; }
 @media (max-width:520px){
-  .criar-evento-container{ margin: 65px 12px; padding:16px; }
+  .criar-evento-container{ 
+    padding:16px; 
+    padding: 16px;
+    width: 90%;
+  }
   .criar-evento-actions{ flex-direction:column-reverse; }
 }

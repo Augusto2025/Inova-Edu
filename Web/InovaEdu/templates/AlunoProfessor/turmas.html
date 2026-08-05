@@ -2,75 +2,104 @@
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    
     <link rel="stylesheet" href="{% static 'styles/turmas.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
     {% block header %}
         {% include "partials/header.html" %}
     {% endblock %}
 
-    <div class="rota">Página: Cursos > Turmas</div>
-
-    <div class="titulo">
-        <p>Turmas</p>
-    </div>
-    
-    <main class="accordion-container">
-
-        {% if not turmas_por_ano %}
-            <p class="sem-turmas">Nenhuma turma encontrada.</p>
-        {% else %}
-            {% for ano, turmas_do_ano in turmas_por_ano.items %}
-            
-            <div class="accordion-item">
-                <button class="accordion-header">
-                    <span>Ano {{ ano }}</span>
-                    <span class="icon">+</span>
-                </button>
-                
-                <div class="accordion-content">
-                    {% for Turma in turmas_do_ano %}
-                    <section class="turma-card">
-                        <p><strong>Código:</strong> {{ Turma.codigo_turma }}</p>
-                        <p><strong>Turno:</strong> {{ Turma.turno }}</p>
-                        <a class="Botao_entrar_curso" href="{% url 'projetos_da_turma' Turma.idturma %}">Ver Projetos</a>
-                    </section>
-                    {% endfor %}
-                </div>
+    <div class="container">
+        
+        <header class="section-header">
+            <div class="rota">
+                Página: Turmas
             </div>
-            
-            {% endfor %}
+            <div class="titulo">
+                <p class="main-title">Turmas</p>
+            </div>
+        </header>
+
+        <section class="search-container">
+            <form method="get" action="{% url 'turmas' curso.idcurso  %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder="Pesquise uma Turma..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+        
+        {% if total_turmas == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
+            </div>
         {% endif %}
+    </div>
+
+      
+
+    <main class="container">
+
+        {% for ano, turmas_do_ano in turmas_por_ano.items %}
+        <div class="ano-header">
+            <h2>Ano {{ ano }}</h2>
+
+            <div class="linha"></div>
+
+            <span class="turmas-ativas">
+                {{ turmas_do_ano|length }} Turma{{ turmas_do_ano|length|pluralize:"s" }}
+            </span>
+        </div>
+
+        <div class="cards-container">
+
+            {% for turma in turmas_do_ano %}
+
+            <div class="curso-card">
+
+                <div class="card-topo">
+                    <span class="codigo">
+                        {{ turma.codigo_turma }}
+                    </span>
+
+                    <span class="turno">
+                        {{ turma.turno }}
+                    </span>
+                </div>
+
+                <h3>
+                    {{ turma.turmas }}
+                </h3>
+                <p class="professor">
+                    <strong>Professor:</strong> {{ turma.professor }}
+                </p>
+
+
+
+                <a class="btn-detalhes"
+                href="{% url 'projetos_da_turma' turma.idturma %}">
+                    Ver Projetos
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endfor %}
+
+
+    </main> 
+
     
-    </main>
 
-    <script>
-        document.querySelectorAll('.accordion-header').forEach(header => {
-            header.addEventListener('click', () => {
-
-                const content = header.nextElementSibling;
-                const icon = header.querySelector('.icon');
-                const isOpen = content.classList.contains('open');
-
-                // fecha todos
-                document.querySelectorAll('.accordion-content').forEach(c => {
-                    c.classList.remove('open');
-                });
-                document.querySelectorAll('.accordion-header .icon').forEach(i => {
-                    i.textContent = "+";
-                });
-
-                // abre somente se estava fechado
-                if (!isOpen) {
-                    content.classList.add('open');
-                    icon.textContent = "−";
-                }
-            });
-        });
-    </script>
-
+   
 {% endblock %}
-
+    
 {% block footer %}
     {% include "partials/footer.html" %}
 {% endblock %}

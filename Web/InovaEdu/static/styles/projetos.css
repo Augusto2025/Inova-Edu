@@ -1,348 +1,536 @@
-/* ================== MODAL GERAL (ATUALIZADO PARA MODERNO) ================== */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.3s ease-in-out;
-    backdrop-filter: blur(4px);
+:root {
+    --laranja-Senac: #F7941D;
+    --laranja-Senac-hover: #e08316;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --bg-surface: #f8fafc;
 }
 
-.modal-content, .modal-moderno {
-    background-color: #fff;
-    /* padding: 16px; */
-    border-radius: 20px; 
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-    animation: slideDown 0.3s ease-out;
-    overflow: hidden;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.fechar {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #94a3b8;
-    transition: color 0.2s;
-    z-index: 10;
-}
-.fechar:hover { color: #ef4444; }
-
-#fecharExcluirBtn {
-    background-color: red;
-    padding: 10px 20px;
-    border-radius: 10px;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 20px;
 }
 
-.modal-footer, .modal-actions {
+/* HEADER DA PÁGINA */
+.section-header .rota {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.header-main-action {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 16px 24px;
-    border-top: 1px solid #f1f5f9;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
-/* ================== MODAL CADASTRO PROJETO (ESTILO MODERNO) ================== */
-#modalProjeto .modal-content {
-    max-width: 480px;
-    padding: 0; 
-    border-radius: 20px;
-    background-color: #fff;
-}
-
-#modalProjeto h2 {
-    font-size: 1.4rem;
+.main-title {
+    color: var(--azul-Senac);
+    font-size: 26px;
     font-weight: 700;
-    /* margin: 24px 24px 10px 24px; */
-    color: var(--branco-Senac);
+}
+
+.sub-title {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* TABELA DE PROJETOS */
+.tabela-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabela-projetos {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
     text-align: left;
 }
 
-#modalProjeto form {
-    padding: 20px;
+.tabela-projetos thead tr {
+    background-color: var(--bg-surface);
+    border-bottom: 2px solid var(--border-color);
 }
 
-#modalProjeto input[type="text"],
-#modalProjeto textarea,
-#modalProjeto input[type="file"] {
-    width: 100%; 
-    max-width: 440px;
-    padding: 12px;
-    border-radius: 10px;
-    border: 2px solid #e2e8f0;
-    font-size: 0.95rem;
-    margin-top: 8px;
-    margin-bottom: 12px;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
+.tabela-projetos th {
+    padding: 14px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-#modalProjeto input[type="text"]:focus,
-#modalProjeto textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    outline: none;
+.linha-projeto {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
 }
 
-/* ================== CARDS (ORIGINAL PRESERVADO) ================== */
-.cards-container {
-    display: flex;
-    flex-direction: column;
-    gap: 27px;
-    margin-top: 35px;
-    justify-content: start;
-    align-items: center;
-    min-height: calc(77vh - 90px);
+.linha-projeto:hover {
+    background-color: var(--bg-surface);
 }
 
-.card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    padding: 36px;
-    width: 100%;
-    max-width: 800px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    max-height: 190px;
+.linha-projeto td {
+    padding: 14px 16px;
+    vertical-align: middle;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+/* CAPA / THUMBNAIL */
+.col-capa {
+    width: 90px;
 }
 
-.card-image {
-    flex: 0 0 100px;
-}
-.card-image img {
-    width: 100px;
-    height: 100px;
+.projeto-thumb {
+    width: 70px;
+    /* height: 50px; */
     border-radius: 8px;
     object-fit: cover;
+    border: 1px solid var(--border-color);
+    display: block;
 }
 
-.card-content {
-    flex: 1;
-    padding: 0 20px;
-    text-align: left;
+.projeto-thumb-placeholder {
+    width: 70px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #94a3b8;
 }
-.card-title {
-    margin: 0 0 5px 0;
-    font-size: 1.5rem;
-    color: #333;
+
+/* INFO DO PROJETO */
+.projeto-nome {
+    color: var(--azul-Senac);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.projeto-descricao {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 420px;
+}
+
+/* BADGES */
+.badges-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.turno {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
 }
-.card-description {
-    margin-bottom: 20px;
-    color: #666;
-    font-size: 0.95rem;
-}
 
-.card-action {
+/* BOTÕES E AÇÕES */
+.acoes {
     display: flex;
-    gap: 10px;
     align-items: center;
-    min-width: 140px;
+    gap: 6px;
 }
 
-/* ================== BOTÕES (ORIGINAL PRESERVADO) ================== */
-.btn-repositorio,
-.btn-primary,
-.btn-warning {
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    cursor: pointer;
+.btn-primary {
+    background: var(--laranja-Senac);
+    color: white;
     border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background: var(--laranja-Senac-hover);
+    transform: translateY(-1px);
+}
+
+.btn-azul {
+    background: var(--azul-Senac);
+    color: white;
     text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.btn-azul:hover {
+    background: var(--azul-Senac-hover);
+}
+
+.btn-verde {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-verde:hover {
+    background: #059669;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.btn-danger, .btn-secondary {
-    border: none;
-    background-color: #fff;
-    font-size: larger;
-    cursor: pointer;
+.btn-secondary:hover {
+    background: #e2e8f0;
 }
 
-.btn-repositorio { background-color: #007bff; color: #fff; }
-.btn-repositorio:hover { background-color: #0056b3; transform: translateY(-2px); }
+.btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
-.btn-primary { background-color: var(--laranja-Senac); color: #fff;}
-.btn-primary:hover { transform: translateY(-2px); }
+.btn-danger:hover {
+    background: #fca5a5;
+}
 
-.btn-warning { background-color: #04b338; color: #fff; }
-.btn-warning:hover { background-color: #03952f; transform: translateY(-2px); }
+.empty-table-state {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
 
-/* ================== DESIGN MODERNO DE ALUNOS ================== */
+/* ===================================================
+   SISTEMA DE MODAIS PADRONIZADO E RESPONSIVO
+   =================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 16px;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 480px;
+    max-height: 88vh;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalFade 0.2s ease-out;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* CABEÇALHO DO MODAL */
 .modal-header {
-    padding: 24px 24px 16px;
+    background: var(--azul-Senac);
+    padding: 16px 20px;
+    color: white;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #f1f5f9;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.modal-header-danger {
+    background: #dc2626;
 }
 
 .header-text h2 {
-    font-size: 1.25rem;
-    /* color: #1e293b; */
     margin: 0;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .header-text p {
-    font-size: 0.875rem;
-    /* color: #64748b; */
-    margin: 4px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 4px;
+    line-height: 1.3;
 }
 
-.lista-alunos-scroll {
-    max-height: 380px;
+.fechar {
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.2s;
+}
+
+.fechar:hover {
+    color: #00376a;
+}
+
+/* CORPO DO MODAL (ROLÁVEL) */
+.modal-body {
+    padding: 20px;
     overflow-y: auto;
-    padding: 8px 16px;
+    flex: 1;
+}
+
+.campo {
+    margin-bottom: 16px;
+}
+
+.campo:last-child {
+    margin-bottom: 0;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.campo input[type="text"],
+.campo textarea,
+.campo input[type="file"] {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text-main);
+    transition: border-color 0.2s;
+}
+
+.campo input[type="text"]:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: var(--azul-Senac);
+}
+
+.campo textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.texto-confirmacao {
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+/* LISTA DE ALUNOS (PERMISSÕES) */
+.lista-alunos-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .aluno-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px;
-    margin: 4px 0;
-    border-radius: 12px;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
 }
 
-.aluno-row:hover { background-color: #f8fafc; }
-.aluno-row input[type="checkbox"] { display: none; }
+.aluno-row:hover {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
 
 .aluno-content {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .avatar-circle {
-    width: 38px; height: 38px;
-    background: #e2e8f0; color: #475569;
-    border-radius: 50%; display: flex;
-    align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--azul-Senac);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
 }
 
-.nome-completo { font-weight: 500; color: #334155; }
-
-.custom-check {
-    width: 22px; height: 22px;
-    border: 2px solid #cbd5e1; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
+.nome-completo {
+    font-size: 13px;
+    color: var(--text-main);
+    font-weight: 500;
 }
 
-.aluno-row input:checked + .aluno-content + .custom-check {
-    background-color: #3b82f6; border-color: #3b82f6;
+/* RODAPÉ E AÇÕES DOS MODAIS */
+.modal-footer {
+    padding: 14px 20px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
 }
 
-.aluno-row input:checked + .aluno-content + .custom-check::after {
-    content: '✓'; color: white; font-size: 14px; font-weight: bold;
+.btn-cancelar {
+    padding: 9px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.aluno-row input:checked ~ .aluno-content .avatar-circle {
-    background-color: #dbeafe; color: #3b82f6;
-}
-
-.btn-cancel {
-    background: transparent; border: none;
-    color: #64748b; font-weight: 600; cursor: pointer;
-    padding: 10px 16px;
+.btn-cancelar:hover {
+    background: #f1f5f9;
 }
 
 .btn-save {
-    background: #3b82f6; color: white;
-    border: none; padding: 10px 20px;
-    border-radius: 10px; font-weight: 600;
+    background: var(--azul-Senac);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-/* ================== RESPONSIVIDADE (OTIMIZADA) ================== */
-@media (max-width: 768px) {
-    .cards-container{
-        min-height: calc(80vh - 83px);
-    }
-
-    /* Cards ficam em coluna */
-    .card {
-        width: 300px;
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-        max-height: none;
-        padding: 24px;
-    }
-    
-    .card-content {
-        padding: 0;
-    }
-
-    .card-action {
-        width: 100%;
-        gap: 8px;
-    }
-
-    .btn-secondary, .btn-danger {
-        width: 55%;
-    }
-
-    .btn-primary{
-        width: 40%;
-        font-size: 0.80rem;
-    }
-
-    .btn-warning{
-        width: 100%; 
-        margin-top: 10px;
-    }
-
-    .btn-repositorio{
-        width: 90%;
-    }
-
-    /* Modais ficam mais largos no mobile para aproveitar espaço */
-    .modal-content, .modal-moderno {
-        width: 95%;
-        margin: 10px;
-    }
-
-    /* Ajuste de ações no footer do modal para não apertar botões */
-    .modal-footer, .modal-actions {
-        flex-direction: column-reverse; /* Salvar em cima, Cancelar embaixo */
-        align-items: stretch;
-    }
+.btn-save:hover {
+    background: var(--laranja-Senac-hover);
 }
 
-/* Animações */
-@keyframes fadeIn {
+.btn-confirmar-excluir {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #dc2626;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-confirmar-excluir:hover {
+    background: #b91c1c;
+}
+
+@keyframes modalFade {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ===================================================
+   RESPONSIVIDADE (MOBILE & TABLET)
+   =================================================== */
+@media (max-width: 640px) {
+    .header-main-action {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .main-title {
+        font-size: 22px;
+    }
+
+    .col-capa {
+        width: 60px;
+    }
+
+    .projeto-thumb,
+    .projeto-thumb-placeholder {
+        width: 55px;
+        /* height: 42px; */
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+
+    .modal-footer button {
+        width: 100%;
+    }
 }

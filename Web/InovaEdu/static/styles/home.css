@@ -1,0 +1,412 @@
+:root {
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --azul-Senac-hover: #00376a;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --text-main: #334155;
+  --text-muted: #64748b;
+}
+
+/* Base Global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   ANIMAÇÕES
+   ========================================================================== */
+@keyframes entradaSuave {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flutuarEsvaziado {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Animação suave de ondulação para as linhas senoidais */
+@keyframes flutuarOnda {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-15px) scaleY(1.05);
+  }
+}
+
+@keyframes flutuarOndaInversa {
+  0%, 100% {
+    transform: translateY(0) scaleY(1.05);
+  }
+  50% {
+    transform: translateY(12px) scaleY(0.95);
+  }
+}
+
+/* Animação Sutil para a Rede de Conexões do Fundo Global */
+/* @keyframes moverRedeFundo {
+  0% { background-position: 0px 0px; }
+  50% { background-position: 30px 20px; }
+  100% { background-position: 0px 0px; }
+} */
+
+/* ==========================================================================
+   CORPO DO SITE (Fundo com malha de Conexões)
+   ========================================================================== */
+body {
+  color: var(--text-main);
+  overflow-x: hidden;
+  background-color: #ffffff;
+  
+  /* Padrão geométrico abstrato simulando nós e conexões em cinza ultra claro */
+  background-image: 
+    radial-gradient(circle at 15px 15px, #e2e8f07a 2px, transparent 2.5px),
+    linear-gradient(to right, rgba(239, 244, 252, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(239, 244, 252, 0.4) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 40px 40px;
+  
+  /* Movimento contínuo e discreto do papel de parede */
+  animation: moverRedeFundo 25s linear infinite;
+}
+
+/* ==========================================================================
+   HERO SECTION (Fundo Azul com Ondas Tecnológicas)
+   ========================================================================== */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  display: flex;
+  align-items: center;
+  padding-left: 10%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--azul-Senac) 0%, var(--azul-Senac-hover) 100%);
+}
+
+.ondas-container {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  width: 100%;
+  height: 250px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.onda {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* Definição de ritmos de oscilação diferentes para dar profundidade */
+.onda-1 {
+  animation: flutuarOnda 8s ease-in-out infinite;
+  bottom: 10px;
+}
+
+.onda-2 {
+  animation: flutuarOndaInversa 11s ease-in-out infinite;
+  bottom: -5px;
+}
+
+.onda-3 {
+  animation: flutuarOnda 14s ease-in-out infinite;
+  bottom: -20px;
+}
+
+.hero-info {
+  position: relative;
+  z-index: 3;
+  color: white;
+  max-width: 600px;
+  animation: entradaSuave 0.8s ease forwards;
+}
+
+.saudacao {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.5px;
+}
+
+.hero-info h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.hero-info h3 {
+  font-size: 1.5rem;
+  color: var(--laranja-Senac);
+  margin-bottom: 15px;
+}
+
+.hero-info p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* Header Menu Central */
+.hearder-meio {
+  position: sticky;
+  top: 20px;
+  z-index: 1000;
+  max-width: 850px;
+  margin: -35px auto 40px auto;
+  background-color: #0464be;
+  border-radius: 100px;
+  box-shadow: 0 10px 25px rgba(0, 74, 141, 0.3);
+  padding: 6px;
+}
+
+.links-meio {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.links-meio a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: 100px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.links-meio a:hover {
+  background-color: var(--laranja-Senac);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 5px 15px rgba(247, 148, 29, 0.4);
+}
+
+/* Bento Grid Dashboard */
+.dashboard-bento {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 30px;
+  max-width: 1300px;
+  margin: 0 auto 40px auto;
+  padding: 0 20px;
+}
+
+.foruns-home, .eventos-home {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  animation: entradaSuave 0.8s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.eventos-home { animation-delay: 0.4s; }
+.titulo-secao, .titulo-eventos, .titulo-curso { margin-bottom: 25px; }
+.titulo-secao h2, .titulo-eventos h2, .titulo-curso h2 { font-size: 24px; color: var(--azul-Senac); }
+.titulo-secao p, .titulo-eventos p, .titulo-curso p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+/* Grid de Fóruns */
+.cards-foruns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card-forum {
+  background: #f8fafc;
+  border-radius: 18px;
+  text-decoration: none;
+  color: inherit;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e2e8f0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-forum:hover {
+  transform: translateY(-5px);
+  background: white;
+  border-color: var(--laranja-Senac);
+  box-shadow: 0 10px 25px rgba(247, 148, 29, 0.12);
+}
+
+.icone-card {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #fff3ea;
+  color: #ff8b2c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.card-forum h3 { color: var(--azul-Senac); font-size: 18px; margin-bottom: 6px; }
+.card-forum p { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; flex: 1; }
+.card-forum span { color: var(--laranja-Senac); font-weight: 600; font-size: 13px; }
+
+/* Agenda de Eventos */
+.cards-eventos { display: flex; flex-direction: column; gap: 15px; }
+.card-evento {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.card-evento:hover { background: white; border-color: var(--azul-Senac); transform: translateX(6px); }
+.data-evento {
+  width: 60px;
+  height: 60px;
+  background: var(--azul-Senac);
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.card-evento:hover .data-evento { transform: scale(1.05) rotate(-4deg); background: var(--laranja-Senac); }
+.data-evento .dia { font-size: 22px; font-weight: bold; }
+.data-evento .mes { font-size: 10px; text-transform: uppercase; }
+.info-evento h3 { color: var(--azul-Senac); font-size: 16px; }
+.info-evento p { color: var(--text-muted); font-size: 13px; margin-top: 3px; }
+
+.estado-vazio-animado { text-align: center; padding: 30px 10px; }
+.animar-esvaziado { font-size: 2.5rem; animation: flutuarEsvaziado 4s ease-in-out infinite; display: inline-block; background: transparent !important; }
+
+/* Blocos de Cursos */
+.cursos-recentes {
+  max-width: 1300px;
+  margin: 20px auto 70px auto;
+  padding: 0 20px;
+  animation: entradaSuave 0.8s ease forwards;
+  animation-delay: 0.6s;
+  opacity: 0;
+}
+
+.cards-cursos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 30px;
+}
+
+.card-curso {
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #e2e8f0;
+}
+
+.card-curso:hover {
+  transform: translateY(-8px);
+  border-color: var(--azul-Senac);
+  box-shadow: 0 20px 40px rgba(0, 74, 141, 0.08);
+}
+
+.imagem-curso {
+  width: 100%;
+  height: 180px;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.imagem-curso img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card-curso:hover .imagem-curso img { transform: scale(1.06); }
+.sem-imagem { font-size: 48px; }
+
+.conteudo-curso {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.conteudo-curso h3 {
+  color: var(--azul-Senac);
+  font-size: 19px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.conteudo-curso p {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.btn-entrar {
+  display: block;
+  text-align: center;
+  padding: 11px 24px;
+  background: var(--azul-Senac);
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-entrar:hover {
+  background: var(--laranja-Senac);
+  box-shadow: 0 5px 15px rgba(247, 148, 29, 0.3);
+}
+
+.sem-cursos { background: white; padding: 40px; border-radius: 24px; text-align: center; box-shadow: var(--shadow); border: 1px solid #e2e8f0; }
+
+/* Responsividade Adaptativa */
+@media (max-width: 992px) {
+  .dashboard-bento { grid-template-columns: 1fr; }
+  
+  .hero { 
+    padding: 60px 20px;
+    height: auto;
+    align-items: flex-start;
+  }
+
+  .hero-info h1 { font-size: 2.5rem; }
+  .hearder-meio { width: 92%; border-radius: 20px; margin-top: -20px; }
+  .links-meio { flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .links-meio a { padding: 8px 16px; font-size: 15px; }
+}

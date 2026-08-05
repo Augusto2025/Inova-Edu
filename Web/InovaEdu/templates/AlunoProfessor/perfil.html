@@ -2,276 +2,364 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/perfil_Aluno.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
 
-{% block header %}
-    {% include "partials/header.html" %}
-{% endblock %}
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
 
-<div class="container">
+    {% comment %} {% block menssagem %}
+    {% endblock  %} {% endcomment %}
 
-    <!-- PERFIL -->
-    <div class="profile-card">
-        <div class="profile-header">
-            <div class="profile-photo-container">
-                {% if usuario.imagem %}
-                    <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
-                {% else %}
-                    <img src="{% static 'img/default_user.png' %}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
-                {% endif %}
+    <div class="container">
+        {% include "partials/menssagem.html" %}
 
-                <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()">
-                    <i class="fas fa-camera"></i>
+        <!-- HERO / CARD DE PERFIL UNIFICADO -->
+        <div class="profile-hero-card">
+            <div class="profile-hero-header">
+                <!-- FOTO COM CAMERA OVERLAY -->
+                <div class="profile-photo-container">
+                    {% if usuario.imagem %}
+                        <img src="{{ usuario.imagem.url }}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                    {% else %}
+                        <img src="{% static 'img/default_user.png' %}" alt="Foto de perfil" class="profile-photo" id="profile-photo">
+                    {% endif %}
+
+                    {% comment %} <div class="photo-edit-btn" onclick="document.getElementById('photo-upload').click()" title="Alterar foto">
+                        <i class="fas fa-camera"></i>
+                    </div>
+
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)"> {% endcomment %}
                 </div>
 
-                <input type="file" id="photo-upload" accept="image/*"
-                       style="display: none;" onchange="updateProfilePhoto(event)">
+                <!-- INFORMAÇÕES DO USUÁRIO -->
+                <div class="profile-hero-info">
+                    <div class="profile-title-row">
+                        <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
+                        
+                        {% if turma %}
+                            <span class="badge-turma">
+                                <i class="fas fa-graduation-cap"></i> Turma {{ turma.codigo_turma }} • {{ turma.ano }} ({{ turma.turno }})
+                            </span>
+                        {% else %}
+                            <span class="badge-turma badge-empty">
+                                <i class="fas fa-graduation-cap"></i> Turma não informada
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="profile-bio" id="profile-bio">
+                        {{ usuario.descricao|default:"Sem descrição cadastrada." }}
+                    </p>
+                </div>
+
+                <!-- BOTÃO DE EDITAR -->
+                <div class="profile-hero-action">
+                    <button class="btn-edit-profile" onclick="openProfileModal()">
+                        <i class="fas fa-user-edit"></i> Editar Perfil
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGAÇÃO POR ABAS (TABS BAR) -->
+        <div class="workspace-tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-btn active" id="btn-tab-projetos" onclick="switchTab('projetos')">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Projetos</span>
+                    <span class="tab-counter">{{ projetos|length }}</span>
+                </button>
+
+                <button class="tab-btn" id="btn-tab-certificados" onclick="switchTab('certificados')">
+                    <i class="fas fa-award"></i>
+                    <span>Certificados</span>
+                    <span class="tab-counter">{{ certificados|length }}</span>
+                </button>
             </div>
 
-            <div class="profile-info">
-                <h1 id="profile-name">{{ usuario.nome }} {{ usuario.sobrenome }}</h1>
-
-                <!-- BADGES CERTIFICADOS -->
-                <div class="course-badges">
-                    {% if turma %}
-<span class="course-badge">
-    Turma {{ turma.codigo_turma }} - {{ turma.ano }} ({{ turma.turno }})
-</span>
-{% else %}
-<span class="course-badge">
-    Turma não informada
-</span>
-{% endif %}
-                </div>
-
-                <p class="profile-bio" id="profile-bio">
-                    {{ usuario.descricao|default:"Sem descrição cadastrada." }}
-                </p>
-
-                <button class="edit-btn" onclick="openProfileModal()">
-                    <i class="fas fa-edit"></i> Editar Perfil
+            <div class="tabs-extra-action">
+                <button class="btn-add-global" id="btn-add-cert-action" style="display: none;" onclick="openCertificadoModal()">
+                    <i class="fas fa-plus"></i> Novo Certificado
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- CERTIFICADOS -->
-    <div class="certificates-section">
-        <div class="section-header">
-            <h2><i class="fas fa-graduation-cap"></i> Meus Certificados</h2>
+        <!-- ÁREA DE CONTEÚDO DAS ABAS -->
+        <div class="workspace-content">
 
-            <button class="add-btn" onclick="openCertificadoModal()">
-                <i class="fas fa-plus"></i> Adicionar Certificado
-            </button>
+            <!-- ABA 1: PROJETOS -->
+            <div class="tab-content active" id="tab-projetos">
+                <div class="tab-grid-list">
+                    {% for projeto in projetos %}
+                        <div class="workspace-card repo-card-item">
+                            <div class="card-icon-box">
+                                <i class="fas fa-code"></i>
+                            </div>
+
+                            <div class="card-main-info">
+                                <div class="card-title-line">
+                                    <h3>{{ projeto.nome_projeto }}</h3>
+                                    <span class="pill-date">
+                                        <i class="far fa-calendar-alt"></i> {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                                    </span>
+                                </div>
+
+                                <p class="card-subtitle">
+                                    <i class="fas fa-users"></i>
+                                    {% if projeto.turma %}
+                                        Turma {{ projeto.turma.codigo_turma }} • {{ projeto.turma.curso.nome_curso }} ({{ projeto.turma.turno }})
+                                    {% else %}
+                                        Turma não informada
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="card-action-side">
+                                <a href="{% url 'repositorio_projeto' projeto.idprojeto %}" class="dash-btn-link">
+                                    <button class="btn-primary-action">
+                                        <span>Acessar Projeto</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="no-items-placeholder">
+                            <i class="fas fa-folder-open"></i>
+                            <h4>Nenhum projeto associado</h4>
+                            <p>Você ainda não possui projetos vinculados à sua turma.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ABA 2: CERTIFICADOS -->
+            <div class="tab-content" id="tab-certificados">
+                <div class="tab-grid-list">
+                    {% for certificado in certificados %}
+                        <div class="workspace-card cert-card-item" data-id="{{ certificado.idcertificado }}">
+                            <div class="card-icon-box icon-cert">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+
+                            <div class="card-main-info">
+                                <div class="card-title-line">
+                                    <h3>{{ certificado.nome }}</h3>
+                                    <span class="pill-date">
+                                        <i class="far fa-clock"></i>
+                                        {% if certificado.data_inicio %}{{ certificado.data_inicio|date:"d/m/Y" }}{% else %}---{% endif %} 
+                                        até 
+                                        {% if certificado.data_final %}{{ certificado.data_final|date:"d/m/Y" }}{% else %}Atual{% endif %}
+                                    </span>
+                                </div>
+
+                                <p class="card-description">
+                                    {{ certificado.descricao|default:"Sem descrição cadastrada." }}
+                                </p>
+                            </div>
+
+                            <div class="card-action-side horizontal-actions">
+                                <button class="btn-icon-action edit" title="Editar"
+                                    onclick='openEditCertificadoModal(
+                                        {{ certificado.idcertificado }},
+                                        "{{ certificado.nome|escapejs }}",
+                                        "{{ certificado.descricao|escapejs }}",
+                                        "{{ certificado.data_inicio|date:'Y-m-d' }}",
+                                        "{{ certificado.data_final|date:'Y-m-d' }}"
+                                    )'>
+                                    <i class="fas fa-pen"></i>
+                                </button>
+
+                                <button class="btn-icon-action delete" title="Excluir"
+                                    onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome|escapejs }}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="no-items-placeholder">
+                            <i class="fas fa-award"></i>
+                            <h4>Nenhum certificado cadastrado</h4>
+                            <p>Adicione seus cursos e qualificações para enriquecer seu perfil.</p>
+                            <button class="btn-primary-action" onclick="openCertificadoModal()">
+                                <i class="fas fa-plus"></i> Adicionar Certificado
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
 
-        <div class="certificates-grid" id="certificados-grid">
-            {% for certificado in certificados %}
-            <div class="certificate-card" data-id="{{ certificado.idcertificado }}">
-                <div class="certificate-icon">
-                    <i class="fas fa-certificate"></i>
+    </div>
+
+    <!-- MODAL PERFIL -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
+                <button type="button" class="close-btn" onclick="closeProfileModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Seção de Foto de Perfil -->
+                <div class="profile-photo-section">
+                    <div class="photo-actions">
+                        <div class="profile-photo-container">
+                            <img id="edit-profile-photo-preview" src="{% if usuario.imagem %}{{ usuario.imagem.url }}{% else %}{% static 'img/default_user.png' %}{% endif %}" alt="Foto de perfil" class="profile-photo">
+                        </div>
+                        <label for="edit-foto-input" class="btn-change-photo">
+                            <i class="fas fa-camera"></i> Alterar Foto
+                        </label>
+                        <input type="file" id="edit-foto-input" accept="image/*" style="display: none;" onchange="updateProfilePhoto(event)">
+                        
+                        <button type="button" class="btn-remove-photo" onclick="removeProfilePhoto()">
+                            <i class="fas fa-trash-alt"></i> Remover Foto
+                        </button>
+                    </div>
                 </div>
 
-                <h3>{{ certificado.nome }}</h3>
+                <form id="formEditarPerfil" onsubmit="event.preventDefault(); saveProfile();">
+                    
 
-                <p><strong>Descrição:</strong>
-                    {{ certificado.descricao|default:"Sem descrição" }}
+                    <div class="form-group">
+                        <label for="edit-email">E-mail</label>
+                        <input type="email" name="email" id="edit-email" value="{{ usuario.email }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-bio">Descrição / Bio</label>
+                        <textarea maxlength="150" name="descricao" id="edit-bio" rows="3">{{ usuario.descricao }}</textarea>
+                    </div>
+
+                    <!-- Checkbox Trocar Senha -->
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-container">
+                            <span>Deseja alterar a sua senha?</span>
+                            <input type="checkbox" id="toggle-change-password" onchange="togglePasswordFields()">
+                        </label>
+                    </div>
+
+                    <!-- Campos de Senha (Ocultos por padrão) -->
+                    <div id="password-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="edit-senha-atual">Senha Atual</label>
+                            <input type="password" name="senha_atual" id="edit-senha-atual" placeholder="Digite sua senha atual">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-nova-senha">Nova Senha</label>
+                            <input type="password" name="nova_senha" id="edit-nova-senha" placeholder="Digite a nova senha">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
+                <button type="button" onclick="saveProfile()" class="save-btn">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CERTIFICADO (CRIAR E EDITAR) -->
+    <div class="modal" id="certificado-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="certificado-modal-title">
+                    <i class="fas fa-plus-circle"></i> Adicionar Certificado
+                </h3>
+                <button type="button" class="close-btn" onclick="closeCertificadoModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form id="formSalvarCertificado" onsubmit="event.preventDefault(); saveCertificado();">
+                    <input type="hidden" name="id_certificado" id="certificado-id">
+
+                    <div class="form-group">
+                        <label>Nome do Certificado</label>
+                        <input type="text" name="nome" id="certificado-nome" maxlength="30" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="descricao" id="certificado-descricao" maxlength="150"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Data de início</label>
+                            <input type="date" name="data_inicio" id="certificado-data-inicio">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data de término</label>
+                            <input type="date" name="data_fim" id="certificado-data-fim">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" onclick="closeCertificadoModal()">Cancelar</button>
+                <button type="button" onclick="saveCertificado()" class="save-btn">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR EXCLUSÃO -->
+    <div class="modal" id="confirm-delete-modal">
+        <div class="modal-content">
+            <div class="modal-header excluir">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h3>
+                <button type="button" class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>
+                    Tem certeza que deseja excluir o certificado
+                    <strong id="certificado-nome-delete"></strong>?
                 </p>
 
-                {% if certificado.data_inicio %}
-                    <p>
-                        <i class="far fa-calendar-alt"></i>
-                        <strong>Início:</strong>
-                        {{ certificado.data_inicio|date:"d/m/Y" }}
-                    </p>
-                {% endif %}
-
-                {% if certificado.data_final %}
-                    <p>
-                        <i class="far fa-calendar-check"></i>
-                        <strong>Término:</strong>
-                        {{ certificado.data_final|date:"d/m/Y" }}
-                    </p>
-                {% endif %}
-
-                <div class="certificate-actions">
-                    <button class="cert-btn edit-cert"
-                        onclick='openEditCertificadoModal(
-                            {{ certificado.idcertificado }},
-                            "{{ certificado.nome|escapejs }}",
-                            "{{ certificado.descricao|escapejs }}",
-                            "{{ certificado.data_inicio|date:'Y-m-d' }}",
-                            "{{ certificado.data_final|date:'Y-m-d' }}"
-                        )'>
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-
-                    <button class="cert-btn delete-cert"
-                    onclick="openDeleteModal({{ certificado.idcertificado }}, '{{ certificado.nome }}')">
-                        <i class="fas fa-trash"></i> Excluir
-                        </button>
-                </div>
+                <p class="text-danger">
+                    Esta ação não pode ser desfeita.
+                </p>
             </div>
-            {% empty %}
-            <div class="no-items">
-                <i class="fas fa-book-open"></i>
-                <p>Nenhum certificado cadastrado ainda.</p>
+
+            <div class="modal-footer">
+                <button type="button" class="delete-btn" onclick="confirmDeleteCertificado()">Excluir</button>
+                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
             </div>
-            {% endfor %}
         </div>
     </div>
 
-    <!-- PROJETOS -->
-    <div class="repos-section">
-        <div class="section-header">
-            <h2><i class="fas fa-project-diagram"></i> Projetos que participo</h2>
-        </div>
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
-        <div class="repos-grid" id="projetos-grid">
-            {% for projeto in projetos %}
-                <div class="repo-card">
+    <!-- SCRIPT DE TROCA DE ABAS -->
+    <script>
+        function switchTab(tabName) {
+            // Oculta conteúdos
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Desativa botões
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-                    <h3>{{ projeto.nome_projeto }}</h3>
+            // Ativa selecionado
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('btn-tab-' + tabName).classList.add('active');
 
-                    <p class="repo-turma">
-                        <i class="fas fa-users"></i>
-                        {% if projeto.turma %}
-                            Turma: {{ projeto.turma.codigo_turma }} -
-                            {{ projeto.turma.curso.nome_curso }} -
-                            {{ projeto.turma.ano }}
-                            ({{ projeto.turma.turno }})
-                        {% else %}
-                            Turma não informada
-                        {% endif %}
-                    </p>
+            // Mostra o botão "+ Novo Certificado" somente na aba de certificados
+            const addCertBtn = document.getElementById('btn-add-cert-action');
+            if (tabName === 'certificados') {
+                addCertBtn.style.display = 'inline-flex';
+            } else {
+                addCertBtn.style.display = 'none';
+            }
+        }
+    </script>
 
-                    <p class="repo-date">
-                        <i class="far fa-calendar-alt"></i>
-                        Criado em: {{ projeto.data_de_criacao|date:"d/m/Y" }}
-                    </p>
-
-                    <a href="{% url 'repositorio_projeto' projeto.idprojeto %}">
-                        <button class="entrar-projeto">
-                            <i class="fas fa-folder-open"></i> Entrar
-                        </button>
-                    </a>
-
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-</div>
-
-<!-- MODAL PERFIL -->
-<div class="modal" id="profile-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
-            <button class="close-btn" onclick="closeProfileModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Nome</label>
-                <input type="text" id="edit-nome" value="{{ usuario.nome }}">
-            </div>
-
-            <div class="form-group">
-                <label>Sobrenome</label>
-                <input type="text" id="edit-sobrenome" value="{{ usuario.sobrenome }}">
-            </div>
-
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea id="edit-bio">{{ usuario.descricao }}</textarea>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeProfileModal()">Cancelar</button>
-            <button class="save-btn" onclick="saveProfile()">Salvar</button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL CERTIFICADO -->
-<div class="modal" id="certificado-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="certificado-modal-title">
-                <i class="fas fa-plus-circle"></i> Adicionar Certificado
-            </h3>
-            <button class="close-btn" onclick="closeCertificadoModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Nome do Certificado</label>
-                <input type="text" id="certificado-nome">
-            </div>
-
-            <div class="form-group">
-                <label>Descrição</label>
-                <textarea id="certificado-descricao"></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Data de início</label>
-                    <input type="date" id="certificado-data-inicio">
-                </div>
-
-                <div class="form-group">
-                    <label>Data de término</label>
-                    <input type="date" id="certificado-data-fim">
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="cancel-btn" onclick="closeCertificadoModal()">Cancelar</button>
-            <button class="save-btn" onclick="saveCertificado()">Salvar</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="confirm-delete-modal">
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h3>⚠️ Confirmar Exclusão</h3>
-            <button onclick="closeDeleteModal()">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <p>
-                Tem certeza que deseja excluir o certificado
-                <strong id="certificado-nome-delete"></strong>?
-            </p>
-
-            <p style="color:red;">
-                Esta ação não pode ser desfeita.
-            </p>
-        </div>
-
-        <div class="modal-footer">
-            <button class="delete-btn" onclick="confirmDeleteCertificado()">
-                Excluir
-            </button>
-
-            <button class="cancel-btn" onclick="closeDeleteModal()">
-                Cancelar
-            </button>
-        </div>
-
-    </div>
-</div>
-
-<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
-
-<script src="{% static 'scripts/perfil.js' %}"></script>
+    <script src="{% static 'scripts/perfil.js' %}"></script>
 
 {% endblock %}
 

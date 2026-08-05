@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    {% if usuario.tipo == "Aluno" %}
+        {% block header %}
+            {% include "partials/header.html" %}
+        {% endblock %}
+    {% else %}
+        {% include "partials/navbar_Coordenacao.html" %}
+    {% endif %}
+
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .btn-primary{
+            background-color: var(--azul-Senac);
+            color: var(--branco-Senac);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .btn-secondary{
+            background-color: var(--text-muted););
+            color: var(--branco-Senac);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <div class="container-repositorio-main" style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 4rem; color: #e74c3c; margin-bottom: 20px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">Ops! Algo deu errado.</h1>
+        <p style="color: #666; font-size: 1.1rem; max-width: 500px; margin: 0 auto 30px auto;">
+            Ocorreu um erro inesperado no nosso servidor. Nossa equipe já foi notificada para resolver isso.
+        </p>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="javascript:history.back()" class="btn-action btn-secondary" style="text-decoration: none;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar à Página Anterior
+            </a>
+
+            {% if usuario.tipo == "Aluno" %}
+                <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-house"></i> Ir para o Início
+                </a>
+            {% else %}
+                <a href="{% url "HomeCoord" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-house"></i> Ir para o Início
+                </a>
+            {% endif %}
+            </a>
+        </div>
+    </div>
+
+    {% include "partials/footer.html" %}
+{% endblock %}

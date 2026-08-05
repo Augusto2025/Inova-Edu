@@ -1,56 +1,121 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { 
-  StyleSheet, 
   View, 
   Text, 
   ScrollView, 
   TouchableOpacity, 
-  TextInput, 
-  Modal,
-  SafeAreaView,
-  Dimensions
+  Image,
+  ActivityIndicator, 
+  Alert
 } from 'react-native';
-import Card from '../components/Card';
+import { useFocusEffect } from '@react-navigation/native'; // 1. Hook de recarregamento
 import Header from '../components/Header';
+import Skeleton from '../components/Skeleton';
 import styles from '../styles/Curso';
+import BarraPesquisa from '../components/BarraPesquisa';
+import { API_ENDPOINTS } from '../services/api';
 
-const { width } = Dimensions.get('window');
+// 2. Importação do Contexto de Tema e Acessibilidade
+import { ThemeContext } from '../context/ThemeContext';
+
+const URL_CURSOS = API_ENDPOINTS.cursos;
 
 export default function CursosScreen({ navigation }) {
-  const [search, setSearch] = useState('');
+  // Puxando as variáveis globais
+  const { theme, fontSizeScale } = useContext(ThemeContext);
 
-  const cursos = [
-    { id: 1, nome_curso: 'Informática Básica' },
-    { id: 2, nome_curso: 'Excel Avançado' },
-    { id: 3, nome_curso: 'Desenvolvimento Web Full Stack' },
-  ];
+  const [search, setSearch] = useState('');
+  const [cursos, setCursos] = useState([]); 
+  const [carregando, setCarregando] = useState(true); 
+
+  // 3. Transformamos a busca em um useCallback para evitar loops infinitos
+  const buscarCursos = useCallback(async () => {
+    try {
+      setCarregando(true);
+      const resposta = await fetch(URL_CURSOS, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const dados = await resposta.json(); 
+      setCursos(dados || []); 
+      
+    } catch (error) {
+      console.error('Erro ao buscar cursos:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os cursos.');
+    } finally {
+      setCarregando(false);
+    }
+  }, []);
+
+  // 4. MÁGICA DO RECARREGAMENTO: Executa buscarCursos() toda vez que a tela é aberta
+  useFocusEffect(
+    useCallback(() => {
+      buscarCursos();
+    }, [buscarCursos])
+  );
 
   const irParaTurmas = (curso) => {
-    navigation.navigate("Turmas", { cursoId: curso.id, nomeCurso: curso.nome_curso });
+    navigation.navigate("Turmas", { cursoId: curso.idcurso, nomeCurso: curso.nome_curso });
   };
 
+  const cursosFiltrados = (cursos || []).filter((curso) => {
+    const termo = search.trim().toLowerCase();
+    if (!termo) return true;
+
+    const nome = `${curso.nome_curso || ''}`.toLowerCase();
+    return nome.includes(termo);
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.listaCursos}>
-        {/* HEADER */}
-        <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} />
-        
-        <View style={{ width: '90%', margin: 20, marginBottom: 0, marginTop: 0 }}>
-          {cursos.length === 0 ? (
-            <Text style={styles.vazio}>Nenhum resultado encontrado.</Text>
+    // Fundo dinâmico aplicado ao container principal
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      
+      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} carregando={carregando} />
+      
+      <BarraPesquisa value={search} onChangeText={setSearch} placeholder="Buscar curso" />
+
+      {carregando ? (
+        <View style={{ flex: 1, padding: 20 }}>
+          {[1, 2, 3].map((item) => (
+            <Skeleton key={item} width="100%" height={120} borderRadius={20} style={{ marginBottom: 16 }} />
+          ))}
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.listaCursos}>
+          {cursosFiltrados.length === 0 ? (
+            <Text style={[styles.vazio, { color: theme.text, fontSize: 16 * fontSizeScale }]}>
+              Nenhum resultado encontrado.
+            </Text>
           ) : (
-            cursos.map((curso) => (
-              <Card 
-                key={curso.id}
-                titulo={curso.nome_curso}
-                textoBotao="Entrar"
-                iconeBotao="arrow-right"
-                aoPressionar={() => irParaTurmas(curso)}
-              />
+            cursosFiltrados.map((curso) => (
+              <TouchableOpacity 
+                key={curso.idcurso} 
+                // Card dinâmico (Cor de fundo se adapta ao modo escuro)
+                style={[styles.cardCursoGrid, { backgroundColor: theme.card }]}
+                onPress={() => irParaTurmas(curso)}
+                activeOpacity={0.8}
+              >
+                {curso.imagem ? (
+                  <Image source={{ uri: curso.imagem }} style={styles.cursoImagem} />
+                ) : (
+                  // O fundo do placeholder também fica mais escuro no dark mode
+                  <View style={[styles.placeholderImagemContainer, { backgroundColor: theme.border }]}>
+                    <Text style={styles.placeholderIcone}>🎓</Text>
+                  </View>
+                )}
+                
+                <View style={styles.textoCursoContainer}>
+                  {/* Fonte dinâmica e cor do texto adaptável */}
+                  <Text style={[styles.tituloCursoGrid, { color: theme.text, fontSize: 14 * fontSizeScale }]} numberOfLines={2}>
+                    {curso.nome_curso}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             ))
           )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      )}
+    </View>
   );
-};
+}

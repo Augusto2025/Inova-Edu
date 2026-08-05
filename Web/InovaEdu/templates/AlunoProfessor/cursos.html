@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    
+    <link rel="stylesheet" href="{% static 'styles/cursos.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/pesquisa.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {% block header %}
+        {% include "partials/header.html" %}
+    {% endblock %}
+
+    <div class="container">
+        
+        <header class="section-header">
+            <div class="rota">
+                Página: Cursos
+            </div>
+            <div class="titulo">
+                <h1 class="main-title">Cursos</h1>
+                <p class="sub-title">Explore os cursos disponíveis e acesse os conteúdos relacionados.</p>
+            </div>
+        </header>
+
+      
+        <section class="search-container">
+            <form method="get" action="{% url 'cursos' %}" class="search-form-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="search" name="q" placeholder=" Digite o nome do curso..." value="{{ query }}">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+
+        {% if curso|length == 0 %}
+            <div class="no-results">
+                <p>Nenhum resultado encontrado.</p>
+            </div>
+        {% endif %}
+    </div> 
+
+    <main class="container">
+
+        <section class="cards-grid">
+            {% for Curso in curso %}
+                
+                <!-- CARD DO CURSO (Exibe os 7 primeiros, oculta os demais) -->
+                <article class="card card-curso {% if forloop.counter > 7 %}curso-oculto{% endif %}" 
+                         {% if forloop.counter > 5 %}style="display: none;"{% endif %}>
+                    
+                    {% if Curso.imagem %}
+                        <div class="card-image" style="background-image: url('{{ Curso.imagem.url }}'); background-size: cover; background-position: center;">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% else %}
+                        <div class="card-image img-fallback-gradient">
+                            <h2>{{ Curso.nome_curso }}</h2>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-content">
+                        <h3>{{ Curso.nome_curso }}</h3>
+                        {% if Curso.descricao_curso %}
+                            <p>{{ Curso.descricao_curso|slice:":120" }}</p>
+                        {% else %}
+                            <p>Descrição não disponível.</p>
+                        {% endif %}
+                        <div class="borda"></div>
+                        <a class="Botao_entrar_curso" href="{% url 'turmas' curso_id=Curso.idcurso %}">Entrar</a>
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+            <!-- CARD "VER MAIS" (Fica no final do grid e é renderizado se houver mais de 7 cursos) -->
+            {% if curso|length > 7 %}
+                <article class="card card-ver-mais" id="btnVerMaisCursos">
+                    <div class="card-ver-mais-content">
+                        <h3>Ver mais cursos</h3>
+                        <p>Clique para ver mais cursos</p>
+                        <div>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </article>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. LÓGICA DE EXIBIR DE 12 EM 12 ---
+            function inicializarVerMais() {
+                const btnVerMais = document.getElementById('btnVerMaisCursos');
+                if (!btnVerMais) return;
+
+                btnVerMais.addEventListener('click', () => {
+                    // Seleciona todos os cursos que ainda estão ocultos
+                    const cursosOcultos = Array.from(document.querySelectorAll('.curso-oculto'));
+                    
+                    // Pega apenas os próximos 12 cursos ocultos
+                    const proximos12 = cursosOcultos.slice(0, 12);
+
+                    // Revela esses 12 cursos
+                    proximos12.forEach(card => {
+                        card.style.display = 'flex';
+                        card.classList.remove('curso-oculto');
+                    });
+
+                    // Se não sobrarem mais cursos ocultos, esconde o card "Ver mais"
+                    if (document.querySelectorAll('.curso-oculto').length === 0) {
+                        btnVerMais.style.display = 'none';
+                    }
+                });
+            }
+
+            inicializarVerMais();
+
+
+            // --- 2. LÓGICA DE BUSCA AUTOMÁTICA EM TEMPO REAL ---
+            const inputBusca = document.querySelector('input[name="q"]');
+            const searchForm = document.querySelector('.search-form-wrapper');
+            const cardsGrid = document.querySelector('.cards-grid');
+            let timeout = null;
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', (e) => e.preventDefault());
+            }
+
+            if (inputBusca && cardsGrid) {
+                inputBusca.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+
+                    timeout = setTimeout(() => {
+                        const query = e.target.value.trim();
+                        const url = `{% url 'cursos' %}?q=${encodeURIComponent(query)}`;
+
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const novaGrid = doc.querySelector('.cards-grid');
+                                
+                                if (novaGrid) {
+                                    cardsGrid.innerHTML = novaGrid.innerHTML;
+                                    inicializarVerMais(); // Re-vincula a ação do "Ver mais"
+                                }
+                            })
+                            .catch(err => console.error('Erro na busca:', err));
+                    }, 300);
+                });
+            }
+
+        });
+    </script>
+   
+{% endblock %}
+
+{% block footer %}
+    {% include "partials/footer.html" %}
+{% endblock %}

@@ -10,7 +10,7 @@
   <link rel="icon" href="{% static 'img/LOGOBRANCO.png' %}">
   <title>Inova Edu</title>
 </head>
-<body>
+<body class="site-wrapper">
   {% block content %} 
     {% block header %}{% endblock %} 
   {% endblock %}
@@ -22,5 +22,61 @@
   {% block chat %}
     {% include "partials/chatbot.html" %}
   {% endblock %}
+
+  {% block content3 %}
+    {% block menssagem %}{% endblock  %}
+  {% endblock  %}
+
+  <!-- Coloque este script no base.html (antes do </body>) -->
+  <script>
+    // Usamos delegação de eventos no document para capturar qualquer formulário enviado
+    document.addEventListener('submit', function (e) {
+      const form = e.target;
+
+      // Se o submit foi cancelado por outro JS (ex: o e.preventDefault() da sua barra de busca), ignora
+      if (e.defaultPrevented) return;
+
+      // Se a validação nativa do HTML (required) falhar, ignora
+      if (!form.checkValidity()) return;
+
+      // 1. Tenta achar o botão DENTRO do formulário
+      let submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+
+      // 2. Se não achou dentro, busca FORA pelo atributo form="idDoForm" (Caso dos seus Modais)
+      if (!submitBtn && form.id) {
+        submitBtn = document.querySelector(`button[type="submit"][form="${form.id}"], input[type="submit"][form="${form.id}"]`);
+      }
+
+      if (submitBtn) {
+        // Se já estiver desabilitado, impede o envio duplicado
+        if (submitBtn.disabled) {
+          e.preventDefault();
+          return false;
+        }
+
+        // Salva o texto original e desabilita o botão
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+
+        // Feedback visual (aproveitando o FontAwesome que você já usa no projeto)
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+      }
+    });
+
+    // CORREÇÃO BFCache: Reabilita os botões se o usuário usar o botão "Voltar" do navegador
+    window.addEventListener('pageshow', function () {
+      document.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function (btn) {
+        if (btn.disabled && btn.dataset.originalText) {
+          btn.disabled = false;
+          btn.innerHTML = btn.dataset.originalText;
+        }
+      });
+    });
+    // Substitua o trecho de desabilitar por um setTimeout:
+    setTimeout(() => {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+    }, 10); // Executa 10ms depois do submit disparar
+  </script>
 </body>
 </html>

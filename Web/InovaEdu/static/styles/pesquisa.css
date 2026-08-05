@@ -1,0 +1,132 @@
+
+/* O css da pesquisa e do home e forum e o filtro do ano na turma====================================================== */
+
+:root {
+    --laranja-Senac: #F7941D;
+    --branco-Senac: #FFF;
+    --azul-Senac: #004A8D;
+    --azul-Senac-hover: #00376a;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --text-main: #334155;
+    --text-muted: #64748b;
+}
+
+
+
+/* BARRA DE PESQUISA SUPERIOR (NOVA)========== */
+.search-container {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 35px;
+}
+
+.search-form-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.search-icon {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  background: transparent;
+}
+
+.btn-search {
+  background-color: var(--azul-Senac);
+  color: #ffffff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.btn-search:hover {
+  background-color: var(--azul-Senac-hover);
+}
+
+/* ===========================================================
+   CABEÇALHO, ROTAS E TÍTULOS
+   =========================================================== */
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+
+
+.section-header {
+    margin-bottom: 25px;
+}
+
+
+.rota {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.rota a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.rota a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+.main-title {
+    color: var(--azul-Senac);
+    font-size: 2.2rem;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+}
+
+/* Detalhe da barra laranja abaixo do título */
+.main-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 4px;
+  background-color: var(--laranja-Senac);
+  border-radius: 2px;
+}
+
+
+
+

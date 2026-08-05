@@ -1,240 +1,243 @@
-import React from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Image,
+  Animated,
+  StatusBar,
 } from "react-native";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { COLORS } from "./Cores"; // Importando as cores para manter a consistência visual
-import { useNavigation, TabActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import Skeleton from "./Skeleton";
+import { useUser } from "../context/UserContext";
+
+// 1. IMPORTANDO O CONTEXTO DO TEMA
+import { ThemeContext } from "../context/ThemeContext";
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function Header({
   nomeTela,
-  temGoBack,
-  telaDestino,
+  temGoBack, 
+  telaDestino, // Mantido para compatibilidade de telas antigas
+  onPressBack, // Permite passar ações customizadas de voltar
   exibirPerfil = false, 
   exibirCurva = true, 
+  quantidadeNotificacoes = 0, 
+  aoClicarNoSino,            
+  carregando = false, 
+  subtitulo = "Tec. Desenvolvimento de Sistemas", // 🆕 permite customizar o texto abaixo do nome (ex: "Professor")
 }) {
   const navigation = useNavigation();
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  const lidarComVoltar = () => {
-    if (telaDestino) {
-      try {
-        navigation.dispatch(TabActions.jumpTo(telaDestino));
-      } catch (e) {
-        navigation.navigate(telaDestino);
-      }
+  // 2. RESGATANDO AS VARIÁVEIS DE TEMA COM PROTEÇÃO (FALLBACK)
+  const context = useContext(ThemeContext);
+  const theme = context?.theme || { background: '#fff', card: '#FFFFFF', text: '#333333', border: '#E2E8F0' };
+  const fontSizeScale = context?.fontSizeScale || 1;
+  const isDarkMode = context?.isDarkMode || false;
+
+  // Pega a foto do usuário do contexto global
+  const { user } = useUser();
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+
+  const isValidImageUri = (uri) => {
+    return typeof uri === 'string' && uri.trim() !== '' && uri.trim().toLowerCase() !== 'null' && /^https?:\/\//i.test(uri.trim());
+  };
+
+  const avatarUri = isValidImageUri(user?.imagem) ? user.imagem.trim() : null;
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [avatarUri]);
+
+  // Cores dinâmicas para o Header
+  const headerBgColor = isDarkMode ? theme.card : "#1459b3";
+  const headerTextColor = isDarkMode ? theme.text : "#fff";
+  const headerSubTextColor = isDarkMode ? theme.text : "#dfe6ff";
+
+  useEffect(() => {
+    if (quantidadeNotificacoes > 0 && !carregando) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.1, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1.0, duration: 1000, useNativeDriver: true }),
+        ])
+      ).start();
     } else {
+      pulseAnim.setValue(1); 
+    }
+  }, [pulseAnim, quantidadeNotificacoes, carregando]);
+
+  // FUNÇÃO DE VOLTAR
+  const lidarComVoltar = () => {
+    if (onPressBack) {
+      onPressBack();
+      return;
+    }
+    if (navigation.canGoBack()) {
       navigation.goBack();
+    } else {
+      navigation.navigate("Home"); 
     }
   };
 
   return (
-    <View style={styles.wrapper}>
-
-      {/* LINHA DA LOGOMARCA: Adicionada no topo do Header */}
-      <View style={styles.logoRow}>
-        <Text style={styles.logoText}>Inova-Edu</Text>
-      </View>
-
-      {/* CONTEÚDO DO HEADER */}
-      <View style={styles.header}>
-
-        {/* ESQUERDA */}
-        <View style={styles.left}>
-          
-          {/* CASO 1: SE FOR A HOME (exibirPerfil === true) */}
-          {exibirPerfil ? (
+    <SafeAreaView edges={["top"]} style={[styles.wrapper, { backgroundColor: headerBgColor }]}> 
+      <StatusBar translucent={false} backgroundColor={headerBgColor} barStyle={isDarkMode ? 'dark-content' : 'light-content'} />
+      <View style={[styles.header, { backgroundColor: headerBgColor }]}>
+        
+        {exibirPerfil ? (
+          <View style={styles.left}>
             <View style={styles.profileContainer}>
-              <Image
-                source={{ uri: "https://i.pravatar.cc/300" }}
-                style={styles.profileImage}
-              />
+              {carregando ? (
+                <Skeleton 
+                  width={52 * fontSizeScale} 
+                  height={52 * fontSizeScale} 
+                  borderRadius={(52 * fontSizeScale) / 2} 
+                  style={{ marginRight: 12 }} 
+                />
+              ) : avatarUri && !avatarLoadFailed ? (
+                <Image 
+                  source={{ uri: avatarUri }} 
+                  style={[styles.profileImage, { borderColor: headerBgColor }]} 
+                  onError={() => setAvatarLoadFailed(true)}
+                />
+              ) : (
+                <View style={[styles.profileImagePlaceholder, { borderColor: headerTextColor, backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                  <Ionicons name="person" size={26} color={headerTextColor} />
+                </View>
+              )}
+
               <View style={styles.rightHeaderText}>
-                <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
-                <Text style={styles.courseSubtitle} numberOfLines={1}>
-                  Tec. Desenvolvimento de Sistemas
-                </Text>
+                {carregando ? (
+                  <View style={{ gap: 6, justifyContent: 'center', height: 52 * fontSizeScale }}>
+                    <Skeleton width={110 * fontSizeScale} height={16 * fontSizeScale} borderRadius={4} />
+                    <Skeleton width={150 * fontSizeScale} height={12 * fontSizeScale} borderRadius={4} />
+                  </View>
+                ) : (
+                  <>
+                    <Text style={[styles.title, { color: headerTextColor, fontSize: 22 * fontSizeScale }]} numberOfLines={1}>
+                      {nomeTela}
+                    </Text>
+                    <Text style={[styles.courseSubtitle, { color: headerSubTextColor, fontSize: 12 * fontSizeScale, opacity: isDarkMode ? 0.7 : 1 }]} numberOfLines={1}>
+                      {subtitulo}
+                    </Text>
+                  </>
+                )}
               </View>
             </View>
-          ) : (
-            
-            /* CASO 2: SE FOR OUTRA TELA (Sem perfil, com botão de voltar embaixo do tema) */
-            <View style={styles.noProfileContainer}>
-              {/* O Tema/Título fica em cima */}
-              <Text style={styles.title} numberOfLines={1}>{nomeTela}</Text>
-              
-              {/* O botão de voltar fica embaixo */}
+          </View>
+        ) : (
+          <View style={styles.centerContainerRow}>
+            {/* BOTÃO DE VOLTAR - ESQUERDA */}
+            <View style={styles.leftActionArea}>
               {temGoBack && (
-                <TouchableOpacity
+                <TouchableOpacity 
+                  style={styles.backButton} 
                   onPress={lidarComVoltar}
-                  style={styles.backButtonUnder}
                   activeOpacity={0.7}
                 >
-                  <Feather name="arrow-left" size={16} color="#dfe6ff" />
-                  <Text style={styles.backButtonText}>Voltar</Text>
+                  <Feather name="arrow-left" size={26 * fontSizeScale} color={headerTextColor} />
                 </TouchableOpacity>
               )}
             </View>
-          )}
 
-        </View>
-
-        {/* NOTIFICAÇÃO (Fica alinhada com o conteúdo inferior) */}
-        <TouchableOpacity
-          style={styles.notification}
-          onPress={() => navigation.navigate("Notifications")}
-        >
-          <Feather name="bell" size={24} color="#fff" />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>3</Text>
-          </View>
-        </TouchableOpacity>
-              {/* NOTIFICAÇÃO */}
-              <TouchableOpacity
-                style={styles.notification}
-                onPress={() => navigation.navigate("Notifications")}
-              >
-                <Feather name="bell" size={24} color="#fff" />
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>3</Text>
-                </View>
-              </TouchableOpacity>
-
+            {/* TÍTULO CENTRALIZADO */}
+            <View style={styles.centerTextContainer}>
+              {carregando ? (
+                <Skeleton width={140 * fontSizeScale} height={20 * fontSizeScale} borderRadius={4} />
+              ) : (
+                <Text style={[styles.title, { color: headerTextColor, fontSize: 20 * fontSizeScale }]} numberOfLines={1}>
+                  {nomeTela}
+                </Text>
+              )}
             </View>
           </View>
+        )}
+
+        {/* BOTÃO DE NOTIFICAÇÃO - DIREITA */}
+        <View style={styles.rightActionArea}>
+          {carregando ? (
+            <Skeleton width={48 * fontSizeScale} height={48 * fontSizeScale} borderRadius={24 * fontSizeScale} />
+          ) : (
+            <AnimatedTouchableOpacity
+              style={[
+                styles.notification,
+                { backgroundColor: isDarkMode ? theme.border : "rgba(255,255,255,0.15)" },
+                quantidadeNotificacoes > 0 && { transform: [{ scale: pulseAnim }] }
+              ]}
+              onPress={() => {
+                if (aoClicarNoSino) aoClicarNoSino(); 
+                navigation.navigate("Notifications");
+              }}
+              activeOpacity={0.8}
+            >
+              <Feather name="bell" size={24 * fontSizeScale} color={headerTextColor} />
+              {quantidadeNotificacoes > 0 && (
+                <View style={[styles.badge, { width: 18 * fontSizeScale, height: 18 * fontSizeScale, borderRadius: 9 * fontSizeScale }]}>
+                  <Text style={[styles.badgeText, { fontSize: 10 * fontSizeScale }]}>{quantidadeNotificacoes}</Text>
+                </View>
+              )}
+            </AnimatedTouchableOpacity>
+          )}
+        </View>
+
+      </View>
+
+      {/* CURVA DINÂMICA */}
+      {exibirCurva && (
+        <View style={[styles.curveContainer, { backgroundColor: headerBgColor }]}>
+          <View style={[styles.curve, { backgroundColor: theme.background }]} />
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: "#1459b3",
+    width: '100%',
+    alignSelf: 'stretch',
+    overflow: 'hidden',
+    paddingTop: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    zIndex: 2,
+    paddingTop: 0,
+  }, 
+  header: { 
+    width: '100%',
+    alignSelf: 'stretch',
+    paddingBottom: 15, 
+    paddingHorizontal: 22, 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center" 
   },
-  // Estilização da nova linha da logo
-  logoRow: {
-    paddingTop: 55, // Afasta dos elementos físicos/notch do celular
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1459b3",
-  },
-  logoText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "800", // Bem marcante
-    letterSpacing: 1, // Espaçamento elegante entre as letras
-    opacity: 0.95,
-  },
-  header: {
-    paddingTop: 15, // Reduzido o paddingTop aqui porque a logo já ocupa o topo
-    paddingBottom: 19, 
-    paddingHorizontal: 22,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start", 
-    backgroundColor: "#1459b3",
-  },
-  left: {
-    flex: 1,
-    marginRight: 10,
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  backButton: {
-    marginRight: 5,
-  },
-  profileArea: {
-    flexDirection: "column",
-  },
-  logoText: {
-    color: "#fff",
-    fontSize: 25,
-    marginBottom: 8,
-    alignItems: "center",
-  },
-  profileContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  profileImage: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    marginRight: 12,
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
-  rightHeaderText: {
-    flex: 1,
-  },
-  noProfileContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    height: 52, 
-  },
-  backButtonUnder: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  backButtonText: {
-    color: "#dfe6ff",
-    fontSize: 13,
-    fontWeight: "500",
-    marginLeft: 4,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-  courseSubtitle: {
-    color: "#dfe6ff",
-    fontSize: 12,
-    marginTop: 2,
-    fontWeight: "500",
-  },
-  notification: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignSelf: "center", 
-  },
-  badge: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    backgroundColor: COLORS.alert,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  badgeText: {
-    color: "#fff",
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-  curveContainer: {
-    backgroundColor: "#1459b3",
-  },
-  curve: {
-    height: 35,
-    backgroundColor: "#f5f7fb",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    height: 35,
-    backgroundColor: COLORS.background,
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
-    marginTop: -15,
-  },
+  left: { flex: 1, marginRight: 10 },
+  profileContainer: { flexDirection: "row", alignItems: "center" },
+  profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2.5, borderColor: "rgba(255,255,255,0.5)" },
+  profileImagePlaceholder: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  rightHeaderText: { flex: 1, justifyContent: 'center' },
+  title: { fontWeight: "bold" },
+  courseSubtitle: { marginTop: 2, fontWeight: "500" },
+  
+  // Alinhamentos estruturais das telas internas
+  centerContainerRow: { flex: 1, flexDirection: 'row', alignItems: 'center', marginRight: 10 },
+  leftActionArea: { width: 40, justifyContent: 'center', alignItems: 'flex-start' },
+  centerTextContainer: { flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 5 },
+  backButton: { paddingVertical: 5, paddingRight: 5 },
+  
+  rightActionArea: { justifyContent: 'center', alignItems: 'center' },
+  notification: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
+  badge: { position: "absolute", top: 5, right: 5, backgroundColor: "#ff4d67", justifyContent: "center", alignItems: "center" },
+  badgeText: { color: "#fff", fontWeight: "bold" },
+  curveContainer: { marginTop: -1, height: 24, overflow: 'hidden' },
+  curve: { height: 24, borderTopLeftRadius: 28, borderTopRightRadius: 28 },
 });

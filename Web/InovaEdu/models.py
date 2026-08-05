@@ -80,7 +80,7 @@ class Usuario(models.Model):
     nome = models.CharField(db_column='Nome', max_length=20)
     sobrenome = models.CharField(db_column='Sobrenome', max_length=20)
     email = models.CharField(db_column='Email', max_length=45)
-    senha = models.CharField(db_column='Senha', max_length=30)
+    senha = models.CharField(db_column='Senha', max_length=128)
     descricao = models.CharField(db_column='Descricao', max_length=100, blank=True, null=True)
 
     class Meta:
@@ -133,7 +133,7 @@ class Turma(models.Model):
 class Projeto(models.Model):
     idprojeto = models.AutoField(db_column='idProjeto', primary_key=True)
     nome_projeto = models.CharField(db_column='Nome_projeto', max_length=30)
-    descricao = models.TextField(db_column='Descricao', blank=True, null=True)
+    descricao = models.TextField(db_column='Descricao', blank=True, null=True, max_length=200)
     imagem = CloudinaryField('imagem_projeto', db_column='Imagem', blank=True, null=True)
     data_de_criacao = models.DateField(auto_now_add=True)
     data_de_modificacao = models.DateField(auto_now=True)
@@ -279,7 +279,7 @@ class Arquivo(models.Model):
 
 class Certificado(models.Model):
     idcertificado = models.AutoField(db_column='idCertificado', primary_key=True)
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=30)
     descricao = models.CharField(max_length=150, blank=True, null=True)
     data_inicio = models.DateField(blank=True, null=True)
     data_final = models.DateField(blank=True, null=True)

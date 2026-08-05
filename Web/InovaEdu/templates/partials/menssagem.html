@@ -1,0 +1,21 @@
+{% load static %}
+
+{% if messages %}
+    <div class="messages-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+        {% for message in messages %}
+            {% if 'error' in message.tags or 'danger' in message.tags or 'warning' in message.tags %}
+                <!-- MENSAGEM VERMELHA (Erros e Avisos Importantes) -->
+                <div class="alert alert-{{ message.tags }}" style="padding: 12px 16px; border-radius: 8px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% else %}
+                <!-- MENSAGEM VERDE (Criação, Edição e Sucesso) -->
+                <div class="alert alert-{{ message.tags }}" style="padding: 12px 16px; border-radius: 8px; background-color: #dbf8d7; color: #285b1d; border: 1px solid #cef5c6; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,1065 @@
+:root {
+  --laranja-Senac: #f7941d;
+  --laranjaEscuro-Senac: #b85c18;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-principal);
+}
+
+/* ============================
+   CONTAINER
+============================ */
+
+.lista-turma {
+  width: 95%;
+  max-width: 85%;
+  margin: 35px auto;
+  background: #fff;
+  border: 1px solid #dce5f2;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+  top: 25px; /* sobe */
+}
+
+/* ============================
+   BARRA SUPERIOR
+============================ */
+
+.barra-superior-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: #fff;
+}
+
+.filtros-lista {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.busca-geral {
+  width: 360px;
+  height: 42px;
+  border: 1px solid #cfd8e6;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #fff;
+}
+
+.busca-geral i {
+  color: #6c7a91;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.busca-geral input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 15px;
+}
+
+/* botão */
+
+.btn-add-geral {
+  background: #ff9650;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.3s;
+}
+
+.btn-add-geral:hover {
+  background: #ef7d2d;
+}
+
+/* ============================
+   LISTA
+============================ */
+
+.lista-turma-conteudo {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.lista-turma-conteudo ul {
+  margin: 0;
+  padding: 0;
+}
+
+.lista-turma-conteudo li {
+  list-style: none;
+}
+
+/* ============================
+   CABEÇALHO
+============================ */
+
+.turma-cabecalho {
+  display: grid;
+  grid-template-columns:
+    1.2fr
+    1fr
+    0.8fr
+    2fr
+    1.9fr
+    1fr;
+
+  background: #0d4b89;
+  color: #fff;
+  font-weight: 600;
+  padding: 18px 20px;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.turma-cabecalho span {
+  display: flex;
+  align-items: center;
+}
+
+/* ============================
+   LINHAS
+============================ */
+
+.turma-item {
+  display: grid;
+  grid-template-columns:
+    1.2fr
+    1fr
+    0.8fr
+    2fr
+    1.9fr
+    1fr;
+
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid #edf1f6;
+  transition: 0.2s;
+}
+
+.turma-item:hover {
+  background: #fafcff;
+}
+
+.turma-item span {
+  font-size: 15px;
+}
+/* Responsivo */
+@media (max-width: 768px){
+
+    .barra-superior-lista{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .filtros-lista{
+        width: 100%;
+    }
+
+    .busca-geral{
+        width: 100%;
+    }
+
+    .busca-geral input{
+        width: 100%;
+    }
+
+    .btn-add-geral{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+}
+
+/* ======================================================== */
+
+.turma-usuarios {
+  display: flex;
+  /* justify-content:center; */
+}
+
+.btn-ver-usuarios {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #e8f1ff;
+  color: #3067ff;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+  right: -54px; /* move -54px para a direita */
+}
+
+.btn-ver-usuarios:hover {
+  background: #d7e8ff;
+}
+
+/* ============================
+   AÇÕES
+============================ */
+
+.acoes-geral_turma {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative;
+  right: 67%; /* move 50px para a direita */
+}
+
+.btn-editar-turma,
+.btn-excluir-turma {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-editar-turma {
+  background: #dfeaff;
+  color: #3067ff;
+}
+
+.btn-editar-turma:hover {
+  background: #cddfff;
+}
+
+.btn-excluir-turma {
+  background: #ffe5e5;
+  color: #ef4444;
+}
+
+.btn-excluir-turma:hover {
+  background: #ffd1d1;
+}
+
+/* ============================
+   SEM DADOS
+============================ */
+
+.turma-vazia {
+  padding: 40px;
+  text-align: center;
+  color: #777;
+}
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media (max-width: 1000px) {
+  .turma-cabecalho,
+  .turma-item {
+    grid-template-columns: repeat(6, minmax(130px, 1fr));
+    min-width: 900px;
+  }
+
+  .lista-turma-conteudo {
+    overflow: auto;
+  }
+}
+
+/* MODAL CADASTRO */
+
+/*==========================
+        MODAL
+==========================*/
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-conteudo {
+  width: 620px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+/*==========================
+        TÍTULO
+==========================*/
+
+.titulo_lista_turma {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 20px 25px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.titulo_lista_turma i {
+  color: #0b4a8b;
+  font-size: 22px;
+}
+
+.titulo_lista_turma p {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  color: #0b4a8b;
+}
+
+/*==========================
+        FECHAR
+==========================*/
+
+.fechar {
+  position: absolute;
+  right: 30px;
+  top: 18px;
+  font-size: 32px;
+  color: #7b8698;
+  cursor: pointer;
+}
+
+/*==========================
+        FORMULÁRIO
+==========================*/
+
+.modal-conteudo form {
+  padding: 25px;
+}
+
+.modal-conteudo label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: #6e7788;
+  text-transform: uppercase;
+}
+
+.modal-conteudo input,
+.modal-conteudo select {
+  width: 100%;
+  height: 48px;
+
+  border: 1px solid #d3dceb;
+  border-radius: 8px;
+
+  background: #f6f8fc;
+
+  padding: 0 15px;
+
+  font-size: 15px;
+
+  transition: 0.3s;
+}
+
+.modal-conteudo input:focus,
+.modal-conteudo select:focus {
+  outline: none;
+  border-color: #0b4a8b;
+  background: #fff;
+}
+
+/*==========================
+        BOTÕES
+==========================*/
+
+.acoes-modal {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 15px;
+
+  margin-top: 10px;
+
+  border-top: 1px solid #ececec;
+
+  /* padding-top:20px; */
+}
+
+.btn-cancelar {
+  width: 150px;
+  height: 46px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f3f7;
+  color: #b7bcc8;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.btn-salvar {
+  width: 170px;
+  height: 46px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #b85d1d;
+  color: #fff;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.btn-salvar:hover {
+  background: #a54f16;
+}
+
+/* TELA DE ADICIONAR OS USUARIO */
+
+/* ===========================
+   MODAL USUÁRIOS DA TURMA
+=========================== */
+
+.modal-usuarios {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-usuarios-box {
+  width: 100%;
+  max-width: 750px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  animation: aparecerModal 0.25s ease;
+}
+
+/* ===========================
+   TOPO
+=========================== */
+
+.modal-usuarios-topo {
+  background: linear-gradient(90deg, #004a8d, #0066c5);
+  color: #fff;
+  padding: 18px 25px;
+}
+
+.modal-usuarios-topo h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ===========================
+   PESQUISA
+=========================== */
+
+.modal-usuarios-busca {
+  padding: 20px 25px 10px;
+}
+
+.modal-usuarios-busca input {
+  width: 100%;
+  height: 45px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  padding: 0 15px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.modal-usuarios-busca input:focus {
+  border-color: #004a8d;
+  box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.15);
+}
+
+/* ===========================
+   LISTA DO BANCO
+=========================== */
+
+.modal-usuarios-lista {
+  margin: 0 25px;
+  border: 1px solid #e2e2e2;
+  border-radius: 10px;
+  height: 220px;
+  overflow-y: auto;
+  color: black;
+  background: var(--azul-Senac);
+}
+
+.modal-usuarios-lista ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.modal-usuarios-lista li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid #eee;
+  transition: 0.2s;
+}
+
+.modal-usuarios-lista li:last-child {
+  border-bottom: none;
+}
+
+.modal-usuarios-lista li:hover {
+  background: #eef6ff;
+}
+
+/* ===========================
+   ALUNOS ADICIONADOS
+=========================== */
+
+/* ===== MODAL ===== */
+
+.modal-usuarios {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-usuarios-box {
+  width: 520px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  animation: abrirModal 0.2s ease;
+}
+
+/* ===== TOPO ===== */
+
+.modal-usuarios-topo {
+  padding: 15px 20px;
+  border-bottom: 1px solid #ececec;
+  background: #fafafa;
+}
+
+.modal-usuarios-topo h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #004a8d;
+  font-weight: 600;
+}
+
+/* ===== PESQUISA ===== */
+
+.modal-usuarios-busca {
+  padding: 18px 20px 10px;
+}
+
+.modal-usuarios-busca input {
+  width: 100%;
+  height: 38px;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  padding: 0 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.modal-usuarios-busca input:focus {
+  border-color: #6b9ed4;
+}
+
+/* ===== LISTAS ===== */
+
+.modal-usuarios-lista,
+.modal-usuarios-selecionados ul {
+  margin: 0 20px;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  background: var(--branco-Senac);
+  overflow-y: auto;
+  color: black;
+}
+
+.modal-usuarios-lista {
+  height: 140px;
+}
+
+.modal-usuarios-selecionados {
+  margin-top: 18px;
+}
+
+.modal-usuarios-selecionados h3 {
+  margin: 0 20px 8px;
+  font-size: 15px;
+  color: #555;
+  font-weight: 600;
+}
+
+.modal-usuarios-selecionados ul {
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.modal-usuarios-lista ul,
+.modal-usuarios-selecionados ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-usuarios-lista li,
+.modal-usuarios-selecionados li {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-usuarios-lista li:last-child,
+.modal-usuarios-selecionados li:last-child {
+  border-bottom: none;
+}
+
+.modal-usuarios-lista li:hover {
+  background: #f6f9fc;
+}
+
+/* ===== BOTÕES ===== */
+
+.modal-usuarios-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #ececec;
+}
+
+.btn-cancelar-modal {
+  background: #f3f3f3;
+  color: #555;
+  border: 1px solid #dcdcdc;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-cancelar-modal:hover {
+  background: #e8e8e8;
+}
+
+.btn-salvar-alunos {
+  background: var(--laranjaEscuro-Senac);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-salvar-alunos:hover {
+  background: #00396d;
+}
+
+/* ===== SCROLL ===== */
+
+.modal-usuarios-lista::-webkit-scrollbar,
+.modal-usuarios-selecionados ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-usuarios-lista::-webkit-scrollbar-thumb,
+.modal-usuarios-selecionados ul::-webkit-scrollbar-thumb {
+  background: #c8c8c8;
+  border-radius: 20px;
+}
+
+/* ===== ANIMAÇÃO ===== */
+
+@keyframes abrirModal {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MODAL EDITAR=================================*/
+/* Fundo escuro */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Caixa do modal */
+.modal-editar-turma {
+  position: relative;
+  width: 720px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  padding: 30px;
+  animation: modal 0.25s ease;
+}
+
+@keyframes modal {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cabeçalho */
+.titulo_lista_editar_turma {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.titulo_lista_editar_turma i {
+  font-size: 28px;
+  color: #0e4c92;
+}
+
+.titulo_lista_editar_turma p {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  color: #0e4c92;
+}
+
+/* X fechar */
+
+.fechar {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  font-size: 30px;
+  color: #7b8794;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fechar:hover {
+  color: #0e4c92;
+}
+
+/* Formulário */
+
+.form-editar-turma {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 20px;
+}
+
+.grupo-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-inteiro {
+  grid-column: 1/3;
+}
+
+.grupo-form label {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6f7787;
+  margin-bottom: 8px;
+}
+
+.grupo-form input,
+.grupo-form select {
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid #d7dee8;
+  border-radius: 10px;
+  background: #f7f9fc;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.grupo-form input:focus,
+.grupo-form select:focus {
+  border-color: #0e4c92;
+  background: #fff;
+}
+
+/* Rodapé */
+
+.acoes-modal {
+  grid-column: 1/3;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  border-top: 1px solid #ececec;
+  padding-top: 22px;
+  margin-top: 10px;
+}
+
+.btn-cancelar {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  /* background:#9c4c14; */
+  color: #6b7280;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background: #e5e7eb;
+}
+
+.btn-salvar {
+  /* padding:12px 28px; */
+  border: none;
+  border-radius: 8px;
+  background: #b75a17;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-salvar:hover {
+  background: #9c4c14;
+}
+
+/* Responsivo */
+
+@media (max-width: 768px) {
+  .form-editar-turma {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-inteiro,
+  .acoes-modal {
+    grid-column: auto;
+  }
+
+  .acoes-modal {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancelar,
+  .btn-salvar {
+    width: 100%;
+  }
+
+  .titulo_lista_editar_turma p {
+    font-size: 28px;
+  }
+}
+
+/* MENSAGEM */
+
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  padding: 14px 20px;
+  border-radius: 8px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 600;
+  animation: aparecer 0.3s ease;
+}
+
+.toast.success {
+  background: #22c55e;
+}
+
+@keyframes toastEntrar {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* EXCLUIR */
+
+/* ==========================
+        MODAL EXCLUIR TURMA
+========================== */
+
+.modal-excluir-turma {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+.modal-excluir-turma-conteudo {
+  width: 430px;
+  max-width: 95%;
+
+  background: #fff;
+
+  border-radius: 18px;
+
+  padding: 35px 40px;
+
+  text-align: center;
+
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+
+  animation: aparecerModal 0.25s ease;
+}
+
+.modal-excluir-turma-conteudo h2 {
+  margin: 0 0 22px;
+
+  font-size: 38px;
+  font-weight: 700;
+
+  color: #333;
+}
+
+#textoExcluirTurma {
+  margin-bottom: 35px;
+
+  font-size: 17px;
+  line-height: 1.5;
+
+  color: #666;
+}
+
+#textoExcluirTurma strong {
+  color: #333;
+}
+
+/* ==========================
+          BOTÕES
+========================== */
+
+#formExcluirTurma {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.btn-cancelar-turma,
+.btn-confirmar-excluir-turma {
+  width: 150px;
+  height: 46px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.btn-cancelar-turma {
+  background: #d6d6d6;
+  color: #fff;
+}
+
+.btn-cancelar-turma:hover {
+  background: #bdbdbd;
+}
+
+.btn-confirmar-excluir-turma {
+  background: #d97434;
+  color: #fff;
+}
+
+.btn-confirmar-excluir-turma:hover {
+  background: #c86428;
+}
+
+/* ==========================
+         ANIMAÇÃO
+========================== */
+
+@keyframes aparecerModal {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*  */

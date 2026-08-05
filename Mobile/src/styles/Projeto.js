@@ -1,80 +1,67 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native';
-import { COLORS } from "../components/Cores"; // Importando as cores para manter a consistência visual
+import { StyleSheet, Dimensions } from 'react-native';
+import { COLORS } from "../components/Cores"; 
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: COLORS.backgroundCard },
   center: { justifyContent: 'center', alignItems: 'center' },
   
-  header: {
-    height: 60,
-    backgroundColor: COLORS.dark,
-    justifyContent: 'center',
+  scrollContent: { 
+    padding: 16,
+    marginTop: 10, 
+  },
+  // NOVO CARD DE PROJETO NO ESTILO DA TELA DE TURMAS
+  projetoCard: {
+    backgroundColor: COLORS.backgroundCard,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
     alignItems: 'center',
-    elevation: 4,
+    justifyContent: 'space-between',
+    elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
-  headerTitle: { color: 'white', fontSize: 18, fontWeight: 'bold', letterSpacing: 1 },
-  
-  scrollContent: { padding: 16 },
-
-  // Breadcrumb
-  breadcrumbCard: {
-    borderRadius: 12,
-    padding: 15,
+  cardInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    borderLeftWidth: 5,
-    backgroundColor: COLORS.backgroundCard,
-    borderLeftColor: COLORS.accent,
+    flex: 1,
   },
-  breadcrumbPath: { fontSize: 12, color: COLORS.textSecondary },
-  turmaBadge: { fontSize: 14, fontWeight: 'bold', color: COLORS.dark, marginTop: 2 },
-  btnAdd: { backgroundColor: COLORS.primary, width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-
-  itemSub: { fontSize: 11, color: COLORS.textSecondary },
-
-  // Cards de Projeto
-  card: {
-    backgroundColor: COLORS.backgroundCard,
-    borderRadius: 15,
-    marginBottom: 16,
-    overflow: 'hidden',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+  projetoImagemQuadrada: {
+    width: 65,
+    height: 65,
+    borderRadius: 8, // Mantém o formato quadrado com cantos suavemente lapidados
+    marginRight: 14,
+    resizeMode: 'cover',
   },
-  cardImage: { width: '100%', height: 140, objectFit: 'cover' },
-  noImage: { backgroundColor: '#F1F5F9', justifyContent: 'center', alignItems: 'center' },
-  cardBody: { padding: 15 },
-  projetoNome: { fontSize: 18, fontWeight: 'bold', color: COLORS.textMain },
-  projetoDesc: { fontSize: 14, color: COLORS.textSecondary, marginTop: 5, lineHeight: 20 },
-  
-  cardActions: {
-    justifyContent: 'right',
+  placeholderImagemContainer: {
+    backgroundColor: '#E2E8F0',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
   },
-  btnRepo: {
-    backgroundColor: COLORS.primary,
-    flexDirection: 'row',
+  projetoNome: { 
+    fontSize: 16, 
+    fontWeight: '700', 
+    color: COLORS.dark,
+    marginBottom: 4,
+  },
+  projetoDesc: { 
+    fontSize: 13, 
+    color: COLORS.textSecondary, 
+    lineHeight: 18,
+    paddingRight: 4 
+  },
+  setaContainer: {
+    paddingLeft: 8,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 50,
-    borderRadius: 8,
-    gap: 8,
   },
-  btnRepoText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
   
-  // Modal
+  // Modal (Preservado original)
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   modalContent: { 
     backgroundColor: 'white', 

@@ -1,504 +1,552 @@
-/* RESET */
+:root {
+    --laranja-Senac: #f7941d;
+    --azul-Senac: #004a8d;
+    --azul-Senac-hover: #00376a;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+}
+
 * {
     box-sizing: border-box;
-}
-.messages {
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 0.95em;
-}
-
-.messages p {
     margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.messages .error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+/* CONTAINER PRINCIPAL COM MARGEM 0 E AUTO */
+.container-repositorio-main {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 20px;
 }
 
-.messages .success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+/* ==========================================================================
+   ROTA 1: PÁGINA DO SISTEMA (SEM ÍCONE)
+   ========================================================================== */
+.page-location-header {
+    margin-bottom: 15px;
 }
 
-.messages .warning {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+.site-breadcrumb {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    word-break: break-word;
 }
 
-.messages .info {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+.main-title {
+    font-size: 1.8rem;
+    color: var(--azul-Senac);
+    font-weight: 700;
 }
 
-/* CONTAINER PRINCIPAL */
-.turma-repositorio {
-    width: 70%;
-    max-width: 1000px;
+/* ==========================================================================
+   ROTA 2: NAVEGAÇÃO DE PASTAS INTERNAS
+   ========================================================================== */
+.folder-navigation-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: #ffffff;
-    margin: 0 auto 40px;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    min-height: calc(66vh - 90px);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-/* TÍTULO DO CURSO */
-.turma-repositorio h3 {
-    font-size: 1.5em;
-    color: #2c3e50;
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 10px;
-}
-
-/* LINK DE VOLTAR */
-.turma-repositorio a[href*="repositorio"] {
-    display: inline-block;
-    padding: 8px 16px;
-    background: #2980b9;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 0.9em;
-    transition: background 0.25s ease;
-}
-
-.turma-repositorio a[href*="repositorio"]:hover {
-    background: #21618c;
-}
-
-/* AÇÕES (CRIAR E UPLOAD) */
-.acoes-repositorio {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.acao-btn {
-    padding: 12px 24px;
-    background: #2980b9;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
+.folder-breadcrumb {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: background 0.25s ease;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
 }
 
-.acao-btn:hover {
-    background: #21618c;
-}
-
-/* MODAL */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease-in-out;
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    background-color: #ffffff;
-    /* padding: 20px; */
-    border-radius: 12px;
-    width: 90%;
-    max-width: 480px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
-}
-
-#fecharExcluirBtn{
-    background-color: red;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.modal h4 {
-    margin-top: 0;
-    color: #34495e;
-}
-
-.modal form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal input {
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 6px;
-}
-
-.modal button {
-    padding: 10px;
-    background: #2980b9;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.modal button:hover {
-    background: #21618c;
-}
-
-/* AÇÕES DA PASTA */
-.pasta-actions {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-.pasta-actions button,
-.arquivo-item button {
-    background: transparent;
-    border: none;
-    color: #7f8c8d;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: color 0.2s ease, background 0.2s ease;
-}
-
-.pasta-actions button:hover,
-.arquivo-item button:hover {
-    color: #2980b9;
-    background: rgba(41, 128, 185, 0.1);
-}
-
-/* SEÇÕES */
-.pastas, .arquivos {
-    background: #f9fafc;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.pastas h4, .arquivos h4 {
-    font-size: 1.2em;
-    color: #34495e;
-    margin-bottom: 15px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.btn-selecionar {
-    padding: 8px 16px;
-    background: #f39c12;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background 0.25s ease;
-}
-
-.btn-selecionar:hover {
-    background: #e67e22;
-}
-
-.btn-excluir-selecionadas {
-    padding: 10px 20px;
-    background: #e74c3c;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.25s ease;
-}
-
-.btn-excluir-selecionadas:hover {
-    background: #c0392b;
-}
-
-.btn-excluir-todas {
-    padding: 10px 20px;
-    background: #e74c3c;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.25s ease;
-}
-
-.btn-excluir-todas:hover {
-    background: #c0392b;
-}
-
-/* LISTAS */
-.lista-pastas, .lista-arquivos {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* ITENS */
-.pasta-item, .arquivo-item {
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 15px 18px;
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    border-left: 5px solid transparent;
-    transition: all 0.25s ease;
-}
-
-.pasta-item {
-    border-left-color: #2980b9;
-}
-
-.arquivo-item {
-    border-left-color: #3498db;
-}
-
-.pasta-item:hover, .arquivo-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-/* INFO DA PASTA */
-.pasta-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-    word-wrap: break-word;
-    overflow: hidden;
-}
-
-.pasta-info img {
-    width: 36px;
-}
-
-/* INFO DO ARQUIVO */
-.arquivo-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-    word-wrap: break-word;
-    overflow: hidden;
-}
-
-/* LINKS */
-.pasta-link,
-.arquivo-item a {
-    font-size: 1.1em;
+.breadcrumb-label {
     font-weight: 600;
-    color: #2980b9;
+    color: var(--azul-Senac);
+    margin-right: 4px;
+}
+
+.crumb-link {
+    color: var(--azul-Senac);
     text-decoration: none;
-    word-wrap: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: 600;
 }
 
-.arquivo-item a {
-    color: #3498db;
-}
-
-.pasta-link:hover,
-.arquivo-item a:hover {
+.crumb-link:hover {
+    color: var(--laranja-Senac);
     text-decoration: underline;
 }
 
-/* METADADOS */
-.pasta-info p,
-.arquivo-item p {
-    font-size: 0.85em;
-    color: #7f8c8d;
+.crumb-separator {
+    color: var(--text-muted);
+    font-weight: bold;
 }
 
-.pasta-info p strong,
-.arquivo-item p strong {
-    color: #2c3e50;
+.crumb-active {
+    color: var(--text-main);
+    font-weight: 700;
 }
 
-/* VAZIO */
-.sem-pasta,
-.sem-arquivo {
-    padding: 15px;
-    text-align: center;
-    font-style: italic;
-    color: #95a5a6;
+.top-actions-bar {
+    margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   ÁREA CENTRAL UNIFICADA (ESTILO EXPLORADOR DE ARQUIVOS)
+   ========================================================================== */
+.turma-repositorio-unified {
+    display: flex;
+    flex-direction: column;
+}
+
+.repo-box-unified {
     background: #ffffff;
-    border-radius: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* RESPONSIVO */
-@media (max-width: 900px) {
-    .turma-repositorio {
-        width: 95%;
-        padding: 15px;
-        gap: 20px;
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.box-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--azul-Senac);
+}
+
+.box-title i {
+    font-size: 1.4rem;
+}
+
+.box-title h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.box-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+/* BOTÕES GERAIS */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--azul-Senac);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: var(--azul-Senac-hover);
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+.btn-download {
+    background: var(--laranja-Senac);
+    color: #ffffff;
+}
+
+.btn-download:hover {
+    background: #e08313;
+}
+
+.btn-back {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+.btn-selecionar {
+    background: var(--azul-Senac);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-selecionar:hover {
+    background: var(--azul-Senac-hover);
+}
+
+/* LISTAGEM UNIFICADA */
+.unified-items-container {
+    flex-grow: 1;
+}
+
+.lista-itens-unified {
+    list-style: none;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+    cursor: pointer;
+    gap: 10px;
+}
+
+.item-row:hover {
+    background: #f1f5f9;
+}
+
+/* Evita que nomes gigantes de arquivos/pastas estourem a largura no celular */
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+}
+
+.item-link {
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-link:hover {
+    color: var(--azul-Senac);
+}
+
+.folder-icon {
+    color: var(--laranja-Senac);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.file-icon {
+    color: var(--azul-Senac);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.item-type-badge {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.item-actions button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-muted);
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.item-actions button:hover {
+    color: var(--azul-Senac);
+    background: #e2e8f0;
+}
+
+.item-actions button.btn-del:hover {
+    color: var(--danger-color);
+    background: #fee2e2;
+}
+
+.sem-itens {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* BARRA DE AÇÕES EM MASSA */
+.mass-actions-bar {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: var(--danger-hover);
+}
+
+.btn-danger-dark {
+    background: #991b1b;
+    color: white;
+}
+
+.btn-danger-dark:hover {
+    background: #7f1d1d;
+}
+
+/* ==========================================================================
+   MODAIS
+   ========================================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background: var(--azul-Senac);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-header-danger {
+    background: #dc2626;
+}
+
+.header-text h2 {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.header-text p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.fechar {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    position: relative;
+}
+
+.fechar::before, .fechar::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 2px;
+    background: white;
+}
+
+.fechar::before { transform: translate(-50%, -50%) rotate(45deg); }
+.fechar::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    background: #f1f5f9;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-save {
+    background: var(--azul-Senac);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-danger-confirm {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVIDADE PARA TABLETS E CELULARES)
+   ========================================================================== */
+
+/* Tablets (até 768px) */
+@media (max-width: 768px) {
+    .container-repositorio-main {
+        width: 100%;
+        padding: 15px 12px;
     }
 
-    .turma-repositorio h3 {
-        font-size: 1.2em;
-    }
-
-    .acoes-repositorio {
+    .folder-navigation-bar {
         flex-direction: column;
-        align-items: center;
-        gap: 15px;
+        align-items: stretch;
     }
 
-    .acao-btn {
-        padding: 10px 20px;
-        font-size: 0.9em;
-        width: 160px;
+    .btn-download {
+        width: 100%;
     }
 
-    .modal-content {
-        width: 95%;
-        max-width: 350px;
+    .box-toolbar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 8px;
+        width: 100%;
     }
 
-    .pasta-item, .arquivo-item {
-        gap: 10px;
-        padding: 12px 15px;
+    .box-toolbar .btn-action {
+        width: 100%;
+        padding: 10px 8px;
+        font-size: 0.85rem;
     }
 
-    .section-header {
+    .item-type-badge {
+        display: none; /* Esconde a tag "Pasta de arquivos" / "Arquivo" em telas menores para dar espaço ao nome */
+    }
+
+    .mass-actions-bar {
         flex-direction: column;
-        gap: 10px;
+    }
+
+    .mass-actions-bar .btn-action {
+        width: 100%;
+    }
+}
+
+/* Celulares pequenos (até 480px) */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 1.4rem;
+    }
+
+    .box-header {
+        flex-direction: column;
         align-items: flex-start;
     }
 
-    .section-header h4 {
-        font-size: 1.1em;
-    }
-
     .btn-selecionar {
-        padding: 6px 12px;
-        font-size: 0.85em;
+        align-self: flex-start;
     }
 
-    .btn-excluir-selecionadas {
-        padding: 8px 16px;
-        font-size: 0.9em;
+    .box-toolbar {
+        grid-template-columns: 1fr; /* Empilha botões de upload um abaixo do outro */
     }
 
-    .btn-excluir-todas {
-        padding: 8px 16px;
-        font-size: 0.9em;
+    .repo-box-unified {
+        padding: 16px 12px;
     }
 
-    .pasta-actions {
-        align-self: flex-end;
-        margin-top: 10px;
+    .item-row {
+        padding: 12px 6px;
     }
 
-    .messages {
-        padding: 10px;
-        font-size: 0.9em;
-    }
-}
-
-@media (max-width: 600px) {
-    .turma-repositorio {
-        width: 98%;
-        padding: 10px;
+    .modal-actions {
+        flex-direction: column;
     }
 
-    .rota {
-        font-size: 0.8em;
-    }
-
-    .titulo p {
-        font-size: 1.5em;
-    }
-
-    .turma-repositorio h3 {
-        font-size: 1.1em;
-    }
-
-    .acoes-repositorio {
-        gap: 10px;
-    }
-
-    .acao-btn {
-        padding: 8px 16px;
-        justify-content: center;
-        font-size: 0.85em;
-        width: 178px;
-        /* margin-right: 10px; */
-    }
-
-    .pasta-item, .arquivo-item {
-        padding: 10px 12px;
-        margin-bottom: 8px;
-    }
-
-    .pasta-info, .arquivo-info {
-        font-size: 0.9em;
-    }
-
-    .pasta-link, .arquivo-item a {
-        font-size: 1em;
-        white-space: normal;
-        text-overflow: clip;
-    }
-
-    .pasta-info p, .arquivo-item p {
-        font-size: 0.8em;
-    }
-
-    .modal-content {
-        padding: 15px;
-    }
-
-    .modal h4 {
-        font-size: 1.1em;
-    }
-
-    .modal input {
-        padding: 8px;
-    }
-
-    .modal button {
-        padding: 8px;
+    .modal-actions button {
+        width: 100%;
     }
 }
