@@ -1,0 +1,396 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usuários</title>
+
+    <link
+      rel="stylesheet"
+      href="{% static 'styles/navbar_coordenacao.css' %}"
+    />
+    <link rel="stylesheet" href="{% static 'styles/UsuarioCoord.css' %}" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    {% include 'partials/navbar_Coordenacao.html' %}
+
+
+     <section class="topo-pagina">
+          <div>
+              <h1><i class="fa-solid fa-graduation-cap"></i> Usuários</h1>
+              <p>Cadastre, edite e gerencie todos os usuários da instituição.</p>
+          </div>
+      </section>
+
+    
+
+    {% comment %} Topo da Lista de Usuários {% endcomment %}
+    <section class="usuarios-container">
+      <div class="topo-lista-usuarios">
+        <div class="filtros-lista">
+          <div class="campo-pesquisa">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="text"
+              id="pesquisarUsuario"
+              placeholder="Buscar por nome ou e-mail..."
+            />
+          </div>
+
+          <select id="filtroTipo" class="select-tipo">
+            <option value="">Tipo de Usuário: Todos</option>
+            <option value="">Todos os Usuários: Todos {{ total_usuarios }}</option>
+            <option value="Aluno">Aluno {{ total_alunos }} </option>
+            <option value="Professor">Professor {{ total_professores }}</option>
+            <option value="Coordenador">Coordenador {{ total_coordenadores }}</option>
+          </select>
+        </div>
+
+        <a
+          href="#"
+          class="btn-novo-usuario"
+          onclick="
+            event.preventDefault();
+            document.getElementById('modalCadastro').style.display = 'flex';
+          "
+        >
+          <i class="fa-solid fa-user-plus"></i>
+          Novo Usuário
+        </a>
+      </div>
+
+      {% comment %} Lista de Usuários {% endcomment %}
+
+      <section class="lista-usuario-conteudo">
+        <table class="tabela-usuarios">
+          <thead>
+            <tr>
+              <th>Avatar</th>
+              <th>Nome Completo</th>
+              <th>Email</th>
+              <th>Tipo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+              <td class="avatar">
+                {% if usuario.imagem %}
+                <img src="{{ usuario.imagem.url }}" alt="{{ usuario.nome }}" />
+                {% else %}
+                <div class="avatar-padrao">
+                  {{ usuario.nome|first }}{{ usuario.sobrenome|first }}
+                </div>
+                {% endif %}
+              </td>
+
+              <td>
+                <strong>{{ usuario.nome }} {{ usuario.sobrenome }}</strong>
+              </td>
+
+              <td>{{ usuario.email }}</td>
+
+              <td>
+                <span class="tipo {{ usuario.tipo|lower }}">
+                  {{ usuario.tipo }}
+                </span>
+              </td>
+
+              <td>
+                <div class="acoes-geral_usuario">
+                  <button
+                    type="button"
+                    class="btn-editar"
+                    data-id="{{ usuario.idusuario }}"
+                    data-nome="{{ usuario.nome }}"
+                    data-sobrenome="{{ usuario.sobrenome }}"
+                    data-email="{{ usuario.email }}"
+                    data-descricao="{{ usuario.descricao }}"
+                    data-tipo="{{ usuario.tipo }}"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
+                  {% comment %} <button
+                    class="btn-descricao icon-descricao"
+                    data-descricao="{{ usuario.descricao|escapejs }}"
+                  >
+                    <i class="fa-solid fa-align-center"></i>
+                  </button> {% endcomment %}
+
+                  <button
+                    type="button"
+                    class="btn-excluir"
+                    onclick="abrirModalExcluir('{{ usuario.idusuario }}', '{{ usuario.nome }} {{ usuario.sobrenome }}')"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            {% empty %}
+
+            <tr>
+              <td colspan="5" class="vazio">Nenhum usuário cadastrado.</td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      {% comment %} MODAL CADASTRAR {% endcomment %}
+
+      <div id="modalCadastro" class="modal">
+        <div class="modal-conteudo">
+          <div class="modal-header">
+            <h2>
+              <i class="fa-solid fa-user-plus"></i>
+              Cadastro Usuário
+            </h2>
+
+            <span class="fechar" id="fecharModal">&times;</span>
+          </div>
+
+          <form
+            action="{% url 'UsuariosCoord' %}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="acao" value="cadastrar_usuario" />
+
+            <div class="linha">
+              <div class="campo">
+                <label>Primeiro Nome</label>
+                <input
+                  type="text"
+                  name="nome"
+                  placeholder="Ex: João"
+                  required
+                />
+              </div>
+
+              <div class="campo">
+                <label>Sobrenome</label>
+                <input
+                  type="text"
+                  name="sobrenome"
+                  placeholder="Ex: Silva"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="campo">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="usuario@email.com"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label>Senha</label>
+              <input
+                type="password"
+                name="senha"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {% comment %} <div class="campo">
+              <label>Descrição</label>
+              <textarea
+                name="descricao"
+                placeholder="Breve resumo das responsabilidades ou perfil..."
+              ></textarea>
+            </div> {% endcomment %}
+
+            <div class="campo">
+              <label>Tipo de Usuário</label>
+
+              <select name="tipoCadastro" required>
+                <option value="">Selecione um perfil</option>
+                <option value="Professor">Professor</option>
+                <option value="Aluno">Aluno</option>
+                <option value="Coordenador">Coordenação</option>
+              </select>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" id="cancelarModal" class="btn-cancelar">
+                Cancelar
+              </button>
+
+              <button type="submit" class="btn-salvar">Salvar Usuário</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    {% comment %} MODAL EDITAR {% endcomment %}
+
+    <div id="modalEditar" class="modal">
+      <div class="modal-conteudo">
+        <!-- Cabeçalho -->
+        <div class="modal-header">
+          <h2>
+            <i class="fa-solid fa-user-pen"></i>
+            Editar Usuário
+          </h2>
+
+          <span class="fechar" id="fecharEditar">&times;</span>
+        </div>
+
+        <form
+          id="formEditarUsuario"
+          method="POST"
+          action="{% url 'editar_usuario' 0 %}"
+          enctype="multipart/form-data"
+        >
+          {% csrf_token %}
+          <input type="hidden" id="idusuarioEdit" name="idusuario" />
+
+          <!-- Primeira linha -->
+          <div class="linha">
+            <div class="campo">
+              <label for="nomeEdit">Primeiro Nome</label>
+              <input
+                type="text"
+                id="nomeEdit"
+                name="nome"
+                placeholder="Digite seu nome"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="SobrenomeEdit">Sobrenome</label>
+              <input
+                type="text"
+                id="SobrenomeEdit"
+                name="sobrenome"
+                placeholder="Digite seu sobrenome"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Segunda linha -->
+          <div class="linha">
+            <div class="campo">
+              <label for="EmailEdit">Email</label>
+              <input
+                type="email"
+                id="EmailEdit"
+                name="email"
+                placeholder="exemplo@gmail.com"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="tipoCadastroEdit">Tipo de Cadastro</label>
+              <select id="tipoCadastroEdit" name="tipoCadastro" required>
+                <option value="" disabled selected>Selecione uma opção</option>
+                <option value="Professor">Professor</option>
+                <option value="Aluno">Aluno</option>
+                <option value="Coordenador">Coordenação</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          {% comment %} <div class="campo">
+            <label for="descricaoEdit">Descrição</label>
+            <textarea
+              id="descricaoEdit"
+              name="descricao"
+              rows="4"
+              placeholder="Lorem ipsum dolor sit amet..."
+            ></textarea>
+          </div> {% endcomment %}
+
+          <!-- Caso queira voltar a usar imagem -->
+          {% comment %}
+          <div class="campo">
+            <label for="imagemEdit">Imagem</label>
+            <input type="file" id="imagemEdit" name="imagem" accept="image/*" />
+          </div>
+          {% endcomment %}
+
+          <!-- Rodapé -->
+          <div class="modal-footer">
+            <button type="button" id="cancelarEditar" class="btn-cancelar">
+              Cancelar
+            </button>
+
+            <button type="submit" class="btn-salvar">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% comment %} EXCLUIR USUARIO {% endcomment %}
+    <div id="modalExcluir" class="modal">
+      <div class="modal-conteudo modal-excluir">
+        {% comment %} <span class="fechar" onclick="fecharModalExcluir()">&times;</span> {% endcomment %}
+
+        <h2>Excluir Usuário</h2>
+
+        <p id="textoExcluir"></p>
+
+        <form id="formExcluir" method="POST">
+          {% csrf_token %}
+
+          <div class="botoes-modal">
+            <button
+              type="button"
+              class="btn-cancelar"
+              onclick="fecharModalExcluir()"
+            >
+              Cancelar
+            </button>
+
+            <button type="submit" class="btn-confirmar-excluir">Excluir</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if messages %}
+    <div class="mensagens">
+      {% for message in messages %}
+      <div class="mensagem {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <script src="{% static 'scripts/coordenacao.js' %}"></script>
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll(".mensagem").forEach((msg) => {
+          msg.style.transition = "0.5s";
+          msg.style.opacity = "0";
+          setTimeout(() => msg.remove(), 500);
+        });
+      }, 3000);
+    </script>
+  </body>
+</html>

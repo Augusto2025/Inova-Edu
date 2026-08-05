@@ -1,0 +1,795 @@
+:root {
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-principal);
+}
+
+/* ========================= */
+/* CONTAINER */
+/* ========================= */
+
+.container-geral {
+  width: 95%;
+  max-width: 85%;
+  margin: 35px auto;
+  background: #fff;
+  border: 1px solid #dce5f2;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+  top: 40px; /* sobe */
+}
+
+.barra-superior-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 18px 22px;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+}
+
+.filtros-lista {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* ========================= */
+/* Busca */
+/* ========================= */
+
+.busca-geral {
+  position: relative;
+}
+
+.busca-geral input {
+  width: 330px;
+  height: 42px;
+  padding-left: 40px;
+  border: 1px solid #d5dce5;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+}
+
+.busca-geral i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8190a5;
+}
+
+/* ========================= */
+/* Select */
+/* ========================= */
+
+.select-filtro {
+  width: 190px;
+  height: 42px;
+  border: 1px solid #d5dce5;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+}
+
+/* ========================= */
+/* Botão */
+/* ========================= */
+
+.btn-add-geral {
+  background: #ff904d;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s;
+}
+
+.btn-add-geral:hover {
+  background: #ff7a28;
+}
+
+/* ========================= */
+/* Lista */
+/* ========================= */
+
+.lista-curso-conteudo ul {
+  max-height: 600px; /* altura máxima da lista */
+  overflow-y: auto; /* rolagem vertical */
+  overflow-x: hidden;
+}
+
+.curso-cabecalho,
+.curso-item {
+  display: grid;
+  grid-template-columns:
+    2fr
+    1fr
+    1fr
+    120px
+    120px;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.curso-cabecalho {
+  background: #003f88;
+  color: #fff;
+  font-weight: 600;
+  padding: 16px 25px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.curso-item {
+  background: #fff;
+  padding: 18px 25px;
+  border-bottom: 1px solid #ececec;
+}
+
+.acoes-geral {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-excluir-curso {
+  display: inline;
+}
+
+.curso-vazio {
+  padding: 30px;
+  text-align: center;
+}
+
+.acoes-geral_usuario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative;
+  right: 45%; /* move 50px para a direita */
+}
+
+.acoes-geral_usuario button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-editar {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.btn-descricao {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.btn-excluir {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.acoes-geral_usuario button:hover {
+  transform: scale(1.05);
+}
+
+.vazio {
+  text-align: center;
+  padding: 40px;
+}
+
+
+
+
+
+/* Responsivo */
+@media (max-width: 768px){
+
+    .barra-superior-lista{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtros-lista-curso{
+        width: 100%;
+    }
+
+    .btn-add-geral{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ========================= */
+/* MODAL */
+/* ========================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal.abrir {
+  display: flex;
+}
+
+/* ========================= */
+
+.modal-conteudo {
+  width: 650px;
+  max-width: 95%;
+
+  background: #fff;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+
+  animation: modal 0.25s ease;
+}
+
+@keyframes modal {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================= */
+/* CABEÇALHO */
+/* ========================= */
+
+.titulo_lista_curso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 25px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.titulo_lista_curso h2 {
+  margin: 0;
+  color: #0d4c8b;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========================= */
+
+.fechar {
+  position: absolute;
+  right: 25px;
+  top: 18px;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fechar:hover {
+  color: #000;
+}
+
+/* ========================= */
+/* FORMULÁRIO */
+/* ========================= */
+
+.modal-conteudo form {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ========================= */
+
+.modal-conteudo label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+}
+
+/* ========================= */
+
+.modal-conteudo input,
+.modal-conteudo textarea {
+  width: 100%;
+  border: 1px solid #d7dce3;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.modal-conteudo textarea {
+  resize: none;
+  min-height: 120px;
+}
+
+/* ========================= */
+
+.modal-conteudo input:focus,
+.modal-conteudo textarea:focus {
+  border-color: #177bda;
+
+  box-shadow: 0 0 0 3px rgba(23, 123, 218, 0.12);
+}
+
+/* ========================= */
+/* DATAS */
+/* ========================= */
+
+.datas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* ========================= */
+/* BOTÕES */
+/* ========================= */
+
+.botoes-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 10px;
+  border-top: 1px solid #ececec;
+  padding-top: 20px;
+}
+
+/* ========================= */
+
+.btn-cancelar {
+  width: 170px;
+  height: 45px;
+  border: none;
+  background: #ececec;
+  color: #777;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ========================= */
+
+.btn-salvar {
+  width: 170px;
+  height: 45px;
+  border: none;
+  background: #b85c18;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-salvar:hover {
+  background: #9e4e14;
+}
+
+/* MODAL EDITAR  */
+/* =======================
+    MODAL
+======================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-conteudo {
+  width: 720px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  animation: aparecer 0.25s ease;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =======================
+    FECHAR
+======================= */
+
+.fechar {
+  position: absolute;
+  top: 22px;
+  right: 25px;
+  font-size: 34px;
+  color: #7c8797;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fechar:hover {
+  color: #003b91;
+}
+
+/* =======================
+    TÍTULO
+======================= */
+
+.titulo_lista_editar_curso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 30px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.titulo_lista_editar_curso i {
+  font-size: 28px;
+  color: #0b4a8b;
+}
+
+.titulo_lista_editar_curso p {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #0b4a8b;
+}
+/* =======================
+    FORMULÁRIO
+======================= */
+
+.modal-conteudo form {
+  padding: 28px 30px 30px;
+  display: flex;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+/* descrição ocupa tudo */
+
+.modal-conteudo textarea,
+.modal-conteudo button {
+  grid-column: 1 / -1;
+}
+
+.modal-conteudo label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #70798b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.modal-conteudo input,
+.modal-conteudo textarea {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #cfd8e6;
+  background: #f4f7fb;
+  border-radius: 9px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.25s;
+}
+
+/* .modal-conteudo textarea{
+    min-height:140px;
+    resize:none;
+} */
+
+.modal-conteudo input:focus,
+.modal-conteudo textarea:focus {
+  border-color: #0b4a8b;
+  background: #fff;
+}
+
+/* =======================
+    BOTÕES
+======================= */
+
+.modal-conteudo button {
+  width: 170px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+button[type="submitsalvar"] {
+  background: #c76a28;
+  color: #fff;
+  justify-self: end;
+}
+
+button[type="submitsalvar"]:hover {
+  background: #b95f20;
+}
+
+button[type="buttoncancelar"] {
+  background: #f1f2f5;
+  color: #4d6078;
+  justify-self: end;
+  margin-right: 185px;
+}
+
+button[type="buttoncancelar"]:hover {
+  background: #e4e6eb;
+}
+.acoes-modal {
+  grid-column: 1/-1;
+  border-top: 1px solid #ececec;
+  padding-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.btn-cancelar {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  /* background:#9c4c14; */
+  color: #6b7280;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background: #e5e7eb;
+}
+
+.btn-salvar {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  background: #b75a17;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-salvar:hover {
+  background: #9c4c14;
+}
+
+/* =======================
+    RESPONSIVO
+======================= */
+
+@media (max-width: 700px) {
+  .modal-conteudo form {
+    grid-template-columns: 1fr;
+  }
+
+  button[type="buttoncancelar"] {
+    margin-right: 0;
+  }
+
+  .modal-conteudo button {
+    width: 100%;
+  }
+}
+
+/* MODAL EXCLUIR  */
+/* Fundo escuro */
+.modal-excluir-curso {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Caixa do modal */
+.modal-excluir-curso-conteudo {
+  /* width: 420px; */
+  max-width: 90%;
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 30px 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  animation: abrirModalCurso 0.25s ease;
+}
+
+/* Título */
+.modal-excluir-curso-titulo {
+  margin: 0;
+  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Texto */
+.modal-excluir-curso-texto {
+  margin: 22px 0 34px;
+  color: #666;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.modal-excluir-curso-texto strong {
+  color: #444;
+  font-weight: 700;
+}
+
+/* Botões */
+.modal-excluir-curso-botoes {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Estilo comum */
+.btn-cancelar-curso,
+.btn-confirmar-excluir-curso {
+  width: 170px;
+  height: 46px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+/* Cancelar */
+.btn-cancelar-curso {
+  background: #cfcfcf;
+  color: #fff;
+}
+
+.btn-cancelar-curso:hover {
+  background: #bdbdbd;
+}
+
+/* Excluir */
+.btn-confirmar-excluir-curso {
+  background: #d87434;
+  color: #fff;
+}
+
+.btn-confirmar-excluir-curso:hover {
+  background: #c56528;
+}
+
+/* Animação */
+@keyframes abrirModalCurso {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MENSAGEM */
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  padding: 14px 20px;
+  border-radius: 8px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 600;
+  animation: aparecer 0.3s ease;
+}
+
+.toast.success {
+  background: #22c55e;
+}
+
+@keyframes toastEntrar {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

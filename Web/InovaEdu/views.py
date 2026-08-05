@@ -49,7 +49,7 @@ def login(request):
         # pegando pelo email
         request.session["usuario_email"] = usuario.email
         if usuario.tipo == "Coordenador":
-            return redirect("home_Coordenacao")
+            return redirect("HomeCoord")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
             return redirect("home")
     # se ele não for, ele manda um erro e volta pro login
@@ -1527,55 +1527,42 @@ def editar_mensagem(request, msg_id):
 
 # ================ TELAS COORDENAÇÃO ====================
 
+def HomeCoord(request):
 
-def home_Coordenacao(request):
-    email_sessao = request.session.get("usuario_email")
+    total_usuarios = Usuario.objects.count()
+    total_cursos = Curso.objects.count()
+    total_turmas = Turma.objects.count()
 
-    if not email_sessao:
-        return redirect("login")
+    context = {
+        "total_usuarios": total_usuarios,
+        "total_cursos": total_cursos,
+        "total_turmas": total_turmas,
+    }
 
-    usuario_logado = get_object_or_404(Usuario, email=email_sessao)
+    return render(request, "Coordenacao/HomeCoord.html", context)
 
-    usuarios = Usuario.objects.all()
-    cursos = Curso.objects.all()
-    turmas = Turma.objects.select_related('curso').all()
-    
-    professores = Usuario.objects.filter(tipo__iexact="Professor")
-    
-  
-    #dashoard total de usuários, cursos e turmas
-    
-    total_usuarios = usuarios.count()
-    total_cursos = cursos.count()  
-    total_turmas = turmas.count()
-    
-    
-   
+
+
+
+def UsuarioCoord(request):
 
     if request.method == "POST":
-        print(request.POST)
+
         acao = request.POST.get("acao")
 
-        # EDITAR PERFIL ==========================
-        if acao == "editar_perfil":
-            usuario_logado.nome = request.POST.get("nome")
-            usuario_logado.sobrenome = request.POST.get("sobrenome")
-            usuario_logado.email = request.POST.get("email")
-            usuario_logado.descricao = request.POST.get("descricao")
-
-            if request.FILES.get("imagem"):
-                usuario_logado.imagem = request.FILES.get("imagem")
-
-            usuario_logado.save()
-            return redirect("home_Coordenacao")
-
-        #  CADASTRAR USUÁRIO ==========================
-
         if acao == "cadastrar_usuario":
+
+            email = request.POST.get("email")
+
+            # Verifica se o e-mail já existe
+            if Usuario.objects.filter(email=email).exists():
+                messages.error(request, "Este e-mail já está cadastrado!")
+                return redirect("UsuariosCoord")
+
             Usuario.objects.create(
                 nome=request.POST.get("nome"),
                 sobrenome=request.POST.get("sobrenome"),
-                email=request.POST.get("email"),
+                email=email,
                 senha=request.POST.get("senha"),
                 descricao=request.POST.get("descricao"),
                 tipo=request.POST.get("tipoCadastro"),
@@ -1583,25 +1570,29 @@ def home_Coordenacao(request):
             )
 
             messages.success(request, "Usuário cadastrado com sucesso!")
-            return redirect('home_Coordenacao')
-        
-        
+            return redirect("UsuariosCoord")
 
-    return render(request, 'Coordenacao/home_Coordenacao.html', {
-        'usuarios': usuarios,
-        'professores': professores,
-        'cursos': cursos,
-        'turmas': turmas,
-        'usuario_logado': usuario_logado,
-        
-        'total_usuarios': total_usuarios,
-        'total_cursos': total_cursos,  
-        'total_turmas': total_turmas,
-    })
+    filtro = request.GET.get("tipo", "todos")
 
+    usuarios = Usuario.objects.all()
 
+    if filtro == "professor":
+        usuarios = usuarios.filter(tipo__iexact="Professor")
 
+    elif filtro == "aluno":
+        usuarios = usuarios.filter(tipo__iexact="Aluno")
+    
+    elif filtro == "coordenador":
+        usuarios = usuarios.filter(tipo__iexact="Coordenador")
 
+    context = {
+        "usuarios": usuarios,
+        "total_usuarios": Usuario.objects.count(),
+        "total_professores": Usuario.objects.filter(tipo__iexact="Professor").count(),
+        "total_alunos": Usuario.objects.filter(tipo__iexact="Aluno").count(),
+        "total_coordenadores": Usuario.objects.filter(tipo__iexact="Coordenador").count(),
+        "filtro": filtro,
+    }
 
 
 
@@ -1658,62 +1649,90 @@ def homePage(request):
 
 
 def excluir_usuario(request, idusuario):
-    usuario = get_object_or_404(Usuario, idusuario=idusuario)
-    usuario.delete()
-    return redirect("home_Coordenacao")
+    if request.method == "POST":
+        usuario = get_object_or_404(Usuario, idusuario=idusuario)
+        usuario.delete()
+
+        messages.success(request, "Usuário excluído com sucesso!")
+
+    return redirect("UsuariosCoord")
+
+
+
+
 
 
 def editar_usuario(request, idusuario):
-    usuario = Usuario.objects.get(idusuario=idusuario)
+
+    usuario = get_object_or_404(Usuario, idusuario=idusuario)
 
     if request.method == "POST":
-        # Verifica se os dados estão sendo passados corretamente
-        print(request.POST)
-        print(request.FILES)
 
         usuario.nome = request.POST.get("nome")
         usuario.sobrenome = request.POST.get("sobrenome")
         usuario.email = request.POST.get("email")
-        # usuario.senha = request.POST.get("senha")
         usuario.descricao = request.POST.get("descricao")
         usuario.tipo = request.POST.get("tipoCadastro")
 
-        if "imagem" in request.FILES:
-            usuario.imagem = request.FILES["imagem"]
+        if request.FILES.get("imagem"):
+            usuario.imagem = request.FILES.get("imagem")
 
         usuario.save()
-        print("SALVO COM SUCESSO")
-        return redirect("home_Coordenacao")
 
-    return redirect("home_Coordenacao")
+        messages.success(request, "Usuário atualizado com sucesso!")
+
+        return redirect("UsuariosCoord")
+
+    return render(request, "Coordenacao/EditarUsuario.html", {"usuario": usuario})
 
 
-# CURSO
+
+
+
+
+
+def CursoCoord(request):
+
+    cursos = Curso.objects.all().order_by("nome_curso")
+
+    return render(
+        request,
+        "Coordenacao/CursoCoord.html",
+        {
+            "cursos": cursos
+        }
+    )
 
 
 def criar_curso(request):
+
     if request.method == "POST":
 
         email_usuario = request.session.get("usuario_email")
+
         if not email_usuario:
             return redirect("login")
 
         try:
             usuario = Usuario.objects.get(email=email_usuario)
+
         except Usuario.DoesNotExist:
             return redirect("login")
 
         Curso.objects.create(
             nome_curso=request.POST.get("nome_curso"),
             descricao_curso=request.POST.get("descricao_curso"),
-            data_inicio=request.POST.get("data_inicio"),
-            data_final=request.POST.get("data_final"),
+            data_inicio=request.POST.get("data_inicio") or None,
+            data_final=request.POST.get("data_final") or None,
             imagem=request.FILES.get("imagem"),
             usuario=usuario,
         )
 
-        return redirect("home_Coordenacao")
+        messages.success(request, "Curso cadastrado com sucesso!")
 
+        return redirect("CursoCoord")
+
+    return redirect("CursoCoord")
 
 def editar_curso(request):
     if request.method == "POST":
@@ -1729,19 +1748,44 @@ def editar_curso(request):
 
         curso.save()
         print("SALVO COM SUCESSO")
+        messages.success(request, "Curso atualizado com sucesso!")
 
     # ✅ continua na mesma página
-    return redirect("home_Coordenacao")
-
+    return redirect("CursoCoord")
 
 def excluir_curso(request, idcurso):
     if request.method == "POST":
         curso = get_object_or_404(Curso, idcurso=idcurso)
+
         curso.delete()
-        return redirect(request.META.get("HTTP_REFERER", "home_Coordenacao"))
+        messages.success(request, "Curso excluído com sucesso!")
+        
+    return redirect(request.META.get("HTTP_REFERER", "CursoCoord"))
 
 
-# TURMA
+
+
+
+    
+    
+    
+ 
+def TurmaCoord(request):
+    turmas = Turma.objects.select_related("curso", "professor").all()
+    cursos = Curso.objects.all()
+    professores = Usuario.objects.filter(tipo="Professor")
+
+    # Apenas alunos
+    alunos = Usuario.objects.filter(tipo="Aluno")
+    
+    context = {
+        "turmas": turmas,
+        "cursos": cursos,
+        "professores": professores,
+        "alunos": alunos,
+    }
+
+    return render(request, "Coordenacao/TurmaCoord.html", context)
 
 
 def criar_turma(request):
@@ -1762,8 +1806,12 @@ def criar_turma(request):
             curso=curso,
             professor=professor,
         )
+        
+        messages.success(request, "Turma cadastrada com sucesso!")
 
-        return redirect("home_Coordenacao")
+        return redirect("TurmaCoord")
+
+
 
 def editar_turma(request):
     if request.method == "POST":
@@ -1783,18 +1831,157 @@ def editar_turma(request):
 
         turma.save()
 
-        messages.success(request, "Editado com sucesso!")
+        messages.success(request, "Turma atualizada com sucesso!")
 
-    return redirect("home_Coordenacao")
+    return redirect("TurmaCoord")
 
 
 def excluir_turma(request, idturma):
+
+    turma = get_object_or_404(Turma, idturma=idturma)
+
     if request.method == "POST":
-        turma = get_object_or_404(Turma, idturma=idturma)
         turma.delete()
-    return redirect("home_Coordenacao")
+        messages.success(request, "Turma excluída com sucesso!")
+
+    return redirect("TurmaCoord")
 
 
-def lista_curso(request):
-    cursos = Curso.objects.all()
-    return render(request, 'Coordenacao/ListaCurso.html', {'cursos': cursos})
+
+
+def listar_alunos_turma(request, idturma):
+
+    alunos = UsuarioDaTurma.objects.filter(
+        id_turma_id=idturma
+    ).values_list(
+        "id_usuario_id",
+        flat=True
+    )
+
+    return JsonResponse({
+        "alunos": list(alunos)
+    })
+
+
+
+@require_POST
+def salvar_turma_usuario(request):
+
+    dados = json.loads(request.body)
+
+    turma = Turma.objects.get(
+        idturma=dados["turma"]
+    )
+
+    ids = dados["usuarios"]
+
+    UsuarioDaTurma.objects.filter(
+        id_turma=turma
+    ).delete()
+
+    for id_usuario in ids:
+
+        UsuarioDaTurma.objects.create(
+            id_turma=turma,
+            id_usuario=Usuario.objects.get(idusuario=id_usuario)
+        )
+
+    return JsonResponse({
+        "status": "ok"
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def homePage(request):
+    return render(request, "homePage.html")
+
+
+# NOVO VISUAL DA COORDENAÇÃO=================
+

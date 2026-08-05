@@ -1,0 +1,103 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordenação</title>
+
+    <link rel="stylesheet" href="{% static 'styles/navbar_coordenacao.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'styles/HomeCoord.css' %}?v=1">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+
+
+
+{% include 'partials/navbar_Coordenacao.html' %}
+
+<div class="dashboard">
+
+    <!-- Banner -->
+    <section class="banner">
+        <h1>Bem-Vindo a área do coordenador</h1>
+
+        <p>
+            Central de gerenciamento acadêmico e operacional.
+            Monitore usuários, organize cursos e otimize o fluxo
+            de turmas em uma única interface eficiente.
+        </p>
+    </section>
+
+
+    <!-- Cards Estatísticas -->
+    <section class="estatisticas">
+
+        <div class="card-info azul">
+            <div class="icone">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <span>PLATAFORMA</span>
+            <h3>Total de Usuários:</h3>
+            <h3>{{ total_usuarios }}</h3>
+
+            <div class="barra"></div> 
+
+            <div class="btn-container">
+                <a href="{% url 'UsuariosCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
+        </div>
+
+
+        <div class="card-info laranja">
+            <div class="icone">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <span>ACADÊMICO</span>
+            <h3>Total de Cursos: </h3>
+            <h3>{{ total_cursos }}</h3>
+
+            <div class="barra"></div>
+
+            <div class="btn-container">
+                <a href="{% url 'CursoCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
+        </div>
+
+
+        <div class="card-info cinza">
+            <div class="icone">
+                <i class="fa-solid fa-book"></i>
+            </div>
+
+            <span>GESTÃO</span>
+            <h3>Total de Turmas: </h3>
+            <h3>{{ total_turmas }}</h3>
+
+            <div class="barra"></div>
+
+            <div class="btn-container">
+                <a href="{% url 'TurmaCoord' %}" class="btn-ver-usuarios">
+                    Entrar
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    
+
+</div>
+
+</body>
+</html>

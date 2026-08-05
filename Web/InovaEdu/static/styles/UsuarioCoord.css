@@ -1,0 +1,518 @@
+:root {
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #fff;
+  --azul-Senac: #004a8d;
+  --cinza-Senac: #f2f2f2;
+  --azul_Claro-Senac: #177bda;
+  --fonte-principal: "Arial", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-principal);
+}
+
+/* Container geral */
+
+.usuarios-container {
+  width: 95%;
+  max-width: 85%;
+  margin: 35px auto;
+  background: #fff;
+  border: 1px solid #dce5f2;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  position: relative;
+  top: 40px; /* sobe */
+}
+
+/* TOPO DA LISTA */
+.topo-lista-usuarios {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #dce5f2;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+}
+
+.filtros-lista {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.campo-pesquisa {
+  width: 330px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #d7dce5;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #f8fafc;
+}
+
+.campo-pesquisa i {
+  color: #8b97a7;
+  margin-right: 10px;
+}
+
+.campo-pesquisa input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+.select-tipo {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d7dce5;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn-novo-usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #ff914d;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-novo-usuario:hover {
+  background: #ea7d38;
+}
+
+@media (max-width: 768px) {
+  .topo-lista-usuarios {
+    flex-direction: column;
+    gap: 15px;
+
+    align-items: stretch;
+  }
+
+  .filtros-lista {
+    flex-direction: column;
+  }
+
+  .campo-pesquisa {
+    width: 100%;
+  }
+
+  .select-tipo {
+    width: 100%;
+  }
+
+  .btn-novo-usuario {
+    justify-content: center;
+  }
+}
+
+/* LISTA DO USUARIO */
+
+.lista-usuario-conteudo {
+  max-height: 600px; /* ajuste para a altura que desejar */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tabela-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.tabela-usuarios thead {
+  background: #003b73;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tabela-usuarios th {
+  padding: 18px;
+  text-align: left;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.tabela-usuarios td {
+  padding: 18px;
+
+  border-bottom: 1px solid #edf2f7;
+
+  vertical-align: middle;
+}
+
+.tabela-usuarios tbody tr:hover {
+  background: #f8fbff;
+}
+
+/* Avatar */
+
+.avatar img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-padrao {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--azul-Senac);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+/* Tipo */
+
+.tipo {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tipo.professor {
+  background: #eaf3ff;
+  color: #0d6efd;
+}
+
+.tipo.aluno {
+  background: #fff3e8;
+  color: #ff7b00;
+}
+
+.tipo.coordenador {
+  background: #eaf9ef;
+  color: #198754;
+}
+
+/* Ações */
+.lista-usuarios li {
+  list-style: none;
+}
+
+.acoes-geral_usuario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative;
+  right: 70%; /* move 50px para a direita */
+}
+
+.acoes-geral_usuario button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-editar {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.btn-descricao {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.btn-excluir {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.acoes-geral_usuario button:hover {
+  transform: scale(1.05);
+}
+
+.vazio {
+  text-align: center;
+  padding: 40px;
+}
+
+
+
+/* MODAL DO CADASTRO DE USUARIO */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-conteudo {
+  width: 700px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 25px;
+  border-bottom: 1px solid #ececec;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #0d4c8b;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fechar {
+  font-size: 30px;
+  cursor: pointer;
+  color: #7b8794;
+}
+
+.modal form {
+  padding: 30px;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.campo label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.campo input,
+.campo textarea,
+.campo select {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid #d8dde6;
+  border-radius: 8px;
+  background: #f5f7fa;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box;
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  border-color: #f7941d;
+  background: #fff;
+}
+
+.campo textarea {
+  min-height: 90px;
+  resize: none;
+}
+
+.modal-footer {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  border-top: 1px solid #ececec;
+  padding-top: 20px;
+}
+
+.btn-cancelar {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  /* background:#9c4c14; */
+  color: #6b7280;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background: #e5e7eb;
+}
+
+.btn-salvar {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  background: #b75a17;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-salvar:hover {
+  background: #9c4c14;
+}
+
+@media (max-width: 700px) {
+  .linha {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-conteudo {
+    width: 95%;
+  }
+}
+
+/* msg */
+
+.mensagens {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.mensagem {
+  padding: 14px 20px;
+  border-radius: 8px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 600;
+  animation: aparecer 0.3s ease;
+}
+
+.mensagem.success {
+  background: #28a745;
+}
+
+.mensagem.error {
+  background: #dc3545;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MODAL EXLUIR */
+
+/* Modal */
+.modal-excluir {
+  width: 420px;
+  max-width: 90%;
+  padding: 15px 25px;
+  border-radius: 12px;
+  background: #fff;
+  text-align: center;
+  /* position: relative; */
+}
+
+.modal-excluir h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 18px;
+}
+
+.modal-excluir p {
+  font-size: 17px;
+  color: #666;
+  line-height: 1.5;
+  /* margin-bottom: 35px; */
+}
+
+.botoes-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Estilo igual ao da imagem */
+.btn-cancelar{
+  color: #6b7280;
+}
+.btn-confirmar-excluir {
+  border: none;
+  border-radius: 8px;
+  height: 38px;
+  min-width: 96px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Cinza */
+.btn-cancelar {
+  background: #c8c8c8;
+}
+
+.btn-cancelar:hover {
+  background: #b5b5b5;
+}
+
+/* Laranja Senac */
+.btn-confirmar-excluir {
+  background: #c96a2b;
+  min-width: 170px;
+}
+
+.btn-confirmar-excluir:hover {
+  background: #b75d21;
+}
+
+/* Botão X */
+.modal-excluir .fechar {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+}
+
+.modal-excluir .fechar:hover {
+  color: #c96a2b;
+}

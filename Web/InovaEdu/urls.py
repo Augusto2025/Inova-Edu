@@ -38,17 +38,43 @@ urlpatterns = [
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
     path('repositorio/<int:projeto_id>/download/', views.download_repositorio_projeto, name='download_repositorio_projeto'),
     # Coordenação
-    path('home_Coordenacao/', views.home_Coordenacao, name="home_Coordenacao"),
+    
+    path("coordenacao/", views.HomeCoord, name="HomeCoord"),
+    path('usuarios/', views.UsuarioCoord, name='UsuariosCoord'),
+    path('CursoCoord/', views.CursoCoord, name='CursoCoord'),
+    path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),   
+    path("cursos/", views.CursoCoord, name="CursoCoord"),
+
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
+    path("CursoCoord/", views.CursoCoord, name="CursoCoord"),
+    
+    
+    # path("turma/salvar-alunos/",views.salvar_turma_usuario,name="salvar_turma_usuario",),
+    path(
+        "turma/listar-alunos/<int:idturma>/",
+        views.listar_alunos_turma,
+        name="listar_alunos_turma",
+    ),
+
+    path(
+        "turma/salvar-alunos/",
+        views.salvar_turma_usuario,
+        name="salvar_turma_usuario",
+    ),
+    
+    
+    
+    
+    
+    
+    
+    
     
     path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
     path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('turma/editar/', views.editar_turma, name='editar_turma'),
     
-    path('listar-alunos/', views.listar_alunos, name='listar_alunos'),
-    path('salvar-alunos-turma/', views.salvar_alunos_turma, name='salvar_alunos_turma'),
-
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
@@ -56,8 +82,6 @@ urlpatterns = [
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
     path('api/upload-foto/', views.upload_foto, name='upload_foto'),
     
-    # path('api/cursos/', views.gerenciar_cursos_ajax, name='gerenciar_cursos_ajax'),
-    # path('salvar-certificado/', views.salvar_certificado, name='salvar_certificado'),
     path('api/certificados/', views.salvar_certificado, name='certificados_api'),
     
 ]
