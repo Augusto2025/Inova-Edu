@@ -468,7 +468,9 @@
 }
 
 /* Estilo igual ao da imagem */
-.btn-cancelar,
+.btn-cancelar{
+  color: #6b7280;
+}
 .btn-confirmar-excluir {
   border: none;
   border-radius: 8px;
@@ -477,7 +479,7 @@
   padding: 0 24px;
   font-size: 15px;
   font-weight: 600;
-  color: #6b7280;
+  color: #fff;
   cursor: pointer;
   transition: 0.3s;
 }

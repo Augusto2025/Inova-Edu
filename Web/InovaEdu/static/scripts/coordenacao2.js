@@ -438,3 +438,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// BUSCA DE ALUNOS
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campoBusca = document.getElementById("buscarAlunoModal");
+    const listaAlunos = document.getElementById("listaAlunosBanco");
+
+    if (!campoBusca || !listaAlunos) return;
+
+    campoBusca.addEventListener("keyup", function () {
+
+        const filtro = this.value.toLowerCase().trim();
+        const alunos = listaAlunos.querySelectorAll("li");
+
+        alunos.forEach(function (aluno) {
+
+            const nome = aluno.querySelector("span").textContent.toLowerCase();
+
+            if (nome.includes(filtro)) {
+                aluno.style.display = "flex";
+            } else {
+                aluno.style.display = "none";
+            }
+
+        });
+
+    });
+
+});
