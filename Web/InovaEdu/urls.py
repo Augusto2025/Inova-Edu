@@ -40,7 +40,7 @@ urlpatterns = [
     # Coordenação
     
     path("coordenacao/", views.HomeCoord, name="HomeCoord"),
-    path('usuarios/', views.UsuarioCoord, name='UsuariosCoord'),
+    path('usuarios/', views.UsuarioCoord, name='UsuarioCoord'),
     path('CursoCoord/', views.CursoCoord, name='CursoCoord'),
     path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),   
     path("cursos/", views.CursoCoord, name="CursoCoord"),
@@ -48,33 +48,12 @@ urlpatterns = [
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
     path("CursoCoord/", views.CursoCoord, name="CursoCoord"),
-    
-    
-    # path("turma/salvar-alunos/",views.salvar_turma_usuario,name="salvar_turma_usuario",),
-    path(
-        "turma/listar-alunos/<int:idturma>/",
-        views.listar_alunos_turma,
-        name="listar_alunos_turma",
-    ),
 
-    path(
-        "turma/salvar-alunos/",
-        views.salvar_turma_usuario,
-        name="salvar_turma_usuario",
-    ),
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    path("turma/listar-alunos/<int:idturma>/", views.listar_alunos_turma, name="listar_alunos_turma"),
+    path("turma/salvar-alunos/", views.salvar_turma_usuario, name="salvar_turma_usuario"),
     path('usuarios/editar/<int:idusuario>/', views.editar_usuario, name='editar_usuario'),
     path("curso/editar/", views.editar_curso, name="editar_curso"),
     path('turma/editar/', views.editar_turma, name='editar_turma'),
-    
     path('usuarios/excluir/<int:idusuario>/', views.excluir_usuario, name='excluir_usuario'),
     path('curso/excluir/<int:idcurso>/', views.excluir_curso, name='excluir_curso'),
     path('turma/excluir/<int:idturma>/', views.excluir_turma, name='excluir_turma'),
