@@ -1645,7 +1645,7 @@ def salvar_alunos_turma(request):
 
 def homePage(request):
     # Exemplo na sua view do Django:
-    cursos = Curso.objects.all().order_by('-idcurso')[:3]
+    cursos = Curso.objects.all().order_by('-idcurso')[:6]
     return render(request, "homePage.html", {"cursos": cursos})
 
 

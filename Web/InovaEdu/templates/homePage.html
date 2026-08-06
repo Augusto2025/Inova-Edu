@@ -22,7 +22,7 @@
                 <span>Inova Edu</span>
             </a>
             <nav class="nav-links">
-                <a href="#recursos">Recursos</a>
+                <a href="#recursos">Funcionalidades</a>
                 <a href="#cursos">Cursos</a>
                 <a href="#download">App</a>
             </nav>
@@ -155,7 +155,7 @@
                 <div class="carousel">
                     <div class="carousel-track">
                         {# O filtro |slice:":3" pega apenas os 3 primeiros itens da lista #}
-                        {% for curso in cursos|slice:":3" %}
+                        {% for curso in cursos %}
                             <div class="curso-card">
                                 <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
                                 <div class="curso-info">
