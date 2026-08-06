@@ -125,7 +125,7 @@
     1.9fr
     1fr;
 
-  background: #0d4b89;
+  background: var(--azul-Senac);
   color: #fff;
   font-weight: 600;
   padding: 18px 20px;
@@ -1062,4 +1062,3 @@
   }
 }
 
-/*  */

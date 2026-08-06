@@ -136,7 +136,7 @@
 }
 
 .tabela-usuarios thead {
-  background: #003b73;
+  background: var(--azul-Senac);
   color: #fff;
   position: sticky;
   top: 0;

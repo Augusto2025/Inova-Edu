@@ -86,11 +86,11 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
 
-                           <button
+                            <button
                                 class="btn-descricao icon-descricao"
                                 data-descricao="{{ curso.descricao_curso|escapejs }}">
                                 <i class="fa-solid fa-align-center"></i>
-                            </button> 
+                            </button>
 
                             <form method="POST" action="{% url 'excluir_curso' curso.idcurso %}" class="form-excluir-curso">
                                 {% csrf_token %}
@@ -288,6 +288,31 @@
         </div>
 
     </div>
+
+    <!-- Modal Descrição -->
+    <div id="modalDescricaoCurso" class="modal-descricao">
+        <div class="modal-descricao-box">
+            <div class="modal-descricao-topo">
+                <h3>Descrição do Curso</h3>
+
+                <button type="button" id="fecharModalDescricao">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-descricao-conteudo">
+                <p id="textoDescricaoCurso"></p>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
 
 
     {% if messages %}
