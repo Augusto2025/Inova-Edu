@@ -41,8 +41,11 @@ def login(request):
     Email = request.POST.get("email")
     Senha = request.POST.get("senha")
 
-    # utiliza do usuário somente o email e a senha
-    usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
+   # Busca o usuário ignorando maiúsculas/minúsculas no e-mail
+    usuario = Usuario.objects.filter(
+        email__iexact=Email,
+        senha=Senha
+    ).first()
 
     # verificar se o usuario é professor aluno ou coordenador
     if usuario:
