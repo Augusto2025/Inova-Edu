@@ -83,7 +83,7 @@
 
           <tbody>
             {% for usuario in usuarios %}
-            <tr>
+            <tr class="linha-usuario">
               <td class="avatar">
                 {% if usuario.imagem %}
                 <img src="{{ usuario.imagem.url }}" alt="{{ usuario.nome }}" />
