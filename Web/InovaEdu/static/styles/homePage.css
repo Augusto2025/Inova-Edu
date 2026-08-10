@@ -208,7 +208,7 @@ body {
    4. SEÇÃO DE RECURSOS (CARDS GRID)
 ================================= */
 .container-secao {
-    max-width: 1200px;
+    max-width: 972px;
     margin: 0 auto;
     padding: 60px 20px;
 }
@@ -231,7 +231,11 @@ body {
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+    gap: 25px;
+    margin-top: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .card {
@@ -421,10 +425,6 @@ body {
 /* =================================
    6. CARROSSEL DE CURSOS
 ================================= */
-.secao-cursos {
-    background: #f1f5f9;
-}
-
 .carousel-container {
     position: relative;
     display: flex;
@@ -518,8 +518,76 @@ body {
 }
 
 /* =================================
-   7. SEÇÃO DOWNLOAD
+   7. SEÇÃO TRILHA DEV
 ================================= */
+.secao-trilha {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.trilha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.trilha-card {
+    background: #ffffff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid #004a8d;
+    position: relative;
+    text-align: left;
+}
+
+.trilha-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.trilha-numero {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: rgba(0, 74, 141, 0.15);
+}
+
+.trilha-icon {
+    font-size: 2rem;
+    color: #004a8d;
+    margin-bottom: 15px;
+}
+
+.trilha-card h3 {
+    font-size: 1.15rem;
+    color: #222;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.trilha-card p {
+    font-size: 0.92rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* =================================
+   8. SEÇÃO DOWNLOAD
+================================= */
+.secao-download {
+    background: #f1f5f9;
+}
+
 .download-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -583,13 +651,17 @@ body {
     font-size: 13px;
     padding: 10px 12px;
 }
+/* adicionar quando o mouse estiver sobre o botão o ponteiro fica com um icone de bloqueio e desativa o botão */
+.btn-store:hover {
+    cursor: not-allowed;
+}
 
 .btn-store:hover {
     background: #0f172a;
 }
 
 /* =================================
-   8. FOOTER ESTRUTURADO
+   9. FOOTER ESTRUTURADO
 ================================= */
 .footer-site {
     background: var(--azul-senac);
@@ -662,7 +734,7 @@ body {
 }
 
 /* =================================
-   9. RESPONSIVIDADE (MEDIA QUERIES)
+   10. RESPONSIVIDADE (MEDIA QUERIES)
 ================================= */
 
 /* Tablets (<= 992px) */

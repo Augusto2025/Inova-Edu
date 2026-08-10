@@ -22,8 +22,9 @@
                 <span>Inova Edu</span>
             </a>
             <nav class="nav-links">
-                <a href="#recursos">Funcionalidades</a>
+                <a href="#recursos">Recursos</a>
                 <a href="#cursos">Cursos</a>
+                <a href="#trilha">Trilha Dev</a>
                 <a href="#download">App</a>
             </nav>
             <div class="botoeslogin">
@@ -40,15 +41,6 @@
             <img class="logo" style="width: 100px; height: auto;" id="titulo-animado" src="{% static 'img/Logo_branco_icone.png' %}" alt="Inova Edu Logo">
             <h1 class="titulo-animado">Da sala de aula para o mundo: descubra os projetos do Senac</h1>
             <h2 class="titulo-animado" id="subtitulo-animado">O ponto de encontro de ideias, inovação e colaboração entre alunos e professores.</h2>
-            
-            <!-- Barra de Pesquisa Integrada -->
-            {% comment %} <form action="/projetos" method="GET" class="hero-search-form">
-                <div class="search-input-wrapper">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" name="q" placeholder="O que você quer pesquisar hoje? Ex: Python, Web, PI...">
-                    <button type="submit" class="btn-search-hero">Buscar</button>
-                </div>
-            </form> {% endcomment %}
         </div>
     </section>
 
@@ -88,11 +80,17 @@
                     <h3>Calendário</h3>
                     <p>Visualizar as datas de bancas e os projetos que serão apresentados.</p>
                 </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class="fa-solid fa-user"></i></div>
+                    <h3>Perfil</h3>
+                    <p>Gerencie suas informações e Projetos.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- PARALLAX 2 (COM CONTADORES DE IMPACTO) -->
+    <!-- PARALLAX 2 (ROADMAP DO DESENVOLVIMENTO DO PROJETO) -->
     <section class="parallax parallax-stats" style="background-image: url('{% static "img/Nootbook.jpg" %}');">
         <div class="parallax-overlay roadmap-overlay">
             <h2 class="parallax-title">Roadmap do Desenvolvimento</h2>
@@ -141,45 +139,94 @@
     </section>
 
     <!-- CARROSSEL DE CURSOS -->
-<section id="cursos" class="secao-cursos">
-    <div class="container-secao">
-        <h2 class="titulo-secao">Cursos em destaque</h2>
-        <p class="descricao">Conheça alguns dos cursos oferecidos na área de tecnologia.</p>
+    <section id="cursos" class="secao-cursos">
+        <div class="container-secao">
+            <h2 class="titulo-secao">Cursos em destaque</h2>
+            <p class="descricao">Conheça alguns dos cursos oferecidos na área de tecnologia.</p>
 
-        <div class="carousel-container">
-            {% if cursos %}
-                <button class="carousel-btn prev" aria-label="Anterior">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
+            <div class="carousel-container">
+                {% if cursos %}
+                    <button class="carousel-btn prev" aria-label="Anterior">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
 
-                <div class="carousel">
-                    <div class="carousel-track">
-                        {# O filtro |slice:":3" pega apenas os 3 primeiros itens da lista #}
-                        {% for curso in cursos %}
-                            <div class="curso-card">
-                                <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
-                                <div class="curso-info">
-                                    <h3>{{ curso.nome_curso }}</h3>
-                                    {% if curso.descricao_curso %}
-                                        <p>{{ curso.descricao_curso }}</p>
-                                    {% else %}
-                                        <p>Descrição não disponível.</p>
-                                    {% endif %}
+                    <div class="carousel">
+                        <div class="carousel-track">
+                            {% for curso in cursos %}
+                                <div class="curso-card">
+                                    <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
+                                    <div class="curso-info">
+                                        <h3>{{ curso.nome_curso }}</h3>
+                                        {% if curso.descricao_curso %}
+                                            <p>{{ curso.descricao_curso }}</p>
+                                        {% else %}
+                                            <p>Descrição não disponível.</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
+
+                    <button class="carousel-btn next" aria-label="Próximo">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                {% else %}
+                    <p class="sem-cursos">Nenhum curso disponível no momento.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TRILHA DE CARREIRA: COMO INICIAR EM DESENVOLVIMENTO     -->
+    <!-- ======================================================== -->
+    <section id="trilha" class="secao-trilha">
+        <div class="container-secao">
+            <h2 class="titulo-secao">Como Iniciar na Carreira de Desenvolvedor</h2>
+            <p class="descricao">Siga este passo a passo estruturado para transformar seus estudos em uma carreira de sucesso na TI.</p>
+
+            <div class="trilha-grid">
+                
+                <div class="trilha-card">
+                    <span class="trilha-numero">01</span>
+                    <div class="trilha-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>1. Lógica & Fundamentos</h3>
+                    <p>Aprenda lógica de programação, algoritmos, HTML5, CSS3 e versionamento de código usando Git e GitHub.</p>
                 </div>
 
-                <button class="carousel-btn next" aria-label="Próximo">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            {% else %}
-                <p class="sem-cursos">Nenhum curso disponível no momento.</p>
-            {% endif %}
+                <div class="trilha-card">
+                    <span class="trilha-numero">02</span>
+                    <div class="trilha-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3>2. Escolha sua Especialização</h3>
+                    <p>Defina seu foco inicial: <strong>Front-end</strong> (Web/UI), <strong>Back-end</strong> (Python, Django, Banco de Dados) ou <strong>Mobile</strong>.</p>
+                </div>
+
+                <div class="trilha-card">
+                    <span class="trilha-numero">03</span>
+                    <div class="trilha-icon"><i class="fa-solid fa-cubes"></i></div>
+                    <h3>3. Projetos Práticos</h3>
+                    <p>Construa os Projetos Integradores no Senac e publique suas soluções no Inova Edu para montar seu portfólio real.</p>
+                </div>
+
+                <div class="trilha-card">
+                    <span class="trilha-numero">04</span>
+                    <div class="trilha-icon"><i class="fa-solid fa-comments"></i></div>
+                    <h3>4. Comunidade & Networking</h3>
+                    <p>Participe do nosso Fórum, tire dúvidas, troque experiências e apresente seus projetos para as bancas avaliadoras.</p>
+                </div>
+
+                <div class="trilha-card">
+                    <span class="trilha-numero">05</span>
+                    <div class="trilha-icon"><i class="fa-solid fa-briefcase"></i></div>
+                    <h3>5. Mercado de Trabalho</h3>
+                    <p>Organize seu LinkedIn, destaque os projetos publicados no Inova Edu e comece a aplicar para vagas de estágio e dev Júnior.</p>
+                </div>
+
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+    <!-- ======================================================== -->
 
     <!-- SEÇÃO DE DOWNLOAD DO APP -->
     <section id="download" class="secao-download">
@@ -191,7 +238,7 @@
                 <div class="download-box">
                     <div class="download-icon"><i class="fa-solid fa-desktop"></i></div>
                     <h3>Desktop</h3>
-                    <p>Versão para Windows e linux x64</p>
+                    <p>Versão para Windows e Linux x64</p>
                     <a href="https://github.com/Augusto2025/Inova-Edu/releases/download/Beta/InovaEdu.zip" class="btn-download">
                         <i class="fa-solid fa-download"></i> Baixar para PC
                     </a>
@@ -205,9 +252,6 @@
                         <a href="#" class="btn-download btn-store">
                             <i class="fa-brands fa-android"></i> Android
                         </a>
-                        {% comment %} <a href="#" class="btn-download btn-store">
-                            <i class="fa-brands fa-apple"></i> App Store
-                        </a> {% endcomment %}
                     </div>
                 </div>
             </div>
