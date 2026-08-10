@@ -14,7 +14,12 @@ router.get('/topico/:topicoId', async (req, res) => {
                 m."Conteudo" AS texto, 
                 m."Data_criacao" AS data,
                 m."ID_Usuario" AS "autorId",
-                u."Nome" AS nome
+                u."Nome" AS nome,
+                u."imagem_usuario" AS foto,
+                m."respondendo_a" AS "respondendoA",
+                m."nome_usuario_respondido" AS "nomeUsuarioRespondido",
+                m."texto_respondido" AS "textoRespondido",
+                (SELECT COUNT(*) FROM mensagem WHERE "respondendo_a" = m."id" AND "excluida" = false) AS "respostasCount"
             FROM mensagem m
             LEFT JOIN usuario u ON m."ID_Usuario" = u."idUsuario"
             WHERE m."ID_Topico" = $1 AND m."excluida" = false
@@ -28,18 +33,23 @@ router.get('/topico/:topicoId', async (req, res) => {
     }
 });
 
-// POST: Enviar uma nova mensagem no tópico
-// URL: /mensagem
+// POST: Enviar uma nova mensagem no tópico (com suporte a respostas)
+// URL: /conversa
 router.post('/', async (req, res) => {
-    const { conteudo, topicoId, usuarioId } = req.body;
+    const { conteudo, topicoId, usuarioId, respondendoA, nomeUsuarioRespondido, textoRespondido } = req.body;
 
     try {
+        // Prepara os dados da resposta se existirem
+        const respondendoAId = respondendoA || null;
+        const nomeRespondido = nomeUsuarioRespondido || null;
+        const textoRespo = textoRespondido || null;
+
         const queryText = `
-            INSERT INTO mensagem ("Conteudo", "ID_Topico", "ID_Usuario", "excluida", "Data_criacao") 
-            VALUES ($1, $2, $3, false, NOW()) 
+            INSERT INTO mensagem ("Conteudo", "ID_Topico", "ID_Usuario", "excluida", "Data_criacao", "respondendo_a", "nome_usuario_respondido", "texto_respondido") 
+            VALUES ($1, $2, $3, false, NOW(), $4, $5, $6) 
             RETURNING "id"
         `;
-        const resultado = await pool.query(queryText, [conteudo, topicoId, usuarioId]);
+        const resultado = await pool.query(queryText, [conteudo, topicoId, usuarioId, respondendoAId, nomeRespondido, textoRespo]);
 
         const topicoRes = await pool.query(
             'SELECT "usuario_id", "titulo" FROM topico WHERE "idtopico" = $1',
@@ -62,6 +72,35 @@ router.post('/', async (req, res) => {
                         topicoId
                     ]
                 );
+            }
+        }
+
+        // Se está respondendo a uma mensagem, notifica o autor da mensagem respondida
+        if (respondendoAId) {
+            const msgRespondidaRes = await pool.query(
+                'SELECT "ID_Usuario", "Conteudo" FROM mensagem WHERE "id" = $1',
+                [respondendoAId]
+            );
+
+            if (msgRespondidaRes.rows.length > 0) {
+                const autorMsgRespondida = msgRespondidaRes.rows[0];
+                if (autorMsgRespondida.ID_Usuario !== parseInt(usuarioId, 10)) {
+                    const nomeUsuarioQueSaiu = (await pool.query('SELECT "Nome" FROM usuario WHERE "idUsuario" = $1', [usuarioId])).rows[0]?.Nome || 'Um usuário';
+                    
+                    await pool.query(
+                        `INSERT INTO notifications (usuario_id, tipo, titulo, subtitulo, tela_destino, parametros, entidade_id)
+                         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                        [
+                            autorMsgRespondida.ID_Usuario,
+                            'Forum',
+                            'Responderam sua mensagem',
+                            `${nomeUsuarioQueSaiu} respondeu: "${conteudo.substring(0, 50)}${conteudo.length > 50 ? '...' : ''}"`,
+                            'Conversa',
+                            JSON.stringify({ topicoId, mensagemId: respondendoAId }),
+                            respondendoAId
+                        ]
+                    );
+                }
             }
         }
 

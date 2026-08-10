@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Modal, TouchableWithoutFeedback, ActivityIndicator, Alert, Keyboard } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Modal, TouchableWithoutFeedback, ActivityIndicator, Alert, Keyboard, Image } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
@@ -28,6 +28,7 @@ export default function ConversaScreen({ navigation, route }) {
   const [editarVisible, setEditarVisible] = useState(false);
   const [textoEditando, setTextoEditando] = useState("");
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
+  const [mensagemRespondendo, setMensagemRespondendo] = useState(null);
 
   // ==========================================
   // BUSCA DE DADOS (API + STORAGE)
@@ -57,7 +58,12 @@ export default function ConversaScreen({ navigation, route }) {
           nome: msg.nome || "Usuário",
           texto: msg.texto,
           hora: formatarHora(msg.data),
-          meu: msg.autorId === idUser
+          foto: msg.foto,
+          meu: msg.autorId === idUser,
+          respondendoA: msg.respondendo_a,
+          textoRespondido: msg.texto_respondido,
+          nomeUsuarioRespondido: msg.nome_usuario_respondido,
+          respostasCount: msg.respostasCount || 0
         }));
 
         setMensagens(formatadas);
@@ -102,14 +108,22 @@ export default function ConversaScreen({ navigation, route }) {
     }
 
     try {
+      const payload = {
+        conteudo: novaMensagem.trim(),
+        topicoId: topico.id,
+        usuarioId: usuarioLogadoId
+      };
+
+      if (mensagemRespondendo) {
+        payload.respondendoA = mensagemRespondendo.id;
+        payload.nomeUsuarioRespondido = mensagemRespondendo.nome;
+        payload.textoRespondido = mensagemRespondendo.texto;
+      }
+
       const response = await fetch(URL_MENSAGEM, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conteudo: novaMensagem.trim(),
-          topicoId: topico.id,
-          usuarioId: usuarioLogadoId
-        })
+        body: JSON.stringify(payload)
       });
 
       // Captura o texto puro retornado pelo backend (seja JSON ou HTML de erro)
@@ -120,6 +134,7 @@ export default function ConversaScreen({ navigation, route }) {
       }
 
       setNovaMensagem("");
+      setMensagemRespondendo(null);
       Keyboard.dismiss();
       carregarDados(); // Recarrega o chat com a nova mensagem
     } catch (error) {
@@ -183,6 +198,15 @@ export default function ConversaScreen({ navigation, route }) {
     setEditarVisible(true);
   };
 
+  const responderMensagem = (item) => {
+    setMensagemRespondendo(item);
+    setMenuVisible(false);
+  };
+
+  const cancelarResposta = () => {
+    setMensagemRespondendo(null);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Header nomeTela={"Conversa"} temGoBack={true} telaDestino={"Titulo"} carregando={carregando} />
@@ -205,7 +229,7 @@ export default function ConversaScreen({ navigation, route }) {
         <ScrollView
           ref={scrollViewRef}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 10 }}
+          contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 10 }}
           onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
         >
           {mensagens.map((item) => (
@@ -219,7 +243,15 @@ export default function ConversaScreen({ navigation, route }) {
               <View style={styles.topRow}>
                 {!item.meu && (
                   <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
-                    <Ionicons name="person" size={16} color="#fff" />
+                    {item.foto && item.foto.trim() && item.foto.toLowerCase() !== 'null' ? (
+                      <Image
+                        source={{ uri: item.foto }}
+                        style={styles.avatarImage}
+                        onError={() => console.log('Erro ao carregar foto:', item.foto)}
+                      />
+                    ) : (
+                      <Ionicons name="person" size={16} color="#fff" />
+                    )}
                   </View>
                 )}
 
@@ -228,13 +260,29 @@ export default function ConversaScreen({ navigation, route }) {
                     <View style={styles.nameRow}>
                       <Text
                         style={[
-                          styles.message,
+                          styles.name,
                           {
                             color: item.meu ? '#fff' : theme.text,
-                            fontSize: 15 * fontSizeScale
+                            fontSize: 13 * fontSizeScale,
+                            fontWeight: '600'
                           }
                         ]}
-                      ></Text>
+                      >{item.nome}</Text>
+                    </View>
+                  )}
+                  {item.respondendoA && item.textoRespondido && (
+                    <View style={[styles.quotedMessage, { backgroundColor: item.meu ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)', borderLeftColor: item.meu ? 'rgba(255,255,255,0.6)' : theme.primary }]}>
+                      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                        <MaterialIcons name="reply" size={14} color={item.meu ? 'rgba(255,255,255,0.7)' : theme.primary} style={{ marginRight: 8, marginTop: 2 }} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.quotedName, { color: item.meu ? 'rgba(255,255,255,0.9)' : theme.primary, fontSize: 12 * fontSizeScale }]} numberOfLines={1}>
+                            {item.nomeUsuarioRespondido}
+                          </Text>
+                          <Text style={[styles.quotedText, { color: item.meu ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)', fontSize: 13 * fontSizeScale }]} numberOfLines={2}>
+                            {item.textoRespondido}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
                   )}
                   <Text
@@ -253,62 +301,115 @@ export default function ConversaScreen({ navigation, route }) {
               </View>
 
               <View style={styles.footer}>
-  <Text
-    style={[
-      styles.time,
-      {
-        color: item.meu ? "rgba(255,255,255,0.75)" : "#888",
-        fontSize: 10 * fontSizeScale,
-      },
-    ]}
-  >
-    {item.hora}
-  </Text>
+                <View style={styles.footerLeft}>
+                  <Text
+                    style={[
+                      styles.time,
+                      {
+                        color: item.meu ? "rgba(255,255,255,0.75)" : "#888",
+                        fontSize: 10 * fontSizeScale,
+                      },
+                    ]}
+                  >
+                    {item.hora}
+                  </Text>
 
-  {item.meu && (
-    <TouchableOpacity
-      style={styles.moreButton}
-      onPress={() => abrirMenu(item)}
-    >
-      <Feather
-        name="more-vertical"
-        size={15}
-        color="#FFFFFF"
-      />
-    </TouchableOpacity>
-  )}
-</View>
+                  {item.respostasCount > 0 && (
+                    <View style={[styles.respostasIndicator, { backgroundColor: item.meu ? 'rgba(255,255,255,0.2)' : 'rgba(14, 104, 214, 0.1)' }]}>
+                      <MaterialIcons name="reply" size={12} color={item.meu ? '#fff' : theme.primary} />
+                      <Text style={[styles.respostasText, { color: item.meu ? '#fff' : theme.primary, fontSize: 10 * fontSizeScale }]}>
+                        {item.respostasCount}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <View style={styles.footerRight}>
+                  {!item.meu && (
+                    <TouchableOpacity
+                      style={styles.replyButton}
+                      onPress={() => responderMensagem(item)}
+                    >
+                      <MaterialIcons name="reply" size={16} color="#888" />
+                    </TouchableOpacity>
+                  )}
+
+                  {item.meu && (
+                    <TouchableOpacity
+                      style={styles.moreButton}
+                      onPress={() => abrirMenu(item)}
+                    >
+                      <Feather
+                        name="more-vertical"
+                        size={15}
+                        color="#FFFFFF"
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
             </View>
           ))}
         </ScrollView>
       )}
 
-      {/* INPUT BARRA INFERIOR */}
-      <View style={[styles.inputContainer, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
-        <TextInput
-          placeholder="Escreva sua mensagem..."
-          placeholderTextColor={theme.text + '80'}
-          style={[styles.input, { color: theme.text, fontSize: 16 * fontSizeScale }]}
-          value={novaMensagem}
-          onChangeText={setNovaMensagem}
-        />
-        <TouchableOpacity style={[styles.sendButton, { backgroundColor: theme.primary }]} onPress={enviarMensagem}>
-          <Ionicons name="send" size={18} color="#fff" />
-        </TouchableOpacity>
+      {/* CONTAINER BOTTOM COM PREVIEW + INPUT */}
+      <View style={[styles.bottomContainer, { backgroundColor: theme.background }]}>
+        {/* PREVIEW DE RESPOSTA */}
+        {mensagemRespondendo && (
+          <View style={[styles.replyPreview, { backgroundColor: theme.card, borderColor: theme.primary }]}>
+            <View style={styles.replyPreviewContent}>
+              <MaterialIcons name="reply" size={16} color={theme.primary} />
+              <View style={{ marginLeft: 8, flex: 1 }}>
+                <Text style={[styles.replyPreviewName, { color: theme.primary, fontSize: 12 * fontSizeScale }]}>
+                  Respondendo para {mensagemRespondendo.nome}
+                </Text>
+                <Text style={[styles.replyPreviewText, { color: theme.text, fontSize: 13 * fontSizeScale }]} numberOfLines={1}>
+                  {mensagemRespondendo.texto}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={cancelarResposta}>
+              <Feather name="x" size={18} color={theme.text} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* INPUT BARRA INFERIOR */}
+        <View style={[styles.inputContainer, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
+          <TextInput
+            placeholder="Escreva sua mensagem..."
+            placeholderTextColor={theme.text + '80'}
+            style={[styles.input, { color: theme.text, fontSize: 16 * fontSizeScale }]}
+            value={novaMensagem}
+            onChangeText={setNovaMensagem}
+          />
+          <TouchableOpacity style={[styles.sendButton, { backgroundColor: theme.primary }]} onPress={enviarMensagem}>
+            <Ionicons name="send" size={18} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* MODAL MENU OPÇÕES */}
       <Modal visible={menuVisible} transparent animationType="fade">
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setMenuVisible(false)}>
           <View style={[styles.menuContainer, { backgroundColor: theme.card }]}>
-            <TouchableOpacity style={styles.menuItem} onPress={abrirEditar}>
-              <Feather name="edit-2" size={18} color="#2563EB" />
-              <Text style={[styles.menuText, { color: theme.text }]}>Editar</Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => responderMensagem(mensagemSelecionada)}>
+              <MaterialIcons name="reply" size={18} color="#16A34A" />
+              <Text style={[styles.menuText, { color: theme.text }]}>Responder</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={excluirMensagem}>
-              <MaterialIcons name="delete-outline" size={20} color="#EF4444" />
-              <Text style={[styles.menuText, { color: "#EF4444" }]}>Excluir</Text>
-            </TouchableOpacity>
+            {mensagemSelecionada?.meu && (
+              <>
+                <TouchableOpacity style={styles.menuItem} onPress={abrirEditar}>
+                  <Feather name="edit-2" size={18} color="#2563EB" />
+                  <Text style={[styles.menuText, { color: theme.text }]}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItem} onPress={excluirMensagem}>
+                  <MaterialIcons name="delete-outline" size={20} color="#EF4444" />
+                  <Text style={[styles.menuText, { color: "#EF4444" }]}>Excluir</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -366,11 +467,25 @@ const styles = StyleSheet.create({
   userInfo: { justifyContent: "center", flexShrink: 1 },
   nameRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
   name: { fontSize: 13, fontWeight: "700", color: "#222" },
+  avatarImage: { width: 32, height: 32, borderRadius: 16 },
   message: { fontSize: 13, color: "#333", lineHeight: 18 },
-  footer: { marginTop: 6, flexDirection: "row", justifyContent: "space-between", alignItems: "center", minWidth: 45 },
+  footer: { marginTop: 6, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  footerLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
+  footerRight: { flexDirection: "row", alignItems: "center" },
   time: { fontSize: 10, color: "#888", marginRight: 5 },
+  respostasIndicator: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10, gap: 2 },
+  respostasText: { fontWeight: '600', fontSize: 10 },
+  replyButton: { padding: 4, marginLeft: 6 },
   moreButton: { padding: 2, marginLeft: 5 },
-  inputContainer: { position: "absolute", bottom: 15, left: 10, right: 10, backgroundColor: "#fff", borderRadius: 18, flexDirection: "row", alignItems: "center", paddingHorizontal: 10, height: 50, elevation: 3 },
+  bottomContainer: { flexDirection: 'column', paddingHorizontal: 10, paddingBottom: 15, paddingTop: 8 },
+  replyPreview: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8, borderLeftWidth: 3, borderRadius: 8 },
+  replyPreviewContent: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  replyPreviewName: { fontWeight: '600', marginBottom: 2 },
+  replyPreviewText: { opacity: 0.7 },
+  quotedMessage: { paddingHorizontal: 10, paddingVertical: 8, marginVertical: 6, borderLeftWidth: 4, borderRadius: 8, marginBottom: 8 },
+  quotedName: { fontWeight: '700', marginBottom: 3 },
+  quotedText: { lineHeight: 18, opacity: 0.85, marginTop: 2 },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 50, borderRadius: 18, elevation: 3, borderTopWidth: 1 },
   clipButton: { marginRight: 8 },
   input: { flex: 1, fontSize: 14 },
   sendButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.primary, justifyContent: "center", alignItems: "center" },
