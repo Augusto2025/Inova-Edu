@@ -481,10 +481,15 @@ const styles = StyleSheet.create({
   },
   verTodos: { color: COLORS.primary, fontWeight: "600" },
 
-  statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14 },
+  statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14, justifyContent: 'space-between' },
   statCard: {
-    width: "47%", borderRadius: 16, padding: 14,
-    borderWidth: 1, elevation: 2,
+    flexBasis: "48%",
+    maxWidth: "48%",
+    minWidth: 150,
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    elevation: 2,
   },
   statIconWrap: {
     width: 36, height: 36, borderRadius: 10,
@@ -512,8 +517,13 @@ const styles = StyleSheet.create({
   pendenciaBadgeText: { color: "#7C3AED", fontWeight: "bold" },
 
   turmaCard: {
-    width: 170, borderRadius: 16, padding: 14,
-    borderWidth: 1, elevation: 2,
+    flexBasis: "42%",
+    maxWidth: "48%",
+    minWidth: 150,
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    elevation: 2,
   },
   turmaIconWrap: {
     width: 38, height: 38, borderRadius: 10, backgroundColor: COLORS.primary,

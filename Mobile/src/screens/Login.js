@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
@@ -17,6 +17,11 @@ export default function LoginScreen({ navigation }) {
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
     const [lembrarDeMim, setLembrarDeMim] = useState(false);
+
+    const { width, height } = useWindowDimensions();
+    const logoSize = Math.min(140, Math.max(90, width * 0.32));
+    const headerTopPadding = Math.max(36, Math.min(88, height * 0.12));
+    const containerPaddingHorizontal = Math.max(16, Math.min(32, width * 0.08));
 
     const Logo = require('../../assets/LOGOBRANCO.png');
 
@@ -146,14 +151,21 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <View style={{ flex: 1 }}>
-            <KeyboardAwareScrollView style={styles.tela} contentContainerStyle={styles.scrollContent} enableOnAndroid={true} extraScrollHeight={40}>
+            <KeyboardAwareScrollView
+                style={styles.tela}
+                contentContainerStyle={styles.scrollContent}
+                enableOnAndroid={true}
+                extraScrollHeight={80}
+                keyboardOpeningTime={0}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.containerTotal}>
-                    <View style={styles.header}>
-                        <Image source={Logo} style={styles.Logo} />
-                        <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
+                    <View style={[styles.header, { paddingTop: headerTopPadding, paddingBottom: headerTopPadding }]}> 
+                        <Image source={Logo} style={[styles.Logo, { width: logoSize, height: logoSize }]} />
+                        <Text style={[styles.headerText, { fontSize: Math.max(18, Math.min(24, width * 0.055)) }]}>Bem-Vindo ao Inova Edu</Text>
                     </View>
                     
-                    <View style={styles.containerCenter}>
+                    <View style={[styles.containerCenter, { paddingTop: Math.max(18, height * 0.08), paddingHorizontal: containerPaddingHorizontal }]}> 
                         <Text style={styles.titulo}>Login</Text>
 
                         <Text style={styles.labelTipo}>Você é:</Text>
@@ -227,7 +239,7 @@ export default function LoginScreen({ navigation }) {
                             <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                         </TouchableOpacity>
 
-                        <CustomButton title="Entrar" onPress={handleLogin}/>
+                        <CustomButton title="Entrar" onPress={handleLogin} style={styles.loginButton} />
                     </View>
                 </View>
             </KeyboardAwareScrollView>
@@ -237,13 +249,17 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
-const paddingHeader = 90;
 const borderRadius = 40;
 
 const styles = StyleSheet.create({
     Logo: {
-        width: 150,
-        height: 150,
+        resizeMode: 'contain',
+    },
+    headerText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 12,
     },
     tela: {
         backgroundColor: '#1459b3',
@@ -252,12 +268,10 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     containerTotal: {
-        flexGrow: 1,
+        minHeight: '100%',
     },
     header: {
         width: '100%',
-        paddingBottom: paddingHeader,
-        paddingTop: paddingHeader,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -267,8 +281,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fafafa',
         width: '100%',
         flexGrow: 1,
-        paddingTop: '12%',
-        paddingHorizontal: '8%',
         alignItems: 'center',
     },
     titulo: {
@@ -330,5 +342,9 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 16,
         alignSelf: 'center',
+    },
+    loginButton: {
+        width: '100%',
+        maxWidth: 420,
     },
 });

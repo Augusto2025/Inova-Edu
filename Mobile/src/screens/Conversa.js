@@ -28,7 +28,14 @@ export default function ConversaScreen({ navigation, route }) {
   const [editarVisible, setEditarVisible] = useState(false);
   const [textoEditando, setTextoEditando] = useState("");
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
-  const [mensagemRespondendo, setMensagemRespondendo] = useState(null);
+  
+  // Estados para o sistema de menções
+  const [usuariosMencaoVisivel, setUsuariosMencaoVisivel] = useState(false);
+  const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
+  const [usuariosDisponiveisMencao, setUsuariosDisponiveisMencao] = useState([]);
+  const [mencaoAtiva, setMencaoAtiva] = useState(false);
+  const [textoBuscaMencao, setTextoBuscaMencao] = useState("");
+  const [usuariosMencaoDaTela, setUsuariosMencaoDaTela] = useState(new Set());
 
   // ==========================================
   // BUSCA DE DADOS (API + STORAGE)
@@ -75,12 +82,112 @@ export default function ConversaScreen({ navigation, route }) {
 
   useEffect(() => {
     carregarDados();
+    carregarUsuariosDoTopico();
   }, [topico]);
+
+  const carregarUsuariosDoTopico = async () => {
+    try {
+      if (topico?.id) {
+        const response = await fetch(`${URL_MENSAGEM}/topico/${topico.id}`);
+        if (response.ok) {
+          const dados = await response.json();
+          // Extrai usuários únicos das mensagens
+          const usuariosUnicos = new Set();
+          dados.forEach(msg => {
+            if (msg.nome && msg.id_Usuario !== usuarioLogadoId) {
+              usuariosUnicos.add({ id: msg.id_Usuario, nome: msg.nome });
+            }
+          });
+          setUsuariosDisponiveisMencao(Array.from(usuariosUnicos));
+        }
+      }
+    } catch (error) {
+      console.error("❌ Erro ao carregar usuários:", error);
+    }
+  };
 
   const formatarHora = (dataString) => {
     if (!dataString) return "Agora";
     const d = new Date(dataString);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleMudancaTexto = (texto) => {
+    setNovaMensagem(texto);
+    
+    // Detecta se há @ no texto
+    const ultimaArroba = texto.lastIndexOf('@');
+    if (ultimaArroba !== -1) {
+      const textoAposFinal = texto.substring(ultimaArroba + 1);
+      // Se não tem espaço após @, ativa modo mencao
+      if (!textoAposFinal.includes(' ')) {
+        setMencaoAtiva(true);
+        setTextoBuscaMencao(textoAposFinal.toLowerCase());
+        
+        // Filtra usuários que correspondem
+        const filtrados = usuariosDisponiveisMencao.filter(u =>
+          u.nome.toLowerCase().includes(textoAposFinal.toLowerCase())
+        );
+        setUsuariosFiltrados(filtrados);
+        setUsuariosMencaoVisivel(filtrados.length > 0);
+      } else {
+        setMencaoAtiva(false);
+        setUsuariosMencaoVisivel(false);
+      }
+    } else {
+      setMencaoAtiva(false);
+      setUsuariosMencaoVisivel(false);
+    }
+  };
+
+  const inserirMencao = (usuario) => {
+    const ultimaArroba = novaMensagem.lastIndexOf('@');
+    const textoAntes = novaMensagem.substring(0, ultimaArroba);
+    const novoTexto = textoAntes + '@' + usuario.nome + ' ';
+    
+    setNovaMensagem(novoTexto);
+    setUsuariosMencaoDaTela(prev => new Set(prev).add(usuario.nome));
+    setUsuariosMencaoVisivel(false);
+    setMencaoAtiva(false);
+    setTextoBuscaMencao("");
+  };
+
+  const renderizarMensagemComMencoes = (texto) => {
+    // Detecta padrão @NomePessoa
+    const padrao = /@(\w+)/g;
+    const partes = [];
+    let ultimoIndice = 0;
+    let match;
+
+    while ((match = padrao.exec(texto)) !== null) {
+      // Texto antes da menção
+      if (match.index > ultimoIndice) {
+        partes.push({
+          tipo: 'texto',
+          conteudo: texto.substring(ultimoIndice, match.index)
+        });
+      }
+      // Menção
+      partes.push({
+        tipo: 'mencao',
+        conteudo: match[0]
+      });
+      ultimoIndice = match.index + match[0].length;
+    }
+
+    // Texto final
+    if (ultimoIndice < texto.length) {
+      partes.push({
+        tipo: 'texto',
+        conteudo: texto.substring(ultimoIndice)
+      });
+    }
+
+    if (partes.length === 0) {
+      return texto;
+    }
+
+    return partes;
   };
 
   // ==========================================
@@ -110,12 +217,6 @@ export default function ConversaScreen({ navigation, route }) {
         usuarioId: usuarioLogadoId
       };
 
-      if (mensagemRespondendo) {
-        payload.respondendoA = mensagemRespondendo.id;
-        payload.nomeUsuarioRespondido = mensagemRespondendo.nome;
-        payload.textoRespondido = mensagemRespondendo.texto;
-      }
-
       const response = await fetch(URL_MENSAGEM, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -129,8 +230,37 @@ export default function ConversaScreen({ navigation, route }) {
         throw new Error(`Status ${response.status}: ${textoResposta || "Sem detalhes"}`);
       }
 
+      // Notifica usuários mencionados
+      if (usuariosMencaoDaTela.size > 0) {
+        for (const nomeMencionado of usuariosMencaoDaTela) {
+          const usuarioMencionado = usuariosDisponiveisMencao.find(
+            u => u.nome.toLowerCase() === nomeMencionado.toLowerCase()
+          );
+          
+          if (usuarioMencionado) {
+            try {
+              await fetch(`${URL_BASE}/notifications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  usuario_id: usuarioMencionado.id,
+                  tipo: 'Forum',
+                  titulo: 'Você foi mencionado',
+                  subtitulo: `Você foi mencionado no tópico "${topico.titulo}"`,
+                  tela_destino: 'Conversa',
+                  parametros: JSON.stringify({ topicoId: topico.id }),
+                  entidade_id: topico.id
+                })
+              });
+            } catch (err) {
+              console.error('❌ Erro ao enviar notificação de menção:', err);
+            }
+          }
+        }
+      }
+
       setNovaMensagem("");
-      setMensagemRespondendo(null);
+      setUsuariosMencaoDaTela(new Set());
       Keyboard.dismiss();
       carregarDados(); // Recarrega o chat com a nova mensagem
     } catch (error) {
@@ -192,15 +322,6 @@ export default function ConversaScreen({ navigation, route }) {
     setTextoEditando(mensagemSelecionada.texto);
     setMenuVisible(false);
     setEditarVisible(true);
-  };
-
-  const responderMensagem = (item) => {
-    setMensagemRespondendo(item);
-    setMenuVisible(false);
-  };
-
-  const cancelarResposta = () => {
-    setMensagemRespondendo(null);
   };
 
   return (
@@ -268,17 +389,27 @@ export default function ConversaScreen({ navigation, route }) {
                   )}
                   {/* RECURSO DE RESPOSTAS SERÁ IMPLEMENTADO QUANDO AS COLUNAS FOREM ADICIONADAS AO BANCO */}
                   <Text
-  style={[
-    styles.message,
-    {
-      color: item.meu ? "#FFFFFF" : theme.text,
-      fontSize: 15 * fontSizeScale,
-      lineHeight: 22,
-    },
-  ]}
->
-  {item.texto}
-</Text>
+                    style={[
+                      styles.message,
+                      {
+                        color: item.meu ? "#FFFFFF" : theme.text,
+                        fontSize: 15 * fontSizeScale,
+                        lineHeight: 22,
+                      },
+                    ]}
+                  >
+                    {(() => {
+                      const partes = renderizarMensagemComMencoes(item.texto);
+                      if (typeof partes === 'string') {
+                        return partes;
+                      }
+                      return partes.map((parte, idx) => (
+                        <Text key={idx} style={parte.tipo === 'mencao' ? { fontWeight: 'bold', color: '#FFD700' } : {}}>
+                          {parte.conteudo}
+                        </Text>
+                      ));
+                    })()}
+                  </Text>
                 </View>
               </View>
 
@@ -296,7 +427,6 @@ export default function ConversaScreen({ navigation, route }) {
                     {item.hora}
                   </Text>
 
-                  {item.respostasCount > 0 && (
                   {/* RESPOSTASCOUNT REMOVIDO TEMPORARIAMENTE */}
                 </View>
 
@@ -332,49 +462,44 @@ export default function ConversaScreen({ navigation, route }) {
 
       {/* CONTAINER BOTTOM COM PREVIEW + INPUT */}
       <View style={[styles.bottomContainer, { backgroundColor: theme.background }]}>
-        {/* PREVIEW DE RESPOSTA */}
-        {mensagemRespondendo && (
-          <View style={[styles.replyPreview, { backgroundColor: theme.card, borderColor: theme.primary }]}>
-            <View style={styles.replyPreviewContent}>
-              <MaterialIcons name="reply" size={16} color={theme.primary} />
-              <View style={{ marginLeft: 8, flex: 1 }}>
-                <Text style={[styles.replyPreviewName, { color: theme.primary, fontSize: 12 * fontSizeScale }]}>
-                  Respondendo para {mensagemRespondendo.nome}
-                </Text>
-                <Text style={[styles.replyPreviewText, { color: theme.text, fontSize: 13 * fontSizeScale }]} numberOfLines={1}>
-                  {mensagemRespondendo.texto}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity onPress={cancelarResposta}>
-              <Feather name="x" size={18} color={theme.text} />
-            </TouchableOpacity>
-          </View>
-        )}
-
         {/* INPUT BARRA INFERIOR */}
         <View style={[styles.inputContainer, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
           <TextInput
-            placeholder="Escreva sua mensagem..."
+            placeholder="Escreva sua mensagem... (use @ para mencionar)"
             placeholderTextColor={theme.text + '80'}
             style={[styles.input, { color: theme.text, fontSize: 16 * fontSizeScale }]}
             value={novaMensagem}
-            onChangeText={setNovaMensagem}
+            onChangeText={handleMudancaTexto}
           />
           <TouchableOpacity style={[styles.sendButton, { backgroundColor: theme.primary }]} onPress={enviarMensagem}>
             <Ionicons name="send" size={18} color="#fff" />
           </TouchableOpacity>
         </View>
+
+        {/* MODAL DE SUGESTÕES DE MENÇÃO */}
+        {usuariosMencaoVisivel && (
+          <View style={[styles.mencaoContainer, { backgroundColor: theme.card, borderTopColor: theme.primary }]}>
+            <ScrollView style={{ maxHeight: 150 }} nestedScrollEnabled={true}>
+              {usuariosFiltrados.map((usuario, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[styles.mencaoItem, { backgroundColor: theme.card, borderBottomColor: theme.border }]}
+                  onPress={() => inserirMencao(usuario)}
+                >
+                  <MaterialIcons name="person" size={16} color={theme.primary} />
+                  <Text style={[styles.mencaoText, { color: theme.text }]}>@{usuario.nome}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </View>
 
       {/* MODAL MENU OPÇÕES */}
       <Modal visible={menuVisible} transparent animationType="fade">
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setMenuVisible(false)}>
           <View style={[styles.menuContainer, { backgroundColor: theme.card }]}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => responderMensagem(mensagemSelecionada)}>
-              <MaterialIcons name="reply" size={18} color="#16A34A" />
-              <Text style={[styles.menuText, { color: theme.text }]}>Responder</Text>
-            </TouchableOpacity>
+            {/* RECURSO DE RESPOSTA REMOVIDO - USAR MENÇÕES @USUARIO */}
             {mensagemSelecionada?.meu && (
               <>
                 <TouchableOpacity style={styles.menuItem} onPress={abrirEditar}>
@@ -399,8 +524,8 @@ export default function ConversaScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#ffffff" },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  pathContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 15, marginTop: 12, marginBottom: 10 },
-  pathText: { color: "#777", fontSize: 13, marginRight: 4, maxWidth: 100 },
+  pathContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 15, marginTop: 12, marginBottom: 10, flexWrap: 'wrap' },
+  pathText: { color: "#777", fontSize: 13, marginRight: 4, flexShrink: 1, minWidth: 0 },
   pathActive: { color: "#2563EB", fontSize: 13, fontWeight: "700", marginLeft: 4 },
   messageCard: { marginBottom: 10, borderRadius: 16, padding: 12, maxWidth: "80%", elevation: 1 },
   myMessageCard: {
@@ -467,7 +592,7 @@ const styles = StyleSheet.create({
   input: { flex: 1, fontSize: 14 },
   sendButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.primary, justifyContent: "center", alignItems: "center" },
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.2)", justifyContent: "center", alignItems: "center" },
-  menuContainer: { width: 160, backgroundColor: "#fff", borderRadius: 16, paddingVertical: 6, elevation: 6 },
+  menuContainer: { minWidth: 140, width: "auto", backgroundColor: "#fff", borderRadius: 16, paddingVertical: 6, elevation: 6 },
   menuItem: { flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16 },
   menuText: { marginLeft: 12, fontSize: 14, color: "#333", fontWeight: "600" },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.67)', justifyContent: 'center', padding: 15 },
@@ -479,5 +604,8 @@ const styles = StyleSheet.create({
   inputLabel: { fontSize: 14, fontWeight: "600", color: "#333", marginBottom: 6, paddingLeft: 2 },
   inputField: { borderWidth: 1, borderColor: '#ddd', borderRadius: 12, padding: 12 },
   saveBtn: { backgroundColor: COLORS.primary, padding: 15, borderRadius: 12, alignItems: 'center', marginTop: 10 },
-  saveBtnText: { color: 'white', fontWeight: 'bold' }
+  saveBtnText: { color: 'white', fontWeight: 'bold' },
+  mencaoContainer: { borderTopWidth: 2, paddingVertical: 8, maxHeight: 150 },
+  mencaoItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 12, borderBottomWidth: 1 },
+  mencaoText: { marginLeft: 10, fontSize: 14, fontWeight: '500' }
 });

@@ -144,7 +144,9 @@
   top: 0;
   z-index: 100;
 }
-
+.avatar-curso {
+ display:none;
+}
 .curso-item {
   background: #fff;
   padding: 18px 25px;
@@ -224,6 +226,204 @@
     justify-content: center;
     align-items: center;
     margin-top: 15px;
+  }
+}
+
+/* RESPONSIVIDADE DO CURSO */
+/* =========================================
+   RESPONSIVO - TABLET E CELULAR
+   Até 768px
+========================================= */
+
+@media (max-width: 768px) {
+  /* Área da lista */
+  .lista-curso-conteudo {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* Remove o cabeçalho da tabela no celular */
+  .curso-cabecalho {
+    display: none;
+  }
+
+  /* Lista */
+  .lista-cursos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+  }
+
+  /* =====================================
+       CARD DO CURSO
+    ===================================== */
+
+  .curso-item {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    grid-template-areas:
+      "avatar nome"
+      "avatar inicio"
+      "avatar termino"
+      "acoes acoes";
+    align-items: center;
+    width: 100%;
+    min-height: auto;
+    padding: 15px;
+    gap: 4px 12px;
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: none;
+  }
+
+  /* Remove efeito de hover no celular */
+  .curso-item:hover {
+    background: #fff;
+  }
+
+  /* =====================================
+       AVATAR
+    ===================================== */
+
+  .curso-item .avatar-curso {
+    grid-area: avatar;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: #004a8d;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* =====================================
+       NOME DO CURSO
+    ===================================== */
+
+  .curso-item > span:nth-child(2) {
+    grid-area: nome;
+
+    min-width: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #333;
+
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+
+    line-height: 1.3;
+  }
+
+  /* =====================================
+       DATA DE INÍCIO
+    ===================================== */
+
+  .curso-item > span:nth-child(3) {
+    grid-area: inicio;
+
+    font-size: 13px;
+    color: #666;
+
+    line-height: 1.4;
+  }
+
+  .curso-item > span:nth-child(3)::before {
+    content: "Início: ";
+
+    font-weight: 600;
+    color: #444;
+  }
+
+  /* =====================================
+       DATA DE TÉRMINO
+    ===================================== */
+
+  .curso-item > span:nth-child(4) {
+    grid-area: termino;
+
+    font-size: 13px;
+    color: #666;
+
+    line-height: 1.4;
+  }
+
+  .curso-item > span:nth-child(4)::before {
+    content: "Término: ";
+
+    font-weight: 600;
+    color: #444;
+  }
+
+  /* =====================================
+       ÁREA DE AÇÕES
+    ===================================== */
+
+  .acoes-geral_usuario {
+    grid-area: acoes;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  /* Botões */
+  .acoes-geral_usuario button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  /* =====================================
+       FORM DO EXCLUIR
+    ===================================== */
+
+  .form-excluir-curso {
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* =====================================
+       CURSO VAZIO
+    ===================================== */
+
+  .curso-vazio {
+    width: 100%;
+
+    padding: 25px 15px;
+
+    text-align: center;
+
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+
+    color: #777;
   }
 }
 
@@ -767,52 +967,52 @@ button[type="buttoncancelar"]:hover {
 }
 
 /* modal descrição */
-.modal-descricao{
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+.modal-descricao {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
-.modal-descricao-box{
-    width: 500px;
-    max-width: 90%;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+.modal-descricao-box {
+  width: 500px;
+  max-width: 90%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.modal-descricao-topo{
-    background: #003b73;
-    color: #fff;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.modal-descricao-topo {
+  background: #003b73;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.modal-descricao-topo button{
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    font-size: 20px;
+.modal-descricao-topo button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
 }
 
-.modal-descricao-conteudo{
-    padding: 20px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #444;
-    max-height: 300px;
-    overflow-y: auto;
+.modal-descricao-conteudo {
+  padding: 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.modal-descricao-conteudo p{
-    margin: 0;
-    white-space: pre-line;
+.modal-descricao-conteudo p {
+  margin: 0;
+  white-space: pre-line;
 }

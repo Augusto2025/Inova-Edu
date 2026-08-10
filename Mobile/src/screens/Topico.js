@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   deleteButton: { padding: 4 },
   fab: { position: "absolute", bottom: 25, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: "#ff8c00", justifyContent: "center", alignItems: "center", elevation: 4 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.67)', justifyContent: 'center', padding: 15 },
-  modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden' },
+  modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden', width: '92%', maxWidth: 520 },
   modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', padding: 20, alignItems: 'center', justifyContent: 'center' },
   modalTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   modalBody: { padding: 20 },
