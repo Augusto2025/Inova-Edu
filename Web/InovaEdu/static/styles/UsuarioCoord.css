@@ -252,8 +252,323 @@
   text-align: center;
   padding: 40px;
 }
+/* RESPONSIVIDADE DA LISTA */
 
+/* =====================================================
+   RESPONSIVO - LISTA DE USUÁRIOS
+   ===================================================== */
 
+@media (max-width: 768px) {
+  /* Área da lista */
+  .lista-usuario-conteudo {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+    padding: 0 5px;
+    box-sizing: border-box;
+
+    max-height: 430px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-right: 5px;
+  }
+
+  /* Tabela deixa de funcionar como tabela */
+  .tabela-usuarios {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .tabela-usuarios thead {
+    display: none;
+  }
+
+  .tabela-usuarios tbody {
+    display: block;
+    width: 100%;
+  }
+
+  /* =================================================
+       CARD DO USUÁRIO
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario {
+    display: grid;
+
+    grid-template-columns: 48px 1fr auto;
+
+    grid-template-rows: auto auto auto;
+
+    column-gap: 10px;
+
+    width: 100%;
+
+    min-height: 72px;
+
+    margin-bottom: 9px;
+
+    padding: 10px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* =================================================
+       FOTO
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario td.avatar {
+    grid-column: 1;
+
+    grid-row: 1 / 4;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 48px;
+
+    padding: 0;
+
+    border: none;
+  }
+
+  .tabela-usuarios tbody .linha-usuario .avatar img,
+  .tabela-usuarios tbody .linha-usuario .avatar-padrao {
+    width: 42px;
+
+    height: 42px;
+
+    min-width: 42px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+  }
+
+  /* =================================================
+       NOME
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario td:nth-child(2) {
+    grid-column: 2;
+
+    grid-row: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    min-width: 0;
+
+    padding: 0;
+
+    border: none;
+
+    font-size: 12px;
+  }
+
+  .tabela-usuarios tbody .linha-usuario td:nth-child(2) strong {
+    display: block;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 12px;
+
+    color: #172b4d;
+  }
+
+  /* =================================================
+       EMAIL
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario td:nth-child(3) {
+    grid-column: 2;
+
+    grid-row: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    min-width: 0;
+
+    padding: 0;
+
+    border: none;
+
+    font-size: 10px;
+
+    color: #52627a;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+  }
+
+  /* =================================================
+       TIPO
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario td:nth-child(4) {
+    grid-column: 2;
+
+    grid-row: 3;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0;
+
+    border: none;
+  }
+
+  .tabela-usuarios tbody .linha-usuario .tipo {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    font-size: 9px;
+
+    padding: 0;
+
+    margin: 0;
+
+    background: transparent;
+  }
+
+  .tabela-usuarios tbody .linha-usuario .tipo::before {
+    content: "";
+
+    width: 6px;
+
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #00a651;
+  }
+
+  /* =================================================
+       AÇÕES
+       ================================================= */
+
+  .tabela-usuarios tbody .linha-usuario td:nth-child(5) {
+    grid-column: 3;
+
+    grid-row: 1 / 4;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    padding: 0;
+
+    border: none;
+  }
+
+  .tabela-usuarios tbody .linha-usuario .acoes-geral_usuario {
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+  .tabela-usuarios tbody .linha-usuario .acoes-geral_usuario button {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 25px;
+
+    height: 25px;
+
+    min-width: 25px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 4px;
+
+    font-size: 10px;
+
+    cursor: pointer;
+  }
+
+  /* EDITAR */
+
+  .tabela-usuarios tbody .linha-usuario .btn-editar {
+    background: #0069d9;
+
+    color: #fff;
+  }
+
+  /* EXCLUIR */
+
+  .tabela-usuarios tbody .linha-usuario .btn-excluir {
+    background: #ff3333;
+
+    color: #fff;
+  }
+
+  /* =================================================
+       LINHA VAZIA
+       ================================================= */
+
+  .tabela-usuarios tbody tr:not(.linha-usuario) {
+    display: block;
+
+    width: 100%;
+
+    background: transparent;
+
+    box-shadow: none;
+  }
+
+  .tabela-usuarios tbody tr:not(.linha-usuario) td {
+    display: block;
+
+    width: 100%;
+
+    padding: 30px 10px;
+
+    border: none;
+
+    text-align: center;
+  }
+}
 
 /* MODAL DO CADASTRO DE USUARIO */
 
@@ -468,7 +783,7 @@
 }
 
 /* Estilo igual ao da imagem */
-.btn-cancelar{
+.btn-cancelar {
   color: #6b7280;
 }
 .btn-confirmar-excluir {
