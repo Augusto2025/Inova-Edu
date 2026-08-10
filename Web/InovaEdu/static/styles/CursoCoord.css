@@ -248,6 +248,10 @@
     display: none;
   }
 
+  .busca-geral input{
+    width: 100%;
+  }
+
   /* Lista */
   .lista-cursos {
     display: flex;
