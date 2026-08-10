@@ -160,7 +160,11 @@
                                 <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
                                 <div class="curso-info">
                                     <h3>{{ curso.nome_curso }}</h3>
-                                    <p>{{ curso.descricao_curso }}</p>
+                                    {% if curso.descricao_curso %}
+                                        <p>{{ curso.descricao_curso }}</p>
+                                    {% else %}
+                                        <p>Descrição não disponível.</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endfor %}

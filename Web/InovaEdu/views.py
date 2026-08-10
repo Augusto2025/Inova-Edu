@@ -31,6 +31,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def homePage(request):
+    cursos = Curso.objects.all().order_by('-idcurso')[:3]
+    return render(request, "homePage.html", {"cursos": cursos})
 
 def login(request):
     # ele pega o que tem dentro do form
@@ -1892,99 +1895,3 @@ def salvar_turma_usuario(request):
     return JsonResponse({
         "status": "ok"
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def homePage(request):
-    return render(request, "homePage.html")
-
-
-# NOVO VISUAL DA COORDENAÇÃO=================
-
