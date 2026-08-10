@@ -59,11 +59,7 @@ export default function ConversaScreen({ navigation, route }) {
           texto: msg.texto,
           hora: formatarHora(msg.data),
           foto: msg.foto,
-          meu: msg.autorId === idUser,
-          respondendoA: msg.respondendo_a,
-          textoRespondido: msg.texto_respondido,
-          nomeUsuarioRespondido: msg.nome_usuario_respondido,
-          respostasCount: msg.respostasCount || 0
+          meu: msg.autorId === idUser
         }));
 
         setMensagens(formatadas);
@@ -270,21 +266,7 @@ export default function ConversaScreen({ navigation, route }) {
                       >{item.nome}</Text>
                     </View>
                   )}
-                  {item.respondendoA && item.textoRespondido && (
-                    <View style={[styles.quotedMessage, { backgroundColor: item.meu ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)', borderLeftColor: item.meu ? 'rgba(255,255,255,0.6)' : theme.primary }]}>
-                      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                        <MaterialIcons name="reply" size={14} color={item.meu ? 'rgba(255,255,255,0.7)' : theme.primary} style={{ marginRight: 8, marginTop: 2 }} />
-                        <View style={{ flex: 1 }}>
-                          <Text style={[styles.quotedName, { color: item.meu ? 'rgba(255,255,255,0.9)' : theme.primary, fontSize: 12 * fontSizeScale }]} numberOfLines={1}>
-                            {item.nomeUsuarioRespondido}
-                          </Text>
-                          <Text style={[styles.quotedText, { color: item.meu ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)', fontSize: 13 * fontSizeScale }]} numberOfLines={2}>
-                            {item.textoRespondido}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  )}
+                  {/* RECURSO DE RESPOSTAS SERÁ IMPLEMENTADO QUANDO AS COLUNAS FOREM ADICIONADAS AO BANCO */}
                   <Text
   style={[
     styles.message,
@@ -315,24 +297,19 @@ export default function ConversaScreen({ navigation, route }) {
                   </Text>
 
                   {item.respostasCount > 0 && (
-                    <View style={[styles.respostasIndicator, { backgroundColor: item.meu ? 'rgba(255,255,255,0.2)' : 'rgba(14, 104, 214, 0.1)' }]}>
-                      <MaterialIcons name="reply" size={12} color={item.meu ? '#fff' : theme.primary} />
-                      <Text style={[styles.respostasText, { color: item.meu ? '#fff' : theme.primary, fontSize: 10 * fontSizeScale }]}>
-                        {item.respostasCount}
-                      </Text>
-                    </View>
-                  )}
+                  {/* RESPOSTASCOUNT REMOVIDO TEMPORARIAMENTE */}
                 </View>
 
                 <View style={styles.footerRight}>
-                  {!item.meu && (
+                  {/* BOTÃO DE RESPOSTA SERÁ ATIVADO QUANDO AS COLUNAS FOREM ADICIONADAS AO BANCO */}
+                  {/* {!item.meu && (
                     <TouchableOpacity
                       style={styles.replyButton}
                       onPress={() => responderMensagem(item)}
                     >
                       <MaterialIcons name="reply" size={16} color="#888" />
                     </TouchableOpacity>
-                  )}
+                  )} */}
 
                   {item.meu && (
                     <TouchableOpacity
