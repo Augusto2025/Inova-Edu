@@ -9,7 +9,8 @@ import {
   Image,
   Animated,
   Alert,
-  Keyboard
+  Keyboard,
+  useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -54,6 +55,9 @@ export default function HomeScreen({ navigation }) {
   const [busca, setBusca] = useState("");
   const [repoSearchResults, setRepoSearchResults] = useState([]);
   const [repoSearchLoading, setRepoSearchLoading] = useState(false);
+  const { width } = useWindowDimensions();
+  const repoCardWidth = Math.min(160, Math.max(120, width * 0.34));
+  const newRepoCardWidth = Math.min(220, Math.max(180, width * 0.55));
   const [repoSearchError, setRepoSearchError] = useState(null);
   const { totalNovas, markAllAsRead } = useNotifications();
   const [homeData, setHomeData] = useState({
@@ -571,7 +575,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                       <TouchableOpacity
                         key={repo.chave_unica || repo.id}
-                        style={[styles.repoCard, { backgroundColor: theme.card }]}
+                        style={[styles.repoCard, { backgroundColor: theme.card, width: repoCardWidth }]}
                         activeOpacity={0.8}
                         onPress={() => {
                           if (temProjeto) {
@@ -679,7 +683,7 @@ export default function HomeScreen({ navigation }) {
             {[1, 2].map((i) => (
               <View
                 key={i}
-                style={[styles.newRepoCard, { width: 220, opacity: 0.6, backgroundColor: theme.card, borderColor: theme.border }]}
+                style={[styles.newRepoCard, { width: newRepoCardWidth, opacity: 0.6, backgroundColor: theme.card, borderColor: theme.border }]}
               />
             ))}
           </ScrollView>
@@ -917,13 +921,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   repoCard: {
-    width: 140,
+    minWidth: 120,
+    width: "auto",
     borderRadius: 12,
     padding: 8,
     alignItems: "center",
     elevation: 2,
   },
-  repoImg: { width: 120, height: 68, borderRadius: 8, marginBottom: 8 },
+  repoImg: { width: "100%", height: 68, borderRadius: 8, marginBottom: 8 },
   repoTitle: { fontWeight: "600" },
   /* Estilos novos / melhorados para Repositórios Recentes */
   repoHeaderRow: {
@@ -932,7 +937,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   newRepoCard: {
-    width: 220,
+    minWidth: 180,
+    width: "auto",
     borderRadius: 14,
     padding: 12,
     flexDirection: "row",
