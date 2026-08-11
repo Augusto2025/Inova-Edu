@@ -168,33 +168,31 @@
   font-size: 15px;
 }
 /* Responsivo */
-@media (max-width: 768px){
+@media (max-width: 768px) {
+  .barra-superior-lista {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
 
-    .barra-superior-lista{
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
+  .filtros-lista {
+    width: 100%;
+  }
 
-    .filtros-lista{
-        width: 100%;
-    }
+  .busca-geral {
+    width: 100%;
+  }
 
-    .busca-geral{
-        width: 100%;
-    }
+  .busca-geral input {
+    width: 100%;
+  }
 
-    .busca-geral input{
-        width: 100%;
-    }
-
-    .btn-add-geral{
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
+  .btn-add-geral {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 /* ======================================================== */
@@ -279,7 +277,7 @@
   .turma-cabecalho,
   .turma-item {
     grid-template-columns: repeat(6, minmax(130px, 1fr));
-    min-width: 900px;
+    min-width: 605px;
   }
 
   .lista-turma-conteudo {
@@ -287,7 +285,282 @@
   }
 }
 
-/* MODAL CADASTRO */
+/* RESPONSIVIDADE DA LISTA */
+
+/* ==========================================
+   TURMAS - RESPONSIVO PARA CELULAR
+========================================== */
+
+@media (max-width: 768px) {
+  /* Área da lista */
+  .lista-turma-conteudo {
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .lista-turma-conteudo > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 15px;
+    margin: 0;
+    list-style: none;
+  }
+
+  /* Esconde o cabeçalho no celular */
+  .turma-cabecalho {
+    display: none !important;
+  }
+
+  /* =====================================
+       CARD DA TURMA
+    ===================================== */
+
+  .turma-item {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    grid-template-areas:
+      "codigo codigo"
+      "turno ano"
+      "curso curso"
+      "usuarios acoes";
+
+    gap: 8px 15px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 16px;
+
+    background: #fff;
+
+    border: 1px solid #e3e3e3;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.06);
+  }
+
+  /* =====================================
+       CÓDIGO
+    ===================================== */
+
+  .turma-item > span:nth-child(1) {
+    grid-area: codigo;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #004a8d;
+
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid #eee;
+  }
+
+  .turma-item > span:nth-child(1)::before {
+    content: "Código: ";
+
+    color: #555;
+    font-weight: 600;
+  }
+
+  /* =====================================
+       TURNO
+    ===================================== */
+
+  .turma-item > span:nth-child(2) {
+    grid-area: turno;
+
+    font-size: 13px;
+    color: #555;
+  }
+
+  .turma-item > span:nth-child(2)::before {
+    content: "Turno: ";
+
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* =====================================
+       ANO
+    ===================================== */
+
+  .turma-item > span:nth-child(3) {
+    grid-area: ano;
+
+    font-size: 13px;
+    color: #555;
+  }
+
+  .turma-item > span:nth-child(3)::before {
+    content: "Ano: ";
+
+    font-weight: 600;
+    color: #333;
+  }
+
+  /* =====================================
+       CURSO
+    ===================================== */
+
+  .turma-item > span:nth-child(4) {
+    grid-area: curso;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #333;
+
+    padding: 7px 0;
+  }
+
+  .turma-item > span:nth-child(4)::before {
+    content: "Curso: ";
+
+    font-weight: 600;
+    color: #555;
+  }
+
+  /* =====================================
+       USUÁRIOS
+    ===================================== */
+
+  .turma-usuarios {
+    grid-area: usuarios;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    color: #555;
+  }
+
+  .turma-usuarios::before {
+    content: "Usuários";
+    font-weight: 600;
+  }
+
+  /* Botão usuários */
+  .btn-ver-usuarios {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #e8f1fb;
+    color: #004a8d;
+
+    cursor: pointer;
+  }
+
+  /* =====================================
+       AÇÕES
+    ===================================== */
+
+  .acoes-geral_turma {
+    grid-area: acoes;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  /* Botões de ação */
+  .acoes-geral_turma button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    cursor: pointer;
+  }
+
+  /* Editar */
+  .btn-editar-turma {
+    background: #e8f1fb;
+    color: #004a8d;
+  }
+
+  /* Excluir */
+  .btn-excluir-turma {
+    background: #fdeaea;
+    color: #d93025;
+  }
+
+  /* Form não interfere no card */
+  .form-excluir-turma {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* =====================================
+       TURMA VAZIA
+    ===================================== */
+
+  .turma-vazia {
+    padding: 25px;
+
+    text-align: center;
+
+    color: #777;
+
+    background: #fff;
+
+    border-radius: 10px;
+  }
+}
+
+/* ==========================================
+   CELULARES PEQUENOS
+========================================== */
+
+@media (max-width: 480px) {
+  .turma-item {
+    padding: 14px;
+
+    border-radius: 10px;
+  }
+
+  .turma-item > span:nth-child(1) {
+    font-size: 15px;
+  }
+
+  .turma-item > span:nth-child(2),
+  .turma-item > span:nth-child(3) {
+    font-size: 12px;
+  }
+
+  .turma-item > span:nth-child(4) {
+    font-size: 13px;
+  }
+
+  .turma-usuarios {
+    font-size: 12px;
+  }
+
+  .btn-ver-usuarios,
+  .acoes-geral_turma button {
+    width: 36px;
+    height: 36px;
+  }
+}
 
 /*==========================
         MODAL
@@ -1061,4 +1334,3 @@
     transform: scale(1);
   }
 }
-
