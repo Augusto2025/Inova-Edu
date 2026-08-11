@@ -213,6 +213,7 @@ export default function LoginScreen({ navigation }) {
                             onChangeText={setEmail}
                             autoCapitalize="none"
                             keyboardType="email-address"
+                            placeholderTextColor="#64748B"
                         />
                         
                         <CustomInput
@@ -220,6 +221,7 @@ export default function LoginScreen({ navigation }) {
                             value={senha}
                             onChangeText={setSenha}
                             secureTextEntry
+                            placeholderTextColor="#64748B"
                         />
 
                         <TouchableOpacity 
