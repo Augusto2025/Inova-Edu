@@ -344,6 +344,7 @@ export default function HomePainelProfessor({ navigation }) {
                   key={evento.id}
                   style={[styles.eventoCard, { backgroundColor: theme.card, borderColor: theme.border }]}
                   activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Eventos", { selectedDate: evento.data })}
                 >
                   {/* Ícone Estilo Folhinha de Calendário */}
                   <View style={[styles.calendarIcon, { borderColor: corTema }]}>
@@ -431,12 +432,14 @@ export default function HomePainelProfessor({ navigation }) {
           {painel.ultimosProjetos.length > 0 ? (
             <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
               {painel.ultimosProjetos.map((proj, index) => (
-                <View
+                <TouchableOpacity
                   key={proj.id}
                   style={[
                     styles.projetoRow,
                     index < painel.ultimosProjetos.length - 1 && [styles.eventoRowBorda, { borderBottomColor: theme.border }],
                   ]}
+                  activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Repositorio", { projetoId: proj.id, projetoNome: proj.nome })}
                 >
                   <View style={[styles.pendenciaIconWrap, { backgroundColor: "#D1FAE5" }]}>
                     <Feather name="folder" size={16 * fontSizeScale} color="#059669" />
@@ -449,7 +452,7 @@ export default function HomePainelProfessor({ navigation }) {
                       {proj.turma}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           ) : (
