@@ -462,6 +462,15 @@
 
     cursor: pointer;
   }
+  .turma-item {
+    position: relative;
+  }
+
+  .turma-usuarios,
+  .acoes-geral_turma {
+    position: relative;
+    z-index: 10;
+  }
 
   /* =====================================
        AÇÕES
