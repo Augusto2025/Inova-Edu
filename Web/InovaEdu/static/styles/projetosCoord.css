@@ -1,0 +1,531 @@
+:root {
+  --azul-Senac: #004a8d;
+  --azul-escuro: #003b73;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #ffffff;
+
+  --cinza-fundo: #f5f7fa;
+  --cinza-borda: #e5e7eb;
+  --cinza-texto: #6b7280;
+
+  --preto: #1f2937;
+}
+
+/* ========================================
+   RESET
+======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--cinza-fundo);
+  color: var(--preto);
+}
+
+/* ========================================
+   PÁGINA
+======================================== */
+
+.pagina-projetos {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 35px 40px 50px;
+}
+
+/* ========================================
+   CABEÇALHO
+======================================== */
+
+.cabecalho-projetos {
+  margin-bottom: 28px;
+}
+
+.titulo-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icone-titulo {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff3e4;
+  border-radius: 14px;
+  font-size: 27px;
+}
+
+.titulo-area h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--azul-Senac);
+}
+
+.titulo-area p {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--cinza-texto);
+}
+
+/* ========================================
+   BARRA DE PESQUISA
+======================================== */
+
+.barra-pesquisa {
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.campo-pesquisa {
+  width: 100%;
+  max-width: 600px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  background-color: var(--branco-Senac);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 12px;
+  padding: 0 16px;
+  transition: 0.2s ease;
+}
+
+.campo-pesquisa:focus-within {
+  border-color: var(--azul-Senac);
+  box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.08);
+}
+
+.icone-pesquisa {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.campo-pesquisa input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: var(--preto);
+}
+
+.campo-pesquisa input::placeholder {
+  color: #9ca3af;
+}
+
+/* ========================================
+   CONTADOR
+======================================== */
+
+.info-projetos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--cinza-texto);
+}
+
+.info-projetos strong {
+  min-width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+/* ========================================
+   GRID DOS CARDS
+======================================== */
+
+.projetos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+/* ========================================
+   CARD
+======================================== */
+
+.projeto-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--branco-Senac);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 16px;
+  padding: 20px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.projeto-card:hover {
+  transform: translateY(-3px);
+  border-color: #d1d9e2;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================
+   TOPO DO CARD
+======================================== */
+
+.card-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.icone-projeto {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff3e4;
+  border-radius: 12px;
+  font-size: 21px;
+}
+
+.status-projeto {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12 px;
+  background-color: #eef5fb;
+  color: var(--azul-Senac);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ========================================
+   NOME DO PROJETO
+======================================== */
+
+.nome-projeto {
+  /* min-height: 58px; */
+  margin-bottom: 5px;
+}
+
+.nome-projeto h2 {
+  font-size: 21px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #202b38;
+  word-break: break-word;
+}
+
+/* ========================================
+   INFORMAÇÕES
+======================================== */
+
+.informacoes-projeto {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 17px 0;
+  border-top: 1px solid #eef0f2;
+  border-bottom: 1px solid #eef0f2;
+}
+
+.informacao {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.informacao-icone {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+.informacao > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.informacao small {
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.informacao strong {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ========================================
+   RODAPÉ DO CARD
+======================================== */
+
+.card-rodape {
+  margin-top: 18px;
+}
+
+.btn-ver-projeto {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--azul-Senac);
+  color: var(--branco-Senac);
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.btn-ver-projeto:hover {
+  background-color: var(--azul-escuro);
+}
+
+.btn-ver-projeto span {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.btn-ver-projeto:hover span {
+  transform: translateX(3px);
+}
+
+/* ========================================
+   NENHUM PROJETO
+======================================== */
+
+.sem-projetos,
+.sem-resultado {
+  grid-column: 1 / -1;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background-color: var(--branco-Senac);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.sem-projetos-icone,
+.sem-resultado > div {
+  margin-bottom: 12px;
+  font-size: 40px;
+}
+
+.sem-projetos h2,
+.sem-resultado h2 {
+  margin-bottom: 5px;
+  font-size: 18px;
+  color: #374151;
+}
+
+.sem-projetos p,
+.sem-resultado p {
+  font-size: 13px;
+  color: var(--cinza-texto);
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1100px) {
+  .projetos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.imagem-projeto {
+    width: 60px;
+    height: 60px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background-color: #F5F7FA;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.imagem-projeto img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+@media (max-width: 480px) {
+
+    .imagem-projeto {
+        width: 50px;
+        height: 50px;
+
+        border-radius: 10px;
+    }
+
+}
+
+
+
+
+
+/* ========================================
+   CELULAR
+======================================== */
+
+@media (max-width: 768px) {
+  .pagina-projetos {
+    padding: 25px 18px 40px;
+  }
+
+  .titulo-area {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .icone-titulo {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    font-size: 22px;
+    border-radius: 12px;
+  }
+
+  .titulo-area h1 {
+    font-size: 23px;
+  }
+
+  .titulo-area p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .campo-pesquisa {
+    max-width: 100%;
+    height: 48px;
+  }
+
+  .projetos-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .projeto-card {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .nome-projeto {
+    min-height: auto;
+    margin-bottom: 17px;
+  }
+
+  .nome-projeto h2 {
+    font-size: 17px;
+  }
+}
+
+/* ========================================
+   CELULAR PEQUENO
+======================================== */
+
+@media (max-width: 480px) {
+  .pagina-projetos {
+    padding: 20px 14px 30px;
+  }
+
+  .titulo-area {
+    gap: 10px;
+  }
+
+  .titulo-area h1 {
+    font-size: 21px;
+  }
+
+  .titulo-area p {
+    font-size: 11px;
+  }
+
+  .projeto-card {
+    padding: 16px;
+  }
+
+  .icone-projeto {
+    width: 40px;
+    height: 40px;
+
+    font-size: 18px;
+  }
+
+  .status-projeto {
+    padding: 4px 8px;
+
+    font-size: 10px;
+  }
+
+  .informacao {
+    gap: 10px;
+  }
+
+  .informacao-icone {
+    width: 31px;
+    height: 31px;
+
+    font-size: 14px;
+  }
+
+  .informacao strong {
+    font-size: 11px;
+  }
+
+  .btn-ver-projeto {
+    height: 38px;
+  }
+}
