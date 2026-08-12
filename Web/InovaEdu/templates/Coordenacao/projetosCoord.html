@@ -74,25 +74,29 @@
           <!-- TOPO -->
 
           <div class="card-topo">
-            <div class="imagem-projeto">
-              {% if projeto.imagem %}
 
-              <img
-                src="{{ projeto.imagem.url }}"
-                alt="Imagem do projeto {{ projeto.nome_projeto }}"
-              />
+              <div class="imagem-projeto">
 
-              {% else %}
+                  {% if projeto.imagem %}
 
-              <div class="icone-projeto">📁</div>
+                      <img
+                          src="{{ projeto.imagem.url }}"
+                          alt="Imagem do projeto {{ projeto.nome_projeto }}"
+                      />
 
-              {% endif %}
-            </div>
+                  {% else %}
 
-            <span class="status-projeto"> Projeto </span>
+                      <div class="icone-projeto">📁</div>
+
+                  {% endif %}
+
+              </div>
+
+              <span class="status-projeto">Projeto</span>
+
           </div>
 
-          {% endcomment %}
+          
 
           <!-- NOME -->
 
