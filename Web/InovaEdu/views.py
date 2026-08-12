@@ -1770,11 +1770,6 @@ def excluir_curso(request, idcurso):
 
 
 
-
-
-    
-    
-    
  
 def TurmaCoord(request):
     turmas = Turma.objects.select_related("curso", "professor").all()
@@ -1895,3 +1890,33 @@ def salvar_turma_usuario(request):
     return JsonResponse({
         "status": "ok"
     })
+
+
+def projetosCoord(request):
+
+    # Totais
+    total_usuarios = Usuario.objects.count()
+    total_cursos = Curso.objects.count()
+    total_turmas = Turma.objects.count()
+
+    # Todos os projetos
+    projetos = Projeto.objects.select_related(
+        "turma",
+        "turma__curso"
+    ).prefetch_related(
+        "alunos",
+        "alunos_edicao"
+    ).all().order_by("nome_projeto")
+
+    context = {
+        "total_usuarios": total_usuarios,
+        "total_cursos": total_cursos,
+        "total_turmas": total_turmas,
+        "projetos": projetos,
+    }
+
+    return render(
+        request,
+        "Coordenacao/ProjetosCoord.html",
+        context
+    )

@@ -43,6 +43,7 @@ urlpatterns = [
     path('usuarios/', views.UsuarioCoord, name='UsuariosCoord'),
     path('CursoCoord/', views.CursoCoord, name='CursoCoord'),
     path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),   
+    path('projetosCoord/', views.projetosCoord, name='projetosCoord'),   
 
 
     path('criar_curso/', views.criar_curso, name='criar_curso'),
