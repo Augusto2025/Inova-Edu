@@ -71,7 +71,14 @@ export default function CursosScreen({ navigation }) {
     // Fundo dinâmico aplicado ao container principal
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       
-      <Header foto={null} escolherImagem={null} nomeTela={"Cursos"} carregando={carregando} />
+      <Header 
+        foto={null} 
+        escolherImagem={null} 
+        nomeTela={"Cursos"} 
+        carregando={carregando} 
+        temGoBack={true}
+        onPressBack={() => navigation.navigate('Home')}
+      />
       
       <BarraPesquisa value={search} onChangeText={setSearch} placeholder="Buscar curso" />
 

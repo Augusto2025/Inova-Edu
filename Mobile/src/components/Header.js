@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
   header: { 
     width: '100%',
     alignSelf: 'stretch',
+    paddingTop: 12,
     paddingBottom: 15, 
     paddingHorizontal: 22, 
     flexDirection: "row", 

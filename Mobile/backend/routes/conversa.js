@@ -6,6 +6,7 @@ const pool = require('../config/db'); // Conexão com o Postgres
 // URL: /mensagem/topico/:topicoId
 router.get('/topico/:topicoId', async (req, res) => {
     const { topicoId } = req.params;
+    const baseUrl = (process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
 
     try {
         const queryText = `
@@ -22,7 +23,31 @@ router.get('/topico/:topicoId', async (req, res) => {
             ORDER BY m."Data_criacao" ASC
         `;
         const resultado = await pool.query(queryText, [topicoId]);
-        return res.json(resultado.rows);
+        
+        // DEBUG: Log de todas as fotos retornadas
+        console.log('📸 Fotos do tópico:', resultado.rows.map(r => ({ nome: r.nome, foto: r.foto })));
+        
+        // Formata as URLs das fotos
+        const dadosFormatados = resultado.rows.map(row => {
+            let fotoFormatada = null;
+            if (row.foto) {
+                const fotoString = String(row.foto).trim();
+                if (fotoString && fotoString.toLowerCase() !== 'null') {
+                    if (fotoString.startsWith('http')) {
+                        fotoFormatada = fotoString;
+                    } else {
+                        fotoFormatada = `${baseUrl}${fotoString.startsWith('/') ? '' : '/uploads/'}${fotoString}`;
+                    }
+                }
+            }
+            console.log(`  ${row.nome}: ${row.foto} => ${fotoFormatada}`);
+            return {
+                ...row,
+                foto: fotoFormatada
+            };
+        });
+        
+        return res.json(dadosFormatados);
     } catch (err) {
         console.error('❌ Erro ao buscar mensagens:', err.message);
         return res.status(500).json({ sucesso: false, mensagem: 'Erro ao buscar mensagens.' });

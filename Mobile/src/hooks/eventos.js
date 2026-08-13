@@ -21,64 +21,82 @@ export const useEventos = () => {
     };
 
     const salvarEvento = async (novoEvento, onSuccess) => {
-    const idUsuario = await AsyncStorage.getItem('idUsuario');
+        const idUsuario = await AsyncStorage.getItem('idUsuario');
 
-    const isEdicao = novoEvento.id != null;
-    const url = isEdicao
-        ? `${URL_BASE}/eventos/${novoEvento.id}`
-        : `${URL_BASE}/eventos`;
-
-    const method = isEdicao ? 'PUT' : 'POST';
-
-    // Converte DD/MM/AAAA -> AAAA-MM-DD
-    let dataFormatada = novoEvento.date;
-
-    if (dataFormatada.includes("/")) {
-        const [dia, mes, ano] = dataFormatada.split("/");
-        dataFormatada = `${ano}-${mes}-${dia}`;
-    }
-
-    try {
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ...novoEvento,
-                date: dataFormatada,
-                usuario_id: idUsuario
-            })
-        });
-
-        if (response.ok) {
-            Alert.alert(
-                "Sucesso",
-                isEdicao ? "Evento atualizado!" : "Evento criado!"
-            );
-
-            onSuccess();
-            buscarEventos();
-
-        } else {
-            const errorData = await response.json();
-
-            console.log("Status:", response.status);
-            console.log("Erro Backend:", errorData);
-
-            Alert.alert(
-                "Erro",
-                errorData.detalhe ||
-                errorData.mensagem ||
-                JSON.stringify(errorData)
-            );
+        // Validação básica
+        if (!novoEvento.title?.trim()) {
+            Alert.alert("Erro", "Preencha o nome do evento");
+            return;
+        }
+        if (!novoEvento.date?.trim()) {
+            Alert.alert("Erro", "Preencha a data do evento");
+            return;
+        }
+        if (!novoEvento.time?.trim()) {
+            Alert.alert("Erro", "Preencha o horário do evento");
+            return;
+        }
+        if (!novoEvento.local?.trim()) {
+            Alert.alert("Erro", "Preencha o local do evento");
+            return;
         }
 
-    } catch (error) {
-        console.log(error);
-        Alert.alert("Erro", error.message);
-    }
-};
+        const isEdicao = novoEvento.id != null;
+        const url = isEdicao
+            ? `${URL_BASE}/eventos/${novoEvento.id}`
+            : `${URL_BASE}/eventos`;
+
+        const method = isEdicao ? 'PUT' : 'POST';
+
+        // Converte DD/MM/AAAA -> AAAA-MM-DD
+        let dataFormatada = novoEvento.date;
+
+        if (dataFormatada.includes("/")) {
+            const [dia, mes, ano] = dataFormatada.split("/");
+            dataFormatada = `${ano}-${mes}-${dia}`;
+        }
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...novoEvento,
+                    date: dataFormatada,
+                    usuario_id: idUsuario
+                })
+            });
+
+            if (response.ok) {
+                Alert.alert(
+                    "Sucesso",
+                    isEdicao ? "Evento atualizado!" : "Evento criado!"
+                );
+
+                onSuccess();
+                buscarEventos();
+
+            } else {
+                const errorData = await response.json();
+
+                console.log("Status:", response.status);
+                console.log("Erro Backend:", errorData);
+
+                Alert.alert(
+                    "Erro",
+                    errorData.detalhe ||
+                    errorData.mensagem ||
+                    JSON.stringify(errorData)
+                );
+            }
+
+        } catch (error) {
+            console.log("Erro ao salvar evento:", error);
+            Alert.alert("Erro", error.message);
+        }
+    };
 
     const excluirEvento = async (idEvento, onSuccess) => {
         const idUsuario = await AsyncStorage.getItem('idUsuario');

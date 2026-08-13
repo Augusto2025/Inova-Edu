@@ -165,7 +165,7 @@ export default function LoginScreen({ navigation }) {
                         <Text style={[styles.headerText, { fontSize: Math.max(18, Math.min(24, width * 0.055)) }]}>Bem-Vindo ao Inova Edu</Text>
                     </View>
                     
-                    <View style={[styles.containerCenter, { paddingTop: Math.max(18, height * 0.08), paddingHorizontal: containerPaddingHorizontal }]}> 
+                    <View style={[styles.containerCenter, { paddingTop: Math.max(18, height * 0.08), paddingHorizontal: containerPaddingHorizontal, paddingBottom: 30 }]}> 
                         <Text style={styles.titulo}>Login</Text>
 
                         <Text style={styles.labelTipo}>Você é:</Text>

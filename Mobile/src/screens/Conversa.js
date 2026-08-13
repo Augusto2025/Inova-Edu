@@ -24,10 +24,32 @@ export default function ConversaScreen({ navigation, route }) {
   const [carregando, setCarregando] = useState(true);
   const [usuarioLogadoId, setUsuarioLogadoId] = useState(null);
 
+  // Normaliza URLs de imagens do banco de dados
+  const normalizarUrlFoto = (fotoValue) => {
+    if (!fotoValue || typeof fotoValue !== 'string') return null;
+    const trimmed = fotoValue.trim();
+    if (!trimmed || trimmed.toLowerCase() === 'null') return null;
+    
+    // Se já é uma URL completa
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    
+    // Se é um caminho relativo da API
+    if (/^\//.test(trimmed)) return `${URL_BASE}${trimmed}`;
+    
+    // Se é do Cloudinary (sem protocol)
+    if (/^\/\//.test(trimmed)) return `https:${trimmed}`;
+    
+    // Tenta como URL do Cloudinary
+    if (!trimmed.includes('/')) return `https://res.cloudinary.com/dw0pxfap3/${trimmed}`;
+    
+    return null;
+  };
+
   const [menuVisible, setMenuVisible] = useState(false);
   const [editarVisible, setEditarVisible] = useState(false);
   const [textoEditando, setTextoEditando] = useState("");
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
+  const [participantesCount, setParticipantesCount] = useState(0);
   
   // Estados para o sistema de menções
   const [usuariosMencaoVisivel, setUsuariosMencaoVisivel] = useState(false);
@@ -40,19 +62,19 @@ export default function ConversaScreen({ navigation, route }) {
   // ==========================================
   // BUSCA DE DADOS (API + STORAGE)
   // ==========================================
-  const carregarDados = async () => {
+  const carregarDados = async (semLoading = false) => {
     try {
-      setCarregando(true);
+      if (!semLoading) setCarregando(true);
 
       const idSalvo = await AsyncStorage.getItem('idUsuario');
       const idUser = idSalvo ? parseInt(idSalvo) : null;
-      setUsuarioLogadoId(idUser);
+      if (idUser && !usuarioLogadoId) {
+        setUsuarioLogadoId(idUser);
+      }
 
       if (topico?.id) {
-        console.log("📡 Buscando mensagens na URL:", `${URL_MENSAGEM}/topico/${topico.id}`);
         const response = await fetch(`${URL_MENSAGEM}/topico/${topico.id}`);
 
-        // MODIFICAÇÃO AQUI: Captura o erro real do servidor
         if (!response.ok) {
           const textoErro = await response.text();
           throw new Error(`Status ${response.status}: ${textoErro || "Sem detalhes"}`);
@@ -65,25 +87,54 @@ export default function ConversaScreen({ navigation, route }) {
           nome: msg.nome || "Usuário",
           texto: msg.texto,
           hora: formatarHora(msg.data),
-          foto: msg.foto,
+          foto: normalizarUrlFoto(msg.foto),
           meu: msg.autorId === idUser
         }));
 
-        setMensagens(formatadas);
+        // Conta usuários únicos no tópico
+        const usuariosUnicos = new Set(dados.map(msg => msg.id_Usuario || msg.autorId));
+        setParticipantesCount(usuariosUnicos.size);
+
+        // Só atualiza se houver mudança
+        if (JSON.stringify(formatadas) !== JSON.stringify(mensagens)) {
+          setMensagens(formatadas);
+        }
       }
     } catch (error) {
       console.error("❌ Erro ao carregar dados:", error);
-      // Alerta melhorado para te mostrar o culpado:
-      Alert.alert("Erro no Carregamento", error.message);
+      if (!semLoading) Alert.alert("Erro no Carregamento", error.message);
     } finally {
-      setCarregando(false);
+      if (!semLoading) setCarregando(false);
     }
   };
 
   useEffect(() => {
+    if (!topico?.id) return;
+
     carregarDados();
     carregarUsuariosDoTopico();
-  }, [topico]);
+
+    // Intervalo para atualizar em tempo real (silenciosamente)
+    const intervaloAtualizacao = setInterval(() => {
+      carregarDados(true);
+      carregarUsuariosDoTopico();
+    }, 6000); // 6 segundos
+
+    // Sincroniza quando o app volta para primeiro plano
+    const subscription = require('react-native').AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      clearInterval(intervaloAtualizacao);
+      subscription?.remove();
+    };
+  }, [topico?.id]);
+
+  const handleAppStateChange = (state) => {
+    if (state === 'active') {
+      carregarDados(true);
+      carregarUsuariosDoTopico();
+    }
+  };
 
   const carregarUsuariosDoTopico = async () => {
     try {
@@ -259,10 +310,20 @@ export default function ConversaScreen({ navigation, route }) {
         }
       }
 
+      // Adiciona a mensagem localmente sem recarregar tudo
+      const novaMensagemObj = {
+        id: Math.random(),
+        nome: "Você",
+        texto: novaMensagem.trim(),
+        hora: formatarHora(new Date().toISOString()),
+        foto: null,
+        meu: true
+      };
+      
+      setMensagens(prev => [...prev, novaMensagemObj]);
       setNovaMensagem("");
       setUsuariosMencaoDaTela(new Set());
       Keyboard.dismiss();
-      carregarDados(); // Recarrega o chat com a nova mensagem
     } catch (error) {
       console.error("❌ Erro detalhado no envio:", error);
       Alert.alert("Erro ao Enviar", error.message);
@@ -336,6 +397,15 @@ export default function ConversaScreen({ navigation, route }) {
         <Text style={[styles.pathActive, { color: theme.primary }]}>Conversa</Text>
       </View>
 
+      <View style={[styles.infoContainer, { backgroundColor: theme.card, borderBottomColor: theme.border }]}>
+        <View style={styles.participantesInfo}>
+          <Ionicons name="people" size={16} color={theme.primary} />
+          <Text style={[styles.participantesText, { color: theme.text }]}>
+            {participantesCount} {participantesCount === 1 ? 'participante' : 'participantes'}
+          </Text>
+        </View>
+      </View>
+
       {carregando ? (
         <View style={{ flex: 1, padding: 20 }}>
           {[1, 2, 3].map((item) => (
@@ -360,14 +430,20 @@ export default function ConversaScreen({ navigation, route }) {
               <View style={styles.topRow}>
                 {!item.meu && (
                   <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
-                    {item.foto && item.foto.trim() && item.foto.toLowerCase() !== 'null' ? (
-                      <Image
-                        source={{ uri: item.foto }}
-                        style={styles.avatarImage}
-                        onError={() => console.log('Erro ao carregar foto:', item.foto)}
-                      />
+                    {item.foto ? (
+                      <>
+                        <Image
+                          source={{ uri: item.foto }}
+                          style={styles.avatarImage}
+                          onLoad={() => console.log('✅ Foto carregada:', item.foto)}
+                          onError={(e) => console.log('❌ Erro ao carregar foto:', item.foto, e.nativeEvent.error)}
+                        />
+                      </>
                     ) : (
-                      <Ionicons name="person" size={16} color="#fff" />
+                      <>
+                        <Ionicons name="person" size={16} color="#fff" />
+                        {console.log('ℹ️ Sem foto para usuário:', item.nome, 'Valor bruto:', item.foto)}
+                      </>
                     )}
                   </View>
                 )}
@@ -527,6 +603,9 @@ const styles = StyleSheet.create({
   pathContainer: { flexDirection: "row", alignItems: "center", paddingHorizontal: 15, marginTop: 12, marginBottom: 10, flexWrap: 'wrap' },
   pathText: { color: "#777", fontSize: 13, marginRight: 4, flexShrink: 1, minWidth: 0 },
   pathActive: { color: "#2563EB", fontSize: 13, fontWeight: "700", marginLeft: 4 },
+  infoContainer: { paddingHorizontal: 15, paddingVertical: 10, borderBottomWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' },
+  participantesInfo: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  participantesText: { fontSize: 13, fontWeight: '500' },
   messageCard: { marginBottom: 10, borderRadius: 16, padding: 12, maxWidth: "80%", elevation: 1 },
   myMessageCard: {
     backgroundColor: COLORS.primary,

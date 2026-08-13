@@ -133,13 +133,7 @@ export default function ConfiguracoesScreen({ navigation }) {
             {user && user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
               <Image source={{ uri: user.imagem }} style={styles.avatar} />
             ) : (
-              <View style={[
-                styles.avatarPlaceholder,
-                {
-                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9',
-                  borderColor: isDarkMode ? '#94A3B8' : '#2d6cdf',
-                },
-              ]}>
+              <View style={[styles.avatarPlaceholder, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9', borderColor: isDarkMode ? '#94A3B8' : '#2d6cdf' }]}>
                 <Ionicons name="person" size={60} color={isDarkMode ? '#94A3B8' : '#64748B'} />
               </View>
             )}
