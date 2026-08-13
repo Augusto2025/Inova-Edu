@@ -39,89 +39,71 @@ body {
 }
 
 /* ========================================
-   CABEÇALHO
-======================================== */
-
-.cabecalho-projetos {
-  margin-bottom: 28px;
-}
-
-.titulo-area {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.icone-titulo {
-  width: 58px;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff3e4;
-  border-radius: 14px;
-  font-size: 27px;
-}
-
-.titulo-area h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--azul-Senac);
-}
-
-.titulo-area p {
-  margin-top: 3px;
-  font-size: 14px;
-  color: var(--cinza-texto);
-}
-
-/* ========================================
    BARRA DE PESQUISA
 ======================================== */
+.busca-geral {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    height: 45px;
+    padding: 0 15px;
 
-.barra-pesquisa {
-  width: 100%;
-  margin-bottom: 22px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
-.campo-pesquisa {
-  width: 100%;
-  max-width: 600px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  background-color: var(--branco-Senac);
-  border: 1px solid var(--cinza-borda);
-  border-radius: 12px;
-  padding: 0 16px;
-  transition: 0.2s ease;
+.busca-geral i {
+    color: #004A8D;
+    font-size: 16px;
+    flex-shrink: 0;
 }
 
-.campo-pesquisa:focus-within {
-  border-color: var(--azul-Senac);
-  box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.08);
+.busca-geral input {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: #333;
 }
 
-.icone-pesquisa {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  margin-right: 10px;
+.busca-geral input::placeholder {
+    color: #999;
 }
 
-.campo-pesquisa input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  color: var(--preto);
+/* Efeito ao clicar na busca */
+.busca-geral:focus-within {
+    border-color: #004A8D;
+    box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
 }
 
-.campo-pesquisa input::placeholder {
-  color: #9ca3af;
+/* Responsivo */
+@media (max-width: 768px) {
+    .busca-geral {
+        max-width: 100%;
+        height: 42px;
+    }
+
+    .busca-geral input {
+        font-size: 13px;
+    }
+
+    .busca-geral i {
+        font-size: 15px;
+    }
 }
+
+
 
 /* ========================================
    CONTADOR
