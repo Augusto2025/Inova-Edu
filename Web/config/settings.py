@@ -20,7 +20,12 @@ cloudinary.config(
 
 # --- Segurança ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
-DEBUG = False
+django_debug = os.environ.get('DJANGO_DEBUG')
+if django_debug == "False":
+    DEBUG = False
+elif django_debug == "True" or django_debug is not None:
+    DEBUG = True
+print(f"[DJANGO DEBUG] {DEBUG}")
 ALLOWED_HOSTS = ["inova-edu.onrender.com", "127.0.0.1", "localhost"]
 
 # --- Aplicativos instalados ---

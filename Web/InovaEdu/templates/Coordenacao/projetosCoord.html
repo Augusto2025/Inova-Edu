@@ -1,0 +1,241 @@
+{% load static %}
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Projetos</title>
+
+    <link rel="stylesheet" href="{% static 'styles/projetosCoord.css' %}?v=1" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    {% include 'partials/navbar_Coordenacao.html' %}
+
+    <main class="pagina-projetos">
+      <!-- CABEÇALHO -->
+
+      <div class="cabecalho-projetos">
+        <div class="titulo-area">
+          <div class="icone-titulo">📁</div>
+
+          <div>
+            <h1>Projetos</h1>
+
+            <p>Todos os projetos cadastrados no sistema</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESQUISA -->
+
+      <div class="barra-pesquisa">
+        <div class="campo-pesquisa">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input
+            type="text"
+            id="pesquisarProjeto"
+            placeholder="Pesquisar projeto, turma ou curso..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <!-- CONTADOR -->
+
+      <div class="info-projetos">
+        <span> Projetos encontrados </span>
+
+        <strong id="contadorProjetos"> {{ projetos|length }} </strong>
+      </div>
+
+      <!-- GRID DOS PROJETOS -->
+
+      <div class="projetos-grid" id="listaProjetos">
+        {% for projeto in projetos %}
+
+        <article
+          class="projeto-card"
+          data-pesquisa="
+                {{ projeto.nome_projeto }}
+                {{ projeto.turma.codigo_turma }}
+                {{ projeto.turma.curso.nome_curso }}
+            "
+        >
+          <!-- TOPO -->
+
+          <div class="card-topo">
+
+              <div class="imagem-projeto">
+
+                  {% if projeto.imagem %}
+
+                      <img
+                          src="{{ projeto.imagem.url }}"
+                          alt="Imagem do projeto {{ projeto.nome_projeto }}"
+                      />
+
+                  {% else %}
+
+                      <div class="icone-projeto">📁</div>
+
+                  {% endif %}
+
+              </div>
+
+              <span class="status-projeto">Projeto</span>
+
+          </div>
+
+          
+
+          <!-- NOME -->
+
+          <div class="nome-projeto">
+            <h2>{{ projeto.nome_projeto }}</h2>
+          </div>
+
+          <!-- INFORMAÇÕES -->
+
+          <div class="informacoes-projeto">
+            <!-- TURMA -->
+
+            <div class="informacao">
+              <span class="informacao-icone"> 🎓 </span>
+
+              <div>
+                <small> Turma </small>
+
+                <strong> {{ projeto.turma.codigo_turma }} </strong>
+              </div>
+            </div>
+
+            <!-- CURSO -->
+
+            <div class="informacao">
+              <span class="informacao-icone"> 📚 </span>
+
+              <div>
+                <small> Curso </small>
+
+                <strong title="{{ projeto.turma.curso.nome_curso }}">
+                  {{ projeto.turma.curso.nome_curso }}
+                </strong>
+              </div>
+            </div>
+
+            <!-- ALUNOS -->
+
+            {% comment %}
+            <div class="informacao">
+              <span class="informacao-icone"> 👥 </span>
+
+              <div>
+                <small> Participantes </small>
+
+                <strong>
+                  {{ projeto.alunos.count }} aluno{{
+                  projeto.alunos.count|pluralize }}
+                </strong>
+              </div>
+            </div>
+            {% endcomment %}
+
+            <!-- DATA -->
+
+            <div class="informacao">
+              <span class="informacao-icone"> 📅 </span>
+
+              <div>
+                <small> Criado em </small>
+
+                <strong> {{ projeto.data_de_criacao|date:"d/m/Y" }} </strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTÃO -->
+
+          <div class="card-rodape">
+            <a href="#" class="btn-ver-projeto">
+              Ver projeto
+
+              <span> → </span>
+            </a>
+          </div>
+        </article>
+
+        {% empty %}
+
+        <!-- SEM PROJETOS -->
+
+        <div class="sem-projetos">
+          <div class="sem-projetos-icone">📂</div>
+
+          <h2>Nenhum projeto cadastrado</h2>
+
+          <p>Ainda não existem projetos cadastrados no sistema.</p>
+        </div>
+
+        {% endfor %}
+      </div>
+
+      <!-- SEM RESULTADO DA PESQUISA -->
+
+      <div id="semResultado" class="sem-resultado" style="display: none">
+        <div>🔎</div>
+
+        <h2>Nenhum projeto encontrado</h2>
+
+        <p>Tente pesquisar por outro nome, turma ou curso.</p>
+      </div>
+    </main>
+
+    <script>
+      const campoPesquisa = document.getElementById("pesquisarProjeto");
+
+      const cards = document.querySelectorAll(".projeto-card");
+
+      const contador = document.getElementById("contadorProjetos");
+
+      const semResultado = document.getElementById("semResultado");
+
+      campoPesquisa.addEventListener("input", function () {
+        const pesquisa = this.value.toLowerCase().trim();
+
+        let encontrados = 0;
+
+        cards.forEach(function (card) {
+          const texto = card.dataset.pesquisa.toLowerCase();
+
+          if (texto.includes(pesquisa)) {
+            card.style.display = "";
+
+            encontrados++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        contador.textContent = encontrados;
+
+        if (encontrados === 0 && pesquisa !== "") {
+          semResultado.style.display = "flex";
+        } else {
+          semResultado.style.display = "none";
+        }
+      });
+    </script>
+
+    {% include "partials/footerCoord.html" %}
+  </body>
+</html>
