@@ -21,7 +21,7 @@ cloudinary.config(
 # --- Segurança ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
 django_debug = os.environ.get('DJANGO_DEBUG')
-if django_debug == "True":
+if django_debug == "True" or django_debug is not None:
     DEBUG = True
 else:
     DEBUG = False
