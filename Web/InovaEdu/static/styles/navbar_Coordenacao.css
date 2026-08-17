@@ -1,204 +1,528 @@
-/* ===========================
-   NAVBAR
-=========================== */
+/* ==================================================
+   VARIÁVEIS
+================================================== */
 
 :root {
     --azul-principal: #004A8D;
     --azul-secundario: #0066C5;
     --azul-escuro: #003566;
+
     --branco: #FFFFFF;
+
     --cinza-claro: #F4F6F9;
     --cinza: #D9D9D9;
-      --fonte-principal: "Arial", sans-serif;
+
+    --fonte-principal: Arial, sans-serif;
 }
 
-*{
+
+/* ==================================================
+   RESET
+================================================== */
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: var(--fonte-principal);
 }
 
-.navbar{
+
+/* ==================================================
+   NAVBAR
+================================================== */
+
+.navbar-coordenacao {
     width: 100%;
     height: 75px;
+
     background: var(--azul-principal);
+
     display: flex;
     align-items: center;
-    justify-content: space-between;
+
     padding: 0 45px;
-    box-shadow: 0 5px 20px rgba(0,0,0,.15);
+
     position: sticky;
     top: 0;
-    z-index: 999;
+
+    z-index: 1000;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Logo */
 
-.nav-logo img{
-    height: 85px;
-    transition: .3s;
-}
+/* ==================================================
+   LOGO
+================================================== */
 
-.nav-logo img:hover{
-    transform: scale(1.08);
-}
-
-/* Menu */
-
-.nav-menu{
+.nav-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-    list-style: none;
+    flex-shrink: 0;
 }
 
-.nav-menu li{
-    list-style: none;
-}
-
-.nav-menu a{
+.nav-logo a {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    color: white;
+}
+
+.nav-logo img {
+    height: 65px;
+    width: auto;
+
+    display: block;
+
+    transition: 0.3s;
+}
+
+.nav-logo img:hover {
+    transform: scale(1.06);
+}
+
+
+/* ==================================================
+   MENU DESKTOP
+================================================== */
+
+.nav-menu {
+    list-style: none;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    padding: 0;
+}
+
+.nav-menu li {
+    list-style: none;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 11px 17px;
+
+    border-radius: 8px;
+
+    color: var(--branco);
+
+    text-decoration: none;
+
     font-size: 15px;
     font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 8px;
-    transition: .3s;
+
+    white-space: nowrap;
+
+    transition: 0.3s;
 }
 
-.nav-menu a:hover{
-    background: rgba(255,255,255,.18);
+.nav-menu a:hover {
+    background: rgba(255, 255, 255, 0.16);
 }
 
-.nav-menu a.active{
-    background: white;
-    color: var(--azul-principal);
+
+/* ==================================================
+   ÍCONES DESKTOP
+================================================== */
+
+.nav-menu a i {
+    font-size: 15px;
+
+    width: 18px;
+
+    text-align: center;
+
+    flex-shrink: 0;
 }
 
-/* Botões */
 
-.nav-actions{
+/* ==================================================
+   SAIR DESKTOP
+================================================== */
+
+.nav-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+
+    flex-shrink: 0;
 }
 
-.btn-perfil,
-.btn-sair{
-    text-decoration: none;
+.btn-sair {
     display: flex;
     align-items: center;
+
     gap: 8px;
+
     padding: 10px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: .3s;
-}
 
-.btn-perfil{
-    background: rgba(255,255,255,.15);
-    color: white;
-}
+    background: var(--branco);
 
-.btn-perfil:hover{
-    background: rgba(255,255,255,.25);
-}
-
-.btn-sair{
-    background: white;
     color: var(--azul-principal);
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: 0.3s;
 }
 
-.btn-sair:hover{
+.btn-sair i {
+    font-size: 15px;
+}
+
+.btn-sair:hover {
     background: #f2f2f2;
     transform: translateY(-2px);
 }
 
-/* Botão Menu */
 
-.menu-toggle{
+/* ==================================================
+   BOTÃO MENU MOBILE
+================================================== */
+
+.menu-toggle {
     display: none;
+
     background: transparent;
+
     border: none;
-    color: white;
+
+    color: var(--branco);
+
     font-size: 26px;
+
+    cursor: pointer;
+
+    padding: 8px;
+
+    margin-left: auto;
+}
+
+
+/* ==================================================
+   MENU LATERAL MOBILE
+================================================== */
+
+.mobile-menu {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 300px;
+    max-width: 85%;
+
+    height: 100vh;
+
+    background: var(--branco);
+
+    z-index: 2000;
+
+    transform: translateX(-100%);
+
+    transition: transform 0.3s ease;
+
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.20);
+
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+
+/* ==================================================
+   CABEÇALHO MENU MOBILE
+================================================== */
+
+.mobile-menu-header {
+    width: 100%;
+    height: 80px;
+
+    background: var(--azul-principal);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+}
+
+.mobile-menu-header a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.mobile-menu-header img {
+    height: 55px;
+    width: auto;
+}
+
+
+/* BOTÃO X */
+
+.close-menu {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+
+    border: none;
+
+    color: var(--branco);
+
+    font-size: 25px;
+
     cursor: pointer;
 }
 
-/* ===========================
-   RESPONSIVO
-=========================== */
 
-@media (max-width:900px){
+/* ==================================================
+   MENU MOBILE
+================================================== */
 
-    .navbar{
-        padding: 0 20px;
+.mobile-nav-menu {
+    list-style: none;
+
+    width: 100%;
+
+    padding: 12px 0;
+    margin: 0;
+}
+
+.mobile-nav-menu li {
+    width: 100%;
+    list-style: none;
+}
+
+.mobile-nav-menu li a {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 16px 22px;
+
+    color: #333;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    transition: 0.2s;
+}
+
+.mobile-nav-menu li a:hover {
+    background: var(--cinza-claro);
+
+    color: var(--azul-principal);
+}
+
+
+/* ==================================================
+   ÍCONES MOBILE
+================================================== */
+
+.mobile-nav-menu li a i {
+    width: 22px;
+
+    min-width: 22px;
+
+    text-align: center;
+
+    color: var(--azul-principal);
+
+    font-size: 17px;
+}
+
+
+/* ==================================================
+   SAIR MOBILE
+================================================== */
+
+.mobile-sair {
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding-top: 8px;
+
+    border-top: 1px solid #e5e5e5;
+}
+
+.mobile-sair a {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    width: 100%;
+
+    padding: 16px 22px;
+
+    color: #333;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.mobile-sair a:hover {
+    background: var(--cinza-claro);
+
+    color: var(--azul-principal);
+}
+
+.mobile-sair a i {
+    width: 22px;
+
+    min-width: 22px;
+
+    text-align: center;
+
+    color: var(--azul-principal);
+
+    font-size: 17px;
+}
+
+
+/* ==================================================
+   FUNDO ESCURO
+================================================== */
+
+.menu-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    z-index: 1500;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+}
+
+.menu-overlay.active {
+    opacity: 1;
+
+    visibility: visible;
+}
+
+
+/* ==================================================
+   RESPONSIVIDADE
+================================================== */
+
+@media (max-width: 900px) {
+
+    .navbar-coordenacao {
         height: 70px;
+
+        padding: 0 20px;
     }
 
-    .menu-toggle{
-        display: block;
-    }
+    /* Esconde menu desktop */
 
-    .nav-menu{
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background: var(--azul-principal);
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0;
+    .nav-menu {
         display: none;
-        padding: 15px 0;
     }
 
-    .nav-menu.active{
+    /* Esconde Sair desktop */
+
+    .nav-actions {
+        display: none;
+    }
+
+    /* Logo */
+
+    .nav-logo img {
+        height: 58px;
+    }
+
+    /* Mostra botão */
+
+    .menu-toggle {
         display: flex;
-    }
 
-    .nav-menu li{
-        width: 100%;
+        align-items: center;
+        justify-content: center;
     }
-
-    .nav-menu a{
-        display: block;
-        width: 100%;
-        padding: 15px 25px;
-        border-radius: 0;
-    }
-
-    .nav-menu a:hover{
-        background: rgba(255,255,255,.15);
-    }
-
-    .nav-actions{
-        display: none;
-    }
-
 }
 
 
-/* TITULOS DAS PAG */
-.topo-pagina{
-    color:var(--azul-secundario);
-    width:95%;
-    max-width:85%;
-    margin:35px auto;
-   
-}
+/* ==================================================
+   CELULAR PEQUENO
+================================================== */
 
-.topo-pagina h1{
-    margin:0;
-    font-size:36px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
+@media (max-width: 480px) {
 
-.topo-pagina p{
-    margin-top:10px;
-    font-size:17px;
-    opacity:.9;
+    .navbar-coordenacao {
+        height: 65px;
+
+        padding: 0 15px;
+    }
+
+    .nav-logo img {
+        height: 53px;
+    }
+
+    .menu-toggle {
+        font-size: 24px;
+
+        padding: 6px;
+    }
+
+    .mobile-menu {
+        width: 82%;
+
+        max-width: 300px;
+    }
+
+    .mobile-menu-header {
+        height: 70px;
+
+        padding: 0 18px;
+    }
+
+    .mobile-menu-header img {
+        height: 50px;
+    }
+
+    .mobile-nav-menu li a,
+    .mobile-sair a {
+        padding: 15px 20px;
+
+        font-size: 15px;
+    }
 }
