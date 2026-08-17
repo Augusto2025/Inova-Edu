@@ -13,8 +13,14 @@
 
     <!-- ================= ROTA 1: LOCALIZAÇÃO DA PÁGINA (SEM ÍCONE) ================= -->
     <header class="page-location-header">
-        <div class="site-breadcrumb">
-            <span>Página: Cursos &gt; Turmas &gt; {{ projeto.nome_projeto }} &gt; Repositório</span>
+        <div class="rota">
+            <span>
+                Página: 
+                <a href="{% url 'cursos' %}"> {{ projeto.turma.curso.nome_curso }} </a> &gt; 
+                <a href="{% url 'turmas' projeto.turma.idturma %}">{{ projeto.turma.codigo_turma }}</a> &gt; 
+                <a href="{% url 'projetos_da_turma' projeto.turma.idturma %}">{{ projeto.nome_projeto }}</a> &gt; 
+                <strong>Repositório</strong>
+            </span>
         </div>
         <div class="page-title-box">
             <h1 class="main-title">Repositório</h1>

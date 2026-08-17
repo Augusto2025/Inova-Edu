@@ -13,20 +13,9 @@
     <header class="section-header">
         <div class="rota">
             <span>Página:</span>
-
-            <a href="{% url 'forum_blocos' %}">
-                Todos os fóruns
-            </a>
-
-            <span>></span>
-
-            <a href="{% url 'forum_topicos' forum.idforum %}">
-                Tópicos do fórum
-            </a>
-
-            <span>></span>
-
-            <span>{{ forum.nome }}</span>
+            <a href="{% url 'forum_blocos' %}">{{ forum.nome }}</a> &gt; 
+            <a href="{% url 'forum_topicos' forum.idforum %}">{{ topico_selecionado.titulo }}</a> &gt;
+            <strong>Chat de Conversa</strong>
         </div>
 
      

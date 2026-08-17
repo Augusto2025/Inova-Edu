@@ -443,17 +443,16 @@ def salvar_certificado(request):
 
 
 def turmas(request, curso_id):
+    # O Django busca o curso no banco pelo ID
     curso = get_object_or_404(Curso, idcurso=curso_id)
 
     query = request.GET.get("q", "").strip()
-
     turmas = Turma.objects.filter(curso=curso)
 
     if query:
         turmas = turmas.filter(codigo_turma__icontains=query)
 
     total_turmas = turmas.count()
-
     turmas = turmas.order_by("ano")
 
     turmas_por_ano = {}
@@ -464,7 +463,7 @@ def turmas(request, curso_id):
         request,
         "AlunoProfessor/turmas.html",
         {
-            "curso": curso,
+            "curso": curso,  # O objeto 'curso' vai para o HTML com o nome dentro dele
             "turmas_por_ano": turmas_por_ano,
             "query": query,
             "total_turmas": total_turmas,
