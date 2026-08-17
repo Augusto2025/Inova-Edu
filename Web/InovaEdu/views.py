@@ -1530,6 +1530,27 @@ def editar_mensagem(request, msg_id):
             
     return redirect(request.META.get('HTTP_REFERER'))
 
+def buscar_novas_mensagens(request, topico_id):
+    # Pega o ID da última mensagem que o navegador já tem
+    ultimo_id = request.GET.get('ultimo_id', 0)
+    
+    # Busca mensagens criadas APÓS essa última
+    novas = Mensagem.objects.filter(
+        topico_id=topico_id, 
+        id__gt=ultimo_id
+    ).order_by('id')
+
+    dados = []
+    for msg in novas:
+        dados.append({
+            'id': msg.id,
+            'autor_nome': msg.autor.nome,
+            'autor_email': msg.autor.email,
+            'conteudo': 'Mensagem excluída' if msg.excluida else msg.conteudo,
+            'criado_em': msg.criado_em.strftime('%H:%M %d/%m/%Y'),
+        })
+
+    return JsonResponse({'mensagens': dados})
 
 # ================ TELAS COORDENAÇÃO ====================
 

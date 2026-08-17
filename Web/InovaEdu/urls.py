@@ -25,6 +25,7 @@ urlpatterns = [
     path('forum/editar/<int:forum_id>/', views.editar_forum, name='editar_forum'),
     path('mensagem/excluir/<int:msg_id>/', views.excluir_mensagem, name='excluir_mensagem'),
     path('mensagem/editar/<int:msg_id>/', views.editar_mensagem, name='editar_mensagem'),
+    path('api/topico/<int:topico_id>/mensagens/', views.buscar_novas_mensagens, name='buscar_novas_mensagens'),
     path("calendario/", views.calendario, name="calendario"),
     path('calendario/criar/', views.criar_evento, name='criar_evento'),
     path('calendario/excluir/<int:evento_id>/', views.excluir_evento, name='excluir_evento'),

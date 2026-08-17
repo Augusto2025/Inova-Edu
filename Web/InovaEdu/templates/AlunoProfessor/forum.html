@@ -88,7 +88,11 @@
 
                     <div class="msg-content" id="content-{{ msg.id }}">
                         {% if msg.excluida %}
-                            <i style="color: white;">Mensagem excluída</i>
+                            {% if msg.autor.email == request.session.usuario_email %}
+                                <i style="color: white;">Mensagem excluída</i>
+                            {% else %}
+                                <i style="color: black;">Mensagem excluída pelo autor</i>
+                            {% endif %}
                         {% else %}
                             {{ msg.conteudo }}
                         {% endif %}
@@ -118,48 +122,99 @@
 
 <script>
     const chatForm = document.getElementById('chat-form');
-    const chatInput = chatForm.querySelector('input[name="conteudo"]');
-    const btnSubmit = document.getElementById('btn-submit');
-    const btnCancelar = document.getElementById('btn-cancelar');
-    const originalAction = chatForm.action; // Guarda a URL original de envio
+const chatInput = chatForm.querySelector('input[name="conteudo"]');
+const btnSubmit = document.getElementById('btn-submit');
+const btnCancelar = document.getElementById('btn-cancelar');
+const originalAction = chatForm.action;
+const containerMensagens = document.querySelector('.mensagens');
+const usuarioEmail = "{{ request.session.usuario_email }}";
 
-    function toggleMenu(id) {
-        // Fecha outros menus abertos antes de abrir o novo
-        document.querySelectorAll('.msg-menu').forEach(m => {
-            if(m.id !== id) m.classList.add('hidden');
-        });
-        document.getElementById(id).classList.toggle('hidden');
+// 1. Rola para o final assim que abre a página
+if (containerMensagens) {
+    containerMensagens.scrollTop = containerMensagens.scrollHeight;
+}
+
+// 2. Descobre qual é o ID da última mensagem na tela
+function getUltimoId() {
+    const mensagens = document.querySelectorAll('.msg-wrapper');
+    if (mensagens.length === 0) return 0;
+    const ultima = mensagens[mensagens.length - 1];
+    return ultima.id.replace('msg-', '');
+}
+
+// 3. Busca mensagens novas a cada 3 segundos (3000ms)
+async function checarNovasMensagens() {
+    const topicoId = "{{ topico_selecionado.id }}";
+    if (!topicoId) return;
+
+    const ultimoId = getUltimoId();
+
+    try {
+        const response = await fetch(`/api/topico/${topicoId}/mensagens/?ultimo_id=${ultimoId}`);
+        const data = await response.json();
+
+        if (data.mensagens && data.mensagens.length > 0) {
+            data.mensagens.forEach(msg => {
+                // Evita duplicar se a mensagem já existe na tela
+                if (!document.getElementById(`msg-${msg.id}`)) {
+                    const isMinha = msg.autor_email === usuarioEmail;
+                    const html = `
+                        <div class="msg-wrapper ${isMinha ? 'right' : 'left'}" id="msg-${msg.id}">
+                            <div class="msg ${isMinha ? 'minha-msg' : 'outra-msg'}">
+                                <div class="msg-header">
+                                    <strong style="margin-right: 20px;">${msg.autor_nome}</strong>
+                                    <small>${msg.criado_em}</small>
+                                </div>
+                                <div class="msg-content" id="content-${msg.id}">
+                                    ${msg.conteudo}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    containerMensagens.insertAdjacentHTML('beforeend', html);
+                }
+            });
+
+            // Rola suavemente para a mensagem nova
+            containerMensagens.scrollTop = containerMensagens.scrollHeight;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar novas mensagens:", error);
     }
+}
 
-    function prepararEdicao(id, texto) {
-        // 1. Configura o formulário para edição
-        chatForm.action = `/mensagem/editar/${id}/`; 
-        chatInput.value = texto;
-        chatInput.focus();
-        
-        // 2. Ajusta os botões
-        btnSubmit.innerText = "Salvar";
-        btnCancelar.classList.remove('hidden');
-        
-        // 3. Fecha o menu de 3 pontos
+// Inicia a verificação contínua
+setInterval(checarNovasMensagens, 3000);
+
+// Funções do menu de opções e edição
+function toggleMenu(id) {
+    document.querySelectorAll('.msg-menu').forEach(m => {
+        if(m.id !== id) m.classList.add('hidden');
+    });
+    document.getElementById(id).classList.toggle('hidden');
+}
+
+function prepararEdicao(id, texto) {
+    chatForm.action = `/mensagem/editar/${id}/`; 
+    chatInput.value = texto;
+    chatInput.focus();
+    btnSubmit.innerText = "Salvar";
+    btnCancelar.classList.remove('hidden');
+    document.querySelectorAll('.msg-menu').forEach(m => m.classList.add('hidden'));
+}
+
+function cancelarEdicao() {
+    chatForm.action = originalAction;
+    chatInput.value = "";
+    btnSubmit.innerText = "Enviar";
+    btnCancelar.classList.add('hidden');
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('.btn-opcoes')) {
         document.querySelectorAll('.msg-menu').forEach(m => m.classList.add('hidden'));
     }
-
-    function cancelarEdicao() {
-        // 1. Volta o form para o estado original (POST para a mesma página)
-        chatForm.action = originalAction;
-        chatInput.value = "";
-        
-        // 2. Restaura os botões
-        btnSubmit.innerText = "Enviar";
-        btnCancelar.classList.add('hidden');
-    }
-
-    window.onclick = function(event) {
-        if (!event.target.matches('.btn-opcoes')) {
-            document.querySelectorAll('.msg-menu').forEach(m => m.classList.add('hidden'));
-        }
-    }
+}
 </script>
 
 {% endblock %}
