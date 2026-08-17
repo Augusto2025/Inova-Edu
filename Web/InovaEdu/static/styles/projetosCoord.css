@@ -21,6 +21,31 @@
   box-sizing: border-box;
   font-family: var(--fonte-principal);
 }
+/* TITULOS DAS PAG */
+.topo-pagina{
+    color:var(--azul-secundario);
+    width:95%;
+    max-width:85%;
+    margin:35px auto;
+   
+}
+
+.topo-pagina h1{
+    margin:0;
+    font-size:36px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.topo-pagina p{
+    margin-top:10px;
+    font-size:17px;
+    opacity:.9;
+}
+
+
+
 
 
 /* ========================================
