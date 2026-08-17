@@ -1949,6 +1949,6 @@ def projetosCoord(request):
 
     return render(
         request,
-        "Coordenacao/ProjetosCoord.html",
+        "Coordenacao/projetosCoord.html",
         context
     )
