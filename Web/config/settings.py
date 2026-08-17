@@ -28,6 +28,7 @@ elif django_debug == "True" or django_debug is not None:
     DEBUG = True
 else:
     DEBUG = True
+
 print(f"[DJANGO DEBUG] {DEBUG}")
 
 ALLOWED_HOSTS = ["inova-edu.onrender.com", "127.0.0.1", "localhost"]
