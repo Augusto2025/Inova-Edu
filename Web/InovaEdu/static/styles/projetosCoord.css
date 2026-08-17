@@ -7,8 +7,8 @@
   --cinza-fundo: #f5f7fa;
   --cinza-borda: #e5e7eb;
   --cinza-texto: #6b7280;
+  --fonte-principal: "Arial", sans-serif
 
-  --preto: #1f2937;
 }
 
 /* ========================================
@@ -19,13 +19,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--fonte-principal);
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: var(--cinza-fundo);
-  color: var(--preto);
-}
 
 /* ========================================
    PÁGINA
