@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "archiver": "^5.3.2",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
