@@ -32,113 +32,75 @@ body {
 ======================================== */
 
 .pagina-projetos {
-  width: 100%;
-  max-width: 1400px;
+  width: 95%;
+  max-width: 90%;
   margin: 0 auto;
   padding: 35px 40px 50px;
 }
 
 /* ========================================
-   CABEÇALHO
+   BARRA DE PESQUISA
 ======================================== */
-
-.cabecalho-projetos {
-  margin-bottom: 28px;
-}
-
-.titulo-area {
+.info-projetos {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.icone-titulo {
-  width: 58px;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff3e4;
-  border-radius: 14px;
-  font-size: 27px;
-}
-
-.titulo-area h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--azul-Senac);
-}
-
-.titulo-area p {
-  margin-top: 3px;
-  font-size: 14px;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  font-size: 20px;
   color: var(--cinza-texto);
 }
 
-/* ========================================
-   BARRA DE PESQUISA
-======================================== */
-
-.barra-pesquisa {
-  width: 100%;
-  margin-bottom: 22px;
-}
-
-.campo-pesquisa {
-  width: 100%;
-  max-width: 600px;
-  height: 50px;
+/* Pesquisa */
+.busca-geral {
   display: flex;
   align-items: center;
-  background-color: var(--branco-Senac);
-  border: 1px solid var(--cinza-borda);
-  border-radius: 12px;
-  padding: 0 16px;
-  transition: 0.2s ease;
-}
-
-.campo-pesquisa:focus-within {
-  border-color: var(--azul-Senac);
-  box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.08);
-}
-
-.icone-pesquisa {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  margin-right: 10px;
-}
-
-.campo-pesquisa input {
+  gap: 10px;
   width: 100%;
+  max-width: 400px;
+  height: 45px;
+  padding: 0 15px;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.busca-geral i {
+  color: #004a8d;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.busca-geral input {
+  width: 100%;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
   font-family: "Poppins", sans-serif;
   font-size: 14px;
-  color: var(--preto);
+  color: #333;
 }
 
-.campo-pesquisa input::placeholder {
-  color: #9ca3af;
+.busca-geral input::placeholder {
+  color: #999;
 }
 
-/* ========================================
-   CONTADOR
-======================================== */
+.busca-geral:focus-within {
+  border-color: #004a8d;
+  box-shadow: 0 0 0 3px rgba(0, 74, 141, 0.1);
+}
 
-.info-projetos {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
-  font-size: 13px;
-  color: var(--cinza-texto);
+/* Informações do lado direito */
+.info-projetos > span {
+  margin-left: auto;
 }
 
 .info-projetos strong {
-  min-width: 25px;
-  height: 25px;
+  min-width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,16 +108,45 @@ body {
   background-color: var(--azul-Senac);
   color: var(--branco-Senac);
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 15px;
 }
 
+/* Responsivo */
+@media (max-width: 768px) {
+  .info-projetos {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .busca-geral {
+    max-width: 100%;
+    height: 42px;
+  }
+
+  .busca-geral input {
+    font-size: 13px;
+  }
+
+  .busca-geral i {
+    font-size: 15px;
+  }
+
+  .info-projetos > span {
+    margin-left: 0;
+  }
+
+  .info-projetos strong {
+    align-self: flex-start;
+  }
+}
 /* ========================================
    GRID DOS CARDS
 ======================================== */
 
 .projetos-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -375,38 +366,31 @@ body {
 }
 
 .imagem-projeto {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
-    overflow: hidden;
-    border-radius: 12px;
-    background-color: #F5F7FA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #f5f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
 .imagem-projeto img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 @media (max-width: 480px) {
-
-    .imagem-projeto {
-        width: 50px;
-        height: 50px;
-        border-radius: 10px;
-    }
-
+  .imagem-projeto {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+  }
 }
-
-
-
-
 
 /* ========================================
    CELULAR

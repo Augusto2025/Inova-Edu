@@ -20,43 +20,28 @@
   <body>
     {% include 'partials/navbar_Coordenacao.html' %}
 
+    <section class="topo-pagina">
+      <div>
+        <h1><i class="fa-solid fa-file"></i> Projetos</h1>
+        <p>
+          Nesta área, você terá acesso à visualização de todos os projetos
+          existentes.
+        </p>
+      </div>
+    </section>
+
     <main class="pagina-projetos">
-      <!-- CABEÇALHO -->
-
-      <div class="cabecalho-projetos">
-        <div class="titulo-area">
-          <div class="icone-titulo">📁</div>
-
-          <div>
-            <h1>Projetos</h1>
-
-            <p>Todos os projetos cadastrados no sistema</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- PESQUISA -->
-
-      <div class="barra-pesquisa">
-        <div class="campo-pesquisa">
-          <i class="fa-solid fa-magnifying-glass"></i>
-
-          <input
-            type="text"
-            id="pesquisarProjeto"
-            placeholder="Pesquisar projeto, turma ou curso..."
-            autocomplete="off"
-          />
-        </div>
-      </div>
-
-      <!-- CONTADOR -->
-
       <div class="info-projetos">
+        
+        <div class="busca-geral">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="pesquisarProjeto" placeholder="Projetos..." />
+        </div>
         <span> Projetos encontrados </span>
 
         <strong id="contadorProjetos"> {{ projetos|length }} </strong>
       </div>
+
 
       <!-- GRID DOS PROJETOS -->
 
@@ -74,29 +59,23 @@
           <!-- TOPO -->
 
           <div class="card-topo">
+            <div class="imagem-projeto">
+              {% if projeto.imagem %}
 
-              <div class="imagem-projeto">
+              <img
+                src="{{ projeto.imagem.url }}"
+                alt="Imagem do projeto {{ projeto.nome_projeto }}"
+              />
 
-                  {% if projeto.imagem %}
+              {% else %}
 
-                      <img
-                          src="{{ projeto.imagem.url }}"
-                          alt="Imagem do projeto {{ projeto.nome_projeto }}"
-                      />
+              <div class="icone-projeto">📁</div>
 
-                  {% else %}
+              {% endif %}
+            </div>
 
-                      <div class="icone-projeto">📁</div>
-
-                  {% endif %}
-
-              </div>
-
-              <span class="status-projeto">Projeto</span>
-
+            <span class="status-projeto">Projeto</span>
           </div>
-
-          
 
           <!-- NOME -->
 
@@ -165,6 +144,7 @@
 
           <!-- BOTÃO -->
 
+          {% comment %}
           <div class="card-rodape">
             <a href="#" class="btn-ver-projeto">
               Ver projeto
@@ -172,6 +152,7 @@
               <span> → </span>
             </a>
           </div>
+          {% endcomment %}
         </article>
 
         {% empty %}
