@@ -42,6 +42,11 @@ export const UserProvider = ({ children }) => {
 
       if (dados.sucesso) {
         const urlCompleta = normalizeImageUrl(dados.usuario.imagem);
+        console.log("================================");
+        console.log("👤 CARREGAR USUARIO");
+        console.log("📦 imagem recebida do backend:", dados.usuario.imagem);
+        console.log("🖼️ imagem normalizada:", urlCompleta);
+        console.log("================================");
 
         const novoUser = {
           idUsuario: dados.usuario.idUsuario || idSalvo,
@@ -71,6 +76,7 @@ export const UserProvider = ({ children }) => {
       return { ...prev, ...novosDados };
     });
   }, []);
+  
 
   // Atualiza foto especificamente e persiste no estado
   const atualizarFoto = useCallback((urlImagem) => {
@@ -97,6 +103,7 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
+    
   );
 };
 

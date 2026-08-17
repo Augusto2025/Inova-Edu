@@ -51,12 +51,15 @@ export default function ProfileScreen() {
     try {
       setCarregando(true);
       const idSalvo = await AsyncStorage.getItem('idUsuario');
+      console.log("================================");
+      console.log("👤 ID USUARIO:", idSalvo);
+      console.log("================================");
       
       if (!idSalvo) {
         Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
         return;
       }
-
+      
       const response = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
       const textoRaw = await response.text();
 
@@ -91,142 +94,198 @@ export default function ProfileScreen() {
   );
 
   // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
-  const alterarFotoPerfil = async () => {
-    const idSalvo = await AsyncStorage.getItem('idUsuario');
+ const alterarFotoPerfil = async () => {
+  const idSalvo = await AsyncStorage.getItem('idUsuario');
 
-    if (!idSalvo) {
-      Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
-      return;
-    }
-
+  if (!idSalvo) {
     Alert.alert(
-      "Foto de Perfil",
-      "Escolha o que deseja fazer com sua foto:",
-      [
-        {
-          text: "Escolher da Galeria",
-          onPress: async () => {
-            const dadosPermissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      "Erro",
+      "Usuário não identificado. Faça login novamente."
+    );
+    return;
+  }
+
+  Alert.alert(
+    "Foto de Perfil",
+    "Escolha o que deseja fazer com sua foto:",
+    [
+      {
+        text: "Escolher da Galeria",
+        onPress: async () => {
+          try {
+            const dadosPermissao =
+              await ImagePicker.requestMediaLibraryPermissionsAsync();
+
             if (!dadosPermissao.granted) {
-              Alert.alert("Permissão necessária", "Precisamos de acesso às fotos para alterar o perfil.");
+              Alert.alert(
+                "Permissão necessária",
+                "Precisamos de acesso às fotos para alterar o perfil."
+              );
               return;
             }
 
-            const resultado = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images'],
-              allowsEditing: true,
-              aspect: [1, 1],
-              quality: 0.3, 
-              base64: true,
-            });
+            const resultado =
+              await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.3,
+                base64: true,
+              });
 
-            if (resultado.canceled) return;
+            if (resultado.canceled) {
+              return;
+            }
 
-            const { uri: fotoLocalUriRaw, type: assetType, fileName: assetName, base64: base64Data } = resultado.assets[0];
-            const fileName = assetName || 'profile.jpg';
-            const fileExtension = fileName.split('.').pop()?.toLowerCase();
-            const mimeType = assetType && assetType.includes('/')
-              ? assetType
-              : fileExtension === 'png'
-                ? 'image/png'
-                : fileExtension === 'gif'
-                  ? 'image/gif'
-                  : fileExtension === 'jpg' || fileExtension === 'jpeg'
-                    ? 'image/jpeg'
-                    : 'application/octet-stream';
+            const asset = resultado.assets[0];
 
-            try {
-              setCarregando(true);
+            const {
+              uri: fotoLocalUriRaw,
+              fileName: assetName,
+              base64: base64Data,
+              mimeType: assetMimeType,
+            } = asset;
 
-              const hasCloudinaryConfig = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET && process.env.EXPO_PUBLIC_CLOUD_NAME;
+            if (!base64Data) {
+              throw new Error(
+                "Não foi possível obter os dados da imagem."
+              );
+            }
 
-              if (hasCloudinaryConfig) {
-                const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
-                const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-                const cloudinaryForm = new FormData();
+            const fileName =
+              assetName || `perfil_${idSalvo}.jpg`;
 
-                cloudinaryForm.append('file', {
-                  uri: fotoLocalUriRaw,
-                  type: mimeType,
-                  name: fileName,
-                });
-                cloudinaryForm.append('upload_preset', UPLOAD_PRESET);
+            const mimeType =
+              assetMimeType || 'image/jpeg';
 
-                const respostaCloudinary = await fetch(
-                  `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                  {
-                    method: 'POST',
-                    body: cloudinaryForm,
-                  }
-                );
+            console.log("================================");
+            console.log("📸 FOTO SELECIONADA");
+            console.log("👤 ID:", idSalvo);
+            console.log("📄 Nome:", fileName);
+            console.log("🖼️ Tipo:", mimeType);
+            console.log("📦 Base64 recebido:", !!base64Data);
+            console.log("🌐 Backend:", URL_BASE);
+            console.log("================================");
 
-                const dadosFoto = await respostaCloudinary.json();
-                if (!respostaCloudinary.ok) {
-                  throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
-                }
+            setCarregando(true);
 
-                const urlCloudinary = dadosFoto.secure_url;
-                await atualizarFotoNoBackend(idSalvo, urlCloudinary);
-              } else {
-                if (!base64Data) {
-                  throw new Error('Não foi possível obter os dados da imagem.');
-                }
+            console.log(
+              "📤 Enviando imagem para o backend..."
+            );
 
-                const finalMime = assetType === 'image' ? 'image/jpeg' : assetType || 'image/jpeg';
-                
-                const respostaServidor = await fetch(`${URL_BASE}/perfil/upload-foto`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                  },
-                  body: JSON.stringify({
-                    idUsuario: idSalvo,
-                    fileName,
-                    mimeType: finalMime,
-                    base64: base64Data,
-                  }),
-                });
-
-                if (respostaServidor.status < 200 || respostaServidor.status >= 300) {
-                  throw new Error(`Upload falhou: ${respostaServidor.status}`);
-                }
-
-                const dadosServidor = await respostaServidor.json();
-
-                if (dadosServidor.sucesso) {
-                  await atualizarFotoNoBackend(idSalvo, dadosServidor.imagem);
-                } else {
-                  throw new Error(dadosServidor.mensagem || "Erro ao fazer upload no servidor");
-                }
+            const respostaServidor = await fetch(
+              `${URL_BASE}/perfil/upload-foto`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                  idUsuario: idSalvo,
+                  fileName,
+                  mimeType,
+                  base64: base64Data,
+                }),
               }
+            );
 
-            } catch (error) {
-              console.error("❌ Erro ao subir imagem:", error);
-              Alert.alert("Erro ao subir imagem", error.message);
-            } finally {
-              setCarregando(false);
+            const textoResposta =
+              await respostaServidor.text();
+
+            console.log(
+              "📥 Status backend:",
+              respostaServidor.status
+            );
+
+            console.log(
+              "📥 Resposta backend:",
+              textoResposta
+            );
+
+            if (!respostaServidor.ok) {
+              throw new Error(
+                `Upload falhou (${respostaServidor.status}): ${textoResposta}`
+              );
             }
-          }
-        },
-        {
-          text: "Remover Foto Atual",
-          style: "destructive",
-          onPress: async () => {
+
+            let dadosServidor;
+
             try {
-              setCarregando(true);
-              await atualizarFotoNoBackend(idSalvo, null); 
-            } catch (error) {
-              Alert.alert("Erro ao remover foto", error.message);
-            } finally {
-              setCarregando(false);
+              dadosServidor = JSON.parse(textoResposta);
+            } catch {
+              throw new Error(
+                "O servidor retornou uma resposta inválida."
+              );
             }
+
+            if (!dadosServidor.sucesso) {
+              throw new Error(
+                dadosServidor.mensagem ||
+                dadosServidor.message ||
+                "Erro ao fazer upload."
+              );
+            }
+
+            console.log(
+              "☁️ URL Cloudinary:",
+              dadosServidor.imagem
+            );
+
+            atualizarFoto(dadosServidor.imagem);
+
+            await carregarUsuario();
+
+            Alert.alert(
+              "Sucesso",
+              "Foto de perfil atualizada!"
+            );
+
+          } catch (error) {
+            console.error(
+              "❌ Erro ao subir imagem:",
+              error
+            );
+
+            Alert.alert(
+              "Erro ao subir imagem",
+              error.message ||
+              "Não foi possível atualizar sua foto."
+            );
+          } finally {
+            setCarregando(false);
           }
         },
-        { text: "Cancelar", style: "cancel" }
-      ]
-    );
-  };
+      },
+      {
+        text: "Remover Foto Atual",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setCarregando(true);
+
+            await atualizarFotoNoBackend(
+              idSalvo,
+              null
+            );
+
+          } catch (error) {
+            Alert.alert(
+              "Erro ao remover foto",
+              error.message
+            );
+          } finally {
+            setCarregando(false);
+          }
+        },
+      },
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+    ]
+  );
+};
 
   const atualizarFotoNoBackend = async (idUsuario, urlImagem) => {
     try {

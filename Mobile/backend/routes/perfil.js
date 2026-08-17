@@ -1,13 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db'); // Conexão com o Postgres
-const fs = require('fs');
-const path = require('path');
-
-const buildPublicUrl = (req, relativePath) => {
-    const baseUrl = (process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || process.env.EXPO_PUBLIC_URL_BACKEND || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
-    return `${baseUrl}${relativePath.startsWith('/') ? relativePath : `/${relativePath}`}`;
-};
+const cloudinary = require('../config/cloudinary');
 
 // =================================================================
 // 1. GET: Buscar todos os dados do perfil de um usuário específico
@@ -81,70 +75,72 @@ router.get('/:usuarioId', async (req, res) => {
 // =================================================================
 // URL: /perfil/atualizar-foto
 router.put('/atualizar-foto', async (req, res) => {
-    const { idUsuario, imagem } = req.body; 
+    const { idUsuario, imagem } = req.body;
 
     if (!idUsuario) {
-        return res.status(400).json({ sucesso: false, mensagem: "ID do usuário é obrigatório." });
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: 'ID do usuário é obrigatório.'
+        });
+    }
+
+    if (!imagem) {
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: 'Imagem é obrigatória.'
+        });
     }
 
     try {
-        // Se for uma data URL base64, precisamos converter para URL normal
-        let imagemUrl = imagem;
+        console.log('☁️ Enviando imagem para o Cloudinary...');
 
-        // Verificar se é uma data URL
-        if (imagem && imagem.startsWith('data:')) {
-            console.log('📥 Recebendo imagem base64 para salvar.');
-            const match = imagem.match(/^data:(image\/[a-zA-Z]+);base64,(.+)$/);
-            if (!match) {
-                throw new Error('Formato de imagem base64 inválido.');
-            }
+        const resultadoCloudinary = await cloudinary.uploader.upload(imagem, {
+            folder: 'inova-edu/perfis',
+            public_id: `usuario_${idUsuario}`,
+            overwrite: true,
+            resource_type: 'image'
+        });
 
-            const mimeType = match[1];
-            const base64Data = match[2];
-            const extension = mimeType.split('/')[1] || 'jpg';
-            const randomId = `${idUsuario}_${Date.now()}`;
-            const uploadsDir = path.join(__dirname, '../uploads');
+        const imagemUrl = resultadoCloudinary.secure_url;
 
-            // Criar diretório se não existir
-            if (!fs.existsSync(uploadsDir)) {
-              fs.mkdirSync(uploadsDir, { recursive: true });
-            }
-
-            const fileName = `${randomId}.${extension}`;
-            const filePath = path.join(uploadsDir, fileName);
-
-            const buffer = Buffer.from(base64Data, 'base64');
-            console.log(`📁 Salvando arquivo ${fileName} (${buffer.length} bytes)`);
-            fs.writeFileSync(filePath, buffer);
-
-            // URL relativa e absoluta para armazenar no banco (frontend precisa de URL absoluta)
-            const relativeUrl = `/uploads/${fileName}`;
-            const absoluteUrl = buildPublicUrl(req, relativeUrl);
-            imagemUrl = absoluteUrl;
-            console.log(`✅ Arquivo salvo: ${relativeUrl} -> ${absoluteUrl}`);
-        }
+        console.log('✅ Imagem enviada para Cloudinary:');
+        console.log(imagemUrl);
 
         const query = `
             UPDATE usuario
             SET imagem_usuario = $1
             WHERE "idUsuario" = $2
         `;
-        
-        const resultado = await pool.query(query, [imagemUrl, idUsuario]);
+
+        const resultado = await pool.query(query, [
+            imagemUrl,
+            idUsuario
+        ]);
 
         if (resultado.rowCount === 0) {
-            return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado para atualizar." });
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Usuário não encontrado para atualizar.'
+            });
         }
 
         return res.json({
             sucesso: true,
-            mensagem: "Foto de perfil atualizada com sucesso!",
+            mensagem: 'Foto de perfil atualizada com sucesso!',
             imagem: imagemUrl
         });
 
     } catch (err) {
-        console.error("❌ Erro ao atualizar foto no banco:", err.stack || err.message);
-        return res.status(500).json({ sucesso: false, message: "Erro interno ao salvar imagem.", erro: err.message, stack: err.stack });
+        console.error(
+            '❌ Erro ao enviar imagem para Cloudinary:',
+            err.stack || err.message
+        );
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao enviar imagem.',
+            erro: err.message
+        });
     }
 });
 
@@ -156,48 +152,86 @@ router.post('/upload-foto', async (req, res) => {
     const { idUsuario, base64, fileName, mimeType } = req.body;
 
     if (!idUsuario) {
-        return res.status(400).json({ sucesso: false, mensagem: "ID do usuário é obrigatório." });
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: 'ID do usuário é obrigatório.'
+        });
     }
 
     if (!base64) {
-        return res.status(400).json({ sucesso: false, mensagem: "Base64 da imagem é obrigatório." });
+        return res.status(400).json({
+            sucesso: false,
+            mensagem: 'Base64 da imagem é obrigatório.'
+        });
     }
 
     try {
-        const uploadsDir = path.join(__dirname, '../uploads');
-        if (!fs.existsSync(uploadsDir)) {
-            fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log("🔥🔥🔥 VERSÃO CLOUDINARY 2026-08-17 🔥🔥🔥");
+    console.log("🔥 ROTA ATUAL: POST /perfil/upload-foto");
+    console.log("🔥 CLOUD NAME:", process.env.CLOUDINARY_CLOUD_NAME);
+
+    console.log('☁️ Enviando foto para o Cloudinary...');
+
+    const dataUri = base64.startsWith('data:')
+        ? base64
+        : `data:${mimeType || 'image/jpeg'};base64,${base64}`;
+
+    const resultadoCloudinary = await cloudinary.uploader.upload(
+        dataUri,
+        {
+            folder: 'inova-edu/perfis',
+            public_id: `usuario_${idUsuario}`,
+            overwrite: true,
+            resource_type: 'image'
         }
+    );
 
-        const extension = mimeType?.split('/')?.[1] || fileName?.split('.')?.pop() || 'jpg';
-        const safeFileName = `${idUsuario}_${Date.now()}.${extension}`;
-        const filePath = path.join(uploadsDir, safeFileName);
-        const relativeFileUrl = `/uploads/${safeFileName}`;
-        const absoluteFileUrl = buildPublicUrl(req, relativeFileUrl);
+    console.log("🔥 RESULTADO CLOUDINARY:");
+    console.log(resultadoCloudinary);
 
-        const buffer = Buffer.from(base64, 'base64');
-        fs.writeFileSync(filePath, buffer);
-        console.log(`✅ Arquivo salvo no backend local: ${relativeFileUrl} -> ${absoluteFileUrl}`);
+    console.log("🔥 SECURE URL:");
+    console.log(resultadoCloudinary.secure_url);
+
+    const imagemUrl = resultadoCloudinary.secure_url;
+
+    console.log('✅ Upload concluído!');
+    console.log('☁️ URL:', imagemUrl);
 
         const query = `
             UPDATE usuario
             SET imagem_usuario = $1
             WHERE "idUsuario" = $2
         `;
-        const resultado = await pool.query(query, [absoluteFileUrl, idUsuario]);
+
+        const resultado = await pool.query(query, [
+            imagemUrl,
+            idUsuario
+        ]);
 
         if (resultado.rowCount === 0) {
-            return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado para atualizar." });
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Usuário não encontrado para atualizar.'
+            });
         }
 
         return res.json({
             sucesso: true,
-            mensagem: "Foto de perfil atualizada com sucesso!",
-            imagem: absoluteFileUrl
+            mensagem: 'Foto de perfil atualizada com sucesso!',
+            imagem: imagemUrl
         });
+
     } catch (err) {
-        console.error('❌ Erro no upload de foto local:', err.stack || err.message);
-        return res.status(500).json({ sucesso: false, message: 'Erro interno ao salvar imagem.', erro: err.message });
+        console.error(
+            '❌ Erro no upload para Cloudinary:',
+            err.stack || err.message
+        );
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro interno ao enviar imagem.',
+            erro: err.message
+        });
     }
 });
 
