@@ -16,9 +16,8 @@
         <header class="section-header">
             <div class="rota">
                 <span>Página:</span>
-                <a href="{% url 'forum_blocos' %}">Todos os fóruns</a>
-                <span>></span>
-                <span>{{ forum.nome }}</span>
+                <a href="{% url 'forum_blocos' %}">{{ forum.nome }}</a> &gt;                
+                <strong>Todos os Tópicos</strong>
             </div>
             
             <div class="header-top-bar">
