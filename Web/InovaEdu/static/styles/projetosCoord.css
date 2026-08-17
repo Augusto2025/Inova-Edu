@@ -7,8 +7,8 @@
   --cinza-fundo: #f5f7fa;
   --cinza-borda: #e5e7eb;
   --cinza-texto: #6b7280;
+  --fonte-principal: "Arial", sans-serif
 
-  --preto: #1f2937;
 }
 
 /* ========================================
@@ -19,13 +19,34 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--fonte-principal);
+}
+/* TITULOS DAS PAG */
+.topo-pagina{
+    color:var(--azul-secundario);
+    width:95%;
+    max-width:85%;
+    margin:35px auto;
+   
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: var(--cinza-fundo);
-  color: var(--preto);
+.topo-pagina h1{
+    margin:0;
+    font-size:36px;
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
+
+.topo-pagina p{
+    margin-top:10px;
+    font-size:17px;
+    opacity:.9;
+}
+
+
+
+
 
 /* ========================================
    PÁGINA

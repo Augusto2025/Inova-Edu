@@ -51,11 +51,15 @@
                 <i class="fa-solid fa-arrow-left"></i> Voltar à Página Anterior
             </a>
 
-            {% if usuario.tipo == "Aluno" %}
+            {% if usuario.tipo == None or usuario.tipo == "" %}
+                <a href="{% url "homePage" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                    <i class="fa-solid fa-house"></i> Ir para o Início
+                </a>
+            {% elif usuario.tipo == "Aluno" or usuario.tipo == "Professor" %}
                 <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
                     <i class="fa-solid fa-house"></i> Ir para o Início
                 </a>
-            {% else %}
+            {% elif usuario.tipo == "Coordenador" %}
                 <a href="{% url "HomeCoord" %}" class="btn-action btn-primary" style="text-decoration: none;">
                     <i class="fa-solid fa-house"></i> Ir para o Início
                 </a>
