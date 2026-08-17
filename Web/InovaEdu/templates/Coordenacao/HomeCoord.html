@@ -1,99 +1,226 @@
 {% load static %}
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Coordenação</title>
 
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/navbar_Coordenacao.css' %}?v=1"> {% endcomment %}
-    <link rel="stylesheet" href="{% static 'styles/HomeCoord.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'styles/HomeCoord.css' %}?v=3" />
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
 
+  <body>
+    {% include 'partials/navbar_Coordenacao.html' %}
 
+    <main class="dashboard">
+      <!-- =====================================
+         BANNER PRINCIPAL
+    ====================================== -->
 
-{% include 'partials/navbar_Coordenacao.html' %}
+      <section class="banner">
+        <div class="banner-conteudo">
+          <span class="banner-tag">
+            <i class="fa-solid fa-chart-line"></i>
+            ÁREA DA COORDENAÇÃO
+          </span>
 
-<div class="dashboard">
+          <h1>Bem-vindo à área do coordenador</h1>
 
-    <!-- Banner -->
-    <section class="banner">
-        <h1>Bem-Vindo a área do coordenador</h1>
+          <p>
+            Central de gerenciamento acadêmico e operacional. Monitore usuários,
+            organize cursos e otimize o fluxo de turmas em uma única interface
+            eficiente.
+          </p>
+        </div>
+      </section>
 
-        <p>
-            Central de gerenciamento acadêmico e operacional.
-            Monitore usuários, organize cursos e otimize o fluxo
-            de turmas em uma única interface eficiente.
-        </p>
-    </section>
+      <!-- =====================================
+         PROJETOS EM DESTAQUE
+    ====================================== -->
 
+      <section class="secao-cursos">
+        <div class="titulo-cursos">
+          <div>
+            <span class="subtitulo">
+              <i class="fa-solid fa-folder-open"></i>
+              PROJETOS
+            </span>
 
-    <!-- Cards Estatísticas -->
-    {% comment %} <section class="estatisticas">
+            <h2>Projetos em destaque</h2>
 
-        <div class="card-info azul">
-            <div class="icone">
-                <i class="fa-solid fa-users"></i>
-            </div>
-            <span>PLATAFORMA</span>
-            <h3>Total de Usuários:</h3>
-            <h3>{{ total_usuarios }}</h3>
-
-            <div class="barra"></div> 
-
-            <div class="btn-container">
-                <a href="{% url 'UsuariosCoord' %}" class="btn-ver-usuarios">
-                    Entrar
-                </a>
-            </div>
+            <p>Confira os projetos cadastrados no sistema.</p>
+          </div>
         </div>
 
+        <!-- =====================================
+             CARROSSEL
+        ====================================== -->
 
-        <div class="card-info laranja">
-            <div class="icone">
-                <i class="fa-solid fa-graduation-cap"></i>
+        <div class="carrossel-container">
+          <!-- ANTERIOR -->
+
+          <button
+            type="button"
+            class="carrossel-btn anterior"
+            id="btnAnterior"
+            aria-label="Projeto anterior"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+
+          <!-- ÁREA DO CARROSSEL -->
+
+          <div class="carrossel">
+            <div class="carrossel-track" id="carrosselTrack">
+              {% for projeto in projetos %}
+
+              <article class="curso-card projeto-card-destaque">
+                <!-- =====================================
+                             IMAGEM DO PROJETO
+                        ====================================== -->
+
+                <div class="curso-imagem">
+                  {% if projeto.imagem %}
+
+                  <img
+                    src="{{ projeto.imagem.url }}"
+                    alt="Imagem do projeto {{ projeto.nome_projeto }}"
+                  />
+
+                  {% else %}
+
+                  <div class="curso-sem-imagem">
+                    <i class="fa-solid fa-folder-open"></i>
+                  </div>
+
+                  {% endif %}
+                </div>
+
+                <!-- =====================================
+                             INFORMAÇÕES DO PROJETO
+                        ====================================== -->
+
+                <div class="curso-conteudo">
+                  <span class="curso-label">
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    PROJETO
+                  </span>
+
+                  <!-- NOME -->
+
+                  <h3>{{ projeto.nome_projeto }}</h3>
+
+                  <!-- DESCRIÇÃO -->
+
+                  {% if projeto.descricao %}
+
+                  <p>{{ projeto.descricao }}</p>
+
+                  {% else %}
+
+                  <p>
+                    Projeto desenvolvido pela turma {{
+                    projeto.turma.codigo_turma }}.
+                  </p>
+
+                  {% endif %}
+
+                  <!-- =====================================
+                                 INFORMAÇÕES
+                            ====================================== -->
+
+                  <div class="curso-datas">
+                    <!-- TURMA -->
+
+                    <div>
+                      <i class="fa-solid fa-graduation-cap"></i>
+
+                      <div>
+                        <small> Turma </small>
+
+                        <strong> {{ projeto.turma.codigo_turma }} </strong>
+                      </div>
+                    </div>
+
+                    <!-- CURSO -->
+
+                    <div>
+                      <i class="fa-solid fa-book"></i>
+
+                      <div>
+                        <small> Curso </small>
+
+                        <strong title="{{ projeto.turma.curso.nome_curso }}">
+                          {{ projeto.turma.curso.nome_curso }}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <!-- DATA -->
+
+                    <div>
+                      <i class="fa-regular fa-calendar"></i>
+
+                      <div>
+                        <small> Criado em </small>
+
+                        <strong>
+                          {{ projeto.data_de_criacao|date:"d/m/Y" }}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              {% empty %}
+
+              <!-- =====================================
+                         SEM PROJETOS
+                    ====================================== -->
+
+              <div class="sem-cursos">
+                <i class="fa-solid fa-folder-open"></i>
+
+                <h3>Nenhum projeto cadastrado</h3>
+
+                <p>Ainda não existem projetos disponíveis.</p>
+              </div>
+
+              {% endfor %}
             </div>
+          </div>
 
-            <span>ACADÊMICO</span>
-            <h3>Total de Cursos: </h3>
-            <h3>{{ total_cursos }}</h3>
+          <!-- PRÓXIMO -->
 
-            <div class="barra"></div>
-
-            <div class="btn-container">
-                <a href="{% url 'CursoCoord' %}" class="btn-ver-usuarios">
-                    Entrar
-                </a>
-            </div>
+          <button
+            type="button"
+            class="carrossel-btn proximo"
+            id="btnProximo"
+            aria-label="Próximo projeto"
+          >
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
 
+        <!-- =====================================
+             INDICADORES
+        ====================================== -->
 
-        <div class="card-info cinza">
-            <div class="icone">
-                <i class="fa-solid fa-book"></i>
-            </div>
+        <div class="carrossel-indicadores" id="carrosselIndicadores"></div>
+      </section>
+    </main>
 
-            <span>GESTÃO</span>
-            <h3>Total de Turmas: </h3>
-            <h3>{{ total_turmas }}</h3>
+    {% include "partials/footerCoord.html" %}
 
-            <div class="barra"></div>
-
-            <div class="btn-container">
-                <a href="{% url 'TurmaCoord' %}" class="btn-ver-usuarios">
-                    Entrar
-                </a>
-            </div>
-
-        </div>
-
-    </section> {% endcomment %}
-</div>
-{% include "partials/footerCoord.html" %}
-</body>
+    <script src="{% static 'scripts/HomeCoord.js' %}?v=3"></script>
+  </body>
 </html>

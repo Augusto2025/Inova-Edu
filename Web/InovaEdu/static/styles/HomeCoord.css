@@ -1,264 +1,868 @@
 :root {
-  --laranja-Senac: #f7941d;
-  --branco-Senac: #fff;
   --azul-Senac: #004a8d;
-  --cinza-Senac: #f2f2f2;
-  --azul_Claro-Senac: #177bda;
-  --fonte-principal: "Arial", sans-serif;
+  --azul-escuro: #003b70;
+  --laranja-Senac: #f7941d;
+  --branco-Senac: #ffffff;
+
+  --cinza-fundo: #f5f7fa;
+  --cinza-texto: #667085;
+  --cinza-borda: #e8ebef;
 }
+
+/* =========================================
+   RESET
+========================================= */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: var(--fonte-principal);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: #f4f6f9;
+  margin: 0;
+
+  font-family: "Poppins", sans-serif;
+
+  background: var(--cinza-fundo);
+
+  color: #263238;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
 }
 
-/*========================*/
+/* =========================================
+   DASHBOARD
+========================================= */
+
+.dashboard {
+  width: 100%;
+}
+
+/* =========================================
+   BANNER
+========================================= */
 
 .banner {
-  background: var(--azul-Senac);
-  color: #fff;
-  text-align: center;
-  padding: 180px 20px;
+  position: relative;
+
+  width: 100%;
+
+  min-height: 350px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 55px 8%;
+
+  background-image:
+    linear-gradient(110deg, rgba(0, 48, 92, 0.88), rgba(0, 74, 141, 0.72)),
+    url("../images/banner-coordenacao.jpg");
+
+  background-size: cover;
+
+  background-position: center;
+
+  overflow: hidden;
+}
+
+/* detalhes do banner */
+
+.banner::before {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: 10%;
+  top: -120px;
+
+  border-radius: 50%;
+
+  border: 35px solid rgba(255, 255, 255, 0.05);
+}
+
+.banner::after {
+  content: "";
+
+  position: absolute;
+
+  width: 350px;
+  height: 350px;
+
+  right: -120px;
+  bottom: -230px;
+
+  border-radius: 50%;
+
+  background: rgba(247, 148, 29, 0.18);
+}
+
+/* =========================================
+   CONTEÚDO DO BANNER
+========================================= */
+
+.banner-conteudo {
+  position: relative;
+
+  z-index: 2;
+
+  max-width: 850px;
+
+  color: white;
+}
+
+.banner-tag {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+
+  padding: 8px 15px;
+
+  border-radius: 30px;
+
+  background: rgba(255, 255, 255, 0.13);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+}
+
+.banner-tag i {
+  color: var(--laranja-Senac);
 }
 
 .banner h1 {
-  font-size: 40px;
-  margin-bottom: 15px;
+  margin: 0 0 18px;
+
+  font-size: clamp(30px, 4vw, 50px);
+
+  line-height: 1.15;
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
 }
 
 .banner p {
-  width: 700px;
-  max-width: 90%;
-  margin: auto;
-  line-height: 1.6;
-  opacity: 0.9;
+  max-width: 720px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/*========================*/
+/* =========================================
+   SEÇÃO DOS PROJETOS
+========================================= */
 
+.secao-cursos {
+  width: 100%;
 
+  padding: 42px 6% 55px;
 
-/*========================*/
+  background: var(--cinza-fundo);
+}
 
-.titulo {
-  width: 95%;
-  margin: 40px auto;
+/* =========================================
+   TÍTULO
+========================================= */
+
+.titulo-cursos {
+  max-width: 1250px;
+
+  margin: 0 auto 22px;
+}
+
+.subtitulo {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: var(--laranja-Senac);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+}
+
+.subtitulo i {
+  font-size: 12px;
+}
+
+.titulo-cursos h2 {
+  margin-top: 5px;
+
+  color: var(--azul-Senac);
+
+  font-size: 27px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  letter-spacing: -0.4px;
+}
+
+.titulo-cursos p {
+  margin-top: 5px;
+
+  color: var(--cinza-texto);
+
+  font-size: 12px;
+}
+
+/* =========================================
+   CARROSSEL
+========================================= */
+
+.carrossel-container {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 1250px;
+
+  margin: 0 auto;
 
   display: flex;
+
   align-items: center;
+
   gap: 12px;
 }
 
-.titulo .linha {
-  width: 5px;
-  height: 35px;
+.carrossel {
+  width: 100%;
 
-  background: #b45d1f;
+  overflow: hidden;
+
+  border-radius: 18px;
 }
 
-.titulo h2 {
-  color: #355b89;
-  font-size: 34px;
+/* =========================================
+   TRACK
+========================================= */
+
+.carrossel-track {
+  display: flex;
+
+  width: 100%;
+
+  gap: 16px;
+
+  transition: transform 0.65s ease;
+
+  will-change: transform;
 }
 
-/*========================*/
-/* ========================= */
-/* AÇÕES RÁPIDAS */
-/* ========================= */
+/* =========================================
+   CARD
+========================================= */
 
+.curso-card {
+  /*
+       2 cards por vez
+    */
 
+  min-width: calc((100% - 16px) / 2);
 
+  width: calc((100% - 16px) / 2);
 
+  height: 235px;
 
+  flex-shrink: 0;
 
+  display: grid;
 
-/*========================*/
-.menu-toggle{
-    display:none;
-    background:none;
-    border:none;
-    font-size:28px;
-    color:var(--branco-Senac);
-    cursor:pointer;
+  grid-template-columns: 38% 62%;
+
+  background: #ffffff;
+
+  border: 1px solid var(--cinza-borda);
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
+.curso-card:hover {
+  transform: translateY(-3px);
 
-
-
-/* ========================================= */
-/* RESPONSIVO */
-/* ========================================= */
-
-@media screen and (max-width: 992px) {
-
-    .banner {
-        padding: 100px 20px;
-    }
-
-    .banner h1 {
-        font-size: 32px;
-    }
-
-    .banner p {
-        width: 100%;
-        font-size: 16px;
-    }
-
-    .estatisticas {
-        grid-template-columns: 1fr;
-    }
-
-    .acoes {
-        grid-template-columns: 1fr;
-    }
-
-    .titulo h2 {
-        font-size: 28px;
-    }
-
-    .card-info h3 {
-        font-size: 24px;
-    }
-
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
 }
 
+/* =========================================
+   IMAGEM
+========================================= */
 
-/* CELULAR */
+.curso-imagem {
+  width: 100%;
 
-@media screen and (max-width: 768px) {
+  height: 235px;
 
-    body{
-        padding-top:80px;
-    }
+  overflow: hidden;
 
-    /* Navbar */
+  display: flex;
 
-    .menu-toggle{
-        display:block;
-    }
+  align-items: center;
 
-    .nav-menu{
-        display:none;
-        flex-direction:column;
-        position:absolute;
-        top:85px;
-        left:0;
-        width:100%;
-        background:#fff;
-        padding:20px;
-        box-shadow:0 5px 10px rgba(0,0,0,.15);
-        gap:20px;
-    }
+  justify-content: center;
 
-    .nav-menu.active{
-        display:flex;
-        flex-direction:column;
-        background:var(--azul-Senac);
-        color:var(--branco-Senac);
-        
-    }
+  background: #edf3f8;
+}
 
-    .nav-actions{
-        gap:10px;
-    }
+.curso-imagem img {
+  width: 100%;
 
-    .btn-perfil{
+  height: 100%;
 
-        font-size:0;
+  display: block;
 
-    }
+  /*
+       Mantém a proporção da imagem.
+    */
 
-    .btn-perfil i{
+  object-fit: cover;
 
-        font-size:22px;
+  object-position: center;
 
-    }
+  transition: transform 0.45s ease;
+}
 
-    .btn-sair{
+.curso-card:hover .curso-imagem img {
+  transform: scale(1.03);
+}
 
-        padding:8px 15px;
-        font-size:14px;
+/* =========================================
+   SEM IMAGEM
+========================================= */
 
-    }
+.curso-sem-imagem {
+  width: 100%;
 
-    /* Banner */
+  height: 235px;
 
-    .banner{
+  display: flex;
 
-        padding:80px 20px;
+  align-items: center;
 
-    }
+  justify-content: center;
 
-    .banner h1{
+  color: white;
 
-        font-size:28px;
+  font-size: 40px;
 
-    }
+  background: linear-gradient(135deg, var(--azul-Senac), #1767aa);
+}
 
-    .banner p{
+/* =========================================
+   CONTEÚDO
+========================================= */
 
-        font-size:15px;
+.curso-conteudo {
+  min-width: 0;
 
-    }
+  padding: 22px;
 
-    /* Cards */
+  display: flex;
 
-    .estatisticas{
+  flex-direction: column;
 
-        grid-template-columns:1fr;
+  justify-content: center;
+}
 
-        gap:20px;
+/* =========================================
+   LABEL
+========================================= */
 
-    }
+.curso-label {
+  display: inline-flex;
 
-    .acoes{
+  align-items: center;
 
-        grid-template-columns:1fr;
+  gap: 7px;
 
-        gap:20px;
+  width: fit-content;
 
-    }
+  color: var(--laranja-Senac);
 
-    .card{
+  font-size: 10px;
 
-        width:100%;
+  font-weight: 700;
 
-    }
+  letter-spacing: 1px;
+}
 
-    .card img{
+.curso-label i {
+  font-size: 11px;
+}
 
-        height:200px;
+/* =========================================
+   TÍTULO DO PROJETO
+========================================= */
 
-    }
+.curso-conteudo h3 {
+  margin-top: 7px;
+  color: var(--azul-Senac);
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-    .overlay h3{
+/* =========================================
+   DESCRIÇÃO
+========================================= */
 
-        font-size:22px;
+.curso-conteudo > p {
+  margin-top: 9px;
 
-    }
+  color: #667085;
 
-    .conteudo{
+  font-size: 11px;
 
-        padding:20px;
+  line-height: 1.55;
 
-    }
+  display: -webkit-box;
 
-    .titulo{
+  -webkit-line-clamp: 2;
 
-        margin:30px auto;
+  -webkit-box-orient: vertical;
 
-    }
+  overflow: hidden;
+}
 
-    .titulo h2{
+/* =========================================
+   INFORMAÇÕES
+========================================= */
 
-        font-size:24px;
+.curso-datas {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 17px;
+  flex-wrap: wrap;
+}
 
-    }
+.curso-datas > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
 
+.curso-datas > div > i {
+  flex-shrink: 0;
+  color: var(--laranja-Senac);
+  font-size: 14px;
+}
+
+.curso-datas small {
+  display: block;
+  color: #98a2b3;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.curso-datas strong {
+  display: block;
+
+  margin-top: 2px;
+
+  max-width: 100px;
+
+  color: #344054;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+/* =========================================
+   BOTÕES
+========================================= */
+
+.carrossel-btn {
+  position: relative;
+
+  z-index: 5;
+
+  flex-shrink: 0;
+
+  width: 42px;
+
+  height: 42px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: white;
+
+  background: var(--azul-Senac);
+
+  cursor: pointer;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.carrossel-btn:hover {
+  background: var(--laranja-Senac);
+
+  transform: scale(1.08);
+}
+
+.carrossel-btn:active {
+  transform: scale(0.94);
+}
+
+/* =========================================
+   INDICADORES
+========================================= */
+
+.carrossel-indicadores {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 14px;
+}
+
+.indicador {
+  width: 7px;
+
+  height: 7px;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #cbd5e1;
+
+  cursor: pointer;
+
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+.indicador.ativo {
+  width: 22px;
+
+  border-radius: 10px;
+
+  background: var(--laranja-Senac);
+}
+
+/* =========================================
+   SEM PROJETOS
+========================================= */
+
+.sem-cursos {
+  min-width: 100%;
+
+  height: 235px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid var(--cinza-borda);
+
+  border-radius: 18px;
+
+  color: #667085;
+}
+
+.sem-cursos i {
+  margin-bottom: 10px;
+
+  color: var(--azul-Senac);
+
+  font-size: 40px;
+}
+
+.sem-cursos h3 {
+  margin-bottom: 5px;
+
+  color: var(--azul-Senac);
+
+  font-size: 17px;
+}
+
+.sem-cursos p {
+  font-size: 11px;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+  .curso-card {
+    grid-template-columns: 35% 65%;
+
+    height: 220px;
+  }
+
+  .curso-imagem {
+    height: 220px;
+  }
+
+  .curso-sem-imagem {
+    height: 220px;
+  }
+
+  .curso-conteudo {
+    padding: 18px;
+  }
+
+  .curso-conteudo h3 {
+    font-size: 18px;
+  }
+
+  .curso-datas {
+    gap: 10px;
+  }
+}
+
+/* =========================================
+   CELULAR
+========================================= */
+
+@media (max-width: 768px) {
+  .banner {
+    min-height: 300px;
+
+    padding: 40px 25px;
+  }
+
+  .banner h1 {
+    font-size: 31px;
+  }
+
+  .banner p {
+    font-size: 13px;
+
+    line-height: 1.7;
+  }
+
+  .secao-cursos {
+    padding: 35px 18px 50px;
+  }
+
+  .titulo-cursos h2 {
+    font-size: 23px;
+  }
+
+  .carrossel-container {
+    gap: 6px;
+  }
+
+  /*
+       No celular apenas 1 card
+    */
+
+  .curso-card {
+    min-width: 100%;
+
+    width: 100%;
+
+    height: auto;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+  }
+
+  .curso-imagem {
+    width: 100%;
+
+    height: 175px;
+  }
+
+  .curso-sem-imagem {
+    height: 175px;
+  }
+
+  .curso-conteudo {
+    padding: 20px;
+  }
+
+  .curso-conteudo h3 {
+    font-size: 20px;
+  }
+
+  .curso-conteudo > p {
+    font-size: 12px;
+
+    -webkit-line-clamp: 3;
+  }
+
+  .curso-datas {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-top: 16px;
+  }
+
+  .curso-datas > div {
+    width: 100%;
+  }
+
+  .curso-datas strong {
+    max-width: 220px;
+  }
+
+  .carrossel-btn {
+    width: 36px;
+
+    height: 36px;
+
+    font-size: 11px;
+  }
+}
+
+/* =========================================
+   CELULAR PEQUENO
+========================================= */
+
+@media (max-width: 480px) {
+  .banner {
+    min-height: 280px;
+
+    padding: 35px 20px;
+  }
+
+  .banner-tag {
+    font-size: 9px;
+
+    padding: 7px 11px;
+  }
+
+  .banner h1 {
+    font-size: 26px;
+  }
+
+  .banner p {
+    font-size: 12px;
+  }
+
+  .secao-cursos {
+    padding: 30px 14px 45px;
+  }
+
+  .titulo-cursos h2 {
+    font-size: 21px;
+  }
+
+  .curso-imagem {
+    height: 155px;
+  }
+
+  .curso-sem-imagem {
+    height: 155px;
+
+    font-size: 38px;
+  }
+
+  .curso-conteudo {
+    padding: 18px;
+  }
+
+  .curso-conteudo h3 {
+    font-size: 18px;
+  }
+
+  .curso-conteudo > p {
+    font-size: 11px;
+  }
+
+  .curso-datas {
+    gap: 8px;
+  }
+
+  .carrossel-btn {
+    width: 32px;
+
+    height: 32px;
+
+    font-size: 10px;
+  }
+}
+
+/* =========================================
+   ACESSIBILIDADE
+========================================= */
+
+.carrossel-btn:focus-visible,
+.indicador:focus-visible {
+  outline: 3px solid var(--laranja-Senac);
+
+  outline-offset: 3px;
 }

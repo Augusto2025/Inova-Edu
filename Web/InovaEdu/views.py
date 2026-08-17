@@ -1560,14 +1560,26 @@ def HomeCoord(request):
     total_cursos = Curso.objects.count()
     total_turmas = Turma.objects.count()
 
+    projetos = Projeto.objects.select_related(
+        "turma",
+        "turma__curso"
+    ).prefetch_related(
+        "alunos",
+        "alunos_edicao"
+    ).all().order_by("-data_de_criacao")
+
     context = {
         "total_usuarios": total_usuarios,
         "total_cursos": total_cursos,
         "total_turmas": total_turmas,
+        "projetos": projetos,
     }
 
-    return render(request, "Coordenacao/HomeCoord.html", context)
-
+    return render(
+        request,
+        "Coordenacao/HomeCoord.html",
+        context
+    )
 
 
 def UsuarioCoord(request):
