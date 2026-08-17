@@ -1,50 +1,172 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordenação</title>
 
-    <link rel="stylesheet" href="{% static 'styles/navbar_Coordenacao.css' %}?v=1">
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/HomeCoord.css' %}?v=1"> {% endcomment %}
+<link rel="stylesheet"
+      href="{% static 'styles/navbar_Coordenacao.css' %}?v=3">
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-</head>
-<body>
+<nav class="navbar-coordenacao">
 
-<nav class="navbar">
+    <!-- LOGO -->
     <div class="nav-logo">
         <a href="{% url 'HomeCoord' %}">
-            <img src="{% static 'img/Logo_branco_icone.png' %}" alt="Logo Senac">
+            <img
+                src="{% static 'img/Logo_branco_icone.png' %}"
+                alt="Logo Senac"
+            >
         </a>
     </div>
 
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fa-solid fa-bars"></i>
-    </button>
 
+    <!-- MENU DESKTOP -->
+    <ul class="nav-menu">
 
-    <ul class="nav-menu" id="navMenu">
-        <li><a href="{% url 'HomeCoord' %}">Home</a></li>
-        <li> <a href="{% url 'UsuariosCoord' %}">Usuários</a></li>
-        <li><a href="{% url 'CursoCoord' %}">Cursos</a></li>
-        <li><a href="{% url 'TurmaCoord' %}">Turmas</a></li> 
-        <li><a href="{% url 'projetosCoord' %}">Repositorios</a></li> 
+        <li>
+            <a href="{% url 'HomeCoord' %}">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'UsuariosCoord' %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Usuários</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'CursoCoord' %}">
+                <i class="fa-solid fa-book"></i>
+                <span>Cursos</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'TurmaCoord' %}">
+                <i class="fa-solid fa-user-group"></i>
+                <span>Turmas</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'projetosCoord' %}">
+                <i class="fa-solid fa-folder-open"></i>
+                <span>Repositórios</span>
+            </a>
+        </li>
+
     </ul>
 
+
+    <!-- SAIR DESKTOP -->
     <div class="nav-actions">
-        {% comment %} <a href="{% url 'PerfilCoord' %}" class="btn-perfil">
-            <i class="fa-solid fa-user"></i>
-            Perfil
-        </a> {% endcomment %}
 
         <a href="{% url 'login' %}" class="btn-sair">
             <i class="fa-solid fa-right-from-bracket"></i>
-            Sair
+            <span>Sair</span>
         </a>
+
     </div>
+
+
+    <!-- BOTÃO MENU MOBILE -->
+    <button
+        type="button"
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Abrir menu"
+    >
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
 </nav>
 
-<script src="{% static 'scripts/coordenacao.js' %}"></script>
+
+<!-- FUNDO ESCURO -->
+<div
+    class="menu-overlay"
+    id="menuOverlay">
+</div>
+
+
+<!-- MENU LATERAL MOBILE -->
+<aside
+    class="mobile-menu"
+    id="mobileMenu">
+
+    <!-- CABEÇALHO -->
+    <div class="mobile-menu-header">
+
+        <a href="{% url 'HomeCoord' %}">
+            <img
+                src="{% static 'img/Logo_branco_icone.png' %}"
+                alt="Logo Senac"
+            >
+        </a>
+
+        <button
+            type="button"
+            class="close-menu"
+            id="closeMenu"
+            aria-label="Fechar menu"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+    </div>
+
+
+    <!-- MENU MOBILE -->
+    <ul class="mobile-nav-menu">
+
+        <li>
+            <a href="{% url 'HomeCoord' %}">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'UsuariosCoord' %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Usuários</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'CursoCoord' %}">
+                <i class="fa-solid fa-book"></i>
+                <span>Cursos</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'TurmaCoord' %}">
+                <i class="fa-solid fa-user-group"></i>
+                <span>Turmas</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'projetosCoord' %}">
+                <i class="fa-solid fa-folder-open"></i>
+                <span>Repositórios</span>
+            </a>
+        </li>
+
+    </ul>
+
+
+    <!-- SAIR MOBILE -->
+    <div class="mobile-sair">
+
+        <a href="{% url 'login' %}">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+        </a>
+
+    </div>
+
+</aside>
+
+
+<script src="{% static 'scripts/navbar_Coordenacao.js' %}?v=3"></script>
