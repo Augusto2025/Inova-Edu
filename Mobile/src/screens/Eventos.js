@@ -328,7 +328,7 @@ export default function CalendarScreen() {
               <Text style={[styles.descriptionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>Descrição:</Text>
               <Text style={[styles.descriptionText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{eventSelected?.description || "Sem descrição informada."}</Text>
 
-              {isProfessor && usuarioEhDonoDoEvento() && (
+              {isProfessor && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                   <TouchableOpacity
                     style={[styles.closeButton, { backgroundColor: '#FF9800', flex: 0.48 }]}

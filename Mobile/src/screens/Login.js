@@ -18,11 +18,16 @@ export default function LoginScreen({ navigation }) {
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
     const [lembrarDeMim, setLembrarDeMim] = useState(false);
 
-    const { width, height } = useWindowDimensions();
-    const logoSize = Math.min(140, Math.max(90, width * 0.32));
-    const headerTopPadding = Math.max(36, Math.min(88, height * 0.12));
-    const containerPaddingHorizontal = Math.max(16, Math.min(32, width * 0.08));
+  const { width, height } = useWindowDimensions();
 
+const logoSize = Math.min(120, Math.max(80, width * 0.28));
+
+const headerPaddingTop = Math.max(35, Math.min(60, height * 0.06));
+
+const containerPaddingHorizontal = Math.max(
+    18,
+    Math.min(32, width * 0.07)
+);
     const Logo = require('../../assets/LOGOBRANCO.png');
 
     useEffect(() => {
@@ -160,12 +165,29 @@ export default function LoginScreen({ navigation }) {
                 keyboardShouldPersistTaps="handled"
             >
                 <View style={styles.containerTotal}>
-                    <View style={[styles.header, { paddingTop: headerTopPadding, paddingBottom: headerTopPadding }]}> 
+                    <View
+    style={[
+        styles.header,
+        {
+            paddingTop: headerPaddingTop,
+            paddingBottom: 45,
+        },
+    ]}
+>
                         <Image source={Logo} style={[styles.Logo, { width: logoSize, height: logoSize }]} />
                         <Text style={[styles.headerText, { fontSize: Math.max(18, Math.min(24, width * 0.055)) }]}>Bem-Vindo ao Inova Edu</Text>
                     </View>
                     
-                    <View style={[styles.containerCenter, { paddingTop: Math.max(18, height * 0.08), paddingHorizontal: containerPaddingHorizontal, paddingBottom: 30 }]}> 
+                    <View
+    style={[
+        styles.containerCenter,
+        {
+            paddingTop: 35,
+            paddingHorizontal: containerPaddingHorizontal,
+            paddingBottom: 50,
+        },
+    ]}
+>
                         <Text style={styles.titulo}>Login</Text>
 
                         <Text style={styles.labelTipo}>Você é:</Text>
@@ -267,11 +289,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#1459b3',
     },
     scrollContent: {
-        flexGrow: 1,
+    flexGrow: 1,
+    paddingBottom: 20,
     },
     containerTotal: {
-        minHeight: '100%',
-    },
+    flexGrow: 1,
+},
     header: {
         width: '100%',
         justifyContent: 'center',
