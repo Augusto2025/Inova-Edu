@@ -7,8 +7,7 @@
   --cinza-fundo: #f5f7fa;
   --cinza-borda: #e5e7eb;
   --cinza-texto: #6b7280;
-  --fonte-principal: "Arial", sans-serif
-
+  --fonte-principal: "Arial", sans-serif;
 }
 
 /* ========================================
@@ -22,31 +21,26 @@
   font-family: var(--fonte-principal);
 }
 /* TITULOS DAS PAG */
-.topo-pagina{
-    color:var(--azul-secundario);
-    width:95%;
-    max-width:85%;
-    margin:35px auto;
-   
+.topo-pagina {
+  color: var(--azul-secundario);
+  width: 95%;
+  max-width: 85%;
+  margin: 35px auto;
 }
 
-.topo-pagina h1{
-    margin:0;
-    font-size:36px;
-    display:flex;
-    align-items:center;
-    gap:12px;
+.topo-pagina h1 {
+  margin: 0;
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.topo-pagina p{
-    margin-top:10px;
-    font-size:17px;
-    opacity:.9;
+.topo-pagina p {
+  margin-top: 10px;
+  font-size: 17px;
+  opacity: 0.9;
 }
-
-
-
-
 
 /* ========================================
    PÁGINA
@@ -167,7 +161,7 @@
 
 .projetos-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -202,8 +196,9 @@
 .card-topo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+  gap: 8px;
 }
 
 .icone-projeto {
@@ -220,8 +215,7 @@
 .status-projeto {
   display: inline-flex;
   align-items: center;
-  padding: 6px 12 px;
-  background-color: #eef5fb;
+  padding: 6px 12px;
   color: var(--azul-Senac);
   border-radius: 20px;
   font-size: 12px;
@@ -255,7 +249,7 @@
   gap: 14px;
   padding: 17px 0;
   border-top: 1px solid #eef0f2;
-  border-bottom: 1px solid #eef0f2;
+  /* border-bottom: 1px solid #eef0f2; */
 }
 
 .informacao {
