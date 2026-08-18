@@ -71,7 +71,8 @@ router.get('/:usuarioId', async (req, res) => {
 });
 
 // =================================================================
-// 2. PUT: Atualizar apenas a foto de perfil (URL do Cloudinary)
+// =================================================================
+// 2. PUT: Atualizar ou remover foto de perfil
 // =================================================================
 // URL: /perfil/atualizar-foto
 router.put('/atualizar-foto', async (req, res) => {
@@ -84,86 +85,138 @@ router.put('/atualizar-foto', async (req, res) => {
         });
     }
 
-    // Permite remover a foto: quando vier null/vazio, salva no banco como NULL
-    const deveRemoverFoto = imagem === null || imagem === undefined || imagem === '';
+    const deveRemoverFoto =
+        imagem === null ||
+        imagem === undefined ||
+        imagem === '';
 
     try {
-        if (!deveRemoverFoto) {
-            console.log('☁️ Enviando imagem para o Cloudinary...');
 
-            const resultadoCloudinary = await cloudinary.uploader.upload(imagem, {
-                folder: 'inova-edu/perfis',
-                public_id: `usuario_${idUsuario}`,
-                overwrite: true,
-                resource_type: 'image'
-            });
+        // =========================================================
+        // 🗑️ REMOVER FOTO
+        // =========================================================
+        if (deveRemoverFoto) {
 
-            const imagemUrl = resultadoCloudinary.secure_url;
+            console.log('================================');
+            console.log('🗑️ REMOVER FOTO DE PERFIL');
+            console.log('👤 ID:', idUsuario);
+            console.log('================================');
 
-            console.log('✅ Imagem enviada para Cloudinary:');
-            console.log(imagemUrl);
+            const publicId = `inova-edu/perfis/usuario_${idUsuario}`;
 
+            // 1. Remove do Cloudinary
+            console.log('☁️ Removendo imagem do Cloudinary...');
+            console.log('🆔 Public ID:', publicId);
+
+            const resultadoCloudinary =
+                await cloudinary.uploader.destroy(
+                    publicId,
+                    {
+                        invalidate: true,
+                        resource_type: 'image'
+                    }
+                );
+
+            console.log(
+                '☁️ Resultado Cloudinary:',
+                resultadoCloudinary
+            );
+
+            // 2. Remove a URL do banco
             const query = `
                 UPDATE usuario
-                SET imagem_usuario = $1
-                WHERE "idUsuario" = $2
+                SET imagem_usuario = NULL
+                WHERE "idUsuario" = $1
             `;
 
-            const resultado = await pool.query(query, [imagemUrl, idUsuario]);
+            const resultado = await pool.query(
+                query,
+                [idUsuario]
+            );
 
             if (resultado.rowCount === 0) {
                 return res.status(404).json({
                     sucesso: false,
-                    mensagem: 'Usuário não encontrado para atualizar.'
+                    mensagem:
+                        'Usuário não encontrado para remover a foto.'
                 });
             }
 
+            console.log('✅ Foto removida do banco.');
+
             return res.json({
                 sucesso: true,
-                mensagem: 'Foto de perfil atualizada com sucesso!',
-                imagem: imagemUrl
+                mensagem:
+                    'Foto de perfil removida com sucesso!',
+                imagem: null
             });
         }
 
+        // =========================================================
+        // ☁️ ATUALIZAR FOTO
+        // =========================================================
+
+        console.log('================================');
+        console.log('☁️ ATUALIZAR FOTO DE PERFIL');
+        console.log('👤 ID:', idUsuario);
+        console.log('================================');
+
+        const resultadoCloudinary =
+            await cloudinary.uploader.upload(
+                imagem,
+                {
+                    folder: 'inova-edu/perfis',
+                    public_id: `usuario_${idUsuario}`,
+                    overwrite: true,
+                    resource_type: 'image'
+                }
+            );
+
+        const imagemUrl =
+            resultadoCloudinary.secure_url;
+
+        console.log(
+            '✅ Imagem enviada:',
+            imagemUrl
+        );
+
         const query = `
             UPDATE usuario
-            SET imagem_usuario = NULL
-            WHERE "idUsuario" = $1
+            SET imagem_usuario = $1
+            WHERE "idUsuario" = $2
         `;
 
-        const resultado = await pool.query(query, [idUsuario]);
+        const resultado = await pool.query(
+            query,
+            [imagemUrl, idUsuario]
+        );
 
         if (resultado.rowCount === 0) {
             return res.status(404).json({
                 sucesso: false,
-                mensagem: 'Usuário não encontrado para remover a foto.'
+                mensagem:
+                    'Usuário não encontrado para atualizar.'
             });
-        }
-
-        try {
-            await cloudinary.uploader.destroy(`inova-edu/perfis/usuario_${idUsuario}`, {
-                invalidate: true,
-                resource_type: 'image'
-            });
-        } catch (cloudErr) {
-            console.warn('⚠️ Falha ao remover imagem do Cloudinary:', cloudErr.message || cloudErr);
         }
 
         return res.json({
             sucesso: true,
-            mensagem: 'Foto de perfil removida com sucesso!',
-            imagem: null
+            mensagem:
+                'Foto de perfil atualizada com sucesso!',
+            imagem: imagemUrl
         });
 
     } catch (err) {
+
         console.error(
-            '❌ Erro ao processar imagem do perfil:',
+            '❌ Erro ao processar foto:',
             err.stack || err.message
         );
 
         return res.status(500).json({
             sucesso: false,
-            mensagem: 'Erro ao processar a imagem.',
+            mensagem:
+                'Erro ao processar a foto de perfil.',
             erro: err.message
         });
     }

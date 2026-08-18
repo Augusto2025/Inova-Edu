@@ -106,13 +106,20 @@ export const useEventos = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ usuario_id: idUsuario })
             });
+
+            const data = await response.json().catch(() => ({}));
+
             if (response.ok) {
-                Alert.alert("Sucesso", "Evento removido!");
-                onSuccess();
-                buscarEventos();
+                Alert.alert('Sucesso', data.mensagem || 'Evento removido!');
+                onSuccess?.();
+                await buscarEventos();
+                return;
             }
+
+            Alert.alert('Erro', data.mensagem || 'Não foi possível excluir o evento.');
         } catch (error) {
-            Alert.alert("Erro", "Não foi possível excluir.");
+            console.error('Erro ao excluir evento:', error);
+            Alert.alert('Erro', 'Não foi possível excluir o evento.');
         }
     };
 
