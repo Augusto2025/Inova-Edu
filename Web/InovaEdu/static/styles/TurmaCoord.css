@@ -305,7 +305,7 @@
   .turma-cabecalho,
   .turma-item {
     grid-template-columns: repeat(6, minmax(130px, 1fr));
-    min-width: 605px;
+    /* min-width: 605px; */
   }
 
   .lista-turma-conteudo {
