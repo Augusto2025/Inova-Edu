@@ -41,10 +41,11 @@ export default function CalendarScreen() {
   useEffect(() => {
     const carregarDadosUsuario = async () => {
       const id = await AsyncStorage.getItem('idUsuario');
-      const tipoUsuario = await AsyncStorage.getItem('tipo');
+      const tipoUsuario = (await AsyncStorage.getItem('tipo') || '').trim().toLowerCase();
 
       setIdUsuarioLogado(id);
-      if (tipoUsuario === 'Professor') setIsProfessor(true);
+      if (tipoUsuario === 'professor') setIsProfessor(true);
+      else setIsProfessor(false);
     };
     carregarDadosUsuario();
   }, []);
@@ -111,6 +112,11 @@ export default function CalendarScreen() {
       marcacoes[selected] = { ...marcacoes[selected], selected: true, selectedColor: '#1459b3' };
     }
     return marcacoes;
+  };
+
+  const usuarioEhDonoDoEvento = () => {
+    if (!eventSelected) return false;
+    return String(idUsuarioLogado) === String(eventSelected.usuario_id);
   };
 
   return (
@@ -322,7 +328,7 @@ export default function CalendarScreen() {
               <Text style={[styles.descriptionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>Descrição:</Text>
               <Text style={[styles.descriptionText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{eventSelected?.description || "Sem descrição informada."}</Text>
 
-              {isProfessor && parseInt(idUsuarioLogado) === parseInt(eventSelected?.usuario_id) && (
+              {isProfessor && usuarioEhDonoDoEvento() && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                   <TouchableOpacity
                     style={[styles.closeButton, { backgroundColor: '#FF9800', flex: 0.48 }]}

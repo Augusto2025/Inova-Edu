@@ -300,7 +300,7 @@ export default function ProfileScreen() {
       if (dadosBack.sucesso) {
         atualizarFoto(urlImagem);
         await carregarUsuario();
-        Alert.alert("Sucesso", "Foto de perfil atualizada!");
+        Alert.alert("Sucesso", urlImagem ? "Foto de perfil atualizada!" : "Foto de perfil removida!");
       } else {
         throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
       }
