@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Modal, TouchableWithoutFeedback, ActivityIndicator, Alert, Keyboard, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Modal, TouchableWithoutFeedback, ActivityIndicator, Alert, Keyboard, Image, KeyboardAvoidingView, Platform } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import Skeleton from "../components/Skeleton";
@@ -50,6 +50,8 @@ export default function ConversaScreen({ navigation, route }) {
   const [textoEditando, setTextoEditando] = useState("");
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
   const [participantesCount, setParticipantesCount] = useState(0);
+  const [participantes, setParticipantes] = useState([]);
+  const [participantesVisible, setParticipantesVisible] = useState(false);
   
   // Estados para o sistema de menções
   const [usuariosMencaoVisivel, setUsuariosMencaoVisivel] = useState(false);
@@ -91,9 +93,20 @@ export default function ConversaScreen({ navigation, route }) {
           meu: msg.autorId === idUser
         }));
 
-        // Conta usuários únicos no tópico
-        const usuariosUnicos = new Set(dados.map(msg => msg.id_Usuario || msg.autorId));
-        setParticipantesCount(usuariosUnicos.size);
+        const participantesUnicos = new Map();
+        dados.forEach(msg => {
+          const id = msg.autorId;
+          if (id !== null && id !== undefined && !participantesUnicos.has(id)) {
+            participantesUnicos.set(id, {
+              id,
+              nome: msg.nome || "Usuário",
+              foto: normalizarUrlFoto(msg.foto),
+            });
+          }
+        });
+        const participantesAtuais = Array.from(participantesUnicos.values());
+        setParticipantes(participantesAtuais);
+        setParticipantesCount(participantesAtuais.length);
 
         // Só atualiza se houver mudança
         if (JSON.stringify(formatadas) !== JSON.stringify(mensagens)) {
@@ -397,28 +410,38 @@ export default function ConversaScreen({ navigation, route }) {
         <Text style={[styles.pathActive, { color: theme.primary }]}>Conversa</Text>
       </View>
 
-      <View style={[styles.infoContainer, { backgroundColor: theme.card, borderBottomColor: theme.border }]}>
+      <TouchableOpacity
+        style={[styles.infoContainer, { backgroundColor: theme.card, borderBottomColor: theme.border }]}
+        onPress={() => setParticipantesVisible(true)}
+        activeOpacity={0.7}
+      >
         <View style={styles.participantesInfo}>
           <Ionicons name="people" size={16} color={theme.primary} />
           <Text style={[styles.participantesText, { color: theme.text }]}>
             {participantesCount} {participantesCount === 1 ? 'participante' : 'participantes'}
           </Text>
         </View>
-      </View>
+        <Ionicons name="chevron-forward" size={18} color={theme.text} />
+      </TouchableOpacity>
 
-      {carregando ? (
-        <View style={{ flex: 1, padding: 20 }}>
-          {[1, 2, 3].map((item) => (
-            <Skeleton key={item} width="100%" height={120} borderRadius={18} style={{ marginBottom: 16 }} />
-          ))}
-        </View>
-      ) : (
-        <ScrollView
-          ref={scrollViewRef}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 10 }}
-          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-        >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        {carregando ? (
+          <View style={{ flex: 1, padding: 20 }}>
+            {[1, 2, 3].map((item) => (
+              <Skeleton key={item} width="100%" height={120} borderRadius={18} style={{ marginBottom: 16 }} />
+            ))}
+          </View>
+        ) : (
+          <ScrollView
+            ref={scrollViewRef}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 150, paddingHorizontal: 10 }}
+            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+            keyboardShouldPersistTaps="handled"
+          >
           {mensagens.map((item) => (
             <View
               key={item.id.toString()}
@@ -533,11 +556,11 @@ export default function ConversaScreen({ navigation, route }) {
               </View>
             </View>
           ))}
-        </ScrollView>
-      )}
+          </ScrollView>
+        )}
 
-      {/* CONTAINER BOTTOM COM PREVIEW + INPUT */}
-      <View style={[styles.bottomContainer, { backgroundColor: theme.background }]}>
+        {/* CONTAINER BOTTOM COM PREVIEW + INPUT */}
+        <View style={[styles.bottomContainer, { backgroundColor: theme.background }]}>
         {/* INPUT BARRA INFERIOR */}
         <View style={[styles.inputContainer, { backgroundColor: theme.card, borderTopColor: theme.border }]}>
           <TextInput
@@ -569,7 +592,8 @@ export default function ConversaScreen({ navigation, route }) {
             </ScrollView>
           </View>
         )}
-      </View>
+        </View>
+      </KeyboardAvoidingView>
 
       {/* MODAL MENU OPÇÕES */}
       <Modal visible={menuVisible} transparent animationType="fade">
@@ -589,6 +613,35 @@ export default function ConversaScreen({ navigation, route }) {
               </>
             )}
           </View>
+        </TouchableOpacity>
+      </Modal>
+
+      <Modal visible={participantesVisible} transparent animationType="fade" onRequestClose={() => setParticipantesVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setParticipantesVisible(false)}>
+          <TouchableWithoutFeedback>
+            <View style={[styles.modalContent, { backgroundColor: theme.card, width: '90%', maxHeight: '75%' }]}>
+              <View style={[styles.modalHeader, { backgroundColor: theme.primary }]}>
+                <Text style={styles.modalTitle}>Participantes</Text>
+                <TouchableOpacity onPress={() => setParticipantesVisible(false)}>
+                  <Ionicons name="close-circle" size={30} color="white" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView contentContainerStyle={{ padding: 12 }}>
+                {participantes.map((participante) => (
+                  <View key={String(participante.id)} style={styles.participanteItem}>
+                    <View style={[styles.participanteAvatar, { backgroundColor: theme.primary }]}>
+                      {participante.foto ? (
+                        <Image source={{ uri: participante.foto }} style={styles.participanteAvatarImage} />
+                      ) : (
+                        <Ionicons name="person" size={18} color="#fff" />
+                      )}
+                    </View>
+                    <Text style={[styles.participanteNome, { color: theme.text }]}>{participante.nome}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          </TouchableWithoutFeedback>
         </TouchableOpacity>
       </Modal>
 
@@ -686,5 +739,9 @@ const styles = StyleSheet.create({
   saveBtnText: { color: 'white', fontWeight: 'bold' },
   mencaoContainer: { borderTopWidth: 2, paddingVertical: 8, maxHeight: 150 },
   mencaoItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 12, borderBottomWidth: 1 },
-  mencaoText: { marginLeft: 10, fontSize: 14, fontWeight: '500' }
+  mencaoText: { marginLeft: 10, fontSize: 14, fontWeight: '500' },
+  participanteItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 8 },
+  participanteAvatar: { width: 38, height: 38, borderRadius: 19, justifyContent: 'center', alignItems: 'center', marginRight: 12, overflow: 'hidden' },
+  participanteAvatarImage: { width: '100%', height: '100%' },
+  participanteNome: { fontSize: 15, fontWeight: '500' }
 });

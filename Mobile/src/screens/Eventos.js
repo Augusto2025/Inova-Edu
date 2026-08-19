@@ -3,6 +3,8 @@ import {
   View,
   Text,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   TouchableOpacity,
   TextInput,
   Modal,
@@ -208,8 +210,11 @@ export default function CalendarScreen() {
 
       {/* Modal de Cadastro/Edição */}
       <Modal visible={modalAddVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.card, maxHeight: '90%' }]}>
             <View style={[styles.modalHeader, { backgroundColor: '#1459b3' }]}>
               <Text style={[styles.modalTitle, { fontSize: 20 * fontSizeScale }]}>
                 {novoEvento.id ? "Editar Evento" : "Novo Evento"}
@@ -222,7 +227,12 @@ export default function CalendarScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.modalBody}>
+            <ScrollView
+              style={styles.modalBody}
+              contentContainerStyle={{ paddingBottom: 8 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
               {/* Adaptando os TextInputs para não ficarem invisíveis no Modo Escuro */}
               <TextInput
                 value={novoEvento.title}
@@ -299,9 +309,9 @@ export default function CalendarScreen() {
                   <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
                 )}
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Modal de Detalhes */}
