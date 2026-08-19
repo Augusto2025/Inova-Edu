@@ -154,8 +154,13 @@ export default function HomePainelProfessor({ navigation }) {
 
   const abrirTopico = (topico) => {
     try {
-      navigation.navigate("Titulo", {
-        topico: { id: topico.id, titulo: topico.titulo, forum: topico.forum_nome },
+      navigation.navigate("Conversa", {
+        forum: topico.forum_nome || "Fórum",
+        topico: {
+          id: topico.id,
+          titulo: topico.titulo,
+          forumId: topico.forum_id,
+        },
       });
     } catch (e) {
       console.warn("Erro ao navegar para o tópico:", e.message);
