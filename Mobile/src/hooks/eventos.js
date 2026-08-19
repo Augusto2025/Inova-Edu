@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { URL_BASE } from '../config/backend';
@@ -6,6 +6,8 @@ import { URL_BASE } from '../config/backend';
 export const useEventos = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [salvando, setSalvando] = useState(false);
+    const salvandoRef = useRef(false);
 
     const buscarEventos = async () => {
         try {
@@ -21,6 +23,11 @@ export const useEventos = () => {
     };
 
     const salvarEvento = async (novoEvento, onSuccess) => {
+        if (salvandoRef.current) return;
+        salvandoRef.current = true;
+        setSalvando(true);
+
+        try {
         const idUsuario = await AsyncStorage.getItem('idUsuario');
 
         // Validação básica
@@ -56,7 +63,6 @@ export const useEventos = () => {
             dataFormatada = `${ano}-${mes}-${dia}`;
         }
 
-        try {
             const response = await fetch(url, {
                 method,
                 headers: {
@@ -95,6 +101,9 @@ export const useEventos = () => {
         } catch (error) {
             console.log("Erro ao salvar evento:", error);
             Alert.alert("Erro", error.message);
+        } finally {
+            salvandoRef.current = false;
+            setSalvando(false);
         }
     };
 
@@ -125,5 +134,5 @@ export const useEventos = () => {
 
     useEffect(() => { buscarEventos(); }, []);
 
-    return { events, loading, buscarEventos, salvarEvento, excluirEvento };
+    return { events, loading, salvando, buscarEventos, salvarEvento, excluirEvento };
 };

@@ -27,7 +27,7 @@ export default function CalendarScreen() {
   // 2. PUXANDO AS VARIÁVEIS GLOBAIS DE ACESSIBILIDADE E TEMA
   const { theme, fontSizeScale } = useContext(ThemeContext);
 
-  const { events, loading, salvarEvento, excluirEvento } = useEventos();
+  const { events, loading, salvando, salvarEvento, excluirEvento } = useEventos();
 
   const [selected, setSelected] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -292,8 +292,12 @@ export default function CalendarScreen() {
                 onChangeText={t => setNovoEvento({ ...novoEvento, description: t })}
               />
 
-              <TouchableOpacity style={styles.saveBtn} onPress={handleSalvar}>
-                <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
+              <TouchableOpacity style={[styles.saveBtn, salvando && { opacity: 0.6 }]} onPress={handleSalvar} disabled={salvando}>
+                {salvando ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

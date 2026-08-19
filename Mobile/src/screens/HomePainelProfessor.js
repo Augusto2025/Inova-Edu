@@ -310,7 +310,7 @@ export default function HomePainelProfessor({ navigation }) {
                 <View style={styles.turmaIconWrap}>
                   <Ionicons name="school" size={20 * fontSizeScale} color="#fff" />
                 </View>
-                <Text style={[styles.turmaNome, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>
+                <Text style={[styles.turmaNome, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={2}>
                   {turma.nome}
                 </Text>
                 <Text style={[styles.turmaAlunos, { color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale }]}>
@@ -533,9 +533,9 @@ const styles = StyleSheet.create({
   pendenciaBadgeText: { color: "#7C3AED", fontWeight: "bold" },
 
   turmaCard: {
-    flexBasis: "42%",
-    maxWidth: "48%",
-    minWidth: 150,
+    width: 180,
+    flexGrow: 0,
+    flexShrink: 0,
     borderRadius: 16,
     padding: 14,
     borderWidth: 1,
@@ -552,7 +552,8 @@ const styles = StyleSheet.create({
   turmaStatText: { fontWeight: "600" },
   acessarBtn: {
     marginTop: 12, backgroundColor: "#EEF2FF", borderRadius: 10,
-    paddingVertical: 8, alignItems: "center",
+    minHeight: 40, paddingHorizontal: 10, paddingVertical: 8,
+    width: "100%", alignItems: "center", justifyContent: "center",
   },
   acessarBtnText: { color: COLORS.primary, fontWeight: "700" },
 

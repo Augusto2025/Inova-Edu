@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback, ActivityIndicator, Alert, FlatList, Keyboard } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
@@ -22,6 +22,8 @@ export default function TopicosScreen({ navigation, route }) {
   // 🆕 Sabe se quem está logado é Professor, pra liberar editar/apagar de qualquer tópico (moderação)
   const [ehModerador, setEhModerador] = useState(false);
   const [modal, setModal] = useState({ visible: false, modo: "Criar", titulo: "", descricao: "", id: null });
+  const [salvando, setSalvando] = useState(false);
+  const salvandoRef = useRef(false);
 
   // ==========================================
   // CARREGAR DADOS INICIAIS
@@ -68,9 +70,13 @@ export default function TopicosScreen({ navigation, route }) {
   // SALVAR / EDITAR NO BACKEND
   // ==========================================
   const salvarTopico = async () => {
-    if (!modal.titulo.trim() || !modal.descricao.trim()) return;
+    if (salvandoRef.current) return;
+    salvandoRef.current = true;
+    setSalvando(true);
 
     try {
+      if (!modal.titulo.trim() || !modal.descricao.trim()) return;
+
       if (modal.modo === "Criar") {
         const response = await fetch(URL_TOPICO, {
           method: "POST",
@@ -106,6 +112,9 @@ export default function TopicosScreen({ navigation, route }) {
       Keyboard.dismiss();
     } catch (error) {
       Alert.alert("Ação Negada", error.message);
+    } finally {
+      salvandoRef.current = false;
+      setSalvando(false);
     }
   };
 
@@ -275,8 +284,8 @@ export default function TopicosScreen({ navigation, route }) {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.saveBtn} onPress={salvarTopico}>
-                  <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>
+                <TouchableOpacity style={[styles.saveBtn, salvando && { opacity: 0.6 }]} onPress={salvarTopico} disabled={salvando}>
+                  {salvando ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>}
                 </TouchableOpacity>
               </View>
             </View>
