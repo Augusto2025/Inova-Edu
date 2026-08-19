@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, ScrollView, 
   TouchableOpacity, ActivityIndicator, Alert,
   Modal, TextInput, TouchableWithoutFeedback,
-  Image,
+  Image, InteractionManager,
   Linking
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -111,8 +111,10 @@ export default function ProfileScreen() {
     [
       {
         text: "Escolher da Galeria",
-        onPress: async () => {
-          try {
+        onPress: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              try {
             const dadosPermissao =
               await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -241,20 +243,22 @@ export default function ProfileScreen() {
               "Foto de perfil atualizada!"
             );
 
-          } catch (error) {
-            console.error(
-              "❌ Erro ao subir imagem:",
-              error
-            );
+              } catch (error) {
+                console.error(
+                  "❌ Erro ao subir imagem:",
+                  error
+                );
 
-            Alert.alert(
-              "Erro ao subir imagem",
-              error.message ||
-              "Não foi possível atualizar sua foto."
-            );
-          } finally {
-            setCarregando(false);
-          }
+                Alert.alert(
+                  "Erro ao subir imagem",
+                  error.message ||
+                  "Não foi possível atualizar sua foto."
+                );
+              } finally {
+                setCarregando(false);
+              }
+            }, 300);
+          });
         },
       },
       {
