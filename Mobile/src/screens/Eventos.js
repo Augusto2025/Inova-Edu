@@ -25,7 +25,7 @@ import MaskInput from "react-native-mask-input";
 import { useEventos } from '../hooks/eventos';
 import { ThemeContext } from '../context/ThemeContext';
 
-export default function CalendarScreen() {
+export default function CalendarScreen({ route }) {
   // 2. PUXANDO AS VARIÁVEIS GLOBAIS DE ACESSIBILIDADE E TEMA
   const { theme, fontSizeScale } = useContext(ThemeContext);
 
@@ -40,6 +40,17 @@ export default function CalendarScreen() {
   const [idUsuarioLogado, setIdUsuarioLogado] = useState(null);
   const [isProfessor, setIsProfessor] = useState(false);
 
+  const dataInicial = route?.params?.selectedDate;
+
+  const criarDataLocal = (data) => {
+    if (!data) return null;
+    const partes = String(data).slice(0, 10).split('-').map(Number);
+    if (partes.length === 3 && partes.every(Number.isFinite)) {
+      return new Date(partes[0], partes[1] - 1, partes[2]);
+    }
+    return null;
+  };
+
   useEffect(() => {
     const carregarDadosUsuario = async () => {
       const id = await AsyncStorage.getItem('idUsuario');
@@ -51,6 +62,19 @@ export default function CalendarScreen() {
     };
     carregarDadosUsuario();
   }, []);
+
+  useEffect(() => {
+    if (!dataInicial || loading) return;
+    const dataLocal = criarDataLocal(dataInicial);
+    if (!dataLocal) return;
+
+    const dataSelecionada = [
+      dataLocal.getFullYear(),
+      String(dataLocal.getMonth() + 1).padStart(2, '0'),
+      String(dataLocal.getDate()).padStart(2, '0')
+    ].join('-');
+    handleOpenEvent(dataSelecionada);
+  }, [dataInicial, loading, events]);
 
   const handleSalvar = () => {
     salvarEvento(novoEvento, () => {
@@ -82,7 +106,9 @@ export default function CalendarScreen() {
   const getEventStatusColor = (eventDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const evDate = new Date(eventDate + 'T00:00:00');
+    const evDate = criarDataLocal(eventDate);
+    if (!evDate) return '#4CAF50';
+    evDate.setHours(0, 0, 0, 0);
 
     if (evDate.getTime() === today.getTime()) return '#FFD700';
     return evDate > today ? '#4CAF50' : '#F44336';

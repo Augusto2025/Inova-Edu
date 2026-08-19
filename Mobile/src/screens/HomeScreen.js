@@ -337,10 +337,22 @@ export default function HomeScreen({ navigation }) {
     if (!data) return "#4CAF50";
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    const evento = new Date(data);
+    const evento = criarDataLocal(data);
+    if (!evento) return "#4CAF50";
     evento.setHours(0, 0, 0, 0);
     if (evento.getTime() === hoje.getTime()) return "#FFD700";
     return evento > hoje ? "#4CAF50" : "#F44336";
+  }
+
+  function criarDataLocal(data) {
+    if (!data) return null;
+    const dataTexto = String(data).slice(0, 10);
+    const partes = dataTexto.split('-').map(Number);
+    if (partes.length === 3 && partes.every(Number.isFinite)) {
+      return new Date(partes[0], partes[1] - 1, partes[2]);
+    }
+    const dataConvertida = new Date(data);
+    return Number.isNaN(dataConvertida.getTime()) ? null : dataConvertida;
   }
 
   async function marcarForumComoVisualizado(forum) {
@@ -497,9 +509,11 @@ export default function HomeScreen({ navigation }) {
             const localEvento = event.local || event.local_evento || "InovaEdu";
 
             if (dataOriginal) {
-              const dataObj = new Date(dataOriginal);
-              dia = dataObj.getUTCDate();
-              mes = meses[dataObj.getUTCMonth()];
+              const dataObj = criarDataLocal(dataOriginal);
+              if (dataObj) {
+                dia = dataObj.getDate();
+                mes = meses[dataObj.getMonth()];
+              }
             }
 
             const statusColor = getEventStatusColor(dataOriginal);
