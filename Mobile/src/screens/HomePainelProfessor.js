@@ -40,14 +40,27 @@ function formatarTempoRelativo(dataString) {
   return `Há ${diffDias} dia${diffDias > 1 ? "s" : ""}`;
 }
 
-// LÓGICA DE CORES ATUALIZADA
+function obterDataEventoLocal(dataString) {
+  if (!dataString) return null;
+
+  const dataTexto = String(dataString).slice(0, 10);
+  const partesData = dataTexto.split("-").map(Number);
+
+  if (partesData.length === 3 && partesData.every(Number.isFinite)) {
+    return new Date(partesData[0], partesData[1] - 1, partesData[2]);
+  }
+
+  const data = new Date(dataString);
+  return Number.isNaN(data.getTime()) ? null : data;
+}
+
+// Mantém a classificação alinhada ao calendário Web: hoje = amarelo.
 function obterCorEvento(dataString) {
-  if (!dataString) return "#10B981";
+  const dataEvento = obterDataEventoLocal(dataString);
+  if (!dataEvento) return "#10B981";
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
-
-  const dataEvento = new Date(dataString);
   dataEvento.setHours(0, 0, 0, 0);
 
   if (dataEvento.getTime() < hoje.getTime()) {
