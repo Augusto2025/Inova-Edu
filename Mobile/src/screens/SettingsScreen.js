@@ -129,11 +129,11 @@ export default function ConfiguracoesScreen({ navigation }) {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={styles.perfil}>
-          <View style={[styles.avatarWrapper, { borderColor: isDarkMode ? '#0D9FFF' : '#2d6cdf' }]}>
+          <View style={[styles.avatarWrapper, { borderColor: '#FFFFFF' }]}>
             {user && user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
               <Image source={{ uri: user.imagem }} style={styles.avatar} />
             ) : (
-              <View style={[styles.avatarPlaceholder, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9', borderColor: isDarkMode ? '#94A3B8' : '#2d6cdf' }]}>
+              <View style={[styles.avatarPlaceholder, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9', borderColor: '#FFFFFF' }]}>
                 <Ionicons name="person" size={60} color={isDarkMode ? '#94A3B8' : '#64748B'} />
               </View>
             )}
@@ -197,9 +197,9 @@ export default function ConfiguracoesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   perfil: { alignItems: "center", marginBottom: 20, marginTop: 10 },
-  avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, borderColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
   avatar: { width: 120, height: 120, borderRadius: 60 },
-  avatarPlaceholder: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  avatarPlaceholder: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, borderColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
   nome: { fontWeight: "bold", color: COLORS.primary, marginTop: 10 },
   email: { marginBottom: 5 },
   perfilBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, marginTop: 15 },

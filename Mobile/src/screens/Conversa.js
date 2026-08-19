@@ -19,6 +19,20 @@ export default function ConversaScreen({ navigation, route }) {
 
   const scrollViewRef = useRef();
 
+  const mostrarOpcaoPerfil = (usuario) => {
+    if (!usuario?.id) return;
+    Alert.alert(usuario.nome || "Usuário", "O que deseja fazer?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Ver perfil",
+        onPress: () => {
+          setParticipantesVisible(false);
+          navigation.navigate("Perfil", { usuarioId: usuario.id });
+        }
+      }
+    ]);
+  };
+
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState("");
   const [carregando, setCarregando] = useState(true);
@@ -86,6 +100,7 @@ export default function ConversaScreen({ navigation, route }) {
 
         const formatadas = dados.map(msg => ({
           id: msg.id,
+          autorId: msg.autorId,
           nome: msg.nome || "Usuário",
           texto: msg.texto,
           hora: formatarHora(msg.data),
@@ -452,7 +467,10 @@ export default function ConversaScreen({ navigation, route }) {
             >
               <View style={styles.topRow}>
                 {!item.meu && (
-                  <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
+                  <TouchableOpacity
+                    style={[styles.avatar, { backgroundColor: theme.primary }]}
+                    onPress={() => mostrarOpcaoPerfil({ id: item.autorId, nome: item.nome, foto: item.foto })}
+                  >
                     {item.foto ? (
                       <>
                         <Image
@@ -468,7 +486,7 @@ export default function ConversaScreen({ navigation, route }) {
                         {console.log('ℹ️ Sem foto para usuário:', item.nome, 'Valor bruto:', item.foto)}
                       </>
                     )}
-                  </View>
+                  </TouchableOpacity>
                 )}
 
                 <View style={styles.userInfo}>
@@ -629,13 +647,16 @@ export default function ConversaScreen({ navigation, route }) {
               <ScrollView contentContainerStyle={{ padding: 12 }}>
                 {participantes.map((participante) => (
                   <View key={String(participante.id)} style={styles.participanteItem}>
-                    <View style={[styles.participanteAvatar, { backgroundColor: theme.primary }]}>
+                    <TouchableOpacity
+                      style={[styles.participanteAvatar, { backgroundColor: theme.primary }]}
+                      onPress={() => mostrarOpcaoPerfil(participante)}
+                    >
                       {participante.foto ? (
                         <Image source={{ uri: participante.foto }} style={styles.participanteAvatarImage} />
                       ) : (
                         <Ionicons name="person" size={18} color="#fff" />
                       )}
-                    </View>
+                    </TouchableOpacity>
                     <Text style={[styles.participanteNome, { color: theme.text }]}>{participante.nome}</Text>
                   </View>
                 ))}

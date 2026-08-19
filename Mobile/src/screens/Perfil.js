@@ -19,12 +19,16 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { RAW_BACKEND_URL, URL_BASE } from '../config/backend';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ route, navigation }) {
   const [carregando, setCarregando] = useState(true);
   const { theme, fontSizeScale } = useTheme();
   const { user, carregarUsuario, atualizarPerfil, atualizarFoto } = useUser();
-  const usuarioExibicao = user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
+  const usuarioIdSolicitado = route?.params?.usuarioId;
+  const [usuarioPublico, setUsuarioPublico] = useState(null);
+  const visualizandoOutroUsuario = Boolean(usuarioIdSolicitado) && String(usuarioIdSolicitado) !== String(user?.idUsuario);
+  const usuarioExibicao = usuarioPublico || user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const [fotoPerfilVisible, setFotoPerfilVisible] = useState(false);
 
   useEffect(() => {
     setAvatarLoadFailed(false);
@@ -51,16 +55,17 @@ export default function ProfileScreen() {
     try {
       setCarregando(true);
       const idSalvo = await AsyncStorage.getItem('idUsuario');
+      const idPerfil = usuarioIdSolicitado || idSalvo;
       console.log("================================");
       console.log("👤 ID USUARIO:", idSalvo);
       console.log("================================");
       
-      if (!idSalvo) {
+      if (!idPerfil) {
         Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
         return;
       }
       
-      const response = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
+      const response = await fetch(`${URL_BASE}/perfil/${idPerfil}`);
       const textoRaw = await response.text();
 
       if (!response.ok) {
@@ -70,6 +75,18 @@ export default function ProfileScreen() {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
+        if (usuarioIdSolicitado) {
+          const imagem = dados.usuario.imagem;
+          const imagemNormalizada = typeof imagem === 'string' && imagem.trim() !== '' && imagem.trim().toLowerCase() !== 'null'
+            ? (/^https?:\/\//i.test(imagem) ? imagem : `${URL_BASE}${imagem.startsWith('/') ? '' : '/uploads/'}${imagem}`)
+            : null;
+          setUsuarioPublico({
+            ...dados.usuario,
+            imagem: imagemNormalizada,
+            descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
+            turma: dados.usuario.turma || "Sem Turma Vinculada"
+          });
+        }
         setCertificados(dados.certificados || []);
         setProjetos(dados.projetos || []);
       } else {
@@ -86,11 +103,14 @@ export default function ProfileScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const carregar = async () => {
-        await carregarUsuario();
+        if (!usuarioIdSolicitado) {
+          setUsuarioPublico(null);
+          await carregarUsuario();
+        }
         await carregarDadosPerfil();
       };
       carregar();
-    }, [])
+    }, [usuarioIdSolicitado])
   );
 
   // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
@@ -519,16 +539,23 @@ export default function ProfileScreen() {
         {/* CARD PRINCIPAL DO PERFIL */}
         <View style={[styles.profileHeaderCard, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}> 
           <View style={styles.photoContainer}>
-            <View style={[styles.profileImagePlaceholder, { backgroundColor: theme.background }]}>
+            <TouchableOpacity
+              style={[styles.profileImagePlaceholder, { backgroundColor: theme.background, borderColor: '#FFFFFF' }]}
+              activeOpacity={0.85}
+              disabled={!usuarioExibicao.imagem || avatarLoadFailed}
+              onPress={() => setFotoPerfilVisible(true)}
+            >
               {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' && !avatarLoadFailed ? (
                 <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} resizeMode="cover" onError={() => setAvatarLoadFailed(true)} />
               ) : (
                 <Ionicons name="person" size={50} color="#B0B8C4" />
               )}
-            </View>
-            <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
-              <Ionicons name="camera" size={16} color="white" />
             </TouchableOpacity>
+            {!visualizandoOutroUsuario && (
+              <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
+                <Ionicons name="camera" size={16} color="white" />
+              </TouchableOpacity>
+            )}
           </View>
 
           <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{usuarioExibicao.nome} {usuarioExibicao.sobrenome}</Text>
@@ -540,10 +567,12 @@ export default function ProfileScreen() {
           
           <Text style={[styles.userDesc, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{usuarioExibicao.descricao}</Text>
 
-          <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
-            <Ionicons name="create-outline" size={18} color="white" />
-            <Text style={styles.editProfileBtnText}>Editar Perfil</Text>
-          </TouchableOpacity>
+          {!visualizandoOutroUsuario && (
+            <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
+              <Ionicons name="create-outline" size={18} color="white" />
+              <Text style={styles.editProfileBtnText}>Editar Perfil</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* SEÇÃO: CERTIFICADOS */}
@@ -553,9 +582,11 @@ export default function ProfileScreen() {
               <Ionicons name="ribbon-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
               <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Certificados</Text>
             </View>
-            <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
-              <Ionicons name="add" size={20} color="white" />
-            </TouchableOpacity>
+            {!visualizandoOutroUsuario && (
+              <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
+                <Ionicons name="add" size={20} color="white" />
+              </TouchableOpacity>
+            )}
           </View>
           
           {certificados.length === 0 ? (
@@ -575,14 +606,16 @@ export default function ProfileScreen() {
                   <Text style={[styles.certSub, { color: theme.text, fontSize: 12 * fontSizeScale }]} numberOfLines={2}>{cert.descricao || "Sem descrição"}</Text>
                 </View>
 
-                <View style={styles.certActionColumn}>
-                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirEditarCertificado(cert)}>
-                    <Ionicons name="pencil" size={16} color={COLORS.primary} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirExcluirCertificado(cert)}>
-                    <Ionicons name="trash-outline" size={16} color="#F44336" />
-                  </TouchableOpacity>
-                </View>
+                {!visualizandoOutroUsuario && (
+                  <View style={styles.certActionColumn}>
+                    <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirEditarCertificado(cert)}>
+                      <Ionicons name="pencil" size={16} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirExcluirCertificado(cert)}>
+                      <Ionicons name="trash-outline" size={16} color="#F44336" />
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             ))
           )}
@@ -613,7 +646,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity 
                   style={styles.repoLinkBtn} 
                   activeOpacity={0.7}
-                  onPress={() => proj.link_repo ? Linking.openURL(proj.link_repo) : Alert.alert("Ops", "Link do repositório não disponível.")}
+                  onPress={() => navigation.navigate("Repositorio", { projetoId: proj.id, projetoNome: proj.nome })}
                 >
                   <Text style={[styles.repoLinkText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Acessar Repositório</Text>
                   <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
@@ -624,6 +657,31 @@ export default function ProfileScreen() {
         </View>
 
       </ScrollView>
+
+      <Modal
+        visible={fotoPerfilVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setFotoPerfilVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.fotoModalOverlay}
+          activeOpacity={1}
+          onPress={() => setFotoPerfilVisible(false)}
+        >
+          <Image
+            source={{ uri: usuarioExibicao.imagem }}
+            style={styles.fotoModalImage}
+            resizeMode="contain"
+          />
+          <TouchableOpacity
+            style={styles.fotoModalClose}
+            onPress={() => setFotoPerfilVisible(false)}
+          >
+            <Ionicons name="close" size={26} color="#fff" />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
 
       {/* 1. MODAL EDITAR PERFIL */}
       <Modal visible={modalPerfilVisible} transparent animationType="fade" onRequestClose={() => setModalPerfilVisible(false)}>
@@ -765,6 +823,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -772,6 +832,27 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
+  },
+  fotoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fotoModalImage: {
+    width: '92%',
+    height: '70%',
+  },
+  fotoModalClose: {
+    position: 'absolute',
+    top: 48,
+    right: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cameraBtn: {
     position: 'absolute',

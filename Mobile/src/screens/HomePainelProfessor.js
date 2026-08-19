@@ -66,7 +66,7 @@ function obterCorEvento(dataString) {
   if (dataEvento.getTime() < hoje.getTime()) {
     return "#EF5350"; // Vermelho (Passado)
   } else if (dataEvento.getTime() === hoje.getTime()) {
-    return "#F59E0B"; // Amarelo (Hoje)
+      return "#FFD700"; // Amarelo (Hoje)
   } else {
     return "#10B981"; // Verde (Futuro)
   }
@@ -105,14 +105,15 @@ export default function HomePainelProfessor({ navigation }) {
     totais: { turmas: 0, alunos: 0, projetos: 0, topicos: 0, eventosHoje: 0 },
     turmas: [],
     eventosProximos: [],
-    topicosSemResposta: [],
+    topicosComMensagens: [],
+    totalMensagensNovas: 0,
     ultimosForuns: [],
     ultimosProjetos: [],
   });
 
-  const carregarPainel = useCallback(async () => {
+  const carregarPainel = useCallback(async (silencioso = false) => {
     try {
-      setCarregando(true);
+      if (!silencioso) setCarregando(true);
       const idSalvo = await AsyncStorage.getItem("idUsuario");
       if (!idSalvo) return;
 
@@ -126,7 +127,8 @@ export default function HomePainelProfessor({ navigation }) {
           totais: resposta.data.totais || prev.totais,
           turmas: resposta.data.turmas || [],
           eventosProximos: resposta.data.eventosProximos || [],
-          topicosSemResposta: resposta.data.topicosSemResposta || [],
+          topicosComMensagens: resposta.data.topicosComMensagens || [],
+          totalMensagensNovas: resposta.data.totalMensagensNovas || 0,
           ultimosForuns: resposta.data.ultimosForuns || [],
           ultimosProjetos: resposta.data.ultimosProjetos || [],
         }));
@@ -134,13 +136,19 @@ export default function HomePainelProfessor({ navigation }) {
     } catch (error) {
       console.warn("⚠️ Erro ao carregar painel do professor:", error.message);
     } finally {
-      setCarregando(false);
+      if (!silencioso) setCarregando(false);
     }
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       carregarPainel();
+
+      const intervaloAtualizacao = setInterval(() => {
+        carregarPainel(true);
+      }, 6000);
+
+      return () => clearInterval(intervaloAtualizacao);
     }, [carregarPainel])
   );
 
@@ -163,7 +171,7 @@ export default function HomePainelProfessor({ navigation }) {
   };
 
   const primeiroTopicoPendente =
-    painel.topicosSemResposta.length > 0 ? painel.topicosSemResposta[0] : null;
+    painel.topicosComMensagens.length > 0 ? painel.topicosComMensagens[0] : null;
 
   if (carregando && painel.turmas.length === 0) {
     return (
@@ -268,7 +276,11 @@ export default function HomePainelProfessor({ navigation }) {
             style={styles.pendenciaRow}
             activeOpacity={0.7}
             onPress={() => {
-              if (primeiroTopicoPendente) abrirTopico(primeiroTopicoPendente);
+              if (primeiroTopicoPendente) {
+                abrirTopico(primeiroTopicoPendente);
+              } else {
+                navigation.navigate("Fórum");
+              }
             }}
           >
             <View style={[styles.pendenciaIconWrap, { backgroundColor: "#EDE9FE" }]}>
@@ -276,15 +288,15 @@ export default function HomePainelProfessor({ navigation }) {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.pendenciaTitulo, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
-                Tópicos sem resposta
+                Novas mensagens
               </Text>
               <Text style={[styles.pendenciaSub, { color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale }]}>
-                {painel.topicosSemResposta.length} tópico(s) no fórum precisam de você
+                {painel.totalMensagensNovas} mensagem(ns) nos seus fóruns
               </Text>
             </View>
             <View style={styles.pendenciaBadge}>
               <Text style={[styles.pendenciaBadgeText, { fontSize: 13 * fontSizeScale }]}>
-                {painel.topicosSemResposta.length}
+                {painel.totalMensagensNovas}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={theme.text} style={{ opacity: 0.5 }} />

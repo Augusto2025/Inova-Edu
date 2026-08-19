@@ -71,8 +71,17 @@ export default function HomeScreen({ navigation }) {
   // 🆕 Histórico local de repositórios que o usuário realmente entrou
   const [recentRepos, setRecentRepos] = useState([]);
   const [recentReposCarregado, setRecentReposCarregado] = useState(false);
+  const [mensagensForumVistas, setMensagensForumVistas] = useState({});
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    AsyncStorage.getItem("@InovaEdu:mensagensForumVistas")
+      .then((valor) => {
+        if (valor) setMensagensForumVistas(JSON.parse(valor));
+      })
+      .catch(() => {});
+  }, []);
 
   // 🆕 Carrega o tipo salvo no login (Aluno/Professor) assim que a tela monta
   useEffect(() => {
@@ -332,6 +341,23 @@ export default function HomeScreen({ navigation }) {
     evento.setHours(0, 0, 0, 0);
     if (evento.getTime() === hoje.getTime()) return "#FFD700";
     return evento > hoje ? "#4CAF50" : "#F44336";
+  }
+
+  async function marcarForumComoVisualizado(forum) {
+    if (!forum?.id) return;
+
+    const totalMensagens = Number(forum.mensagens || 0);
+    const novasVistas = { ...mensagensForumVistas, [forum.id]: totalMensagens };
+    setMensagensForumVistas(novasVistas);
+
+    try {
+      await AsyncStorage.setItem(
+        "@InovaEdu:mensagensForumVistas",
+        JSON.stringify(novasVistas)
+      );
+    } catch (error) {
+      console.warn("Não foi possível salvar a leitura do fórum:", error.message);
+    }
   }
 
   async function buscarRepositorios(termoBusca) {
@@ -769,6 +795,8 @@ export default function HomeScreen({ navigation }) {
             onPress={() => {
               if (!forumPrincipal) return;
 
+              marcarForumComoVisualizado(forumPrincipal);
+
               navigation.navigate("Titulo", {
                 topico: forumPrincipal,
               });
@@ -800,7 +828,11 @@ export default function HomeScreen({ navigation }) {
                 ]}
               >
                 <Text style={styles.forumBadgeText}>
-                  {forumPrincipal.mensagens || 0}
+                  {Math.max(
+                    Number(forumPrincipal.mensagens || 0) -
+                    Number(mensagensForumVistas[forumPrincipal.id] || 0),
+                    0
+                  )}
                 </Text>
               </Animated.View>
             </View>

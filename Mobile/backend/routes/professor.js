@@ -75,17 +75,27 @@ router.get('/painel', async (req, res) => {
         `);
         const eventosProximos = eventosProximosRes.rows;
 
-        // 5. Tópicos do professor que ainda não tiveram nenhuma resposta
-        const semRespostaRes = await pool.query(`
-            SELECT t.idtopico AS id, t.titulo, t.forum_id, f.nome AS forum_nome
+        // 5. Mensagens de outros usuários nos fóruns criados pelo professor
+        const mensagensNovasRes = await pool.query(`
+            SELECT
+                t.idtopico AS id,
+                t.titulo,
+                t.forum_id,
+                f.nome AS forum_nome,
+                COUNT(m.id) FILTER (WHERE m."ID_Usuario" <> $1) AS total_mensagens
             FROM topico t
             JOIN forum f ON f.idforum = t.forum_id
             LEFT JOIN mensagem m ON m."ID_Topico" = t.idtopico AND m.excluida = false
-            WHERE t.usuario_id = $1
+            WHERE f.usuario_id = $1
             GROUP BY t.idtopico, t.titulo, t.forum_id, f.nome
-            HAVING COUNT(m.id) = 0
-            ORDER BY t.idtopico DESC
+            HAVING COUNT(m.id) FILTER (WHERE m."ID_Usuario" <> $1) > 0
+            ORDER BY MAX(m."Data_criacao") DESC NULLS LAST
         `, [professorId]);
+
+        const totalMensagensNovas = mensagensNovasRes.rows.reduce(
+            (total, topico) => total + parseInt(topico.total_mensagens || 0, 10),
+            0
+        );
 
         // 6. Últimos fóruns criados (visão geral, com autor e total de tópicos)
         const ultimosForunsRes = await pool.query(`
@@ -136,7 +146,8 @@ router.get('/painel', async (req, res) => {
             },
             turmas,
             eventosProximos,
-            topicosSemResposta: semRespostaRes.rows,
+            topicosComMensagens: mensagensNovasRes.rows,
+            totalMensagensNovas,
             ultimosForuns,
             ultimosProjetos
         });
