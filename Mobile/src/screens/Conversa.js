@@ -638,9 +638,9 @@ export default function ConversaScreen({ navigation, route }) {
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setParticipantesVisible(false)}>
           <TouchableWithoutFeedback>
             <View style={[styles.modalContent, { backgroundColor: theme.card, width: '90%', maxHeight: '75%' }]}>
-              <View style={[styles.modalHeader, { backgroundColor: theme.primary }]}>
+              <View style={[styles.modalHeader, { backgroundColor: theme.primary }]}> 
                 <Text style={styles.modalTitle}>Participantes</Text>
-                <TouchableOpacity onPress={() => setParticipantesVisible(false)}>
+                <TouchableOpacity style={styles.modalCloseButton} onPress={() => setParticipantesVisible(false)}>
                   <Ionicons name="close-circle" size={30} color="white" />
                 </TouchableOpacity>
               </View>
@@ -752,6 +752,7 @@ const styles = StyleSheet.create({
   modalContent: { backgroundColor: 'white', borderRadius: 25, overflow: 'hidden' },
   modalHeader: { backgroundColor: COLORS.primary, flexDirection: 'row', padding: 20, alignItems: 'center', justifyContent: 'center' },
   modalTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  modalCloseButton: { position: 'absolute', right: 18, top: 16 },
   modalBody: { padding: 20 },
   inputContainerModal: { marginBottom: 15 },
   inputLabel: { fontSize: 14, fontWeight: "600", color: "#333", marginBottom: 6, paddingLeft: 2 },
