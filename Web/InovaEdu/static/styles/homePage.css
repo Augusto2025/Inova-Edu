@@ -487,29 +487,7 @@ body {
   opacity: 0.9;
 }
 
-/* BOTÃO PRINCIPAL */
-.inova-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background-color: var(--azul-senac);
-  color: #FFFFFF;
-  padding: 12px 24px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
 
-.inova-btn:hover {
-  background-color: var(--azul-escuro);
-}
-
-.inova-btn:hover .btn-arrow {
-  transform: translateX(4px);
-}
 
 .btn-arrow {
   transition: transform 0.2s ease;
@@ -870,7 +848,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transform-style: preserve-3d;
+  /* transform-style: preserve-3d; */
 }
 
 /* CARD JANELA DE SOFTWARE */

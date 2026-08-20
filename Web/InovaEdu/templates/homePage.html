@@ -113,7 +113,7 @@
                     <h3 class="panel-title">Projetos</h3>
                     <p class="panel-desc">Acompanhe e explore todos os projetos desenvolvidos pelas turmas do Senac. Conheça trabalhos integradores, soluções tecnológicas e ideias inovadoras.</p>
                     <!-- Mantenha o href original de direcionamento se houver -->
-                    <a href="#" class="inova-btn">EXPLORAR PROJETOS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-projects">
@@ -133,7 +133,7 @@
                     <div class="panel-badge-icon"><i class="fa-solid fa-folder-open"></i></div>
                     <h3 class="panel-title">Repositórios</h3>
                     <p class="panel-desc">Veja as criações, ideias e trabalhos organizados por área tecnológica. Acesse documentações, códigos e estruturas de projetos.</p>
-                    <a href="#" class="inova-btn">ACESSAR REPOSITÓRIOS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-tree">
@@ -154,7 +154,7 @@
                     <div class="panel-badge-icon"><i class="fa-solid fa-users"></i></div>
                     <h3 class="panel-title">Turmas</h3>
                     <p class="panel-desc">Uma seção dedicada aos projetos integradores das turmas da área de tecnologia do Senac.</p>
-                    <a href="#" class="inova-btn">VER TURMAS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-turmas">
@@ -180,7 +180,7 @@
                     <div class="panel-badge-icon"><i class="fa-solid fa-comments"></i></div>
                     <h3 class="panel-title">Fórum</h3>
                     <p class="panel-desc">Compartilhar conhecimentos, estudos, tirar dúvidas e trocar aprendizados com alunos e instrutores.</p>
-                    <a href="#" class="inova-btn">ACESSAR FÓRUM <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-forum">
@@ -199,7 +199,7 @@
                     <div class="panel-badge-icon"><i class="fa-solid fa-calendar-days"></i></div>
                     <h3 class="panel-title">Calendário</h3>
                     <p class="panel-desc">Visualizar as datas de bancas, entregas e os projetos que serão apresentados em breve.</p>
-                    <a href="#" class="inova-btn">VER CALENDÁRIO <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-calendar">
@@ -222,7 +222,7 @@
                     <div class="panel-badge-icon"><i class="fa-solid fa-user"></i></div>
                     <h3 class="panel-title">Perfil</h3>
                     <p class="panel-desc">Gerencie suas informações, acompanhe suas submissões e edite suas preferências na plataforma Inova Edu.</p>
-                    <a href="#" class="inova-btn">ACESSAR PERFIL <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    
                     </div>
                     <div class="panel-visual">
                     <div class="tech-graphic graphic-profile">
@@ -431,7 +431,7 @@
                 </div>
 
                 <div class="window-footer">
-                  <a href="#" class="btn-explorar" aria-label="Explorar o curso {{ curso.nome_curso }}">
+                  <a href="{% url 'turmas' curso_id=curso.idcurso %}" class="btn-explorar" aria-label="Explorar o curso {{ curso.nome_curso }}">
                     EXPLORAR <span>&rarr;</span>
                   </a>
                 </div>
