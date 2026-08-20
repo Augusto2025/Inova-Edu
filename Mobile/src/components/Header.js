@@ -49,6 +49,7 @@ export default function Header({
   };
 
   const avatarUri = isValidImageUri(user?.imagem) ? user.imagem.trim() : null;
+  const defaultAvatar = require('../../assets/default.png');
 
   useEffect(() => {
     setAvatarLoadFailed(false);
@@ -100,16 +101,12 @@ export default function Header({
                   borderRadius={(52 * fontSizeScale) / 2} 
                   style={{ marginRight: 12 }} 
                 />
-              ) : avatarUri && !avatarLoadFailed ? (
-                <Image 
-                  source={{ uri: avatarUri }} 
-                  style={[styles.profileImage, { borderColor: '#FFFFFF' }]} 
+              ) : (
+                <Image
+                  source={avatarUri && !avatarLoadFailed ? { uri: avatarUri } : defaultAvatar}
+                  style={[styles.profileImage, { borderColor: '#FFFFFF' }]}
                   onError={() => setAvatarLoadFailed(true)}
                 />
-              ) : (
-                <View style={[styles.profileImagePlaceholder, { borderColor: '#FFFFFF', backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                  <Ionicons name="person" size={26} color={headerTextColor} />
-                </View>
               )}
 
               <View style={styles.rightHeaderText}>

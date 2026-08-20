@@ -28,6 +28,7 @@ export default function ProfileScreen({ route, navigation }) {
   const visualizandoOutroUsuario = Boolean(usuarioIdSolicitado) && String(usuarioIdSolicitado) !== String(user?.idUsuario);
   const usuarioExibicao = usuarioPublico || user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const defaultAvatar = require('../../assets/default.png');
   const [fotoPerfilVisible, setFotoPerfilVisible] = useState(false);
 
   useEffect(() => {
@@ -548,7 +549,7 @@ export default function ProfileScreen({ route, navigation }) {
               {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' && !avatarLoadFailed ? (
                 <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} resizeMode="cover" onError={() => setAvatarLoadFailed(true)} />
               ) : (
-                <Ionicons name="person" size={50} color="#B0B8C4" />
+                <Image source={defaultAvatar} style={styles.profileImage} resizeMode="cover" />
               )}
             </TouchableOpacity>
             {!visualizandoOutroUsuario && (
