@@ -278,6 +278,369 @@ body {
     color: var(--texto-mutado);
 }
 
+/* ============================================================
+   SEÇÃO RECURSOS - INTERFACE APLICATIVO INOVA EDU
+   ============================================================ */
+
+:root {
+  --azul-senac: #004A8D;
+  --azul-escuro: #003366;
+  --bg-app: #FFFFFF;
+  --bg-neutro: #F5F8FC;
+  --border-app: #D9E8F5;
+  --detalhe-app: #E5EEF7;
+}
+
+.inova-edu-section {
+  padding: 60px 20px;
+  background-color: var(--bg-neutro);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.inova-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* CONTAINER DA JANELA DO APLICATIVO */
+.inova-window {
+  background: var(--bg-app);
+  border: 1px solid var(--border-app);
+  border-radius: 12px;
+  box-shadow: 0 16px 32px rgba(0, 51, 102, 0.08);
+  overflow: hidden;
+}
+
+/* BARRA SUPERIOR */
+.inova-window-bar {
+  background-color: var(--azul-escuro);
+  color: #FFFFFF;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.control-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--detalhe-app);
+  opacity: 0.7;
+}
+
+.window-title {
+  color: #FFFFFF;
+  opacity: 0.95;
+}
+
+.window-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--border-app);
+}
+
+.status-indicator {
+  width: 7px;
+  height: 7px;
+  background-color: #D9E8F5;
+  border-radius: 50%;
+}
+
+/* BARRA DE ABAS */
+.inova-tabs-wrapper {
+  background-color: var(--detalhe-app);
+  border-bottom: 1px solid var(--border-app);
+  padding: 8px 12px 0 12px;
+}
+
+.inova-tabs-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.inova-tab {
+  background: var(--bg-neutro);
+  color: var(--azul-escuro);
+  border: 1px solid var(--border-app);
+  border-bottom: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  position: relative;
+  outline: none;
+}
+
+.inova-tab:hover {
+  background: var(--bg-app);
+  color: var(--azul-senac);
+}
+
+.inova-tab:hover .tab-icon {
+  transform: translateY(-1px) scale(1.08);
+}
+
+.inova-tab.active {
+  background: var(--azul-senac);
+  color: #FFFFFF;
+  border-color: var(--azul-senac);
+}
+
+.inova-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--azul-escuro);
+}
+
+.tab-icon {
+  font-size: 0.95rem;
+  transition: transform 0.2s ease;
+}
+
+/* MICROANIMAÇÕES DOS ÍCONES DAS ABAS */
+.inova-tab:hover .fa-lightbulb { filter: drop-shadow(0 0 3px rgba(255,255,255,0.8)); }
+.inova-tab:hover .fa-folder-open { transform: rotate(-3deg); }
+.inova-tab:hover .fa-users { transform: scale(1.05); }
+.inova-tab:hover .fa-comments { transform: translateY(-2px); }
+.inova-tab:hover .fa-calendar-days { transform: scale(1.05); }
+.inova-tab:hover .fa-user { transform: scale(1.08); }
+
+/* ÁREA DE CONTEÚDO DA JANELA */
+.inova-window-body {
+  padding: 40px 30px;
+  background-color: var(--bg-app);
+  min-height: 280px;
+  position: relative;
+}
+
+/* PAINÉIS DE CONTEÚDO */
+.inova-panel {
+  display: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.inova-panel.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.panel-tech-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--azul-senac);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+
+.panel-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 30px;
+  align-items: center;
+}
+
+.panel-badge-icon {
+  font-size: 2rem;
+  color: var(--azul-senac);
+  margin-bottom: 12px;
+}
+
+.panel-title {
+  font-size: 1.6rem;
+  color: var(--azul-escuro);
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.panel-desc {
+  color: var(--azul-escuro);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 28px 0;
+  max-width: 540px;
+  opacity: 0.9;
+}
+
+/* BOTÃO PRINCIPAL */
+.inova-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--azul-senac);
+  color: #FFFFFF;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.inova-btn:hover {
+  background-color: var(--azul-escuro);
+}
+
+.inova-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+/* ELEMENTOS GRÁFICOS E TECNOLÓGICOS DECORATIVOS */
+.tech-graphic {
+  background: var(--bg-neutro);
+  border: 1px solid var(--border-app);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 160px;
+  color: var(--azul-senac);
+}
+
+.graphic-code-box {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.graphic-line {
+  width: 100%;
+  height: 2px;
+  background: var(--border-app);
+  margin: 12px 0;
+}
+
+.graphic-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--azul-senac);
+  border-radius: 50%;
+  margin: 0 3px;
+  opacity: 0.4;
+}
+
+/* Árvore de arquivos (Repositórios) */
+.graphic-tree {
+  align-items: flex-start;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--azul-escuro);
+}
+
+.tree-header { font-weight: bold; margin-bottom: 6px; color: var(--azul-senac); }
+.tree-item { margin-left: 8px; margin-top: 4px; }
+.tree-branch { color: var(--border-app); }
+
+/* Turmas */
+.nodes-wrapper { text-align: center; }
+.node { color: var(--azul-senac); font-size: 1.2rem; }
+.node-line { width: 2px; height: 16px; background: var(--border-app); margin: 4px auto; }
+.nodes-bottom { display: flex; gap: 12px; }
+
+/* Fórum */
+.chat-mock {
+  background: #FFFFFF;
+  border: 1px solid var(--border-app);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+  width: 100%;
+  color: var(--azul-escuro);
+}
+
+/* Calendário */
+.cal-title { font-weight: bold; font-size: 0.8rem; margin-bottom: 8px; color: var(--azul-senac); }
+.cal-days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 0.7rem; color: var(--azul-escuro); }
+.cal-active { background: var(--azul-senac); color: #FFF; border-radius: 3px; text-align: center; }
+
+/* Perfil */
+.avatar-badge { font-size: 2rem; color: var(--azul-senac); margin-bottom: 8px; }
+.profile-tag { font-size: 0.7rem; font-weight: bold; color: var(--azul-escuro); display: flex; align-items: center; gap: 4px; }
+.pulse-dot { width: 6px; height: 6px; background: var(--azul-senac); border-radius: 50%; }
+
+/* ============================================================
+   RESPONSIVIDADE E ACESSIBILIDADE
+   ============================================================ */
+
+/* TABLET (<= 768px) */
+@media (max-width: 768px) {
+  .panel-content-grid {
+    grid-template-columns: 1fr;
+  }
+  .panel-visual {
+    order: -1;
+  }
+}
+
+/* MOBILE (<= 576px) */
+@media (max-width: 576px) {
+  .inova-tabs-wrapper {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .inova-tabs-list {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+  
+  .inova-tab {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .inova-window-body {
+    padding: 24px 16px;
+  }
+}
+
+/* ACCESSIBILITY: REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .inova-panel,
+  .inova-tab,
+  .tab-icon,
+  .inova-btn,
+  .btn-arrow {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
 /* =================================
    5. PARALLAX COM ROADMAP
 ================================= */
@@ -425,161 +788,934 @@ body {
 /* =================================
    6. CARROSSEL DE CURSOS
 ================================= */
-.carousel-container {
-    position: relative;
-    display: flex;
-    align-items: center;
+/* ================================================================
+   ESCOPO EXCLUSIVO DE ESTILOS DA SEÇÃO CARROSSEL DE CURSOS
+   ================================================================ */
+#secao-cursos-carrossel {
+  --azul-senac: #004A8D;
+  --azul-escuro: #003366;
+  --azul-claro: #E5EEF7;
+  --azul-soft: #D9E8F5;
+  --bg-light: #F5F8FC;
+  --branco: #FFFFFF;
+  --cinza-texto: #4A5568;
+
+  position: relative;
+  background-color: var(--bg-light);
+  padding: 80px 20px;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.carousel {
-    overflow: hidden;
-    width: 100%;
+/* Container e Cabeçalho da Seção */
+#secao-cursos-carrossel .cursos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-.carousel-track {
-    display: flex;
-    gap: 20px;
+#secao-cursos-carrossel .cursos-header {
+  text-align: center;
+  margin-bottom: 50px;
 }
 
-.curso-card {
-    min-width: calc(33.333% - 14px);
-    flex-shrink: 0;
-    background: var(--branco);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--cinza-borda);
-    position: relative;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+#secao-cursos-carrossel .cursos-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--azul-claro);
+  color: var(--azul-senac);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 50px;
+  margin-bottom: 14px;
+  border: 1px solid var(--azul-soft);
 }
 
-.curso-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--azul-senac);
-    color: var(--branco);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 20px;
+#secao-cursos-carrossel .cursos-header h2 {
+  font-size: 2.2rem;
+  color: var(--azul-escuro);
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
 }
 
-.curso-card img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
+#secao-cursos-carrossel .cursos-header p {
+  color: var(--cinza-texto);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.curso-info {
-    padding: 20px;
+/* CARROSSEL 3D PERSPECTIVE ENGINE */
+#secao-cursos-carrossel .carousel-stage {
+  position: relative;
+  perspective: 1200px;
+  padding: 30px 0 50px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 520px;
 }
 
-.curso-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    color: var(--azul-senac);
+#secao-cursos-carrossel .carousel-track {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 480px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
 }
 
-.curso-info p {
-    font-size: 0.88rem;
-    color: var(--texto-mutado);
+/* CARD JANELA DE SOFTWARE */
+#secao-cursos-carrossel .app-window-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: var(--branco);
+  border-radius: 12px;
+  border: 1px solid var(--azul-soft);
+  box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+              opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.3s ease, 
+              border-color 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, -200px) scale(0.7);
 }
 
-.carousel-btn {
-    background: var(--branco);
-    border: 1px solid var(--cinza-borda);
-    color: var(--azul-senac);
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    z-index: 10;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s;
+/* POSICIONAMENTO 3D EM PERSPECTIVA */
+#secao-cursos-carrossel .app-window-card.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
+  z-index: 10;
+  box-shadow: 0 20px 45px rgba(0, 74, 141, 0.18);
+  border-color: var(--azul-senac);
 }
 
-.carousel-btn:hover {
-    background: var(--azul-senac);
-    color: var(--branco);
+#secao-cursos-carrossel .app-window-card.prev {
+  opacity: 0.65;
+  pointer-events: auto;
+  transform: translate3d(-60%, 0, -120px) scale(0.85) rotateY(12deg);
+  z-index: 5;
 }
 
-.carousel-btn.prev { margin-right: 10px; }
-.carousel-btn.next { margin-left: 10px; }
+#secao-cursos-carrossel .app-window-card.next {
+  opacity: 0.65;
+  pointer-events: auto;
+  transform: translate3d(60%, 0, -120px) scale(0.85) rotateY(-12deg);
+  z-index: 5;
+}
 
-.sem-cursos{
-    margin: auto;
-    color: var(--texto-mutado);
-    font-size: larger;
+#secao-cursos-carrossel .app-window-card.far-prev {
+  opacity: 0;
+  transform: translate3d(-110%, 0, -250px) scale(0.7) rotateY(20deg);
+  z-index: 1;
+}
+
+#secao-cursos-carrossel .app-window-card.far-next {
+  opacity: 0;
+  transform: translate3d(110%, 0, -250px) scale(0.7) rotateY(-20deg);
+  z-index: 1;
+}
+
+/* HOVER NO CARD ATIVO */
+#secao-cursos-carrossel .app-window-card.active:hover {
+  transform: translate3d(0, -8px, 0) scale(1.01);
+  box-shadow: 0 25px 50px rgba(0, 74, 141, 0.25);
+}
+
+/* HEADER DA JANELA (CONTROLES OS) */
+#secao-cursos-carrossel .window-header {
+  background-color: var(--azul-escuro);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#secao-cursos-carrossel .window-controls {
+  display: flex;
+  gap: 6px;
+}
+
+#secao-cursos-carrossel .window-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--azul-senac);
+  transition: opacity 0.2s;
+}
+
+#secao-cursos-carrossel .window-dot:nth-child(2) { opacity: 0.6; }
+#secao-cursos-carrossel .window-dot:nth-child(3) { background-color: var(--azul-soft); opacity: 0.4; }
+
+#secao-cursos-carrossel .app-window-card:hover .window-dot {
+  opacity: 1;
+}
+
+#secao-cursos-carrossel .window-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--azul-claro);
+  letter-spacing: 1px;
+}
+
+/* ÁREA VISUAL PRINCIPAL */
+#secao-cursos-carrossel .window-viewport {
+  height: 180px;
+  position: relative;
+  background-color: var(--azul-escuro);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ESTADO COM IMAGEM */
+#secao-cursos-carrossel .course-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  filter: brightness(0.92) contrast(1.05);
+}
+
+#secao-cursos-carrossel .app-window-card:hover .course-image {
+  transform: scale(1.06);
+}
+
+#secao-cursos-carrossel .image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,51,102,0.1) 0%, rgba(0,51,102,0.5) 100%);
+  pointer-events: none;
+}
+
+/* ESTADO SEM IMAGEM (TERMINAL INTERATIVO) */
+#secao-cursos-carrossel .terminal-viewport {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  background: linear-gradient(135deg, var(--azul-escuro) 0%, #001A33 100%);
+}
+
+#secao-cursos-carrossel .terminal-bg-decor {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.03);
+  user-select: none;
+  pointer-events: none;
+}
+
+#secao-cursos-carrossel .terminal-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  z-index: 1;
+}
+
+#secao-cursos-carrossel .t-cmd { color: var(--azul-soft); }
+#secao-cursos-carrossel .t-info { color: rgba(255, 255, 255, 0.7); }
+#secao-cursos-carrossel .t-success { color: #80BFFF; font-weight: 700; }
+
+#secao-cursos-carrossel .t-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: var(--azul-senac);
+  margin-left: 4px;
+  animation: blinkCursor 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+#secao-cursos-carrossel .terminal-footer-badge {
+  align-self: flex-start;
+  background-color: rgba(0, 74, 141, 0.4);
+  border: 1px solid rgba(229, 238, 247, 0.2);
+  color: var(--azul-claro);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+/* CORPO DO CARD */
+#secao-cursos-carrossel .window-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  background-color: var(--branco);
+}
+
+#secao-cursos-carrossel .course-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--azul-escuro);
+  margin-bottom: 10px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#secao-cursos-carrossel .course-description {
+  font-size: 0.9rem;
+  color: var(--cinza-texto);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* BOTÃO EXPLORAR */
+#secao-cursos-carrossel .window-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid var(--azul-claro);
+  padding-top: 14px;
+}
+
+#secao-cursos-carrossel .btn-explorar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--azul-senac);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+#secao-cursos-carrossel .btn-explorar span {
+  transition: transform 0.2s ease;
+}
+
+#secao-cursos-carrossel .app-window-card.active:hover .btn-explorar {
+  color: var(--azul-escuro);
+}
+
+#secao-cursos-carrossel .app-window-card.active:hover .btn-explorar span {
+  transform: translateX(5px);
+}
+
+/* CONTROLES E BARRA DE PROGRESSO DO CARROSSEL */
+#secao-cursos-carrossel .carousel-controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  position: relative;
+  z-index: 10;
+}
+
+#secao-cursos-carrossel .nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#secao-cursos-carrossel .btn-nav {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: var(--branco);
+  border: 2px solid var(--azul-claro);
+  color: var(--azul-senac);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 51, 102, 0.06);
+}
+
+#secao-cursos-carrossel .btn-nav:hover {
+  background-color: var(--azul-escuro);
+  color: #FFFFFF;
+  border-color: var(--azul-escuro);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 51, 102, 0.2);
+}
+
+#secao-cursos-carrossel .btn-nav:active {
+  transform: translateY(0);
+}
+
+#secao-cursos-carrossel .counter-display {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--azul-escuro);
+  letter-spacing: 1px;
+}
+
+#secao-cursos-carrossel .progress-bar-container {
+  width: 220px;
+  height: 4px;
+  background-color: var(--azul-soft);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#secao-cursos-carrossel .progress-bar-fill {
+  height: 100%;
+  background-color: var(--azul-senac);
+  width: 0%;
+  transition: width 0.4s ease;
+  border-radius: 4px;
+}
+
+/* FALLBACK PARA LISTA VAZIA */
+#secao-cursos-carrossel .empty-courses-state {
+  text-align: center;
+  padding: 50px 20px;
+  background-color: var(--branco);
+  border: 1px dashed var(--azul-soft);
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* RESPONSIVIDADE E ACESSIBILIDADE */
+@media (max-width: 768px) {
+  #secao-cursos-carrossel .carousel-stage {
+    perspective: none;
+    min-height: 460px;
+  }
+
+  #secao-cursos-carrossel .carousel-track {
+    max-width: 100%;
+    height: 450px;
+  }
+
+  #secao-cursos-carrossel .app-window-card {
+    transform: scale(0.9) !important;
+  }
+
+  #secao-cursos-carrossel .app-window-card.active {
+    transform: scale(1) !important;
+  }
+
+  #secao-cursos-carrossel .app-window-card.prev {
+    transform: translate3d(-85%, 0, 0) scale(0.85) !important;
+    opacity: 0.2;
+  }
+
+  #secao-cursos-carrossel .app-window-card.next {
+    transform: translate3d(85%, 0, 0) scale(0.85) !important;
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #secao-cursos-carrossel .app-window-card,
+  #secao-cursos-carrossel .progress-bar-fill,
+  #secao-cursos-carrossel .course-image {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* =================================
    7. SEÇÃO TRILHA DEV
 ================================= */
 .secao-trilha {
-    padding: 60px 20px;
-    background-color: #f8f9fa;
-    text-align: center;
-}
+      position: relative;
+      background-color: #F5F8FC;
+      color: #0A1F44;
+      padding: 80px 20px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      overflow: hidden;
+    }
 
-.trilha-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    margin-top: 40px;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-}
+    /* Elementos decorativos de código no fundo */
+    .secao-trilha .trilha-bg-code {
+      position: absolute;
+      font-family: monospace;
+      font-weight: 700;
+      color: rgba(0, 102, 255, 0.04);
+      user-select: none;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .secao-trilha .trilha-bg-code.c1 { top: 5%; left: 3%; font-size: 5rem; }
+    .secao-trilha .trilha-bg-code.c2 { top: 25%; right: 4%; font-size: 6rem; }
+    .secao-trilha .trilha-bg-code.c3 { top: 55%; left: 2%; font-size: 5.5rem; }
+    .secao-trilha .trilha-bg-code.c4 { top: 80%; right: 3%; font-size: 7rem; }
 
-.trilha-card {
-    background: #ffffff;
-    padding: 30px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-top: 4px solid #004a8d;
-    position: relative;
-    text-align: left;
-}
+    /* Cabeçalho da Seção */
+    .secao-trilha .trilha-header {
+      text-align: center;
+      max-width: 750px;
+      margin: 0 auto 60px auto;
+      position: relative;
+      z-index: 1;
+    }
+    .secao-trilha .trilha-badge-topo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #EAF4FF;
+      color: #0066FF;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(0, 102, 255, 0.2);
+    }
+    .secao-trilha .trilha-header h2 {
+      font-size: 2.3rem;
+      color: #0A1F44;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+    .secao-trilha .trilha-header p {
+      color: #4A5568;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin: 0;
+    }
 
-.trilha-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
+    /* Conteiner Principal do Roadmap */
+    .secao-trilha .trilha-roadmap {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 0;
+      z-index: 1;
+    }
 
-.trilha-numero {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: rgba(0, 74, 141, 0.15);
-}
+    /* Linha Central Vertical (Desktop) */
+    .secao-trilha .trilha-linha-central {
+      position: absolute;
+      top: 0;
+      bottom: 120px;
+      left: 50%;
+      width: 4px;
+      background: linear-gradient(180deg, #0066FF 0%, #1D8BFF 50%, #0A1F44 100%);
+      transform: translateX(-50%);
+      border-radius: 4px;
+      z-index: 0;
+    }
 
-.trilha-icon {
-    font-size: 2rem;
-    color: #004a8d;
-    margin-bottom: 15px;
-}
+    /* Estrutura genérica das Etapas */
+    .secao-trilha .trilha-etapa {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 70px;
+      width: 100%;
+    }
+    .secao-trilha .trilha-etapa.esquerda {
+      justify-content: flex-start;
+    }
+    .secao-trilha .trilha-etapa.direita {
+      justify-content: flex-end;
+    }
 
-.trilha-card h3 {
-    font-size: 1.15rem;
-    color: #222;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
+    /* Card Padrão */
+    .secao-trilha .trilha-card {
+      width: calc(50% - 45px);
+      background-color: #FFFFFF;
+      border: 1px solid #EAF4FF;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(10, 31, 68, 0.05);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+    }
+    .secao-trilha .trilha-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 35px rgba(0, 102, 255, 0.12);
+      border-color: rgba(0, 102, 255, 0.3);
+    }
 
-.trilha-card p {
-    font-size: 0.92rem;
-    color: #666;
-    line-height: 1.5;
-    margin: 0;
-}
+    /* Checkpoint / Node na linha */
+    .secao-trilha .trilha-checkpoint {
+      position: absolute;
+      left: 50%;
+      top: 32px;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      background-color: #0066FF;
+      border: 4px solid #FFFFFF;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.25);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+    }
+    .secao-trilha .trilha-card:hover ~ .trilha-checkpoint,
+    .secao-trilha .trilha-etapa:hover .trilha-checkpoint {
+      transform: translateX(-50%) scale(1.2);
+      background-color: #1D8BFF;
+      box-shadow: 0 0 0 6px rgba(0, 102, 255, 0.3);
+    }
+
+    /* Cabeçalho do Card */
+    .secao-trilha .trilha-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .secao-trilha .trilha-numero {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #0066FF;
+      opacity: 0.85;
+      line-height: 1;
+    }
+    .secao-trilha .trilha-icon-wrapper {
+      width: 42px;
+      height: 42px;
+      background-color: #EAF4FF;
+      color: #0066FF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    /* Conteúdo do Card */
+    .secao-trilha .trilha-card h3 {
+      font-size: 1.35rem;
+      color: #0A1F44;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .secao-trilha .trilha-card p {
+      color: #4A5568;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* Badges / Tags de Tecnologias */
+    .secao-trilha .trilha-tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .secao-trilha .trilha-tech-badge {
+      background-color: #F5F8FC;
+      color: #0A1F44;
+      border: 1px solid #E2E8F0;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .secao-trilha .trilha-card:hover .trilha-tech-badge {
+      border-color: rgba(0, 102, 255, 0.2);
+      background-color: #EAF4FF;
+      color: #0066FF;
+    }
+
+    /* Destaques (Objetivo, Resultado, etc) */
+    .secao-trilha .trilha-box-destaque {
+      background-color: #EAF4FF;
+      border-left: 3px solid #0066FF;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 15px;
+    }
+    .secao-trilha .trilha-box-destaque-rotulo {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #0066FF;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .secao-trilha .trilha-box-destaque-texto {
+      font-size: 0.88rem;
+      color: #0A1F44;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    /* ================================================================
+       ETAPA 02 - BIFURCAÇÃO / ESPECIALIZAÇÃO (ESPECIAL)
+       ================================================================ */
+    .secao-trilha .trilha-etapa-especial {
+      position: relative;
+      margin-bottom: 70px;
+      width: 100%;
+      z-index: 1;
+    }
+    .secao-trilha .trilha-especial-header {
+      background-color: #FFFFFF;
+      border: 1px solid #EAF4FF;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 35px auto;
+      box-shadow: 0 10px 30px rgba(10, 31, 68, 0.05);
+      position: relative;
+    }
+    .secao-trilha .trilha-especial-header h3 {
+      font-size: 1.4rem;
+      color: #0A1F44;
+      font-weight: 700;
+      margin: 8px 0;
+    }
+    .secao-trilha .trilha-especial-header p {
+      color: #4A5568;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* Grid de Caminhos (3 colunas) */
+    .secao-trilha .trilha-caminhos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      position: relative;
+    }
+    .secao-trilha .trilha-caminho-card {
+      background-color: #FFFFFF;
+      border: 1px solid #EAF4FF;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(10, 31, 68, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .secao-trilha .trilha-caminho-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0, 102, 255, 0.12);
+    }
+    .secao-trilha .trilha-caminho-card.front { border-top: 4px solid #0066FF; }
+    .secao-trilha .trilha-caminho-card.back { border-top: 4px solid #0A1F44; }
+    .secao-trilha .trilha-caminho-card.mobile { border-top: 4px solid #1D8BFF; }
+
+    .secao-trilha .trilha-caminho-titulo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0A1F44;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .secao-trilha .trilha-caminho-desc {
+      font-size: 0.88rem;
+      color: #4A5568;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    /* ================================================================
+       ETAPA 05 - SEQUÊNCIA DE MERCADO (LISTA DE ETAPAS)
+       ================================================================ */
+    .secao-trilha .trilha-mercado-passos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .secao-trilha .trilha-mercado-item {
+      background-color: #F5F8FC;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0A1F44;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .secao-trilha .trilha-mercado-item span {
+      color: #0066FF;
+    }
+
+    /* ================================================================
+       FINAL DA TRILHA - CHECKPOINT DEV JÚNIOR
+       ================================================================ */
+    .secao-trilha .trilha-final {
+      max-width: 650px;
+      margin: 40px auto 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .secao-trilha .trilha-final-card {
+      background: linear-gradient(135deg, #0A1F44 0%, #0066FF 100%);
+      color: #FFFFFF;
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 15px 40px rgba(0, 102, 255, 0.25);
+      position: relative;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+    }
+    .secao-trilha .trilha-final-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .secao-trilha .trilha-trofeu-icon {
+      width: 70px;
+      height: 70px;
+      background-color: #FFFFFF;
+      color: #0066FF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .secao-trilha .trilha-final-card .tag-nivel {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 4px 14px;
+      border-radius: 50px;
+      margin-bottom: 12px;
+      color: #EAF4FF;
+    }
+    .secao-trilha .trilha-final-card h3 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    .secao-trilha .trilha-final-card p {
+      color: #EAF4FF;
+      font-size: 1.05rem;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    /* ================================================================
+       RESPONSIVIDADE (TABLET E MOBILE)
+       ================================================================ */
+    @media (max-width: 991px) {
+      .secao-trilha .trilha-linha-central {
+        left: 24px;
+        transform: none;
+      }
+      .secao-trilha .trilha-etapa {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 45px;
+      }
+      .secao-trilha .trilha-card {
+        width: calc(100% - 60px);
+        margin-left: 60px !important;
+      }
+      .secao-trilha .trilha-checkpoint {
+        left: 24px;
+        top: 24px;
+        transform: translateX(-50%);
+      }
+      .secao-trilha .trilha-etapa:hover .trilha-checkpoint {
+        transform: translateX(-50%) scale(1.1);
+      }
+      .secao-trilha .trilha-caminhos-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding-left: 60px;
+      }
+      .secao-trilha .trilha-especial-header {
+        margin-left: 60px;
+        text-align: left;
+      }
+      .secao-trilha .trilha-mercado-passos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .secao-trilha .trilha-final {
+        padding-left: 0;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .secao-trilha {
+        padding: 50px 15px;
+      }
+      .secao-trilha .trilha-header h2 {
+        font-size: 1.8rem;
+      }
+      .secao-trilha .trilha-card {
+        padding: 20px;
+      }
+      .secao-trilha .trilha-mercado-passos {
+        grid-template-columns: 1fr;
+      }
+      .secao-trilha .trilha-final-card {
+        padding: 30px 20px;
+      }
+      .secao-trilha .trilha-final-card h3 {
+        font-size: 1.5rem;
+      }
+    }
 
 /* =================================
    8. SEÇÃO DOWNLOAD

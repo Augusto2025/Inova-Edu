@@ -24,7 +24,7 @@
             <nav class="nav-links">
                 <a href="#recursos">Recursos</a>
                 <a href="#roadmap">Roadmap</a>
-                <a href="#cursos">Cursos</a>
+                <a href="#secao-cursos-carrossel">Cursos</a>
                 <a href="#trilha">Trilha Dev</a>
                 <a href="#download">App</a>
             </nav>
@@ -45,51 +45,270 @@
         </div>
     </section>
 
-    <!-- SEÇÃO DE RECURSOS (UNIFICADA EM GRADE) -->
-    <section id="recursos" class="secao-recursos">
-        <div class="container-secao">
-            <h2 class="titulo-secao">Tudo o que você precisa para evoluir sua jornada</h2>
-            <p class="descricao">Uma visão geral de todas as áreas e ferramentas do Repositório Inova Edu.</p>
-
-            <div class="cards-grid">
-                <div class="card card-destaque">
-                    <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
-                    <h3>Projetos</h3>
-                    <p>Acompanhar e explorar todos os projetos desenvolvidos pelas turmas do Senac.</p>
+    <section id="recursos" class="inova-edu-section">
+        <div class="inova-container">
+            
+            <!-- JANELA PRINCIPAL ESTILO APLICATIVO -->
+            <div class="inova-window">
+            
+            <!-- BARRA SUPERIOR DA JANELA -->
+            <div class="inova-window-bar">
+                <div class="window-controls" aria-hidden="true">
+                <span class="control-dot"></span>
+                <span class="control-dot"></span>
+                <span class="control-dot"></span>
                 </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-folder-open"></i></div>
-                    <h3>Repositórios</h3>
-                    <p>Veja as criações, ideias e trabalhos organizados por área tecnológica.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
-                    <h3>Turmas</h3>
-                    <p>Uma seção dedicada aos projetos integradores das turmas da área de tecnologia.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-comments"></i></div>
-                    <h3>Fórum</h3>
-                    <p>Compartilhar conhecimentos, estudos, tirar dúvidas e trocar aprendizados.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                    <h3>Calendário</h3>
-                    <p>Visualizar as datas de bancas e os projetos que serão apresentados.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class="fa-solid fa-user"></i></div>
-                    <h3>Perfil</h3>
-                    <p>Gerencie suas informações e Projetos.</p>
+                <div class="window-title">INOVA EDU / RECURSOS</div>
+                <div class="window-status" aria-hidden="true">
+                <span class="status-indicator"></span> SYSTEM_ONLINE
                 </div>
             </div>
+
+            <!-- BARRA DE ABAS DE NAVEGAÇÃO -->
+            <div class="inova-tabs-wrapper">
+                <div class="inova-tabs-list" role="tablist" aria-label="Navegação de Recursos Inova Edu">
+                
+                <button class="inova-tab active" role="tab" aria-selected="true" id="tab-projetos" aria-controls="panel-projetos" tabindex="0">
+                    <i class="fa-solid fa-lightbulb tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Projetos</span>
+                </button>
+
+                <button class="inova-tab" role="tab" aria-selected="false" id="tab-repositorios" aria-controls="panel-repositorios" tabindex="-1">
+                    <i class="fa-solid fa-folder-open tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Repositórios</span>
+                </button>
+
+                <button class="inova-tab" role="tab" aria-selected="false" id="tab-turmas" aria-controls="panel-turmas" tabindex="-1">
+                    <i class="fa-solid fa-users tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Turmas</span>
+                </button>
+
+                <button class="inova-tab" role="tab" aria-selected="false" id="tab-forum" aria-controls="panel-forum" tabindex="-1">
+                    <i class="fa-solid fa-comments tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Fórum</span>
+                </button>
+
+                <button class="inova-tab" role="tab" aria-selected="false" id="tab-calendario" aria-controls="panel-calendario" tabindex="-1">
+                    <i class="fa-solid fa-calendar-days tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Calendário</span>
+                </button>
+
+                <button class="inova-tab" role="tab" aria-selected="false" id="tab-perfil" aria-controls="panel-perfil" tabindex="-1">
+                    <i class="fa-solid fa-user tab-icon" aria-hidden="true"></i>
+                    <span class="tab-label">Perfil</span>
+                </button>
+
+                </div>
+            </div>
+
+            <!-- ÁREA DE CONTEÚDO DA ABA ATIVA -->
+            <div class="inova-window-body">
+
+                <!-- ABA 1: PROJETOS -->
+                <div class="inova-panel active" id="panel-projetos" role="tabpanel" aria-labelledby="tab-projetos">
+                <div class="panel-tech-tag">01 / 06 &bull; PROJECTS_MODULE</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                    <h3 class="panel-title">Projetos</h3>
+                    <p class="panel-desc">Acompanhe e explore todos os projetos desenvolvidos pelas turmas do Senac. Conheça trabalhos integradores, soluções tecnológicas e ideias inovadoras.</p>
+                    <!-- Mantenha o href original de direcionamento se houver -->
+                    <a href="#" class="inova-btn">EXPLORAR PROJETOS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-projects">
+                        <div class="graphic-code-box">&lt;INOVA_PROJECTS /&gt;</div>
+                        <div class="graphic-line"></div>
+                        <div class="graphic-dots"><span></span><span></span><span></span></div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ABA 2: REPOSITÓRIOS -->
+                <div class="inova-panel" id="panel-repositorios" role="tabpanel" aria-labelledby="tab-repositorios" hidden>
+                <div class="panel-tech-tag">02 / 06 &bull; REPOS_INDEX</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <h3 class="panel-title">Repositórios</h3>
+                    <p class="panel-desc">Veja as criações, ideias e trabalhos organizados por área tecnológica. Acesse documentações, códigos e estruturas de projetos.</p>
+                    <a href="#" class="inova-btn">ACESSAR REPOSITÓRIOS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-tree">
+                        <div class="tree-header"><i class="fa-solid fa-folder"></i> PROJECTS/</div>
+                        <div class="tree-item"><span class="tree-branch">├──</span> web/</div>
+                        <div class="tree-item"><span class="tree-branch">├──</span> python/</div>
+                        <div class="tree-item"><span class="tree-branch">└──</span> mobile/</div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ABA 3: TURMAS -->
+                <div class="inova-panel" id="panel-turmas" role="tabpanel" aria-labelledby="tab-turmas" hidden>
+                <div class="panel-tech-tag">03 / 06 &bull; TEAMS_NETWORK</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-users"></i></div>
+                    <h3 class="panel-title">Turmas</h3>
+                    <p class="panel-desc">Uma seção dedicada aos projetos integradores das turmas da área de tecnologia do Senac.</p>
+                    <a href="#" class="inova-btn">VER TURMAS <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-turmas">
+                        <div class="nodes-wrapper">
+                        <div class="node node-top">●</div>
+                        <div class="node-line"></div>
+                        <div class="nodes-bottom">
+                            <span class="node">●</span>
+                            <span class="node">●</span>
+                            <span class="node">●</span>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ABA 4: FÓRUM -->
+                <div class="inova-panel" id="panel-forum" role="tabpanel" aria-labelledby="tab-forum" hidden>
+                <div class="panel-tech-tag">04 / 06 &bull; FORUM_COMMUNITY</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-comments"></i></div>
+                    <h3 class="panel-title">Fórum</h3>
+                    <p class="panel-desc">Compartilhar conhecimentos, estudos, tirar dúvidas e trocar aprendizados com alunos e instrutores.</p>
+                    <a href="#" class="inova-btn">ACESSAR FÓRUM <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-forum">
+                        <div class="chat-mock chat-1">Olá! Como tirar dúvidas?</div>
+                        <div class="chat-mock chat-2">Utilize o fórum da comunidade!</div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ABA 5: CALENDÁRIO -->
+                <div class="inova-panel" id="panel-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden>
+                <div class="panel-tech-tag">05 / 06 &bull; SCHEDULE_EVENTS</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <h3 class="panel-title">Calendário</h3>
+                    <p class="panel-desc">Visualizar as datas de bancas, entregas e os projetos que serão apresentados em breve.</p>
+                    <a href="#" class="inova-btn">VER CALENDÁRIO <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-calendar">
+                        <div class="cal-title">AGOSTO 2026</div>
+                        <div class="cal-days">
+                        <span>01</span><span>02</span><span>03</span><span>04</span>
+                        <span>05</span><span class="cal-active">06</span><span>07</span>
+                        <span>08</span><span>09</span><span>10</span><span>11</span>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ABA 6: PERFIL -->
+                <div class="inova-panel" id="panel-perfil" role="tabpanel" aria-labelledby="tab-perfil" hidden>
+                <div class="panel-tech-tag">06 / 06 &bull; USER_PROFILE</div>
+                <div class="panel-content-grid">
+                    <div class="panel-main">
+                    <div class="panel-badge-icon"><i class="fa-solid fa-user"></i></div>
+                    <h3 class="panel-title">Perfil</h3>
+                    <p class="panel-desc">Gerencie suas informações, acompanhe suas submissões e edite suas preferências na plataforma Inova Edu.</p>
+                    <a href="#" class="inova-btn">ACESSAR PERFIL <i class="fa-solid fa-arrow-right btn-arrow"></i></a>
+                    </div>
+                    <div class="panel-visual">
+                    <div class="tech-graphic graphic-profile">
+                        <div class="avatar-badge"><i class="fa-solid fa-user"></i></div>
+                        <div class="profile-tag"><span class="pulse-dot"></span> USER ACTIVE</div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+            </div> <!-- /.inova-window-body -->
+            </div> <!-- /.inova-window -->
+
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const tabList = document.querySelector('.inova-tabs-list');
+        if (!tabList) return;
+
+        const tabs = tabList.querySelectorAll('[role="tab"]');
+        const panels = document.querySelectorAll('.inova-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab));
+
+            // Navegação acessível via teclado
+            tab.addEventListener('keydown', (e) => {
+            const targetTab = e.target;
+            const tabArray = Array.from(tabs);
+            const index = tabArray.indexOf(targetTab);
+
+            let nextIndex = null;
+
+            if (e.key === 'ArrowRight') {
+                nextIndex = (index + 1) % tabArray.length;
+            } else if (e.key === 'ArrowLeft') {
+                nextIndex = (index - 1 + tabArray.length) % tabArray.length;
+            } else if (e.key === 'Home') {
+                nextIndex = 0;
+            } else if (e.key === 'End') {
+                nextIndex = tabArray.length - 1;
+            }
+
+            if (nextIndex !== null) {
+                e.preventDefault();
+                tabArray[nextIndex].focus();
+                switchTab(tabArray[nextIndex]);
+            }
+            });
+        });
+
+        function switchTab(selectedTab) {
+            // Desativa todas as abas
+            tabs.forEach(tab => {
+            tab.classList.remove('active');
+            tab.setAttribute('aria-selected', 'false');
+            tab.setAttribute('tabindex', '-1');
+            });
+
+            // Oculta todos os painéis
+            panels.forEach(panel => {
+            panel.classList.remove('active');
+            panel.setAttribute('hidden', 'true');
+            });
+
+            // Ativa a aba selecionada
+            selectedTab.classList.add('active');
+            selectedTab.setAttribute('aria-selected', 'true');
+            selectedTab.setAttribute('tabindex', '0');
+
+            // Exibe o painel correspondente
+            const targetPanelId = selectedTab.getAttribute('aria-controls');
+            const targetPanel = document.getElementById(targetPanelId);
+
+            if (targetPanel) {
+            targetPanel.removeAttribute('hidden');
+            // Força reflow suave para acionar a transição visual do CSS
+            requestAnimationFrame(() => {
+                targetPanel.classList.add('active');
+            });
+            }
+        }
+        });
+    </script>
 
     <!-- PARALLAX 2 (ROADMAP DO DESENVOLVIMENTO DO PROJETO) -->
     <section class="parallax parallax-stats" id="roadmap" style="background-image: url('{% static "img/Nootbook.jpg" %}');">
@@ -139,95 +358,350 @@
         </div>
     </section>
 
-    <!-- CARROSSEL DE CURSOS -->
-    <section id="cursos" class="secao-cursos">
-        <div class="container-secao">
-            <h2 class="titulo-secao">Cursos em destaque</h2>
-            <p class="descricao">Conheça alguns dos cursos oferecidos na área de tecnologia.</p>
+    <!-- SEÇÃO: CARROSSEL DE CURSOS -->
+<section id="secao-cursos-carrossel" class="secao-cursos-carrossel">
+  <div class="cursos-container">
+    
+    <!-- Cabeçalho da Seção -->
+    <div class="cursos-header">
+      <div class="cursos-badge">
+        <i class="fa-solid fa-laptop-code"></i> Formação Tecnológica
+      </div>
+      <h2>Módulos &amp; Cursos Disponíveis</h2>
+      <p>Explore nossas formações através de uma experiência interativa e encontre o próximo passo da sua carreira.</p>
+    </div>
 
-            <div class="carousel-container">
-                {% if cursos %}
-                    <button class="carousel-btn prev" aria-label="Anterior">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
+    {% if cursos %}
+      <!-- Palco 3D do Carrossel -->
+      <div class="carousel-stage">
+        <div class="carousel-track" id="cursosCarouselTrack">
 
-                    <div class="carousel">
-                        <div class="carousel-track">
-                            {% for curso in cursos %}
-                                <div class="curso-card">
-                                    <img src="{% static 'img/tecnologia.png' %}" alt="{{ curso.nome_curso }}">
-                                    <div class="curso-info">
-                                        <h3>{{ curso.nome_curso }}</h3>
-                                        {% if curso.descricao_curso %}
-                                            <p>{{ curso.descricao_curso }}</p>
-                                        {% else %}
-                                            <p>Descrição não disponível.</p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+          {% for curso in cursos %}
+            <!-- CARD JANELA DE APLICATIVO -->
+            <article class="app-window-card" data-index="{{ forloop.counter0 }}">
+              
+              <!-- Topo da Janela OS -->
+              <div class="window-header">
+                <div class="window-controls">
+                  <span class="window-dot"></span>
+                  <span class="window-dot"></span>
+                  <span class="window-dot"></span>
+                </div>
+                <div class="window-title">
+                  DEV_MODULE_{% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}
+                </div>
+              </div>
 
-                    <button class="carousel-btn next" aria-label="Próximo">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
+              <!-- Viewport Visual (Com Imagem vs Sem Imagem) -->
+              <div class="window-viewport">
+                {% if curso.imagem %}
+                  <!-- Estado: COM IMAGEM -->
+                  <img src="{{ curso.imagem.url }}" alt="{{ curso.nome_curso }}" class="course-image" loading="lazy">
+                  <div class="image-overlay"></div>
+                {% elif curso.imagem_url %}
+                  <!-- Estado: COM IMAGEM VIA URL -->
+                  <img src="{{ curso.imagem_url }}" alt="{{ curso.nome_curso }}" class="course-image" loading="lazy">
+                  <div class="image-overlay"></div>
                 {% else %}
-                    <p class="sem-cursos">Nenhum curso disponível no momento.</p>
+                  <!-- Estado: SEM IMAGEM (Terminal de Código) -->
+                  <div class="terminal-viewport">
+                    <div class="terminal-bg-decor">&lt;/&gt;</div>
+                    <div class="terminal-lines">
+                      <div class="t-cmd">$ course.load()</div>
+                      <div class="t-info">&gt; initializing_module...</div>
+                      <div class="t-success">&gt; status: ready_<span class="t-cursor"></span></div>
+                    </div>
+                    <div class="terminal-footer-badge">
+                      { CODE_INTERFACE }
+                    </div>
+                  </div>
                 {% endif %}
-            </div>
-        </div>
-    </section>
+              </div>
 
-    <!-- ======================================================== -->
-    <!-- TRILHA DE CARREIRA: COMO INICIAR EM DESENVOLVIMENTO     -->
-    <!-- ======================================================== -->
+              <!-- Corpo do Card -->
+              <div class="window-body">
+                <div>
+                  <h3 class="course-title">{{ curso.nome_curso }}</h3>
+                  
+                  {% if curso.descricao_curso %}
+                    <p class="course-description">{{ curso.descricao_curso }}</p>
+                  {% else %}
+                    <p class="course-description">Descrição não disponível para este módulo de aprendizado.</p>
+                  {% endif %}
+                </div>
+
+                <div class="window-footer">
+                  <a href="#" class="btn-explorar" aria-label="Explorar o curso {{ curso.nome_curso }}">
+                    EXPLORAR <span>&rarr;</span>
+                  </a>
+                </div>
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+      </div>
+
+      <!-- Barra de Navegação e Controles -->
+      <div class="carousel-controls-wrapper">
+        <div class="nav-buttons">
+          <button class="btn-nav" id="btnCursoPrev" aria-label="Curso anterior">
+            <i class="fa-solid fa-chevron-left">&lsaquo;</i>
+          </button>
+          
+          <div class="counter-display" id="cursoCounterDisplay">
+            01 — 01
+          </div>
+
+          <button class="btn-nav" id="btnCursoNext" aria-label="Próximo curso">
+            <i class="fa-solid fa-chevron-right">&rsaquo;</i>
+          </button>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="cursoProgressBar"></div>
+        </div>
+      </div>
+
+    {% else %}
+      <!-- Estado Fallback se a variável 'cursos' estiver vazia -->
+      <div class="empty-courses-state">
+        <i class="fa-solid fa-code-branch" style="font-size: 2.5rem; color: var(--azul-senac); margin-bottom: 12px;"></i>
+        <h3 style="color: var(--azul-escuro); margin-bottom: 8px;">Nenhum curso disponível no momento</h3>
+        <p style="color: var(--cinza-texto); font-size: 0.95rem;">Novos módulos de programação e tecnologia serão carregados em breve.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+    <!-- ================================================================= -->
+<!-- SEÇÃO: TRILHA DE CARREIRA DO DESENVOLVEDOR (JORNADA)            -->
+<!-- ================================================================= -->
     <section id="trilha" class="secao-trilha">
-        <div class="container-secao">
-            <h2 class="titulo-secao">Como Iniciar na Carreira de Desenvolvedor</h2>
-            <p class="descricao">Siga este passo a passo estruturado para transformar seus estudos em uma carreira de sucesso na TI.</p>
+        <!-- Elementos decorativos de código no fundo -->
+        <div class="trilha-bg-code c1">&lt;/&gt;</div>
+        <div class="trilha-bg-code c2">{ }</div>
+        <div class="trilha-bg-code c3">;</div>
+        <div class="trilha-bg-code c4">01</div>
 
-            <div class="trilha-grid">
-                
-                <div class="trilha-card">
-                    <span class="trilha-numero">01</span>
-                    <div class="trilha-icon"><i class="fa-solid fa-code"></i></div>
-                    <h3>1. Lógica & Fundamentos</h3>
-                    <p>Aprenda lógica de programação, algoritmos, HTML5, CSS3 e versionamento de código usando Git e GitHub.</p>
-                </div>
-
-                <div class="trilha-card">
-                    <span class="trilha-numero">02</span>
-                    <div class="trilha-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3>2. Escolha sua Especialização</h3>
-                    <p>Defina seu foco inicial: <strong>Front-end</strong> (Web/UI), <strong>Back-end</strong> (Python, Django, Banco de Dados) ou <strong>Mobile</strong>.</p>
-                </div>
-
-                <div class="trilha-card">
-                    <span class="trilha-numero">03</span>
-                    <div class="trilha-icon"><i class="fa-solid fa-cubes"></i></div>
-                    <h3>3. Projetos Práticos</h3>
-                    <p>Construa os Projetos Integradores no Senac e publique suas soluções no Inova Edu para montar seu portfólio real.</p>
-                </div>
-
-                <div class="trilha-card">
-                    <span class="trilha-numero">04</span>
-                    <div class="trilha-icon"><i class="fa-solid fa-comments"></i></div>
-                    <h3>4. Comunidade & Networking</h3>
-                    <p>Participe do nosso Fórum, tire dúvidas, troque experiências e apresente seus projetos para as bancas avaliadoras.</p>
-                </div>
-
-                <div class="trilha-card">
-                    <span class="trilha-numero">05</span>
-                    <div class="trilha-icon"><i class="fa-solid fa-briefcase"></i></div>
-                    <h3>5. Mercado de Trabalho</h3>
-                    <p>Organize seu LinkedIn, destaque os projetos publicados no Inova Edu e comece a aplicar para vagas de estágio e dev Júnior.</p>
-                </div>
-
+        <div class="container">
+            <!-- Cabeçalho -->
+            <div class="trilha-header">
+            <div class="trilha-badge-topo">
+                <i class="fa-solid fa-rocket"></i> Trilha de Carreira
             </div>
-        </div>
+            <h2>Jornada do Desenvolvedor</h2>
+            <p>Um mapa visual passo a passo da sua evolução profissional, desde a primeira linha de código até a preparação para o mercado de trabalho.</p>
+            </div>
+
+            <!-- Conteiner do Roadmap -->
+            <div class="trilha-roadmap">
+            <!-- Linha Vertical Guia -->
+            <div class="trilha-linha-central"></div>
+
+            <!-- ETAPA 01: FUNDAMENTOS -->
+            <div class="trilha-etapa esquerda">
+                <div class="trilha-card">
+                <div class="trilha-card-header">
+                    <span class="trilha-numero">01</span>
+                    <div class="trilha-icon-wrapper">
+                    <i class="fa-solid fa-code"></i>
+                    </div>
+                </div>
+                <h3>Lógica &amp; Fundamentos</h3>
+                <p>Antes de escolher uma tecnologia, aprenda a pensar como um desenvolvedor. Construa uma base sólida em lógica, algoritmos, desenvolvimento web e versionamento.</p>
+                
+                <div class="trilha-tech-grid">
+                    <span class="trilha-tech-badge">Lógica de Programação</span>
+                    <span class="trilha-tech-badge">Algoritmos</span>
+                    <span class="trilha-tech-badge">HTML5</span>
+                    <span class="trilha-tech-badge">CSS3</span>
+                    <span class="trilha-tech-badge">Git</span>
+                    <span class="trilha-tech-badge">GitHub</span>
+                </div>
+
+                <div class="trilha-box-destaque">
+                    <span class="trilha-box-destaque-rotulo">Objetivo</span>
+                    <p class="trilha-box-destaque-texto">Aprender a resolver problemas utilizando lógica de programação e construir suas primeiras páginas web.</p>
+                </div>
+                </div>
+                <div class="trilha-checkpoint"></div>
+            </div>
+
+            <!-- ETAPA 02: ESPECIALIZAÇÃO (BIFURCAÇÃO) -->
+            <div class="trilha-etapa-especial">
+                <div class="trilha-checkpoint" style="top: 28px;"></div>
+                <div class="trilha-especial-header">
+                <div class="trilha-card-header" style="margin-bottom: 8px;">
+                    <span class="trilha-numero">02</span>
+                    <div class="trilha-icon-wrapper">
+                    <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                </div>
+                <h3>Escolha seu Caminho</h3>
+                <p>Depois de dominar os fundamentos, escolha uma área para aprofundar seus conhecimentos e direcionar seus estudos.</p>
+                </div>
+
+                <div class="trilha-caminhos-grid">
+                <!-- FRONT-END -->
+                <div class="trilha-caminho-card front">
+                    <div>
+                    <div class="trilha-caminho-titulo">
+                        🖥️ Front-End
+                    </div>
+                    <p class="trilha-caminho-desc">Crie interfaces interativas e experiências incríveis para a web.</p>
+                    </div>
+                    <div class="trilha-tech-grid" style="margin-bottom:0;">
+                    <span class="trilha-tech-badge">HTML</span>
+                    <span class="trilha-tech-badge">CSS</span>
+                    <span class="trilha-tech-badge">JavaScript</span>
+                    <span class="trilha-tech-badge">React</span>
+                    </div>
+                </div>
+
+                <!-- BACK-END -->
+                <div class="trilha-caminho-card back">
+                    <div>
+                    <div class="trilha-caminho-titulo">
+                        ⚙️ Back-End
+                    </div>
+                    <p class="trilha-caminho-desc">Construa sistemas robustos, APIs e a regra de negócio das aplicações.</p>
+                    </div>
+                    <div class="trilha-tech-grid" style="margin-bottom:0;">
+                    <span class="trilha-tech-badge">Python</span>
+                    <span class="trilha-tech-badge">Django</span>
+                    <span class="trilha-tech-badge">APIs</span>
+                    <span class="trilha-tech-badge">SQL</span>
+                    </div>
+                </div>
+
+                <!-- MOBILE -->
+                <div class="trilha-caminho-card mobile">
+                    <div>
+                    <div class="trilha-caminho-titulo">
+                        📱 Mobile
+                    </div>
+                    <p class="trilha-caminho-desc">Desenvolva aplicações nativas e multiplataforma para dispositivos móveis.</p>
+                    </div>
+                    <div class="trilha-tech-grid" style="margin-bottom:0;">
+                    <span class="trilha-tech-badge">Flutter</span>
+                    <span class="trilha-tech-badge">React Native</span>
+                    <span class="trilha-tech-badge">APIs</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- ETAPA 03: PROJETOS -->
+            <div class="trilha-etapa direita">
+                <div class="trilha-card">
+                <div class="trilha-card-header">
+                    <span class="trilha-numero">03</span>
+                    <div class="trilha-icon-wrapper">
+                    <i class="fa-solid fa-cubes"></i>
+                    </div>
+                </div>
+                <h3>Transforme Conhecimento em Projetos</h3>
+                <p>É nos projetos que o conhecimento deixa de ser apenas teoria. Construa aplicações reais, experimente tecnologias e crie algo que possa fazer parte do seu portfólio.</p>
+                
+                <div class="trilha-tech-grid">
+                    <span class="trilha-tech-badge">Projetos Integradores</span>
+                    <span class="trilha-tech-badge">Projetos Pessoais</span>
+                    <span class="trilha-tech-badge">Aplicações Web</span>
+                    <span class="trilha-tech-badge">APIs</span>
+                    <span class="trilha-tech-badge">Sistemas</span>
+                    <span class="trilha-tech-badge">Portfólio</span>
+                </div>
+
+                <div class="trilha-box-destaque">
+                    <span class="trilha-box-destaque-rotulo">Resultado</span>
+                    <p class="trilha-box-destaque-texto">Você começa a ter projetos reais para apresentar e demonstrar suas habilidades técnicas.</p>
+                </div>
+                </div>
+                <div class="trilha-checkpoint"></div>
+            </div>
+
+            <!-- ETAPA 04: COMUNIDADE & NETWORKING -->
+            <div class="trilha-etapa esquerda">
+                <div class="trilha-card">
+                <div class="trilha-card-header">
+                    <span class="trilha-numero">04</span>
+                    <div class="trilha-icon-wrapper">
+                    <i class="fa-solid fa-comments"></i>
+                    </div>
+                </div>
+                <h3>Aprenda, Compartilhe e Conecte-se</h3>
+                <p>A evolução profissional também acontece fora do código. Participe de comunidades, apresente seus projetos, tire dúvidas e conheça outras pessoas da área.</p>
+                
+                <div class="trilha-tech-grid">
+                    <span class="trilha-tech-badge">Fórum</span>
+                    <span class="trilha-tech-badge">Comunidade</span>
+                    <span class="trilha-tech-badge">Bancas Avaliadoras</span>
+                    <span class="trilha-tech-badge">Networking</span>
+                </div>
+
+                <div class="trilha-box-destaque">
+                    <span class="trilha-box-destaque-rotulo">Construa sua Presença</span>
+                    <p class="trilha-box-destaque-texto">Mantenha seu GitHub, LinkedIn e Portfólio atualizados com seus projetos mais recentes.</p>
+                </div>
+                </div>
+                <div class="trilha-checkpoint"></div>
+            </div>
+
+            <!-- ETAPA 05: MERCADO DE TRABALHO -->
+            <div class="trilha-etapa direita">
+                <div class="trilha-card">
+                <div class="trilha-card-header">
+                    <span class="trilha-numero">05</span>
+                    <div class="trilha-icon-wrapper">
+                    <i class="fa-solid fa-briefcase"></i>
+                    </div>
+                </div>
+                <h3>Prepare-se para o Mercado</h3>
+                <p>Com fundamentos, projetos e presença profissional construídos, você pode começar a buscar oportunidades e transformar conhecimento em carreira.</p>
+
+                <div class="trilha-mercado-passos">
+                    <div class="trilha-mercado-item"><span>01</span> Currículo</div>
+                    <div class="trilha-mercado-item"><span>02</span> LinkedIn</div>
+                    <div class="trilha-mercado-item"><span>03</span> GitHub</div>
+                    <div class="trilha-mercado-item"><span>04</span> Portfólio</div>
+                    <div class="trilha-mercado-item"><span>05</span> Entrevistas</div>
+                    <div class="trilha-mercado-item"><span>06</span> Vagas</div>
+                </div>
+
+                <div class="trilha-tech-grid" style="margin-top: 15px;">
+                    <span class="trilha-tech-badge">Estágio</span>
+                    <span class="trilha-tech-badge">Dev Júnior</span>
+                    <span class="trilha-tech-badge">Trainee</span>
+                    <span class="trilha-tech-badge">Freelance</span>
+                </div>
+
+                <div class="trilha-box-destaque" style="border-left-color: #0A1F44;">
+                    <span class="trilha-box-destaque-rotulo" style="color: #0A1F44;">Preparação</span>
+                    <p class="trilha-box-destaque-texto">Agora você está mais preparado e confiante para buscar sua primeira oportunidade profissional.</p>
+                </div>
+                </div>
+                <div class="trilha-checkpoint"></div>
+            </div>
+
+            </div><!-- /.trilha-roadmap -->
+
+            <!-- CHECKPOINT FINAL: DESENVOLVEDOR JÚNIOR -->
+            <div class="trilha-final">
+            <div class="trilha-final-card">
+                <div class="trilha-trofeu-icon">
+                <i class="fa-solid fa-trophy"></i>
+                </div>
+                <span class="tag-nivel">Próximo Nível</span>
+                <h3>DESENVOLVEDOR JÚNIOR</h3>
+                <p>Seu primeiro código foi apenas o começo. Continue praticando, evoluindo e construindo seu futuro na tecnologia!</p>
+            </div>
+            </div>
+
+        </div><!-- /.container -->
     </section>
-    <!-- ======================================================== -->
 
     <!-- SEÇÃO DE DOWNLOAD DO APP -->
     <section id="download" class="secao-download">
@@ -309,48 +783,95 @@
 
     <!-- SCRIPT DO CARROSSEL -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const track = document.querySelector('.carousel-track');
-            const cards = document.querySelectorAll('.curso-card');
-            const btnNext = document.querySelector('.carousel-btn.next');
-            const btnPrev = document.querySelector('.carousel-btn.prev');
+    /* ================================================================
+    ENGINE DO CARROSSEL 3D EM PERSPECTIVA
+    ================================================================ */
+    document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('cursosCarouselTrack');
+    if (!track) return;
 
-            if (!track || cards.length === 0) return;
+    const cards = Array.from(track.querySelectorAll('.app-window-card'));
+    const btnPrev = document.getElementById('btnCursoPrev');
+    const btnNext = document.getElementById('btnCursoNext');
+    const counterDisplay = document.getElementById('cursoCounterDisplay');
+    const progressBar = document.getElementById('cursoProgressBar');
 
-            let index = 0;
+    if (cards.length === 0) return;
 
-            function getCardWidth() {
-                const style = window.getComputedStyle(cards[0]);
-                const marginRight = parseInt(style.marginRight) || 20;
-                return cards[0].offsetWidth + marginRight;
-            }
+    let currentIndex = 0;
+    const totalCards = cards.length;
 
-            function moveCarousel() {
-                const cardWidth = getCardWidth();
-                track.style.transition = 'transform 0.5s ease';
-                track.style.transform = `translateX(-${index * cardWidth}px)`;
-            }
+    function updateCarousel() {
+        cards.forEach((card, index) => {
+        card.classList.remove('active', 'prev', 'next', 'far-prev', 'far-next');
 
-            btnNext.addEventListener('click', () => {
-                index++;
-                if (index >= cards.length) index = 0;
-                moveCarousel();
-            });
-
-            btnPrev.addEventListener('click', () => {
-                index--;
-                if (index < 0) index = cards.length - 1;
-                moveCarousel();
-            });
-
-            setInterval(() => {
-                index++;
-                if (index >= cards.length) index = 0;
-                moveCarousel();
-            }, 4000);
-
-            window.addEventListener('resize', moveCarousel);
+        if (index === currentIndex) {
+            card.classList.add('active');
+        } else if (index === (currentIndex - 1 + totalCards) % totalCards) {
+            card.classList.add('prev');
+        } else if (index === (currentIndex + 1) % totalCards) {
+            card.classList.add('next');
+        } else if (index === (currentIndex - 2 + totalCards) % totalCards) {
+            card.classList.add('far-prev');
+        } else {
+            card.classList.add('far-next');
+        }
         });
+
+        // Atualiza contador
+        const currentFormatted = String(currentIndex + 1).padStart(2, '0');
+        const totalFormatted = String(totalCards).padStart(2, '0');
+        if (counterDisplay) {
+        counterDisplay.textContent = `${currentFormatted} — ${totalFormatted}`;
+        }
+
+        // Atualiza barra de progresso
+        if (progressBar) {
+        const progressPercent = ((currentIndex + 1) / totalCards) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+        }
+    }
+
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % totalCards;
+        updateCarousel();
+    }
+
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+        updateCarousel();
+    }
+
+    if (btnNext) btnNext.addEventListener('click', nextSlide);
+    if (btnPrev) btnPrev.addEventListener('click', prevSlide);
+
+    // Seleção direta clicando nos cards laterais
+    cards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+        if (index !== currentIndex) {
+            currentIndex = index;
+            updateCarousel();
+        }
+        });
+    });
+
+    // Gestos Touch (Swipe Mobile)
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 40) nextSlide();
+        if (touchEndX - touchStartX > 40) prevSlide();
+    }, { passive: true });
+
+    // Inicialização
+    updateCarousel();
+    });
     </script>
 
 </body>
