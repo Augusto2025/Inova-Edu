@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/recuperar-senha", async (req, res) => {
-  const { email } = req.body;
+  const { email, novaSenha } = req.body;
 
   if (!email) {
     return res.status(400).json({
@@ -94,15 +94,16 @@ router.post("/recuperar-senha", async (req, res) => {
       });
     }
 
-    const novaSenha = `Inova${Math.floor(1000 + Math.random() * 9000)}`;
+    const senhaFinal = novaSenha && String(novaSenha).trim() ? String(novaSenha).trim() : `Inova${Math.floor(1000 + Math.random() * 9000)}`;
+
     await pool.query(
       'UPDATE usuario SET "Senha"=$1 WHERE "idUsuario"=$2',
-      [novaSenha, resultado.rows[0].idUsuario]
+      [senhaFinal, resultado.rows[0].idUsuario]
     );
 
     return res.json({
       sucesso: true,
-      mensagem: `Uma nova senha temporária foi criada: ${novaSenha}`
+      mensagem: `Sua senha foi redefinida. Nova senha: ${senhaFinal}`
     });
   } catch (err) {
     console.error("Erro ao recuperar senha:", err);

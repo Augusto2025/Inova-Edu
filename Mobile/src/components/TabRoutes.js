@@ -17,6 +17,7 @@ import TituloScreen from '../screens/Topico';
 import ConversaScreen from '../screens/Conversa';
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from '../screens/Perfil';
+import ContaScreen from '../screens/ContaScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -138,6 +139,15 @@ export default function TabRoutes() {
       <Tab.Screen
         name="Conversa"
         component={ConversaScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Conta"
+        component={ContaScreen}
         options={{
           tabBarItemStyle: {
             display: 'none',

@@ -54,7 +54,8 @@ export const UserProvider = ({ children }) => {
           sobrenome: dados.usuario.sobrenome || "",
           descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
           imagem: urlCompleta,
-          turma: dados.usuario.turma || "Sem Turma Vinculada"
+          turma: dados.usuario.turma || "Sem Turma Vinculada",
+          senha: dados.usuario.senha || ""
         };
 
         setUser(novoUser);
