@@ -52,6 +52,7 @@ export const UserProvider = ({ children }) => {
           idUsuario: dados.usuario.idUsuario || idSalvo,
           nome: dados.usuario.nome || "Sem nome",
           sobrenome: dados.usuario.sobrenome || "",
+          email: dados.usuario.email || "",
           descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
           imagem: urlCompleta,
           turma: dados.usuario.turma || "Sem Turma Vinculada",

@@ -17,6 +17,7 @@ export default function LoginScreen({ navigation }) {
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
     const [lembrarDeMim, setLembrarDeMim] = useState(false);
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const { width, height } = useWindowDimensions();
 
@@ -238,13 +239,28 @@ const containerPaddingHorizontal = Math.max(
                             placeholderTextColor="#64748B"
                         />
                         
-                        <CustomInput
-                            placeholder="Senha"
-                            value={senha}
-                            onChangeText={setSenha}
-                            secureTextEntry
-                            placeholderTextColor="#64748B"
-                        />
+                        <View style={styles.passwordInputWrap}>
+                            <CustomInput
+                                placeholder="Senha"
+                                value={senha}
+                                onChangeText={setSenha}
+                                secureTextEntry={!mostrarSenha}
+                                placeholderTextColor="#64748B"
+                                style={styles.passwordInput}
+                            />
+                            <TouchableOpacity
+                                style={styles.passwordEyeButton}
+                                onPress={() => setMostrarSenha((visivel) => !visivel)}
+                                accessibilityRole="button"
+                                accessibilityLabel={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                            >
+                                <Ionicons
+                                    name={mostrarSenha ? 'eye-off' : 'eye'}
+                                    size={21}
+                                    color="#1E293B"
+                                />
+                            </TouchableOpacity>
+                        </View>
 
                         <TouchableOpacity 
                             style={styles.lembrarContainer} 
@@ -367,6 +383,23 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 16,
         alignSelf: 'center',
+    },
+    passwordInputWrap: {
+        width: '100%',
+        position: 'relative',
+    },
+    passwordInput: {
+        marginTop: 15,
+        paddingRight: 52,
+    },
+    passwordEyeButton: {
+        position: 'absolute',
+        right: 8,
+        top: 15,
+        height: 50,
+        width: 42,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     loginButton: {
         width: '100%',

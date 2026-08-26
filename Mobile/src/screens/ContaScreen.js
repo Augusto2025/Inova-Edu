@@ -19,6 +19,18 @@ export default function ContaScreen({ navigation }) {
   const [mostrarNovaSenha, setMostrarNovaSenha] = useState(false);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
 
+  const alternarVisibilidadeSenha = () => {
+    if (!senha) {
+      Alert.alert(
+        'Senha indisponível',
+        'A senha atual não foi salva neste aparelho. Use “Definir nova senha” para cadastrar uma nova senha.'
+      );
+      return;
+    }
+
+    setMostrarSenha((visivel) => !visivel);
+  };
+
   useEffect(() => {
     const carregarDados = async () => {
       try {
@@ -100,8 +112,8 @@ export default function ContaScreen({ navigation }) {
           <Text style={[styles.label, { fontSize: 14 * fontSizeScale, color: theme.text, marginTop: 12 }]}>Senha</Text>
           <View style={styles.passwordWrap}>
             <Text style={[styles.valueText, { color: theme.text, fontSize: 16 * fontSizeScale, flex: 1 }]}
-            >{mostrarSenha ? (senha || '********') : '********'}</Text>
-            <TouchableOpacity onPress={() => setMostrarSenha(!mostrarSenha)} style={styles.eyeButton}>
+            >{mostrarSenha && senha ? senha : '********'}</Text>
+            <TouchableOpacity onPress={alternarVisibilidadeSenha} style={styles.eyeButton}>
               <Ionicons name={mostrarSenha ? 'eye-off' : 'eye'} size={20} color={theme.text} />
             </TouchableOpacity>
           </View>

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Skeleton from "../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +15,7 @@ import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../components/Cores";
 import Header from "../components/Header";
 import api from "../services/api";
+import { URL_BASE } from "../config/backend";
 import { useNotifications } from "../context/NotificationContext";
 
 // Importação do Contexto de Tema (mesmo padrão usado no RepositorioScreen)
@@ -81,6 +83,32 @@ function obterDadosData(dataString) {
     mes: meses[data.getUTCMonth()],
     dia: data.getUTCDate(),
   };
+}
+
+function normalizarImagemProjeto(valor) {
+  if (typeof valor !== "string" || !valor.trim() || valor.trim().toLowerCase() === "null") {
+    return null;
+  }
+
+  const imagem = valor.trim();
+  if (/^https?:\/\//i.test(imagem)) return imagem;
+  if (/^\/\//.test(imagem)) return `https:${imagem}`;
+  if (/^\//.test(imagem)) return `${URL_BASE}${imagem}`;
+  return `https://res.cloudinary.com/dw0pxfap3/${imagem}`;
+}
+
+function ImagemProjeto({ imagem, fontSizeScale }) {
+  const imagemUrl = normalizarImagemProjeto(imagem);
+
+  if (imagemUrl) {
+    return <Image source={{ uri: imagemUrl }} style={styles.projetoImagem} />;
+  }
+
+  return (
+    <View style={[styles.pendenciaIconWrap, { backgroundColor: "#D1FAE5" }]}>
+      <Feather name="folder" size={16 * fontSizeScale} color="#059669" />
+    </View>
+  );
 }
 
 // ==========================================
@@ -471,9 +499,7 @@ export default function HomePainelProfessor({ navigation }) {
                   activeOpacity={0.8}
                   onPress={() => navigation.navigate("Repositorio", { projetoId: proj.id, projetoNome: proj.nome })}
                 >
-                  <View style={[styles.pendenciaIconWrap, { backgroundColor: "#D1FAE5" }]}>
-                    <Feather name="folder" size={16 * fontSizeScale} color="#059669" />
-                  </View>
+                  <ImagemProjeto imagem={proj.imagem} fontSizeScale={fontSizeScale} />
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.projetoNome, { color: theme.text, fontSize: 14 * fontSizeScale }]} numberOfLines={1}>
                       {proj.nome}
@@ -543,6 +569,10 @@ const styles = StyleSheet.create({
   },
   pendenciaTitulo: { fontWeight: "700" },
   pendenciaSub: { marginTop: 2 },
+  projetoImagem: {
+    width: 36, height: 36, borderRadius: 10,
+    resizeMode: "cover",
+  },
   pendenciaBadge: {
     backgroundColor: "#EDE9FE", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4,
     marginRight: 6,

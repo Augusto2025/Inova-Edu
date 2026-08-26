@@ -17,6 +17,7 @@ router.get('/:usuarioId', async (req, res) => {
                 u."idUsuario", 
                 u."Nome" as nome, 
                 u."Sobrenome" as sobrenome, 
+                u."Email" as email,
                 u."Descricao" as descricao,
                 u.imagem_usuario as imagem,
                 CONCAT(t."Codigo_Turma", ' - ', t."Ano", ' (', t."Turno", ')') as turma

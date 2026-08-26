@@ -119,6 +119,7 @@ router.get('/painel', async (req, res) => {
                 SELECT 
                     p."idProjeto" AS id,
                     p."Nome_projeto" AS nome,
+                    p."Imagem" AS imagem,
                     p.data_de_criacao AS data,
                     t."Codigo_Turma" AS turma
                 FROM projeto p

@@ -23,6 +23,18 @@ import styles from '../styles/Projeto';
 import { ThemeContext } from '../context/ThemeContext';
 import { URL_BASE } from '../config/backend';
 
+const normalizarImagemProjeto = (valor) => {
+  if (typeof valor !== 'string' || !valor.trim() || valor.trim().toLowerCase() === 'null') {
+    return null;
+  }
+
+  const imagem = valor.trim();
+  if (/^https?:\/\//i.test(imagem)) return imagem;
+  if (/^\/\//.test(imagem)) return `https:${imagem}`;
+  if (/^\//.test(imagem)) return `${URL_BASE}${imagem}`;
+  return `https://res.cloudinary.com/dw0pxfap3/${imagem}`;
+};
+
 export default function ProjetosScreen({ route, navigation }) {
   // Puxando as variáveis globais
   const { theme, fontSizeScale } = useContext(ThemeContext);
@@ -99,7 +111,7 @@ export default function ProjetosScreen({ route, navigation }) {
             </Text>
           ) : (
             projetos.map((projeto) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={projeto.idprojeto} 
                 // Card adaptável ao modo escuro
                 style={[styles.projetoCard, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}
@@ -107,16 +119,17 @@ export default function ProjetosScreen({ route, navigation }) {
                 onPress={() => irParaRepositorio(projeto)}
               >
                 <View style={styles.cardInfo}>
-                  
-                  {/* Imagem de Capa ou Pasta Placeholder adaptável */}
-                  {projeto.imagem ? (
-                    <Image source={{ uri: projeto.imagem }} style={styles.projetoImagemQuadrada} />
-                  ) : (
-                    <View style={[styles.projetoImagemQuadrada, styles.placeholderImagemContainer, { backgroundColor: theme.border }]}>
-                      <Feather name="folder" size={22 * fontSizeScale} color={COLORS.primary} />
-                    </View>
-                  )}
-                  
+                  {(() => {
+                    const imagemProjeto = normalizarImagemProjeto(projeto.imagem);
+
+                    return imagemProjeto ? (
+                      <Image source={{ uri: imagemProjeto }} style={styles.projetoImagemQuadrada} />
+                    ) : (
+                      <View style={[styles.projetoImagemQuadrada, styles.placeholderImagemContainer, { backgroundColor: theme.border }]}>
+                        <Feather name="folder" size={22 * fontSizeScale} color={COLORS.primary} />
+                      </View>
+                    );
+                  })()}
                   <View style={{ flex: 1 }}> 
                     <Text style={[styles.projetoNome, { color: theme.text, fontSize: 16 * fontSizeScale }]} numberOfLines={1}>
                       {projeto.nome_projeto}
