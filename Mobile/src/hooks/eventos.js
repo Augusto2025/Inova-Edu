@@ -39,6 +39,23 @@ export const useEventos = () => {
             Alert.alert("Erro", "Preencha a data do evento");
             return;
         }
+
+        const dataBrasileira = novoEvento.date.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (!dataBrasileira) {
+            Alert.alert("Erro", "Informe a data no formato DD/MM/AAAA.");
+            return;
+        }
+
+        const [, dia, mes, ano] = dataBrasileira;
+        const dataVerificada = new Date(Number(ano), Number(mes) - 1, Number(dia));
+        if (
+            dataVerificada.getFullYear() !== Number(ano) ||
+            dataVerificada.getMonth() !== Number(mes) - 1 ||
+            dataVerificada.getDate() !== Number(dia)
+        ) {
+            Alert.alert("Erro", "Informe uma data válida.");
+            return;
+        }
         if (!novoEvento.time?.trim()) {
             Alert.alert("Erro", "Preencha o horário do evento");
             return;
@@ -59,8 +76,8 @@ export const useEventos = () => {
         let dataFormatada = novoEvento.date;
 
         if (dataFormatada.includes("/")) {
-            const [dia, mes, ano] = dataFormatada.split("/");
-            dataFormatada = `${ano}-${mes}-${dia}`;
+            const [diaInformado, mesInformado, anoInformado] = dataFormatada.split("/");
+            dataFormatada = `${anoInformado}-${mesInformado}-${diaInformado}`;
         }
 
             const response = await fetch(url, {

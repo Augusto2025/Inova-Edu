@@ -84,10 +84,15 @@ export default function CalendarScreen({ route }) {
   };
 
   const habilitarEdicao = (evento) => {
+    const partesData = String(evento.date || '').slice(0, 10).split('-');
+    const dataParaEdicao = partesData.length === 3
+      ? `${partesData[2]}/${partesData[1]}/${partesData[0]}`
+      : '';
+
     setNovoEvento({
       id: evento.id,
       title: evento.title,
-      date: evento.date,
+      date: dataParaEdicao,
       time: evento.time,
       local: evento.local,
       description: evento.description
@@ -120,6 +125,23 @@ export default function CalendarScreen({ route }) {
     const meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     const mesIndex = parseInt(partes[1], 10) - 1;
     return { dia: partes[2], mes: meses[mesIndex] || 'ERR' };
+  };
+
+  const formatarDataExibicao = (dataStr) => {
+    const partes = String(dataStr || '').slice(0, 10).split('-').map(Number);
+    if (partes.length !== 3 || partes.some(Number.isNaN)) return 'Data inválida';
+
+    const [ano, mes, dia] = partes;
+    const data = new Date(ano, mes - 1, dia);
+    if (
+      data.getFullYear() !== ano ||
+      data.getMonth() !== mes - 1 ||
+      data.getDate() !== dia
+    ) {
+      return 'Data inválida';
+    }
+
+    return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
   };
 
   const handleOpenEvent = (dateString) => {
@@ -354,7 +376,7 @@ export default function CalendarScreen({ route }) {
             <View style={styles.modalBody}>
               <View style={styles.modalInfoRow}>
                 <Ionicons name="calendar-outline" size={20 * fontSizeScale} color="#1459b3" />
-                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Data: {eventSelected?.date.split('-').reverse().join('/')}</Text>
+                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Data: {formatarDataExibicao(eventSelected?.date)}</Text>
               </View>
               <View style={styles.modalInfoRow}>
                 <Ionicons name="time-outline" size={20 * fontSizeScale} color="#1459b3" />

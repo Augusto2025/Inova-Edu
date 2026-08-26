@@ -101,6 +101,7 @@ const containerPaddingHorizontal = Math.max(
             if (dados.sucesso) {
                 await AsyncStorage.setItem('idUsuario', dados.usuario.id.toString());
                 await AsyncStorage.setItem('tipo', dados.usuario.tipo);
+                await AsyncStorage.setItem('senha_sessao', senha);
                 
                 setCarregandoTransicao(true);
 

@@ -20,14 +20,6 @@ export default function ContaScreen({ navigation }) {
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
 
   const alternarVisibilidadeSenha = () => {
-    if (!senha) {
-      Alert.alert(
-        'Senha indisponível',
-        'A senha atual não foi salva neste aparelho. Use “Definir nova senha” para cadastrar uma nova senha.'
-      );
-      return;
-    }
-
     setMostrarSenha((visivel) => !visivel);
   };
 
@@ -36,6 +28,7 @@ export default function ContaScreen({ navigation }) {
       try {
         const emailSalvo = await AsyncStorage.getItem('lembrar_email');
         const senhaSalva = await AsyncStorage.getItem('lembrar_senha');
+        const senhaDaSessao = await AsyncStorage.getItem('senha_sessao');
 
         if (emailSalvo) {
           setEmail(emailSalvo);
@@ -43,8 +36,8 @@ export default function ContaScreen({ navigation }) {
           setEmail(user.email);
         }
 
-        if (senhaSalva) {
-          setSenha(senhaSalva);
+        if (senhaSalva || senhaDaSessao) {
+          setSenha(senhaSalva || senhaDaSessao);
         } else if (user?.senha) {
           setSenha(user.senha);
         }
@@ -110,8 +103,8 @@ export default function ContaScreen({ navigation }) {
           <Text style={[styles.valueText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{email || user?.email || '—'}</Text>
 
           <Text style={[styles.label, { fontSize: 14 * fontSizeScale, color: theme.text, marginTop: 12 }]}>Senha</Text>
-          <View style={styles.passwordWrap}>
-            <Text style={[styles.valueText, { color: theme.text, fontSize: 16 * fontSizeScale, flex: 1 }]}
+          <View style={[styles.passwordWrap, { borderColor: theme.border, backgroundColor: theme.background }]}>
+            <Text style={[styles.passwordText, { color: theme.text, fontSize: 16 * fontSizeScale }]}
             >{mostrarSenha && senha ? senha : '********'}</Text>
             <TouchableOpacity onPress={alternarVisibilidadeSenha} style={styles.eyeButton}>
               <Ionicons name={mostrarSenha ? 'eye-off' : 'eye'} size={20} color={theme.text} />
@@ -176,6 +169,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 6,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingRight: 8,
+  },
+  passwordText: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    fontWeight: '500',
   },
   valueText: {
     marginTop: 6,

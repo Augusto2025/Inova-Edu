@@ -58,7 +58,7 @@ export default function ConfiguracoesScreen({ navigation }) {
       console.log('Iniciando logout: limpando AsyncStorage');
       // tenta limpar chaves específicas e como fallback limpa tudo
       try {
-        await AsyncStorage.multiRemove(['idUsuario', 'tipo']);
+        await AsyncStorage.multiRemove(['idUsuario', 'tipo', 'senha_sessao']);
       } catch (e) {
         console.warn('multiRemove falhou, tentando clear():', e);
         await AsyncStorage.clear();
@@ -175,7 +175,7 @@ export default function ConfiguracoesScreen({ navigation }) {
         <Text style={[styles.titulo, { fontSize: 20 * fontSizeScale }]}>Versão</Text>
         <View style={[styles.card, { backgroundColor: CoresTema.card }]}>
           <Text style={{ color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }}>
-            Versão Brasileira: Herbert Richers 1.0.0
+            Versão: Inova-Edu 1.0.0
           </Text>
         </View>
 
