@@ -17,8 +17,7 @@ cloudinary.config(
     secure=True
 )
 
-
-# --- Segurança ---
+# --- Segurança e Debug ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
 
 django_debug = os.environ.get('DJANGO_DEBUG')
@@ -46,17 +45,25 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-# --- Middleware ---
+# --- Middleware (SecurityMiddleware movido para o topo) ---
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
+
+# Regras de Política de Segurança de Conteúdo (CSP)
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
+CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com")
 
 # --- URLConf e Templates ---
 ROOT_URLCONF = 'config.urls'
@@ -83,7 +90,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
-    # Se existir a URL completa, o Django mapeia o Postgres automaticamente
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
@@ -93,13 +99,12 @@ if DATABASE_URL:
     }
     print("[DJANGO DATABASE] Conectado ao PostgreSQL")
 else:
-    # 2. Caso contrário, monta o MySQL usando exatamente as mesmas variáveis separadas do seu .env
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("DB_NAME"),       # Nome do banco igual ao Desktop
-            "USER": os.environ.get("DB_USER"),       # Usuário igual ao Desktop
-            "PASSWORD": os.environ.get("DB_PASSWORD"), # Senha igual ao Desktop
+            "NAME": os.environ.get("DB_NAME"),
+            "USER": os.environ.get("DB_USER"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
             "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
             "PORT": os.environ.get("DB_PORT", "3306"),
             "OPTIONS": {
@@ -149,5 +154,30 @@ LOGIN_REDIRECT_URL = '/home'
 # --- Storages ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# --- media files ---
+# --- Media files ---
 MEDIA_URL = '/media/'
+
+# ==============================================================================
+# CONFIGURAÇÕES DE SEGURANÇA E PROTEÇÃO DE CABEÇALHOS (AJUSTADAS)
+# ==============================================================================
+
+# Reconhecimento do proxy HTTPS do Render (Impede loops de redirecionamento)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Redireciona conexões HTTP para HTTPS em produção
+SECURE_SSL_REDIRECT = not DEBUG
+
+# 1. Proteção dos Cookies (Resolve: Cookie No HttpOnly / Without Secure Flag)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+# 2. Prevenção de MIME-Sniffing (Resolve: X-Content-Type-Options Header Missing)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# 3. Força HTTPS no Navegador (Resolve: Strict-Transport-Security Header Not Set)
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 Ano
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
