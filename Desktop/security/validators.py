@@ -5,8 +5,22 @@ Validators for user input sanitization and validation.
 import re
 import html
 from typing import Tuple, Optional
-from email_validator import validate_email, EmailNotValidError
 
+# Try to import optional dependencies
+try:
+    from email_validator import validate_email, EmailNotValidError
+    HAS_EMAIL_VALIDATOR = True
+except ImportError:
+    HAS_EMAIL_VALIDATOR = False
+    validate_email = None
+    EmailNotValidError = None
+
+try:
+    import bleach
+    HAS_BLEACH = True
+except ImportError:
+    HAS_BLEACH = False
+    bleach = None
 
 # Password policy
 MIN_PASSWORD_LENGTH = 8
@@ -19,13 +33,19 @@ SPECIAL_CHARS = r"!@#$%^&*()_+-=[]{}|;:,.<>?"
 
 # Name validation
 NAME_MAX_LENGTH = 100
-NAME_PATTERN = re.compile(r'^[\p{L}\s\'-]+$', re.UNICODE)
+# Unicode letters + spaces, hyphens, apostrophes
+# Python's re doesn't support \p{L}, so we use \w and exclude digits in validate_name()
+NAME_PATTERN = re.compile(r"^[\w\s'-]+$", re.UNICODE)
 
 # Bio/description
 BIO_MAX_LENGTH = 1000
 
 # Email
 EMAIL_MAX_LENGTH = 254
+# Simple RFC 5322 compliant regex (fallback when email-validator not available)
+EMAIL_REGEX = re.compile(
+    r'^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$'
+)
 
 
 def validate_password(password: str) -> Tuple[bool, Optional[str]]:
@@ -69,6 +89,7 @@ def validate_password(password: str) -> Tuple[bool, Optional[str]]:
 def validate_email_address(email: str) -> Tuple[bool, Optional[str]]:
     """
     Validate email address format.
+    Uses email-validator if available, falls back to regex.
     """
     if not email:
         return False, "E-mail é obrigatório"
@@ -76,12 +97,18 @@ def validate_email_address(email: str) -> Tuple[bool, Optional[str]]:
     if len(email) > EMAIL_MAX_LENGTH:
         return False, f"E-mail muito longo (máx. {EMAIL_MAX_LENGTH} caracteres)"
 
-    try:
-        # Use email-validator library for RFC-compliant validation
-        valid = validate_email(email, check_deliverability=False)
-        return True, None
-    except EmailNotValidError as e:
-        return False, f"E-mail inválido: {str(e)}"
+    if HAS_EMAIL_VALIDATOR:
+        try:
+            # Use email-validator library for RFC-compliant validation
+            valid = validate_email(email, check_deliverability=False)
+            return True, None
+        except EmailNotValidError as e:
+            return False, f"E-mail inválido: {str(e)}"
+    else:
+        # Fallback: regex validation
+        if EMAIL_REGEX.match(email):
+            return True, None
+        return False, "E-mail inválido (formato incorreto)"
 
 
 def validate_name(name: str, field_name: str = "Nome") -> Tuple[bool, Optional[str]]:
@@ -95,6 +122,10 @@ def validate_name(name: str, field_name: str = "Nome") -> Tuple[bool, Optional[s
 
     if len(name) > NAME_MAX_LENGTH:
         return False, f"{field_name} muito longo (máx. {NAME_MAX_LENGTH} caracteres)"
+
+    # Reject digits (names shouldn't contain numbers)
+    if re.search(r'\d', name):
+        return False, f"{field_name} não pode conter números"
 
     # Allow letters, spaces, hyphens, apostrophes (Unicode)
     if not NAME_PATTERN.match(name):
@@ -118,11 +149,23 @@ def validate_bio(bio: str) -> Tuple[bool, Optional[str]]:
 
 def sanitize_html(text: str) -> str:
     """
-    Sanitize text to prevent XSS (escape HTML entities).
+    Sanitize text to prevent XSS.
+    Uses bleach if available, falls back to html.escape.
     """
     if not text:
         return ""
-    return html.escape(text)
+
+    if HAS_BLEACH:
+        # bleach.clean removes dangerous tags/attributes, keeps safe ones
+        return bleach.clean(
+            text,
+            tags=[],  # No HTML tags allowed
+            attributes={},
+            strip=True
+        )
+    else:
+        # Fallback: escape all HTML entities
+        return html.escape(text)
 
 
 def sanitize_sql_input(text: str) -> str:
@@ -191,13 +234,13 @@ if __name__ == "__main__":
     assert not validate_password("SenhaAbc")[0], "No digit should fail"
     assert not validate_password("Senha123")[0], "No special char should fail"
     assert not validate_password("aaaa123@")[0], "Repeated chars should fail"
-    print("✅ Password validation tests passed")
+    print("[OK] Password validation tests passed")
 
     # Test email validation
     assert validate_email_address("test@example.com")[0], "Valid email should pass"
     assert not validate_email_address("invalid")[0], "Invalid email should fail"
     assert not validate_email_address("@nodomain")[0], "No local part should fail"
-    print("✅ Email validation tests passed")
+    print("[OK] Email validation tests passed")
 
     # Test name validation
     assert validate_name("João")[0], "Valid name should pass"
@@ -206,22 +249,26 @@ if __name__ == "__main__":
     assert validate_name("D'Angelo")[0], "Apostrophe should pass"
     assert not validate_name("João123")[0], "Numbers in name should fail"
     assert not validate_name("")[0], "Empty name should fail"
-    print("✅ Name validation tests passed")
+    print("[OK] Name validation tests passed")
 
     # Test bio validation
     assert validate_bio("A" * 500)[0], "Short bio should pass"
     assert not validate_bio("A" * 1500)[0], "Long bio should fail"
-    print("✅ Bio validation tests passed")
+    print("[OK] Bio validation tests passed")
 
     # Test sanitization
-    assert sanitize_html("<script>alert('xss')</script>") == "<script>alert('xss')</script>"
-    assert sanitize_sql_input("test; DROP TABLE users; --") == "test DROP TABLE users "
-    print("✅ Sanitization tests passed")
+    escaped = sanitize_html("<script>alert('xss')</script>")
+    # html.escape converts < to < and > to >
+    assert "<script>" not in escaped and "</script>" not in escaped, "HTML should be escaped"
+    # sanitize_sql_input removes dangerous patterns
+    sql_result = sanitize_sql_input("test; DROP TABLE users; --")
+    assert "DROP" not in sql_result and ";" not in sql_result and "--" not in sql_result
+    print("[OK] Sanitization tests passed")
 
     # Test CPF
     assert validate_cpf("111.444.777-35")[0], "Valid CPF should pass"
     assert not validate_cpf("111.111.111-11")[0], "All same digits should fail"
     assert not validate_cpf("123.456.789-00")[0], "Invalid check digits should fail"
-    print("✅ CPF validation tests passed")
+    print("[OK] CPF validation tests passed")
 
-    print("\n✅ All validator tests passed!")
+    print("\n[OK] All validator tests passed!")

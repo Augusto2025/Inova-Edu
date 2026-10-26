@@ -117,27 +117,27 @@ if __name__ == "__main__":
 
     # Verify correct
     assert verify_password(pwd, hashed), "Correct password should verify"
-    print("✅ Correct password verifies")
+    print("[OK] Correct password verifies")
 
     # Verify incorrect
     assert not verify_password("WrongPassword", hashed), "Wrong password should fail"
-    print("✅ Wrong password rejected")
+    print("[OK] Wrong password rejected")
 
     # Test empty password
     try:
         hash_password("")
         assert False, "Should raise ValueError"
     except ValueError:
-        print("✅ Empty password rejected")
+        print("[OK] Empty password rejected")
 
     # Test rehash detection
     old_hash = "pbkdf2_sha256$100000$salt$hash"
     assert hash_needs_rehash(old_hash), "Old iterations should need rehash"
-    print("✅ Rehash detection works")
+    print("[OK] Rehash detection works")
 
     # Test constant time compare
     assert constant_time_compare("test", "test"), "Equal strings should match"
     assert not constant_time_compare("test", "wrong"), "Different strings should not match"
-    print("✅ Constant time compare works")
+    print("[OK] Constant time compare works")
 
-    print("\n✅ All crypto tests passed!")
+    print("\n[OK] All crypto tests passed!")

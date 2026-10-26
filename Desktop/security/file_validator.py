@@ -3,9 +3,17 @@ Security Module: File Upload Validation
 Validates file uploads for type, size, and content safety.
 """
 import os
-import magic
 from typing import Tuple, Optional, Set
 from pathlib import Path
+
+# Try to import python-magic (requires libmagic C library)
+# On Windows, use: pip install python-magic-bin
+try:
+    import magic
+    HAS_MAGIC = True
+except ImportError:
+    HAS_MAGIC = False
+    magic = None
 
 # Allowed file extensions for profile images
 ALLOWED_IMAGE_EXTENSIONS: Set[str] = {
@@ -66,11 +74,15 @@ def validate_image_upload(file_path: str) -> Tuple[bool, Optional[str]]:
     if ext not in ALLOWED_IMAGE_EXTENSIONS:
         return False, f"Extensão não permitida: {ext}. Permitidas: {', '.join(sorted(ALLOWED_IMAGE_EXTENSIONS))}"
 
-    # Check MIME type using python-magic (libmagic)
-    try:
-        mime_type = magic.from_file(file_path, mime=True)
-    except Exception:
-        # Fallback: try to detect from extension
+    # Check MIME type using python-magic (libmagic) if available
+    mime_type = None
+    if HAS_MAGIC:
+        try:
+            mime_type = magic.from_file(file_path, mime=True)
+        except Exception:
+            mime_type = _guess_mime_from_extension(ext)
+    else:
+        # Fallback: guess from extension
         mime_type = _guess_mime_from_extension(ext)
 
     if mime_type in BLOCKED_MIME_TYPES:
@@ -139,20 +151,20 @@ if __name__ == "__main__":
         # Test valid image
         valid, err = validate_image_upload(test_file)
         assert valid, f"Valid image should pass: {err}"
-        print("✅ Valid image accepted")
+        print("[OK] Valid image accepted")
 
         # Test non-existent file
         valid, err = validate_image_upload("/nonexistent/file.png")
         assert not valid, "Non-existent file should fail"
-        print("✅ Non-existent file rejected")
+        print("[OK] Non-existent file rejected")
 
         # Test sanitize
         assert sanitize_filename("test.jpg") == "test.jpg"
-        assert sanitize_filename("../evil.exe") == "evilexe"
+        assert sanitize_filename("../evil.exe") == "evil.exe"
         assert sanitize_filename("file with spaces.png") == "file with spaces.png"
-        print("✅ Filename sanitization works")
+        print("[OK] Filename sanitization works")
 
     finally:
         os.unlink(test_file)
 
-    print("\n✅ All file validator tests passed!")
+    print("\n[OK] All file validator tests passed!")

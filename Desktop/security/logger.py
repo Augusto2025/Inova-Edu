@@ -5,6 +5,8 @@ Logging configuration that prevents sensitive data exposure.
 import logging
 import sys
 import os
+import re
+from pathlib import Path
 from logging.handlers import RotatingFileHandler
 from typing import Any, Dict
 

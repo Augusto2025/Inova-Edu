@@ -151,4 +151,4 @@ if __name__ == "__main__":
     assert allowed, "After reset should be allowed"
     print("After reset: allowed")
 
-    print("\n✅ All rate limiter tests passed!")
+    print("\n[OK] All rate limiter tests passed!")
