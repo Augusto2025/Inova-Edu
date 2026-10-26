@@ -280,7 +280,6 @@ class EditarPerfilView(ctk.CTkFrame):
 
         self.sessao.nome = nome
         self.sessao.sobrenome = sobrenome
-        self.sessao.senha = senha_final
         self.sessao.descricao = bio
 
         self.voltar_perfil()

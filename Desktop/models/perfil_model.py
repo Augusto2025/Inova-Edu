@@ -1,5 +1,11 @@
 from config.banco import conectar
 from psycopg2 import extras
+from security.crypto import hash_password
+from security.validators import validate_password
+from security.logger import get_logger
+
+logger = get_logger(__name__)
+
 
 class PerfilModel:
     def obter_dados_perfil(self, email):
@@ -21,7 +27,7 @@ class PerfilModel:
 
             # 2. Dados da Turma (Conforme sua primeira print)
             query_turma = """
-                SELECT t."Codigo_Turma" 
+                SELECT t."Codigo_Turma"
                 FROM usuario_da_turma ut
                 JOIN turma t ON ut."ID_Turma" = t."idTurma"
                 WHERE ut."ID_Usuario" = %s
@@ -40,36 +46,53 @@ class PerfilModel:
                 "certificados": certificados
             }
         except Exception as e:
-            print(f"Erro ao consultar banco (Postgres): {e}")
+            logger.error(f"Erro ao consultar banco (Postgres): {e}")
             return None
         finally:
             if cursor: cursor.close()
             if conexao: conexao.close()
 
     def salvar_usuario(self, email, nome, sobrenome, bio, senha):
+        """
+        Atualiza dados do usuário.
+        Se senha fornecida, faz hash antes de salvar.
+        """
+        # Valida senha se fornecida
+        if senha and senha.strip() != "":
+            valido, erro = validate_password(senha)
+            if not valido:
+                logger.warning(f"Senha inválida para {email}: {erro}")
+                return False, erro
+
+            # Hash da senha
+            senha_hash = hash_password(senha)
+        else:
+            senha_hash = None
+
         conexao = conectar()
         cursor = conexao.cursor()
         try:
-            if senha and senha.strip() != "":
+            if senha_hash:
                 sql = """
-                    UPDATE usuario 
+                    UPDATE usuario
                     SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s, "Senha" = %s
                     WHERE "Email" = %s
                 """
-                params = (nome, sobrenome, bio, senha, email)
+                params = (nome, sobrenome, bio, senha_hash, email)
             else:
                 sql = """
-                    UPDATE usuario 
+                    UPDATE usuario
                     SET "Nome" = %s, "Sobrenome" = %s, "Descricao" = %s
                     WHERE "Email" = %s
                 """
                 params = (nome, sobrenome, bio, email)
             cursor.execute(sql, params)
             conexao.commit()
-            return True
+            logger.info(f"Perfil atualizado para: {email}")
+            return True, None
         except Exception as e:
-            print(f"Erro ao atualizar: {e}")
-            return False
+            logger.error(f"Erro ao atualizar perfil: {e}")
+            return False, str(e)
         finally:
             cursor.close()
             conexao.close()
@@ -78,27 +101,23 @@ class PerfilModel:
         conexao = None
         cursor = None
         try:
-            conexao = conectar() # Sua função de conexão que já funciona
+            conexao = conectar()
             cursor = conexao.cursor()
-            
-            # Query usando os nomes das colunas que vimos na sua foto anterior
+
             query = """
                 INSERT INTO certificado (nome, descricao, data_inicio, data_final, usuario_id)
                 VALUES (%s, %s, %s, %s, %s)
             """
-            
-            # Executa a inserção
+
             cursor.execute(query, (nome, descricao, data_inicio, data_final, usuario_id))
-            
-            # IMPORTANTE: No Postgres, você precisa dar COMMIT para salvar de fato
             conexao.commit()
-            return True
-            
+            return True, None
+
         except Exception as e:
-            print(f"Erro ao inserir no banco: {e}")
+            logger.error(f"Erro ao inserir certificado: {e}")
             if conexao:
-                conexao.rollback() # Cancela se der erro
-            return False
+                conexao.rollback()
+            return False, str(e)
         finally:
             if cursor: cursor.close()
             if conexao: conexao.close()
@@ -109,12 +128,11 @@ class PerfilModel:
         try:
             conexao = conectar()
             cursor = conexao.cursor(cursor_factory=extras.RealDictCursor)
-            
-            # Ajustando para "Data_criacao" (seguindo a lógica do Nome_projeto)
+
             query = """
-                SELECT 
-                    p."idProjeto" as idprojeto, 
-                    p."Nome_projeto" as nome_projeto, 
+                SELECT
+                    p."idProjeto" as idprojeto,
+                    p."Nome_projeto" as nome_projeto,
                     p."data_de_criacao" as data
                 FROM projeto p
                 JOIN usuario_da_turma ut ON p."ID_Turma" = ut."ID_Turma"
@@ -122,17 +140,16 @@ class PerfilModel:
             """
             cursor.execute(query, (id_usuario,))
             projetos = cursor.fetchall()
-            
+
             for p in projetos:
                 if p.get('data'):
                     p['data'] = p['data'].strftime('%d/%m/%Y')
                 else:
                     p['data'] = "Sem data"
-                    
+
             return projetos
         except Exception as e:
-            # Se der erro de novo, o print abaixo vai te mostrar os nomes reais das colunas
-            print(f"[BANCO ERRO] Falha ao listar projetos: {e}")
+            logger.error(f"Falha ao listar projetos: {e}")
             return []
         finally:
             if cursor: cursor.close()
@@ -144,16 +161,15 @@ class PerfilModel:
         try:
             conn = conectar()
             with conn.cursor() as cursor:
-                # Usa o nome exato com aspas duplas conforme o padrão do seu banco
                 sql = """
-                    DELETE FROM certificado 
+                    DELETE FROM certificado
                     WHERE "idCertificado" = %s
                 """
                 cursor.execute(sql, (id_certificado,))
                 conn.commit()
                 return cursor.rowcount > 0
         except Exception as e:
-            print(f"[MODEL ERRO EXCLUIR CERTIFICADO] {e}")
+            logger.error(f"Erro ao excluir certificado: {e}")
             if conn:
                 conn.rollback()
             return False

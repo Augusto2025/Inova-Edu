@@ -1,6 +1,9 @@
 class UsuarioSessao:
     _instance = None
     email = None  # Vamos guardar o e-mail aqui após o login
+    nome = None
+    sobrenome = None
+    descricao = None
 
     def __new__(cls):
         if cls._instance is None:
