@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from "../components/Cores";
 
@@ -16,11 +17,14 @@ import TituloScreen from '../screens/Topico';
 import ConversaScreen from '../screens/Conversa';
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from '../screens/Perfil';
+import ContaScreen from '../screens/ContaScreen';
 
 
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       // 🆕 Garante que, ao entrar no "Main" (logo após o login), a tela inicial seja a Home,
@@ -53,12 +57,14 @@ export default function TabRoutes() {
 
         tabBarStyle: {
           backgroundColor: COLORS.primary,
-          height: 95,
+          height: 64 + insets.bottom,
+          paddingTop: 6,
+          paddingBottom: Math.max(insets.bottom, 6),
         },
 
         tabBarLabelStyle: {
           fontSize: 12,
-          marginTop: 5,
+          marginTop: 0,
         },
       })}
     >
@@ -133,6 +139,15 @@ export default function TabRoutes() {
       <Tab.Screen
         name="Conversa"
         component={ConversaScreen}
+        options={{
+          tabBarItemStyle: {
+            display: 'none',
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Conta"
+        component={ContaScreen}
         options={{
           tabBarItemStyle: {
             display: 'none',

@@ -9,7 +9,8 @@ import {
   Image,
   Animated,
   Alert,
-  Keyboard
+  Keyboard,
+  useWindowDimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
@@ -54,6 +55,9 @@ export default function HomeScreen({ navigation }) {
   const [busca, setBusca] = useState("");
   const [repoSearchResults, setRepoSearchResults] = useState([]);
   const [repoSearchLoading, setRepoSearchLoading] = useState(false);
+  const { width } = useWindowDimensions();
+  const repoCardWidth = Math.min(160, Math.max(120, width * 0.34));
+  const newRepoCardWidth = Math.min(220, Math.max(180, width * 0.55));
   const [repoSearchError, setRepoSearchError] = useState(null);
   const { totalNovas, markAllAsRead } = useNotifications();
   const [homeData, setHomeData] = useState({
@@ -67,8 +71,17 @@ export default function HomeScreen({ navigation }) {
   // 🆕 Histórico local de repositórios que o usuário realmente entrou
   const [recentRepos, setRecentRepos] = useState([]);
   const [recentReposCarregado, setRecentReposCarregado] = useState(false);
+  const [mensagensForumVistas, setMensagensForumVistas] = useState({});
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    AsyncStorage.getItem("@InovaEdu:mensagensForumVistas")
+      .then((valor) => {
+        if (valor) setMensagensForumVistas(JSON.parse(valor));
+      })
+      .catch(() => {});
+  }, []);
 
   // 🆕 Carrega o tipo salvo no login (Aluno/Professor) assim que a tela monta
   useEffect(() => {
@@ -324,10 +337,39 @@ export default function HomeScreen({ navigation }) {
     if (!data) return "#4CAF50";
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    const evento = new Date(data);
+    const evento = criarDataLocal(data);
+    if (!evento) return "#4CAF50";
     evento.setHours(0, 0, 0, 0);
     if (evento.getTime() === hoje.getTime()) return "#FFD700";
     return evento > hoje ? "#4CAF50" : "#F44336";
+  }
+
+  function criarDataLocal(data) {
+    if (!data) return null;
+    const dataTexto = String(data).slice(0, 10);
+    const partes = dataTexto.split('-').map(Number);
+    if (partes.length === 3 && partes.every(Number.isFinite)) {
+      return new Date(partes[0], partes[1] - 1, partes[2]);
+    }
+    const dataConvertida = new Date(data);
+    return Number.isNaN(dataConvertida.getTime()) ? null : dataConvertida;
+  }
+
+  async function marcarForumComoVisualizado(forum) {
+    if (!forum?.id) return;
+
+    const totalMensagens = Number(forum.mensagens || 0);
+    const novasVistas = { ...mensagensForumVistas, [forum.id]: totalMensagens };
+    setMensagensForumVistas(novasVistas);
+
+    try {
+      await AsyncStorage.setItem(
+        "@InovaEdu:mensagensForumVistas",
+        JSON.stringify(novasVistas)
+      );
+    } catch (error) {
+      console.warn("Não foi possível salvar a leitura do fórum:", error.message);
+    }
   }
 
   async function buscarRepositorios(termoBusca) {
@@ -467,9 +509,11 @@ export default function HomeScreen({ navigation }) {
             const localEvento = event.local || event.local_evento || "InovaEdu";
 
             if (dataOriginal) {
-              const dataObj = new Date(dataOriginal);
-              dia = dataObj.getUTCDate();
-              mes = meses[dataObj.getUTCMonth()];
+              const dataObj = criarDataLocal(dataOriginal);
+              if (dataObj) {
+                dia = dataObj.getDate();
+                mes = meses[dataObj.getMonth()];
+              }
             }
 
             const statusColor = getEventStatusColor(dataOriginal);
@@ -571,7 +615,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                       <TouchableOpacity
                         key={repo.chave_unica || repo.id}
-                        style={[styles.repoCard, { backgroundColor: theme.card }]}
+                        style={[styles.repoCard, { backgroundColor: theme.card, width: repoCardWidth }]}
                         activeOpacity={0.8}
                         onPress={() => {
                           if (temProjeto) {
@@ -679,7 +723,7 @@ export default function HomeScreen({ navigation }) {
             {[1, 2].map((i) => (
               <View
                 key={i}
-                style={[styles.newRepoCard, { width: 220, opacity: 0.6, backgroundColor: theme.card, borderColor: theme.border }]}
+                style={[styles.newRepoCard, { width: newRepoCardWidth, opacity: 0.6, backgroundColor: theme.card, borderColor: theme.border }]}
               />
             ))}
           </ScrollView>
@@ -765,6 +809,8 @@ export default function HomeScreen({ navigation }) {
             onPress={() => {
               if (!forumPrincipal) return;
 
+              marcarForumComoVisualizado(forumPrincipal);
+
               navigation.navigate("Titulo", {
                 topico: forumPrincipal,
               });
@@ -796,7 +842,11 @@ export default function HomeScreen({ navigation }) {
                 ]}
               >
                 <Text style={styles.forumBadgeText}>
-                  {forumPrincipal.mensagens || 0}
+                  {Math.max(
+                    Number(forumPrincipal.mensagens || 0) -
+                    Number(mensagensForumVistas[forumPrincipal.id] || 0),
+                    0
+                  )}
                 </Text>
               </Animated.View>
             </View>
@@ -917,13 +967,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   repoCard: {
-    width: 140,
+    minWidth: 120,
+    width: "auto",
     borderRadius: 12,
     padding: 8,
     alignItems: "center",
     elevation: 2,
   },
-  repoImg: { width: 120, height: 68, borderRadius: 8, marginBottom: 8 },
+  repoImg: { width: "100%", height: 68, borderRadius: 8, marginBottom: 8 },
   repoTitle: { fontWeight: "600" },
   /* Estilos novos / melhorados para Repositórios Recentes */
   repoHeaderRow: {
@@ -932,7 +983,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   newRepoCard: {
-    width: 220,
+    minWidth: 180,
+    width: "auto",
     borderRadius: 14,
     padding: 12,
     flexDirection: "row",

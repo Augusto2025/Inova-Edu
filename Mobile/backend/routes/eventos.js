@@ -43,49 +43,119 @@ router.get('/', async (req, res) => {
 });
 
 // ROTA POST (Cadastro) - ESTA ERA A QUE FALTAVA
+// ================================================================
+// ROTA POST - CRIAR EVENTO
+// ================================================================
 router.post('/', async (req, res) => {
-    const { title, time, date, description, local, usuario_id } = req.body;
+
+    console.log('🔥🔥🔥 POST EVENTOS - VERSÃO 18/08/2026 🔥🔥🔥');
+
+    const {
+        title,
+        time,
+        date,
+        description,
+        local,
+        usuario_id
+    } = req.body;
+
+    console.log('========================================');
+    console.log('📅 POST /eventos');
+    console.log('📦 Dados recebidos:', req.body);
+    console.log('========================================');
 
     try {
         const query = `
-            INSERT INTO eventos ("Nome_do_evento", "Hora_do_evento", "Data_do_evento", "Descricao", "Endereco", "ID_Usuario")
+            INSERT INTO eventos (
+                "Nome_do_evento",
+                "Hora_do_evento",
+                "Data_do_evento",
+                "Descricao",
+                "Endereco",
+                "ID_Usuario"
+            )
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
-        
-       const resultado = await db.query(query, [
-    title,
-    time,
-    date,
-    description,
-    local,
-    usuario_id
-]);
 
-console.log(resultado.rows[0]);
+        const resultado = await db.query(query, [
+            title,
+            time,
+            date,
+            description,
+            local,
+            usuario_id
+        ]);
 
-        // Cria notificações para todos os usuários, exceto quem criou o evento
-        await db.query(
-            `INSERT INTO notifications (usuario_id, tipo, titulo, subtitulo, tela_destino, parametros, entidade_id)
-             SELECT "idUsuario", $1, $2, $3, $4, $5, $6
-             FROM usuario
-             WHERE "idUsuario" <> $7
-            `,
-            [
-                'Eventos',
-                `Novo evento: ${title}`,
-                `${date} ${time}`,
-                'Eventos',
-                JSON.stringify({ eventoId: eventoCriado.idEventos }),
-                eventoCriado.idEventos,
-                usuario_id
-            ]
-        );
+        const eventoCriado = resultado?.rows?.[0];
 
-        res.status(201).json({ sucesso: true, mensagem: "Evento criado com sucesso!" });
+        if (!eventoCriado) {
+            console.error('❌ INSERT de evento retornou vazio');
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: 'Evento foi criado sem retorno do banco.'
+            });
+        }
+
+        const idEventoCriado = eventoCriado.idEventos;
+
+        console.log('✅ Evento criado:', eventoCriado);
+        console.log('🆔 ID do evento:', idEventoCriado);
+
+        try {
+            await db.query(
+                `
+                INSERT INTO notifications (
+                    usuario_id,
+                    tipo,
+                    titulo,
+                    subtitulo,
+                    tela_destino,
+                    parametros,
+                    entidade_id
+                )
+                SELECT
+                    "idUsuario",
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5,
+                    $6
+                FROM usuario
+                WHERE "idUsuario" <> $7
+                `,
+                [
+                    'Eventos',
+                    `Novo evento: ${title}`,
+                    `${date} ${time}`,
+                    'Eventos',
+                    JSON.stringify({ eventoId: idEventoCriado }),
+                    idEventoCriado,
+                    usuario_id
+                ]
+            );
+
+            console.log('🔔 Notificações criadas!');
+        } catch (notificationError) {
+            console.error('⚠️ Erro ao criar notificações:', notificationError.message);
+        }
+
+        return res.status(201).json({
+            sucesso: true,
+            mensagem: 'Evento criado com sucesso!',
+            evento: eventoCriado
+        });
     } catch (error) {
-        console.error("Erro ao salvar:", error);
-        res.status(500).json({ mensagem: 'Erro ao criar evento.', detalhe: error.message });
+
+        console.error('❌ ERRO AO CRIAR EVENTO:');
+        console.error(error);
+
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: 'Erro ao criar evento.',
+            detalhe: error.message
+        });
     }
 });
 
@@ -117,16 +187,45 @@ router.put('/:id', async (req, res) => {
 // ROTA DELETE (Excluir)
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    const { usuario_id } = req.body;
+    const { usuario_id } = req.body || {};
+
+    if (!id) {
+        return res.status(400).json({ mensagem: 'ID do evento é obrigatório.' });
+    }
+
+    if (!usuario_id) {
+        return res.status(400).json({ mensagem: 'ID do usuário é obrigatório para excluir o evento.' });
+    }
 
     try {
-        const query = 'DELETE FROM eventos WHERE "idEventos" = $1 AND "ID_Usuario" = $2';
-        const result = await db.query(query, [id, usuario_id]);
+        const eventoQuery = 'SELECT "ID_Usuario" FROM eventos WHERE "idEventos" = $1';
+        const eventoRes = await db.query(eventoQuery, [id]);
 
-        if (result.rowCount === 0) return res.status(403).json({ mensagem: "Ação não permitida." });
-        res.json({ sucesso: true });
+        if (eventoRes.rowCount === 0) {
+            return res.status(404).json({ mensagem: 'Evento não encontrado.' });
+        }
+
+        const usuarioQuery = 'SELECT "Tipo" FROM usuario WHERE "idUsuario" = $1';
+        const usuarioRes = await db.query(usuarioQuery, [usuario_id]);
+
+        const ehProfessor = usuarioRes.rows[0] && String(usuarioRes.rows[0].Tipo).toLowerCase() === 'professor';
+        const ehDono = Number(eventoRes.rows[0].ID_Usuario) === Number(usuario_id);
+
+        if (!ehDono && !ehProfessor) {
+            return res.status(403).json({ mensagem: 'Você não pode excluir este evento.' });
+        }
+
+        const deleteQuery = 'DELETE FROM eventos WHERE "idEventos" = $1';
+        const result = await db.query(deleteQuery, [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(500).json({ mensagem: 'Não foi possível excluir o evento.' });
+        }
+
+        return res.json({ sucesso: true, mensagem: 'Evento excluído com sucesso!' });
     } catch (error) {
-        res.status(500).json({ mensagem: 'Erro ao excluir.' });
+        console.error('Erro ao excluir evento:', error);
+        return res.status(500).json({ mensagem: 'Erro ao excluir evento.', detalhe: error.message });
     }
 });
 

@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, ScrollView, 
   TouchableOpacity, ActivityIndicator, Alert,
   Modal, TextInput, TouchableWithoutFeedback,
-  Image,
+  Image, InteractionManager,
   Linking
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,12 +19,17 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { RAW_BACKEND_URL, URL_BASE } from '../config/backend';
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ route, navigation }) {
   const [carregando, setCarregando] = useState(true);
   const { theme, fontSizeScale } = useTheme();
   const { user, carregarUsuario, atualizarPerfil, atualizarFoto } = useUser();
-  const usuarioExibicao = user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
+  const usuarioIdSolicitado = route?.params?.usuarioId;
+  const [usuarioPublico, setUsuarioPublico] = useState(null);
+  const visualizandoOutroUsuario = Boolean(usuarioIdSolicitado) && String(usuarioIdSolicitado) !== String(user?.idUsuario);
+  const usuarioExibicao = usuarioPublico || user || { nome: '', sobrenome: '', descricao: '', imagem: null, turma: '' };
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const defaultAvatar = require('../../assets/default.png');
+  const [fotoPerfilVisible, setFotoPerfilVisible] = useState(false);
 
   useEffect(() => {
     setAvatarLoadFailed(false);
@@ -51,13 +56,17 @@ export default function ProfileScreen() {
     try {
       setCarregando(true);
       const idSalvo = await AsyncStorage.getItem('idUsuario');
+      const idPerfil = usuarioIdSolicitado || idSalvo;
+      console.log("================================");
+      console.log("👤 ID USUARIO:", idSalvo);
+      console.log("================================");
       
-      if (!idSalvo) {
+      if (!idPerfil) {
         Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
         return;
       }
-
-      const response = await fetch(`${URL_BASE}/perfil/${idSalvo}`);
+      
+      const response = await fetch(`${URL_BASE}/perfil/${idPerfil}`);
       const textoRaw = await response.text();
 
       if (!response.ok) {
@@ -67,6 +76,18 @@ export default function ProfileScreen() {
       const dados = JSON.parse(textoRaw);
 
       if (dados.sucesso) {
+        if (usuarioIdSolicitado) {
+          const imagem = dados.usuario.imagem;
+          const imagemNormalizada = typeof imagem === 'string' && imagem.trim() !== '' && imagem.trim().toLowerCase() !== 'null'
+            ? (/^https?:\/\//i.test(imagem) ? imagem : `${URL_BASE}${imagem.startsWith('/') ? '' : '/uploads/'}${imagem}`)
+            : null;
+          setUsuarioPublico({
+            ...dados.usuario,
+            imagem: imagemNormalizada,
+            descricao: dados.usuario.descricao || "Nenhuma descrição informada.",
+            turma: dados.usuario.turma || "Sem Turma Vinculada"
+          });
+        }
         setCertificados(dados.certificados || []);
         setProjetos(dados.projetos || []);
       } else {
@@ -83,150 +104,213 @@ export default function ProfileScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const carregar = async () => {
-        await carregarUsuario();
+        if (!usuarioIdSolicitado) {
+          setUsuarioPublico(null);
+          await carregarUsuario();
+        }
         await carregarDadosPerfil();
       };
       carregar();
-    }, [])
+    }, [usuarioIdSolicitado])
   );
 
   // --- FUNÇÃO: SELECIONAR, ENVIAR OU REMOVER FOTO ---
-  const alterarFotoPerfil = async () => {
-    const idSalvo = await AsyncStorage.getItem('idUsuario');
+ const alterarFotoPerfil = async () => {
+  const idSalvo = await AsyncStorage.getItem('idUsuario');
 
-    if (!idSalvo) {
-      Alert.alert("Erro", "Usuário não identificado. Faça login novamente.");
-      return;
-    }
-
+  if (!idSalvo) {
     Alert.alert(
-      "Foto de Perfil",
-      "Escolha o que deseja fazer com sua foto:",
-      [
-        {
-          text: "Escolher da Galeria",
-          onPress: async () => {
-            const dadosPermissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      "Erro",
+      "Usuário não identificado. Faça login novamente."
+    );
+    return;
+  }
+
+  Alert.alert(
+    "Foto de Perfil",
+    "Escolha o que deseja fazer com sua foto:",
+    [
+      {
+        text: "Escolher da Galeria",
+        onPress: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(async () => {
+              try {
+            const dadosPermissao =
+              await ImagePicker.requestMediaLibraryPermissionsAsync();
+
             if (!dadosPermissao.granted) {
-              Alert.alert("Permissão necessária", "Precisamos de acesso às fotos para alterar o perfil.");
+              Alert.alert(
+                "Permissão necessária",
+                "Precisamos de acesso às fotos para alterar o perfil."
+              );
               return;
             }
 
-            const resultado = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images'],
-              allowsEditing: true,
-              aspect: [1, 1],
-              quality: 0.3, 
-              base64: true,
-            });
+            const resultado =
+              await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.3,
+                base64: true,
+              });
 
-            if (resultado.canceled) return;
+            if (resultado.canceled) {
+              return;
+            }
 
-            const { uri: fotoLocalUriRaw, type: assetType, fileName: assetName, base64: base64Data } = resultado.assets[0];
-            const fileName = assetName || 'profile.jpg';
-            const fileExtension = fileName.split('.').pop()?.toLowerCase();
-            const mimeType = assetType && assetType.includes('/')
-              ? assetType
-              : fileExtension === 'png'
-                ? 'image/png'
-                : fileExtension === 'gif'
-                  ? 'image/gif'
-                  : fileExtension === 'jpg' || fileExtension === 'jpeg'
-                    ? 'image/jpeg'
-                    : 'application/octet-stream';
+            const asset = resultado.assets[0];
+
+            const {
+              uri: fotoLocalUriRaw,
+              fileName: assetName,
+              base64: base64Data,
+              mimeType: assetMimeType,
+            } = asset;
+
+            if (!base64Data) {
+              throw new Error(
+                "Não foi possível obter os dados da imagem."
+              );
+            }
+
+            const fileName =
+              assetName || `perfil_${idSalvo}.jpg`;
+
+            const mimeType =
+              assetMimeType || 'image/jpeg';
+
+            console.log("================================");
+            console.log("📸 FOTO SELECIONADA");
+            console.log("👤 ID:", idSalvo);
+            console.log("📄 Nome:", fileName);
+            console.log("🖼️ Tipo:", mimeType);
+            console.log("📦 Base64 recebido:", !!base64Data);
+            console.log("🌐 Backend:", URL_BASE);
+            console.log("================================");
+
+            setCarregando(true);
+
+            console.log(
+              "📤 Enviando imagem para o backend..."
+            );
+
+            const respostaServidor = await fetch(
+              `${URL_BASE}/perfil/upload-foto`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                  idUsuario: idSalvo,
+                  fileName,
+                  mimeType,
+                  base64: base64Data,
+                }),
+              }
+            );
+
+            const textoResposta =
+              await respostaServidor.text();
+
+            console.log(
+              "📥 Status backend:",
+              respostaServidor.status
+            );
+
+            console.log(
+              "📥 Resposta backend:",
+              textoResposta
+            );
+
+            if (!respostaServidor.ok) {
+              throw new Error(
+                `Upload falhou (${respostaServidor.status}): ${textoResposta}`
+              );
+            }
+
+            let dadosServidor;
 
             try {
-              setCarregando(true);
+              dadosServidor = JSON.parse(textoResposta);
+            } catch {
+              throw new Error(
+                "O servidor retornou uma resposta inválida."
+              );
+            }
 
-              const hasCloudinaryConfig = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET && process.env.EXPO_PUBLIC_CLOUD_NAME;
+            if (!dadosServidor.sucesso) {
+              throw new Error(
+                dadosServidor.mensagem ||
+                dadosServidor.message ||
+                "Erro ao fazer upload."
+              );
+            }
 
-              if (hasCloudinaryConfig) {
-                const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUD_NAME;
-                const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-                const cloudinaryForm = new FormData();
+            console.log(
+              "☁️ URL Cloudinary:",
+              dadosServidor.imagem
+            );
 
-                cloudinaryForm.append('file', {
-                  uri: fotoLocalUriRaw,
-                  type: mimeType,
-                  name: fileName,
-                });
-                cloudinaryForm.append('upload_preset', UPLOAD_PRESET);
+            atualizarFoto(dadosServidor.imagem);
 
-                const respostaCloudinary = await fetch(
-                  `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-                  {
-                    method: 'POST',
-                    body: cloudinaryForm,
-                  }
+            await carregarUsuario();
+
+            Alert.alert(
+              "Sucesso",
+              "Foto de perfil atualizada!"
+            );
+
+              } catch (error) {
+                console.error(
+                  "❌ Erro ao subir imagem:",
+                  error
                 );
 
-                const dadosFoto = await respostaCloudinary.json();
-                if (!respostaCloudinary.ok) {
-                  throw new Error(dadosFoto.error?.message || "Erro no Cloudinary");
-                }
-
-                const urlCloudinary = dadosFoto.secure_url;
-                await atualizarFotoNoBackend(idSalvo, urlCloudinary);
-              } else {
-                if (!base64Data) {
-                  throw new Error('Não foi possível obter os dados da imagem.');
-                }
-
-                const finalMime = assetType === 'image' ? 'image/jpeg' : assetType || 'image/jpeg';
-                
-                const respostaServidor = await fetch(`${URL_BASE}/perfil/upload-foto`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                  },
-                  body: JSON.stringify({
-                    idUsuario: idSalvo,
-                    fileName,
-                    mimeType: finalMime,
-                    base64: base64Data,
-                  }),
-                });
-
-                if (respostaServidor.status < 200 || respostaServidor.status >= 300) {
-                  throw new Error(`Upload falhou: ${respostaServidor.status}`);
-                }
-
-                const dadosServidor = await respostaServidor.json();
-
-                if (dadosServidor.sucesso) {
-                  await atualizarFotoNoBackend(idSalvo, dadosServidor.imagem);
-                } else {
-                  throw new Error(dadosServidor.mensagem || "Erro ao fazer upload no servidor");
-                }
+                Alert.alert(
+                  "Erro ao subir imagem",
+                  error.message ||
+                  "Não foi possível atualizar sua foto."
+                );
+              } finally {
+                setCarregando(false);
               }
+            }, 300);
+          });
+        },
+      },
+      {
+        text: "Remover Foto Atual",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setCarregando(true);
 
-            } catch (error) {
-              console.error("❌ Erro ao subir imagem:", error);
-              Alert.alert("Erro ao subir imagem", error.message);
-            } finally {
-              setCarregando(false);
-            }
+            await atualizarFotoNoBackend(
+              idSalvo,
+              null
+            );
+
+          } catch (error) {
+            Alert.alert(
+              "Erro ao remover foto",
+              error.message
+            );
+          } finally {
+            setCarregando(false);
           }
         },
-        {
-          text: "Remover Foto Atual",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setCarregando(true);
-              await atualizarFotoNoBackend(idSalvo, null); 
-            } catch (error) {
-              Alert.alert("Erro ao remover foto", error.message);
-            } finally {
-              setCarregando(false);
-            }
-          }
-        },
-        { text: "Cancelar", style: "cancel" }
-      ]
-    );
-  };
+      },
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+    ]
+  );
+};
 
   const atualizarFotoNoBackend = async (idUsuario, urlImagem) => {
     try {
@@ -241,7 +325,7 @@ export default function ProfileScreen() {
       if (dadosBack.sucesso) {
         atualizarFoto(urlImagem);
         await carregarUsuario();
-        Alert.alert("Sucesso", "Foto de perfil atualizada!");
+        Alert.alert("Sucesso", urlImagem ? "Foto de perfil atualizada!" : "Foto de perfil removida!");
       } else {
         throw new Error(dadosBack.mensagem || "Erro ao salvar no servidor.");
       }
@@ -456,16 +540,23 @@ export default function ProfileScreen() {
         {/* CARD PRINCIPAL DO PERFIL */}
         <View style={[styles.profileHeaderCard, { backgroundColor: theme.card, borderColor: theme.border, borderWidth: 1 }]}> 
           <View style={styles.photoContainer}>
-            <View style={[styles.profileImagePlaceholder, { backgroundColor: theme.background }]}>
+            <TouchableOpacity
+              style={[styles.profileImagePlaceholder, { backgroundColor: theme.background, borderColor: '#FFFFFF' }]}
+              activeOpacity={0.85}
+              disabled={!usuarioExibicao.imagem || avatarLoadFailed}
+              onPress={() => setFotoPerfilVisible(true)}
+            >
               {usuarioExibicao.imagem && usuarioExibicao.imagem !== 'null' && usuarioExibicao.imagem.trim() !== '' && !avatarLoadFailed ? (
                 <Image source={{ uri: usuarioExibicao.imagem }} style={styles.profileImage} resizeMode="cover" onError={() => setAvatarLoadFailed(true)} />
               ) : (
-                <Ionicons name="person" size={50} color="#B0B8C4" />
+                <Image source={defaultAvatar} style={styles.profileImage} resizeMode="cover" />
               )}
-            </View>
-            <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
-              <Ionicons name="camera" size={16} color="white" />
             </TouchableOpacity>
+            {!visualizandoOutroUsuario && (
+              <TouchableOpacity style={styles.cameraBtn} activeOpacity={0.7} onPress={alterarFotoPerfil}>
+                <Ionicons name="camera" size={16} color="white" />
+              </TouchableOpacity>
+            )}
           </View>
 
           <Text style={[styles.userName, { color: theme.text, fontSize: 20 * fontSizeScale }]}>{usuarioExibicao.nome} {usuarioExibicao.sobrenome}</Text>
@@ -477,10 +568,12 @@ export default function ProfileScreen() {
           
           <Text style={[styles.userDesc, { color: theme.text, fontSize: 14 * fontSizeScale }]}>{usuarioExibicao.descricao}</Text>
 
-          <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
-            <Ionicons name="create-outline" size={18} color="white" />
-            <Text style={styles.editProfileBtnText}>Editar Perfil</Text>
-          </TouchableOpacity>
+          {!visualizandoOutroUsuario && (
+            <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={abrirEditarPerfil}>
+              <Ionicons name="create-outline" size={18} color="white" />
+              <Text style={styles.editProfileBtnText}>Editar Perfil</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* SEÇÃO: CERTIFICADOS */}
@@ -490,9 +583,11 @@ export default function ProfileScreen() {
               <Ionicons name="ribbon-outline" size={22} color={COLORS.primary} style={{ marginRight: 8 }} />
               <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Certificados</Text>
             </View>
-            <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
-              <Ionicons name="add" size={20} color="white" />
-            </TouchableOpacity>
+            {!visualizandoOutroUsuario && (
+              <TouchableOpacity style={styles.plusBtn} activeOpacity={0.7} onPress={abrirCriarCertificado}>
+                <Ionicons name="add" size={20} color="white" />
+              </TouchableOpacity>
+            )}
           </View>
           
           {certificados.length === 0 ? (
@@ -512,14 +607,16 @@ export default function ProfileScreen() {
                   <Text style={[styles.certSub, { color: theme.text, fontSize: 12 * fontSizeScale }]} numberOfLines={2}>{cert.descricao || "Sem descrição"}</Text>
                 </View>
 
-                <View style={styles.certActionColumn}>
-                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirEditarCertificado(cert)}>
-                    <Ionicons name="pencil" size={16} color={COLORS.primary} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirExcluirCertificado(cert)}>
-                    <Ionicons name="trash-outline" size={16} color="#F44336" />
-                  </TouchableOpacity>
-                </View>
+                {!visualizandoOutroUsuario && (
+                  <View style={styles.certActionColumn}>
+                    <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirEditarCertificado(cert)}>
+                      <Ionicons name="pencil" size={16} color={COLORS.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.miniActionBtn} onPress={() => abrirExcluirCertificado(cert)}>
+                      <Ionicons name="trash-outline" size={16} color="#F44336" />
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             ))
           )}
@@ -550,7 +647,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity 
                   style={styles.repoLinkBtn} 
                   activeOpacity={0.7}
-                  onPress={() => proj.link_repo ? Linking.openURL(proj.link_repo) : Alert.alert("Ops", "Link do repositório não disponível.")}
+                  onPress={() => navigation.navigate("Repositorio", { projetoId: proj.id, projetoNome: proj.nome })}
                 >
                   <Text style={[styles.repoLinkText, { color: theme.text, fontSize: 14 * fontSizeScale }]}>Acessar Repositório</Text>
                   <Ionicons name="arrow-forward" size={14} color={COLORS.primary} />
@@ -561,6 +658,31 @@ export default function ProfileScreen() {
         </View>
 
       </ScrollView>
+
+      <Modal
+        visible={fotoPerfilVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setFotoPerfilVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.fotoModalOverlay}
+          activeOpacity={1}
+          onPress={() => setFotoPerfilVisible(false)}
+        >
+          <Image
+            source={{ uri: usuarioExibicao.imagem }}
+            style={styles.fotoModalImage}
+            resizeMode="contain"
+          />
+          <TouchableOpacity
+            style={styles.fotoModalClose}
+            onPress={() => setFotoPerfilVisible(false)}
+          >
+            <Ionicons name="close" size={26} color="#fff" />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
 
       {/* 1. MODAL EDITAR PERFIL */}
       <Modal visible={modalPerfilVisible} transparent animationType="fade" onRequestClose={() => setModalPerfilVisible(false)}>
@@ -702,6 +824,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -709,6 +833,27 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
+  },
+  fotoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fotoModalImage: {
+    width: '92%',
+    height: '70%',
+  },
+  fotoModalClose: {
+    position: 'absolute',
+    top: 48,
+    right: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cameraBtn: {
     position: 'absolute',

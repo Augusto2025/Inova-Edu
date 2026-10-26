@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Text, Modal, Animated, Easing } from "react-native";
+import { View, StyleSheet, Text, Modal, Animated, Easing, useWindowDimensions } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 
 const Logo = require('../../assets/LOGOBRANCO.png');
 
 export default function SplashScreen() {
     const isFocused = useIsFocused();
+    const { width } = useWindowDimensions();
     const [isLoading, setIsLoading] = useState(true);
+    const logoSize = Math.min(160, Math.max(100, width * 0.4));
 
     // Animadores de escala e opacidade
     const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -73,6 +75,8 @@ export default function SplashScreen() {
                     style={[
                         styles.logo, 
                         { 
+                            width: logoSize,
+                            height: logoSize,
                             transform: [{ scale: scaleAnim }],
                             opacity: opacityAnim,
                         }
@@ -96,9 +100,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     logo: { 
-        width: 150, 
-        height: 150, 
-        marginBottom: 24 
+        marginBottom: 24,
+        resizeMode: 'contain',
     },
     welcomeText: { 
         color: '#ffffff', 

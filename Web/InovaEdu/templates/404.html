@@ -42,11 +42,15 @@
             A página ou diretório que você tentou acessar não existe ou foi movido.
         </p>
 
-        {% if usuario.tipo == "Aluno" %}
+        {% if usuario.tipo == None or usuario.tipo == "" %}
+            <a href="{% url "homePage" %}" class="btn-action btn-primary" style="text-decoration: none;">
+                <i class="fa-solid fa-house"></i> Voltar para a home
+            </a>
+        {% elif usuario.tipo == "Aluno" %}
             <a href="{% url "home" %}" class="btn-action btn-primary" style="text-decoration: none;">
                 <i class="fa-solid fa-house"></i> Voltar para a home
             </a>
-        {% else %}
+        {% elif usuario.tipo == "Coordenador" %}
             <a href="{% url "HomeCoord" %}" class="btn-action btn-primary" style="text-decoration: none;">
                 <i class="fa-solid fa-house"></i> Voltar para a home
             </a>

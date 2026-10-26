@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Usuários</title>
 
-    <link
+    {% comment %} <link
       rel="stylesheet"
       href="{% static 'styles/navbar_coordenacao.css' %}"
-    />
+    /> {% endcomment %}
     <link rel="stylesheet" href="{% static 'styles/UsuarioCoord.css' %}" />
 
     <link
@@ -24,7 +24,7 @@
 
      <section class="topo-pagina">
           <div>
-              <h1><i class="fa-solid fa-graduation-cap"></i> Usuários</h1>
+              <h1><i class="fa-solid fa-users"></i> Usuários</h1>
               <p>Cadastre, edite e gerencie todos os usuários da instituição.</p>
           </div>
       </section>
@@ -83,7 +83,7 @@
 
           <tbody>
             {% for usuario in usuarios %}
-            <tr>
+            <tr class="linha-usuario">
               <td class="avatar">
                 {% if usuario.imagem %}
                 <img src="{{ usuario.imagem.url }}" alt="{{ usuario.nome }}" />
@@ -392,6 +392,6 @@
         });
       }, 3000);
     </script>
-    {% include "partials/footer.html" %}
+    {% include "partials/footerCoord.html" %}
   </body>
 </html>

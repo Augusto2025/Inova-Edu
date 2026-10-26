@@ -6,6 +6,7 @@ const pool = require('../config/db'); // Conexão com o Postgres
 // URL: /mensagem/topico/:topicoId
 router.get('/topico/:topicoId', async (req, res) => {
     const { topicoId } = req.params;
+    const baseUrl = (process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
 
     try {
         const queryText = `
@@ -14,14 +15,39 @@ router.get('/topico/:topicoId', async (req, res) => {
                 m."Conteudo" AS texto, 
                 m."Data_criacao" AS data,
                 m."ID_Usuario" AS "autorId",
-                u."Nome" AS nome
+                u."Nome" AS nome,
+                u."imagem_usuario" AS foto
             FROM mensagem m
             LEFT JOIN usuario u ON m."ID_Usuario" = u."idUsuario"
             WHERE m."ID_Topico" = $1 AND m."excluida" = false
             ORDER BY m."Data_criacao" ASC
         `;
         const resultado = await pool.query(queryText, [topicoId]);
-        return res.json(resultado.rows);
+        
+        // DEBUG: Log de todas as fotos retornadas
+        console.log('📸 Fotos do tópico:', resultado.rows.map(r => ({ nome: r.nome, foto: r.foto })));
+        
+        // Formata as URLs das fotos
+        const dadosFormatados = resultado.rows.map(row => {
+            let fotoFormatada = null;
+            if (row.foto) {
+                const fotoString = String(row.foto).trim();
+                if (fotoString && fotoString.toLowerCase() !== 'null') {
+                    if (fotoString.startsWith('http')) {
+                        fotoFormatada = fotoString;
+                    } else {
+                        fotoFormatada = `${baseUrl}${fotoString.startsWith('/') ? '' : '/uploads/'}${fotoString}`;
+                    }
+                }
+            }
+            console.log(`  ${row.nome}: ${row.foto} => ${fotoFormatada}`);
+            return {
+                ...row,
+                foto: fotoFormatada
+            };
+        });
+        
+        return res.json(dadosFormatados);
     } catch (err) {
         console.error('❌ Erro ao buscar mensagens:', err.message);
         return res.status(500).json({ sucesso: false, mensagem: 'Erro ao buscar mensagens.' });
@@ -29,7 +55,7 @@ router.get('/topico/:topicoId', async (req, res) => {
 });
 
 // POST: Enviar uma nova mensagem no tópico
-// URL: /mensagem
+// URL: /conversa
 router.post('/', async (req, res) => {
     const { conteudo, topicoId, usuarioId } = req.body;
 
@@ -72,6 +98,7 @@ router.post('/', async (req, res) => {
         });
     } catch (err) {
         console.error('❌ Erro detalhado no banco Postgres:', err.message);
+        console.error('❌ Stack:', err);
         return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao enviar mensagem.' });
     }
 });

@@ -1,16 +1,18 @@
 import { TextInput, StyleSheet } from "react-native";
 
-export default function CustomInput(props) {
+export default function CustomInput({ style: customStyle, placeholderTextColor = '#64748B', selectionColor = '#1459b3', ...props }) {
     return (
         <TextInput
-            style={style.input}
-            // Permite passar todas as props para a proxima camada, como placeholder, value, onChangeText, etc.
+            style={[styles.input, customStyle]}
+            placeholderTextColor={placeholderTextColor}
+            selectionColor={selectionColor}
+            keyboardAppearance="light"
             {...props}
         />
     );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
     input: {
         width: '100%',
         borderWidth: 1,
@@ -19,5 +21,6 @@ const style = StyleSheet.create({
         borderRadius: 8,
         borderColor: '#cccccc',
         backgroundColor: '#fff',
+        color: '#1E293B',
     }
-})
+});

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal, ScrollView, TouchableWithoutFeedback, ActivityIndicator, Alert } from "react-native";
 import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
 import Header from "../components/Header";
@@ -29,6 +29,8 @@ export default function ForumScreen({ navigation }) {
   const [modoSelecao, setModoSelecao] = useState(false);
   const [selecionados, setSelecionados] = useState([]);
   const [apagandoSelecionados, setApagandoSelecionados] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const salvandoRef = useRef(false);
 
   // 🆕 Filtro para mostrar só os fóruns que o usuário logado criou
   const [filtro, setFiltro] = useState('todos'); // 'todos' | 'meus'
@@ -82,9 +84,13 @@ export default function ForumScreen({ navigation }) {
   // 2. SALVAR / EDITAR NO BACKEND (POST / PUT)
   // ==========================================
   const salvarTopico = async () => {
-    if (!modal.titulo.trim()) return;
+    if (salvandoRef.current) return;
+    salvandoRef.current = true;
+    setSalvando(true);
 
     try {
+      if (!modal.titulo.trim()) return;
+
       if (modal.modo === "Criar") {
         // Criar Novo Fórum
         const response = await fetch(URL_FORUM, {
@@ -120,6 +126,9 @@ export default function ForumScreen({ navigation }) {
     } catch (error) {
       console.error("Erro ao salvar:", error);
       Alert.alert("Ação Negada", error.message);
+    } finally {
+      salvandoRef.current = false;
+      setSalvando(false);
     }
   };
 
@@ -460,8 +469,8 @@ export default function ForumScreen({ navigation }) {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.saveBtn} onPress={salvarTopico}>
-                  <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>
+                <TouchableOpacity style={[styles.saveBtn, salvando && { opacity: 0.6 }]} onPress={salvarTopico} disabled={salvando}>
+                  {salvando ? <ActivityIndicator color="#fff" /> : <Text style={styles.saveBtnText}>{modal.modo === "Criar" ? "Criar" : "Salvar"}</Text>}
                 </TouchableOpacity>
               </View>
             </View>

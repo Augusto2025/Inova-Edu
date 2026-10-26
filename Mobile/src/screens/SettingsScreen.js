@@ -8,6 +8,10 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Modal,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -25,11 +29,10 @@ export default function ConfiguracoesScreen({ navigation }) {
   // Puxando os novos estados do controle de fonte global
   const { isDarkMode, toggleDarkMode, fontSizeScale, alterarTamanhoFonte, obterNomeTamanhoFonte } = useContext(ThemeContext);
   const { user } = useUser();
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const defaultAvatar = require('../../assets/default.png');
 
   const [push, setPush] = useState(false);
-  const [email, setEmail] = useState(false);
-  const [mensagens, setMensagens] = useState(false);
-  const [eventos, setEventos] = useState(false);
 
   const irParaPerfil = () => {
     navigation.navigate("Perfil");
@@ -55,7 +58,7 @@ export default function ConfiguracoesScreen({ navigation }) {
       console.log('Iniciando logout: limpando AsyncStorage');
       // tenta limpar chaves específicas e como fallback limpa tudo
       try {
-        await AsyncStorage.multiRemove(['idUsuario', 'tipo']);
+        await AsyncStorage.multiRemove(['idUsuario', 'tipo', 'senha_sessao']);
       } catch (e) {
         console.warn('multiRemove falhou, tentando clear():', e);
         await AsyncStorage.clear();
@@ -69,6 +72,9 @@ export default function ConfiguracoesScreen({ navigation }) {
       Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
     }
   };
+
+  // --- Conta (modal) ---
+  const [accountModalVisible, setAccountModalVisible] = useState(false);
 
   useEffect(() => {
     // Não precisa fazer fetch, pois o user já está no contexto
@@ -129,19 +135,11 @@ export default function ConfiguracoesScreen({ navigation }) {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={styles.perfil}>
-          <View style={[styles.avatarWrapper, { borderColor: isDarkMode ? '#0D9FFF' : '#2d6cdf' }]}>
-            {user && user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' ? (
-              <Image source={{ uri: user.imagem }} style={styles.avatar} />
+          <View style={[styles.avatarWrapper, { borderColor: COLORS.primary }]}>
+            {user && user.imagem && user.imagem !== 'null' && user.imagem.trim() !== '' && !avatarLoadFailed ? (
+              <Image source={{ uri: user.imagem }} style={styles.avatar} onError={() => setAvatarLoadFailed(true)} />
             ) : (
-              <View style={[
-                styles.avatarPlaceholder,
-                {
-                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#F1F5F9',
-                  borderColor: isDarkMode ? '#94A3B8' : '#2d6cdf',
-                },
-              ]}>
-                <Ionicons name="person" size={60} color={isDarkMode ? '#94A3B8' : '#64748B'} />
-              </View>
+              <Image source={defaultAvatar} style={styles.avatar} />
             )}
           </View>
           <Text style={[styles.nome, { fontSize: 24 * fontSizeScale }]}>{user ? `${user.nome} ${user.sobrenome}`.trim() : 'Usuário'}</Text>
@@ -150,35 +148,26 @@ export default function ConfiguracoesScreen({ navigation }) {
           <TouchableOpacity style={styles.perfilBtn} onPress={irParaPerfil}>
             <Text style={[styles.perfilBtnText, { fontSize: 14 * fontSizeScale }]}>Visualizar Perfil</Text>
           </TouchableOpacity>
+
+          {/* Conta moved to the settings card below */}
         </View>
 
         {/* Notificações */}
-        <Text style={[styles.titulo, { fontSize: 20 * fontSizeScale }]}>Notificações</Text>
-        <View style={[styles.card, { backgroundColor: CoresTema.card }]}>
-          <ItemSwitch icon="notifications" titulo="Notificações Push" valor={push} funcao={setPush} />
-          <ItemSwitch icon="mail" titulo="Email" valor={email} funcao={setEmail} />
-          <ItemSwitch icon="chatbox" titulo="Mensagens" valor={mensagens} funcao={setMensagens} />
-          <ItemSwitch icon="calendar" titulo="Eventos" valor={eventos} funcao={setEventos} />
-        </View>
 
         {/* Aparência e Acessibilidade */}
-        <Text style={[styles.titulo, { fontSize: 20 * fontSizeScale }]}>Aparência e Acessibilidade</Text>
         <View style={[styles.card, { backgroundColor: CoresTema.card }]}>
+          <ItemSwitch icon="notifications" titulo="Notificações Push" valor={push} funcao={setPush} />
           <ItemSwitch icon="moon" titulo="Modo Escuro" valor={isDarkMode} funcao={toggleDarkMode} />
-          
-          {/* AÇÃO REAL: Altera o tamanho da fonte do sistema */}
           <ItemBotao 
             icon="text" 
             titulo="Tamanho da fonte" 
             subInfo={obterNomeTamanhoFonte()} 
             onPress={alterarTamanhoFonte} 
           />
-          
-          {/* AÇÃO REAL: Executa o leitor de voz do Expo */}
-          <ItemBotao 
-            icon="volume-high" 
-            titulo="Texto em voz alta" 
-            onPress={executarTextoEmVozAlta} 
+          <ItemBotao
+            icon="person"
+            titulo="Conta"
+            onPress={() => navigation.navigate('Conta')}
           />
         </View>
 
@@ -186,7 +175,7 @@ export default function ConfiguracoesScreen({ navigation }) {
         <Text style={[styles.titulo, { fontSize: 20 * fontSizeScale }]}>Versão</Text>
         <View style={[styles.card, { backgroundColor: CoresTema.card }]}>
           <Text style={{ color: CoresTema.textoSecundario, fontSize: 14 * fontSizeScale }}>
-            Versão Brasileira: Herbert Richers 1.0.0
+            Versão: Inova-Edu 1.0.0
           </Text>
         </View>
 
@@ -195,6 +184,51 @@ export default function ConfiguracoesScreen({ navigation }) {
           <Text style={[styles.logoutText, { fontSize: 18 * fontSizeScale }]}>Sair do app</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Modal: Conta */}
+      <Modal visible={accountModalVisible} transparent animationType="fade" onRequestClose={() => setAccountModalVisible(false)}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalBox, { backgroundColor: CoresTema.card, borderColor: CoresTema.borda }]}> 
+              <Text style={[styles.modalTitleSmall, { color: CoresTema.text }]}>Conta</Text>
+
+              <View style={styles.accountField}>
+                <Text style={[styles.accountLabel, { color: CoresTema.text }]}>Email</Text>
+                <Text style={[styles.accountValue, { color: CoresTema.text }]}>{user?.email || user?.nome || ''}</Text>
+              </View>
+
+              <View style={styles.accountField}>
+                <Text style={[styles.accountLabel, { color: CoresTema.text }]}>Senha</Text>
+                <Text style={[styles.accountValue, { color: CoresTema.text }]}>********</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
+                <TouchableOpacity style={[styles.secondaryBtn, { marginRight: 8 }]} onPress={() => setAccountModalVisible(false)}>
+                  <Text style={styles.secondaryBtnText}>Fechar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.primaryBtn} onPress={async () => {
+                  try {
+                    const response = await fetch(`${URL_BASE}/pedir_email/`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                      body: `nome=${encodeURIComponent(user?.nome || '')}&sobrenome=${encodeURIComponent(user?.sobrenome || '')}`
+                    });
+                    const text = await response.text();
+                    if (!response.ok) throw new Error(text || 'Erro ao solicitar redefinição');
+                    Alert.alert('Enviado', 'Um email para redefinição de senha foi enviado.');
+                    setAccountModalVisible(false);
+                  } catch (err) {
+                    Alert.alert('Erro', err.message || String(err));
+                  }
+                }}>
+                  <Text style={styles.primaryBtnText}>Redefinir senha por email</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+      
     </View>
   );
 }
@@ -203,9 +237,9 @@ export default function ConfiguracoesScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   perfil: { alignItems: "center", marginBottom: 20, marginTop: 10 },
-  avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  avatarWrapper: { width: 130, height: 130, borderRadius: 65, borderWidth: 3, borderColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
   avatar: { width: 120, height: 120, borderRadius: 60 },
-  avatarPlaceholder: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  avatarPlaceholder: { width: 120, height: 120, borderRadius: 60, borderWidth: 3, borderColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
   nome: { fontWeight: "bold", color: COLORS.primary, marginTop: 10 },
   email: { marginBottom: 5 },
   perfilBtn: { backgroundColor: COLORS.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 12, marginTop: 15 },
@@ -220,4 +254,15 @@ const styles = StyleSheet.create({
   itemText: { marginLeft: 10 },
   logout: { margin: 20, padding: 15, backgroundColor: "#ff5757", borderRadius: 15, flexDirection: "row", justifyContent: "center", alignItems: "center" },
   logoutText: { color: "#fff", fontWeight: "bold", marginLeft: 10 }
+  ,
+  modalBox: { width: '90%', borderRadius: 14, padding: 16, borderWidth: 1 },
+  modalTitleSmall: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
+  accountField: { marginBottom: 12 },
+  accountLabel: { fontSize: 12, opacity: 0.8, marginBottom: 6 },
+  accountValue: { fontSize: 16, fontWeight: '600' },
+  input: { borderWidth: 1, borderColor: '#E6E6E6', padding: 10, borderRadius: 10, marginBottom: 10 },
+  primaryBtn: { backgroundColor: COLORS.primary, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
+  primaryBtnText: { color: '#fff', fontWeight: '700' },
+  secondaryBtn: { backgroundColor: 'transparent', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
+  secondaryBtnText: { color: '#666', fontWeight: '700' }
 });

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}" nonce="{{ request.csp_nonce }}">
     <link rel="icon" href="{% static 'img/LOGOBRANCO.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" nonce="{{ request.csp_nonce }}">
     <title>Inova Edu</title>
 </head>
 <body>
@@ -50,7 +50,7 @@
                         <label for="id_email">E-mail Acadêmico</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-envelope input-icon"></i>
-                            <input type="email" id="id_email" placeholder="exemplo@senac.com.br" name="email" value="{{ email|default:'' }}" required>
+                            <input type="email" id="id_email" placeholder="exemplo@edu.pa.senac.br" name="email" value="{{ email|default:'' }}" required>
                         </div>
                     </div>
 

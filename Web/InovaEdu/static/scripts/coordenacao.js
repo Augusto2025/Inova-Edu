@@ -311,3 +311,39 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// MODAL DE DESCRIÇÃO DO CURSO
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = document.getElementById("modalDescricaoCurso");
+    const texto = document.getElementById("textoDescricaoCurso");
+    const fechar = document.getElementById("fecharModalDescricao");
+
+    document.querySelectorAll(".btn-descricao").forEach(botao => {
+
+        botao.addEventListener("click", function () {
+
+            let descricao = this.dataset.descricao;
+
+            if (!descricao || descricao.trim() === "") {
+                descricao = "Nenhuma descrição no momento.";
+            }
+
+            texto.textContent = descricao;
+            modal.style.display = "flex";
+        });
+
+    });
+
+    fechar.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+});

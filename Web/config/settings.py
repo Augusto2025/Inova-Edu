@@ -17,10 +17,22 @@ cloudinary.config(
     secure=True
 )
 
-
-# --- Segurança ---
+# --- Segurança e Debug ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-' + secrets.token_urlsafe(50))
-DEBUG = False
+
+django_debug = os.environ.get('DJANGO_DEBUG')
+if django_debug == "False":
+    DEBUG = False
+elif django_debug == "True" or django_debug is not None:
+    DEBUG = True
+else:
+    DEBUG = True
+
+# Use logging instead of print in production
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f"[DJANGO DEBUG] {DEBUG}")
+
 ALLOWED_HOSTS = ["inova-edu.onrender.com", "127.0.0.1", "localhost"]
 
 # --- Aplicativos instalados ---
@@ -36,17 +48,31 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-# --- Middleware ---
+# --- Middleware (SecurityMiddleware movido para o topo) ---
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
+
+# Rate limiting configuration
+RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_ENABLE = True
+
+# Regras de Política de Segurança de Conteúdo (CSP)
+# Usando nonces para scripts inline - remove 'unsafe-inline'
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com")
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com")
+CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
 
 # --- URLConf e Templates ---
 ROOT_URLCONF = 'config.urls'
@@ -73,7 +99,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
-    # Se existir a URL completa, o Django mapeia o Postgres automaticamente
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
@@ -81,15 +106,14 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-    print("[DJANGO DATABASE] Conectado ao PostgreSQL")
+    logger.info("[DJANGO DATABASE] Conectado ao PostgreSQL")
 else:
-    # 2. Caso contrário, monta o MySQL usando exatamente as mesmas variáveis separadas do seu .env
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.environ.get("DB_NAME"),       # Nome do banco igual ao Desktop
-            "USER": os.environ.get("DB_USER"),       # Usuário igual ao Desktop
-            "PASSWORD": os.environ.get("DB_PASSWORD"), # Senha igual ao Desktop
+            "NAME": os.environ.get("DB_NAME"),
+            "USER": os.environ.get("DB_USER"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
             "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
             "PORT": os.environ.get("DB_PORT", "3306"),
             "OPTIONS": {
@@ -97,7 +121,7 @@ else:
             },
         }
     }
-    print("[DJANGO DATABASE] Conectado ao MySQL Local")
+    logger.info("[DJANGO DATABASE] Conectado ao MySQL Local")
 
 # --- Email ---
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
@@ -139,5 +163,125 @@ LOGIN_REDIRECT_URL = '/home'
 # --- Storages ---
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# --- media files ---
+# --- Media files ---
 MEDIA_URL = '/media/'
+
+# ==============================================================================
+# CONFIGURAÇÕES DE SEGURANÇA E PROTEÇÃO DE CABEÇALHOS (AJUSTADAS)
+# ==============================================================================
+
+# Reconhecimento do proxy HTTPS do Render (Impede loops de redirecionamento)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Redireciona conexões HTTP para HTTPS em produção
+SECURE_SSL_REDIRECT = not DEBUG
+
+# 1. Proteção dos Cookies (Resolve: Cookie No HttpOnly / Without Secure Flag)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
+# 2. Prevenção de MIME-Sniffing (Resolve: X-Content-Type-Options Header Missing)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# 3. Força HTTPS no Navegador (Resolve: Strict-Transport-Security Header Not Set)
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 Ano
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# 4. Referrer Policy - Controla informações de referência enviadas
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# 5. Permissions Policy (Feature Policy) - Restringe APIs do navegador
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+
+# 6. Configurações adicionais de sessão seguras
+SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_SAVE_EVERY_REQUEST = True  # Renova sessão a cada request
+SESSION_COOKIE_SAMESITE = 'Lax'  # Proteção CSRF adicional
+
+# 7. CSRF adicional
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_USE_SESSIONS = False  # Usar cookies para CSRF (mais performático)
+CSRF_FAILURE_VIEW = 'InovaEdu.views.csrf_failure'  # View customizada para falha CSRF
+
+# 8. X-Frame-Options já configurado via middleware (DENY)
+
+# 9. Configurações de cache para segurança
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# 10. Logging de segurança
+# Em produção (Render), o filesystem é efêmero, então usamos apenas console
+# Em desenvolvimento, também logamos em arquivo se o diretório existir
+import os
+LOG_DIR = BASE_DIR / 'logs'
+LOG_FILE = LOG_DIR / 'security.log'
+
+# Criar diretório de logs se não existir (apenas em dev/local)
+if not LOG_DIR.exists():
+    try:
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'security': {
+            'format': '[SECURITY] {asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'InovaEdu': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Adicionar file handler apenas se o arquivo puder ser criado (desenvolvimento)
+if LOG_FILE.parent.exists() or not DEBUG:
+    try:
+        # Testar se podemos escrever no arquivo
+        with open(LOG_FILE, 'a') as f:
+            pass
+        LOGGING['handlers']['security_file'] = {
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_FILE),
+            'formatter': 'security',
+        }
+        for logger_name in LOGGING['loggers']:
+            LOGGING['loggers'][logger_name]['handlers'].append('security_file')
+    except Exception:
+        # Se falhar, usa apenas console
+        pass

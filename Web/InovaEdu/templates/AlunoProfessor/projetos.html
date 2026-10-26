@@ -17,7 +17,9 @@
 
         <header class="section-header">
             <div class="rota">
-                Página: {{ turma.curso.nome_curso }} &gt; {{ turma.codigo_turma }} &gt; Projetos
+                Página: <a href="{% url 'cursos' %}">{{ turma.curso.nome_curso }}</a> &gt; 
+                <a href="{% url 'turmas' turma.curso.idcurso %}">{{ turma.codigo_turma }}</a> &gt; 
+                <strong>Projetos</strong>
             </div>
 
             <div class="header-main-action">

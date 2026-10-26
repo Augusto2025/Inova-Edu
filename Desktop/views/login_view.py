@@ -135,6 +135,18 @@ class tela_login(ctk.CTkFrame):
             command=self.autentificacao
         )
         self.botao_entrar.pack(pady=(20, 20), padx=20)
+        self.botao_sair = ctk.CTkButton(
+            self.form_card, 
+            text="Sair do Sistema", 
+            width=360, height=55, 
+            corner_radius=10, 
+            font=ctk.CTkFont(family="Inter", size=16, weight="bold"), 
+            fg_color=VermelhoErro, 
+            hover_color= VermelhoHover, 
+            text_color=Branco,
+            command=self.master.destroy
+        )
+        self.botao_sair.pack(pady=(10, 20), padx=20)
 
         # Binds
         self.usuario.bind("<Return>", self.autentificacao)

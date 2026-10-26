@@ -6,17 +6,17 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{% static 'styles/header.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/header.css' %}" nonce="{{ request.csp_nonce }}">
   <link rel="icon" href="{% static 'img/LOGOBRANCO.png' %}">
   <title>Inova Edu</title>
 </head>
 <body class="site-wrapper">
-  {% block content %} 
-    {% block header %}{% endblock %} 
+  {% block content %}
+    {% block header %}{% endblock %}
   {% endblock %}
 
-  {% block content2 %} 
-    {% block footer %}{% endblock %} 
+  {% block content2 %}
+    {% block footer %}{% endblock %}
   {% endblock %}
 
   {% block chat %}
@@ -28,7 +28,7 @@
   {% endblock  %}
 
   <!-- Coloque este script no base.html (antes do </body>) -->
-  <script>
+  <script nonce="{{ request.csp_nonce }}">
     // Usamos delegação de eventos no document para capturar qualquer formulário enviado
     document.addEventListener('submit', function (e) {
       const form = e.target;

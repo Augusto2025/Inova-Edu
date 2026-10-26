@@ -3,6 +3,8 @@ import {
   View,
   Text,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   TouchableOpacity,
   TextInput,
   Modal,
@@ -23,11 +25,11 @@ import MaskInput from "react-native-mask-input";
 import { useEventos } from '../hooks/eventos';
 import { ThemeContext } from '../context/ThemeContext';
 
-export default function CalendarScreen() {
+export default function CalendarScreen({ route }) {
   // 2. PUXANDO AS VARIÁVEIS GLOBAIS DE ACESSIBILIDADE E TEMA
   const { theme, fontSizeScale } = useContext(ThemeContext);
 
-  const { events, loading, salvarEvento, excluirEvento } = useEventos();
+  const { events, loading, salvando, salvarEvento, excluirEvento } = useEventos();
 
   const [selected, setSelected] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,16 +40,41 @@ export default function CalendarScreen() {
   const [idUsuarioLogado, setIdUsuarioLogado] = useState(null);
   const [isProfessor, setIsProfessor] = useState(false);
 
+  const dataInicial = route?.params?.selectedDate;
+
+  const criarDataLocal = (data) => {
+    if (!data) return null;
+    const partes = String(data).slice(0, 10).split('-').map(Number);
+    if (partes.length === 3 && partes.every(Number.isFinite)) {
+      return new Date(partes[0], partes[1] - 1, partes[2]);
+    }
+    return null;
+  };
+
   useEffect(() => {
     const carregarDadosUsuario = async () => {
       const id = await AsyncStorage.getItem('idUsuario');
-      const tipoUsuario = await AsyncStorage.getItem('tipo');
+      const tipoUsuario = (await AsyncStorage.getItem('tipo') || '').trim().toLowerCase();
 
       setIdUsuarioLogado(id);
-      if (tipoUsuario === 'Professor') setIsProfessor(true);
+      if (tipoUsuario === 'professor') setIsProfessor(true);
+      else setIsProfessor(false);
     };
     carregarDadosUsuario();
   }, []);
+
+  useEffect(() => {
+    if (!dataInicial || loading) return;
+    const dataLocal = criarDataLocal(dataInicial);
+    if (!dataLocal) return;
+
+    const dataSelecionada = [
+      dataLocal.getFullYear(),
+      String(dataLocal.getMonth() + 1).padStart(2, '0'),
+      String(dataLocal.getDate()).padStart(2, '0')
+    ].join('-');
+    handleOpenEvent(dataSelecionada);
+  }, [dataInicial, loading, events]);
 
   const handleSalvar = () => {
     salvarEvento(novoEvento, () => {
@@ -57,10 +84,15 @@ export default function CalendarScreen() {
   };
 
   const habilitarEdicao = (evento) => {
+    const partesData = String(evento.date || '').slice(0, 10).split('-');
+    const dataParaEdicao = partesData.length === 3
+      ? `${partesData[2]}/${partesData[1]}/${partesData[0]}`
+      : '';
+
     setNovoEvento({
       id: evento.id,
       title: evento.title,
-      date: evento.date,
+      date: dataParaEdicao,
       time: evento.time,
       local: evento.local,
       description: evento.description
@@ -79,7 +111,9 @@ export default function CalendarScreen() {
   const getEventStatusColor = (eventDate) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const evDate = new Date(eventDate + 'T00:00:00');
+    const evDate = criarDataLocal(eventDate);
+    if (!evDate) return '#4CAF50';
+    evDate.setHours(0, 0, 0, 0);
 
     if (evDate.getTime() === today.getTime()) return '#FFD700';
     return evDate > today ? '#4CAF50' : '#F44336';
@@ -91,6 +125,23 @@ export default function CalendarScreen() {
     const meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     const mesIndex = parseInt(partes[1], 10) - 1;
     return { dia: partes[2], mes: meses[mesIndex] || 'ERR' };
+  };
+
+  const formatarDataExibicao = (dataStr) => {
+    const partes = String(dataStr || '').slice(0, 10).split('-').map(Number);
+    if (partes.length !== 3 || partes.some(Number.isNaN)) return 'Data inválida';
+
+    const [ano, mes, dia] = partes;
+    const data = new Date(ano, mes - 1, dia);
+    if (
+      data.getFullYear() !== ano ||
+      data.getMonth() !== mes - 1 ||
+      data.getDate() !== dia
+    ) {
+      return 'Data inválida';
+    }
+
+    return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${ano}`;
   };
 
   const handleOpenEvent = (dateString) => {
@@ -111,6 +162,11 @@ export default function CalendarScreen() {
       marcacoes[selected] = { ...marcacoes[selected], selected: true, selectedColor: '#1459b3' };
     }
     return marcacoes;
+  };
+
+  const usuarioEhDonoDoEvento = () => {
+    if (!eventSelected) return false;
+    return String(idUsuarioLogado) === String(eventSelected.usuario_id);
   };
 
   return (
@@ -202,8 +258,11 @@ export default function CalendarScreen() {
 
       {/* Modal de Cadastro/Edição */}
       <Modal visible={modalAddVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <View style={[styles.modalContent, { backgroundColor: theme.card, maxHeight: '90%' }]}>
             <View style={[styles.modalHeader, { backgroundColor: '#1459b3' }]}>
               <Text style={[styles.modalTitle, { fontSize: 20 * fontSizeScale }]}>
                 {novoEvento.id ? "Editar Evento" : "Novo Evento"}
@@ -216,7 +275,12 @@ export default function CalendarScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.modalBody}>
+            <ScrollView
+              style={styles.modalBody}
+              contentContainerStyle={{ paddingBottom: 8 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
               {/* Adaptando os TextInputs para não ficarem invisíveis no Modo Escuro */}
               <TextInput
                 value={novoEvento.title}
@@ -286,12 +350,16 @@ export default function CalendarScreen() {
                 onChangeText={t => setNovoEvento({ ...novoEvento, description: t })}
               />
 
-              <TouchableOpacity style={styles.saveBtn} onPress={handleSalvar}>
-                <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
+              <TouchableOpacity style={[styles.saveBtn, salvando && { opacity: 0.6 }]} onPress={handleSalvar} disabled={salvando}>
+                {salvando ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={[styles.saveBtnText, { fontSize: 16 * fontSizeScale }]}>Salvar Evento</Text>
+                )}
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Modal de Detalhes */}
@@ -308,7 +376,7 @@ export default function CalendarScreen() {
             <View style={styles.modalBody}>
               <View style={styles.modalInfoRow}>
                 <Ionicons name="calendar-outline" size={20 * fontSizeScale} color="#1459b3" />
-                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Data: {eventSelected?.date.split('-').reverse().join('/')}</Text>
+                <Text style={[styles.modalInfoText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>Data: {formatarDataExibicao(eventSelected?.date)}</Text>
               </View>
               <View style={styles.modalInfoRow}>
                 <Ionicons name="time-outline" size={20 * fontSizeScale} color="#1459b3" />
@@ -322,7 +390,7 @@ export default function CalendarScreen() {
               <Text style={[styles.descriptionTitle, { color: theme.text, fontSize: 18 * fontSizeScale }]}>Descrição:</Text>
               <Text style={[styles.descriptionText, { color: theme.text, fontSize: 16 * fontSizeScale }]}>{eventSelected?.description || "Sem descrição informada."}</Text>
 
-              {isProfessor && parseInt(idUsuarioLogado) === parseInt(eventSelected?.usuario_id) && (
+              {isProfessor && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                   <TouchableOpacity
                     style={[styles.closeButton, { backgroundColor: '#FF9800', flex: 0.48 }]}

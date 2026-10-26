@@ -1,21 +1,23 @@
 from django.urls import path
-from config import settings 
+from config import settings
 from django.conf.urls.static import static
 from . import views
 
 
 urlpatterns = [
     # Geral
-    path('', views.homePage),
-    path('homePage/', views.homePage, name='homePage'),
+    path('', views.homePage, name='homePage'),
+    path('homePage/', views.homePage, name='homePage_alt'),
     path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('home/', views.HomeAlunoProfessor, name='home'),
-    path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
-    path("pedir_email/", views.pedir_email, name="pedir_email"),
+    # Password reset - COMENTADO PER USER REQUEST
+    # path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
+    # path("pedir_email/", views.pedir_email, name="pedir_email"),
     # Aluno e Professor
     path('cursos/', views.cursos, name='cursos'),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),
-    path("forum/<int:idforum>/topicos/",views.forum_topicos,name="forum_topicos"),
+    path("forum/<int:idforum>/topicos/", views.forum_topicos, name="forum_topicos"),
     path('forum/<int:idforum>/topico/criar/', views.criar_topico, name='criar_topico'),
     path('topico/editar/<int:id>/', views.editar_topico, name='editar_topico'),
     path('topico/excluir/<int:id>/', views.excluir_topico, name='excluir_topico'),
@@ -25,6 +27,7 @@ urlpatterns = [
     path('forum/editar/<int:forum_id>/', views.editar_forum, name='editar_forum'),
     path('mensagem/excluir/<int:msg_id>/', views.excluir_mensagem, name='excluir_mensagem'),
     path('mensagem/editar/<int:msg_id>/', views.editar_mensagem, name='editar_mensagem'),
+    path('api/topico/<int:topico_id>/mensagens/', views.buscar_novas_mensagens, name='buscar_novas_mensagens'),
     path("calendario/", views.calendario, name="calendario"),
     path('calendario/criar/', views.criar_evento, name='criar_evento'),
     path('calendario/excluir/<int:evento_id>/', views.excluir_evento, name='excluir_evento'),
@@ -38,12 +41,11 @@ urlpatterns = [
     path('repositorio/pasta/<int:pasta_id>/', views.repositorio_pasta, name='repositorio_pasta'),
     path('repositorio/<int:projeto_id>/download/', views.download_repositorio_projeto, name='download_repositorio_projeto'),
     # Coordenação
-    
     path("coordenacao/", views.HomeCoord, name="HomeCoord"),
-    path('usuario/', views.UsuarioCoord, name='UsuariosCoord'),
+    path('usuarios/', views.UsuarioCoord, name='UsuariosCoord'),
     path('CursoCoord/', views.CursoCoord, name='CursoCoord'),
-    path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),   
-
+    path('TurmaCoord/', views.TurmaCoord, name='TurmaCoord'),
+    path('projetosCoord/', views.projetosCoord, name='projetosCoord'),
 
     path('criar_curso/', views.criar_curso, name='criar_curso'),
     path('criar_turma/', views.criar_turma, name='criar_turma'),
@@ -60,10 +62,9 @@ urlpatterns = [
     path('api/listar-projetos/', views.listar_projetos_ajax, name='listar_projetos_ajax'),
     path('api/atualizar-perfil/', views.atualizar_perfil_ajax, name='atualizar_perfil_ajax'),
     path('api/upload-foto/', views.upload_foto, name='upload_foto'),
-    
     path('api/certificados/', views.salvar_certificado, name='certificados_api'),
-    
 ]
+
 
 if settings.DEBUG and hasattr(settings, 'MEDIA_ROOT'):
     urlpatterns += static(

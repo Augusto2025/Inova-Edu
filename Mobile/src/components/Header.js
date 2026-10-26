@@ -49,6 +49,7 @@ export default function Header({
   };
 
   const avatarUri = isValidImageUri(user?.imagem) ? user.imagem.trim() : null;
+  const defaultAvatar = require('../../assets/default.png');
 
   useEffect(() => {
     setAvatarLoadFailed(false);
@@ -100,16 +101,12 @@ export default function Header({
                   borderRadius={(52 * fontSizeScale) / 2} 
                   style={{ marginRight: 12 }} 
                 />
-              ) : avatarUri && !avatarLoadFailed ? (
-                <Image 
-                  source={{ uri: avatarUri }} 
-                  style={[styles.profileImage, { borderColor: headerBgColor }]} 
+              ) : (
+                <Image
+                  source={avatarUri && !avatarLoadFailed ? { uri: avatarUri } : defaultAvatar}
+                  style={[styles.profileImage, { borderColor: '#FFFFFF' }]}
                   onError={() => setAvatarLoadFailed(true)}
                 />
-              ) : (
-                <View style={[styles.profileImagePlaceholder, { borderColor: headerTextColor, backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                  <Ionicons name="person" size={26} color={headerTextColor} />
-                </View>
               )}
 
               <View style={styles.rightHeaderText}>
@@ -214,6 +211,7 @@ const styles = StyleSheet.create({
   header: { 
     width: '100%',
     alignSelf: 'stretch',
+    paddingTop: 12,
     paddingBottom: 15, 
     paddingHorizontal: 22, 
     flexDirection: "row", 
@@ -222,8 +220,8 @@ const styles = StyleSheet.create({
   },
   left: { flex: 1, marginRight: 10 },
   profileContainer: { flexDirection: "row", alignItems: "center" },
-  profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2.5, borderColor: "rgba(255,255,255,0.5)" },
-  profileImagePlaceholder: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 3, justifyContent: 'center', alignItems: 'center' },
+  profileImage: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 2.5, borderColor: '#FFFFFF' },
+  profileImagePlaceholder: { width: 52, height: 52, borderRadius: 26, marginRight: 12, borderWidth: 3, borderColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
   rightHeaderText: { flex: 1, justifyContent: 'center' },
   title: { fontWeight: "bold" },
   courseSubtitle: { marginTop: 2, fontWeight: "500" },

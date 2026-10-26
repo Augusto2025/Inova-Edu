@@ -335,13 +335,13 @@ class UserProfileSystem(ctk.CTkFrame):
                          text_color="#64748B", wraplength=200, justify="left").pack(anchor="w", pady=5)
             
             footer = ctk.CTkFrame(inner_content, fg_color="#F8FAFC", corner_radius=5)
-            footer.pack(fill="x", pady=5)
-            ctk.CTkLabel(footer, text=f"📅 {inicio} • {fim}", font=("Roboto", 11), 
+            footer.pack(fill="x", pady=5, side="left")
+            ctk.CTkLabel(footer, text=f"📅 Período: {inicio} • {fim}", font=("Roboto", 11), 
                          text_color="#475569").pack(padx=5, pady=2)
             
-            ctk.CTkButton(inner_content, text="Remover", fg_color="transparent", text_color="#EF4444", 
-                          hover_color="#FEE2E2", height=20, width=60, font=("Roboto", 11, "bold"),
-                          command=lambda c=id_c: self.controller.operacao_certificado('EXCLUIR', cert_id=c)).pack(anchor="e", pady=(5,0))
+            ctk.CTkButton(inner_content, text="Remover", text_color="#F0ECEC", fg_color="#EF4444", 
+                          hover_color="#FF6868", height=20, width=60, font=("Roboto", 11, "bold"),
+                          command=lambda c=id_c: self.controller.operacao_certificado('EXCLUIR', cert_id=c)).pack(anchor="e", pady=(5,0), side="bottom")
 
     def create_section_title(self, text, is_accordion=False):
         frame = ctk.CTkFrame(self.main_content_frame, fg_color="transparent")

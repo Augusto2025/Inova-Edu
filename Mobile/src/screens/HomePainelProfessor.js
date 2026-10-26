@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Skeleton from "../components/Skeleton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +15,7 @@ import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { COLORS } from "../components/Cores";
 import Header from "../components/Header";
 import api from "../services/api";
+import { URL_BASE } from "../config/backend";
 import { useNotifications } from "../context/NotificationContext";
 
 // Importação do Contexto de Tema (mesmo padrão usado no RepositorioScreen)
@@ -40,20 +42,33 @@ function formatarTempoRelativo(dataString) {
   return `Há ${diffDias} dia${diffDias > 1 ? "s" : ""}`;
 }
 
-// LÓGICA DE CORES ATUALIZADA
+function obterDataEventoLocal(dataString) {
+  if (!dataString) return null;
+
+  const dataTexto = String(dataString).slice(0, 10);
+  const partesData = dataTexto.split("-").map(Number);
+
+  if (partesData.length === 3 && partesData.every(Number.isFinite)) {
+    return new Date(partesData[0], partesData[1] - 1, partesData[2]);
+  }
+
+  const data = new Date(dataString);
+  return Number.isNaN(data.getTime()) ? null : data;
+}
+
+// Mantém a classificação alinhada ao calendário Web: hoje = amarelo.
 function obterCorEvento(dataString) {
-  if (!dataString) return "#10B981";
+  const dataEvento = obterDataEventoLocal(dataString);
+  if (!dataEvento) return "#10B981";
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
-
-  const dataEvento = new Date(dataString);
   dataEvento.setHours(0, 0, 0, 0);
 
   if (dataEvento.getTime() < hoje.getTime()) {
     return "#EF5350"; // Vermelho (Passado)
   } else if (dataEvento.getTime() === hoje.getTime()) {
-    return "#F59E0B"; // Amarelo (Hoje)
+      return "#FFD700"; // Amarelo (Hoje)
   } else {
     return "#10B981"; // Verde (Futuro)
   }
@@ -68,6 +83,32 @@ function obterDadosData(dataString) {
     mes: meses[data.getUTCMonth()],
     dia: data.getUTCDate(),
   };
+}
+
+function normalizarImagemProjeto(valor) {
+  if (typeof valor !== "string" || !valor.trim() || valor.trim().toLowerCase() === "null") {
+    return null;
+  }
+
+  const imagem = valor.trim();
+  if (/^https?:\/\//i.test(imagem)) return imagem;
+  if (/^\/\//.test(imagem)) return `https:${imagem}`;
+  if (/^\//.test(imagem)) return `${URL_BASE}${imagem}`;
+  return `https://res.cloudinary.com/dw0pxfap3/${imagem}`;
+}
+
+function ImagemProjeto({ imagem, fontSizeScale }) {
+  const imagemUrl = normalizarImagemProjeto(imagem);
+
+  if (imagemUrl) {
+    return <Image source={{ uri: imagemUrl }} style={styles.projetoImagem} />;
+  }
+
+  return (
+    <View style={[styles.pendenciaIconWrap, { backgroundColor: "#D1FAE5" }]}>
+      <Feather name="folder" size={16 * fontSizeScale} color="#059669" />
+    </View>
+  );
 }
 
 // ==========================================
@@ -92,14 +133,15 @@ export default function HomePainelProfessor({ navigation }) {
     totais: { turmas: 0, alunos: 0, projetos: 0, topicos: 0, eventosHoje: 0 },
     turmas: [],
     eventosProximos: [],
-    topicosSemResposta: [],
+    topicosComMensagens: [],
+    totalMensagensNovas: 0,
     ultimosForuns: [],
     ultimosProjetos: [],
   });
 
-  const carregarPainel = useCallback(async () => {
+  const carregarPainel = useCallback(async (silencioso = false) => {
     try {
-      setCarregando(true);
+      if (!silencioso) setCarregando(true);
       const idSalvo = await AsyncStorage.getItem("idUsuario");
       if (!idSalvo) return;
 
@@ -113,7 +155,8 @@ export default function HomePainelProfessor({ navigation }) {
           totais: resposta.data.totais || prev.totais,
           turmas: resposta.data.turmas || [],
           eventosProximos: resposta.data.eventosProximos || [],
-          topicosSemResposta: resposta.data.topicosSemResposta || [],
+          topicosComMensagens: resposta.data.topicosComMensagens || [],
+          totalMensagensNovas: resposta.data.totalMensagensNovas || 0,
           ultimosForuns: resposta.data.ultimosForuns || [],
           ultimosProjetos: resposta.data.ultimosProjetos || [],
         }));
@@ -121,20 +164,31 @@ export default function HomePainelProfessor({ navigation }) {
     } catch (error) {
       console.warn("⚠️ Erro ao carregar painel do professor:", error.message);
     } finally {
-      setCarregando(false);
+      if (!silencioso) setCarregando(false);
     }
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       carregarPainel();
+
+      const intervaloAtualizacao = setInterval(() => {
+        carregarPainel(true);
+      }, 6000);
+
+      return () => clearInterval(intervaloAtualizacao);
     }, [carregarPainel])
   );
 
   const abrirTopico = (topico) => {
     try {
-      navigation.navigate("Titulo", {
-        topico: { id: topico.id, titulo: topico.titulo, forum: topico.forum_nome },
+      navigation.navigate("Conversa", {
+        forum: topico.forum_nome || "Fórum",
+        topico: {
+          id: topico.id,
+          titulo: topico.titulo,
+          forumId: topico.forum_id,
+        },
       });
     } catch (e) {
       console.warn("Erro ao navegar para o tópico:", e.message);
@@ -150,7 +204,7 @@ export default function HomePainelProfessor({ navigation }) {
   };
 
   const primeiroTopicoPendente =
-    painel.topicosSemResposta.length > 0 ? painel.topicosSemResposta[0] : null;
+    painel.topicosComMensagens.length > 0 ? painel.topicosComMensagens[0] : null;
 
   if (carregando && painel.turmas.length === 0) {
     return (
@@ -255,7 +309,11 @@ export default function HomePainelProfessor({ navigation }) {
             style={styles.pendenciaRow}
             activeOpacity={0.7}
             onPress={() => {
-              if (primeiroTopicoPendente) abrirTopico(primeiroTopicoPendente);
+              if (primeiroTopicoPendente) {
+                abrirTopico(primeiroTopicoPendente);
+              } else {
+                navigation.navigate("Fórum");
+              }
             }}
           >
             <View style={[styles.pendenciaIconWrap, { backgroundColor: "#EDE9FE" }]}>
@@ -263,15 +321,15 @@ export default function HomePainelProfessor({ navigation }) {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.pendenciaTitulo, { color: theme.text, fontSize: 14 * fontSizeScale }]}>
-                Tópicos sem resposta
+                Novas mensagens
               </Text>
               <Text style={[styles.pendenciaSub, { color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale }]}>
-                {painel.topicosSemResposta.length} tópico(s) no fórum precisam de você
+                {painel.totalMensagensNovas} mensagem(ns) nos seus fóruns
               </Text>
             </View>
             <View style={styles.pendenciaBadge}>
               <Text style={[styles.pendenciaBadgeText, { fontSize: 13 * fontSizeScale }]}>
-                {painel.topicosSemResposta.length}
+                {painel.totalMensagensNovas}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={theme.text} style={{ opacity: 0.5 }} />
@@ -297,7 +355,7 @@ export default function HomePainelProfessor({ navigation }) {
                 <View style={styles.turmaIconWrap}>
                   <Ionicons name="school" size={20 * fontSizeScale} color="#fff" />
                 </View>
-                <Text style={[styles.turmaNome, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={1}>
+                <Text style={[styles.turmaNome, { color: theme.text, fontSize: 15 * fontSizeScale }]} numberOfLines={2}>
                   {turma.nome}
                 </Text>
                 <Text style={[styles.turmaAlunos, { color: theme.text, opacity: 0.6, fontSize: 12 * fontSizeScale }]}>
@@ -344,6 +402,7 @@ export default function HomePainelProfessor({ navigation }) {
                   key={evento.id}
                   style={[styles.eventoCard, { backgroundColor: theme.card, borderColor: theme.border }]}
                   activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Eventos", { selectedDate: evento.data })}
                 >
                   {/* Ícone Estilo Folhinha de Calendário */}
                   <View style={[styles.calendarIcon, { borderColor: corTema }]}>
@@ -431,16 +490,16 @@ export default function HomePainelProfessor({ navigation }) {
           {painel.ultimosProjetos.length > 0 ? (
             <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
               {painel.ultimosProjetos.map((proj, index) => (
-                <View
+                <TouchableOpacity
                   key={proj.id}
                   style={[
                     styles.projetoRow,
                     index < painel.ultimosProjetos.length - 1 && [styles.eventoRowBorda, { borderBottomColor: theme.border }],
                   ]}
+                  activeOpacity={0.8}
+                  onPress={() => navigation.navigate("Repositorio", { projetoId: proj.id, projetoNome: proj.nome })}
                 >
-                  <View style={[styles.pendenciaIconWrap, { backgroundColor: "#D1FAE5" }]}>
-                    <Feather name="folder" size={16 * fontSizeScale} color="#059669" />
-                  </View>
+                  <ImagemProjeto imagem={proj.imagem} fontSizeScale={fontSizeScale} />
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.projetoNome, { color: theme.text, fontSize: 14 * fontSizeScale }]} numberOfLines={1}>
                       {proj.nome}
@@ -449,7 +508,7 @@ export default function HomePainelProfessor({ navigation }) {
                       {proj.turma}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           ) : (
@@ -481,10 +540,15 @@ const styles = StyleSheet.create({
   },
   verTodos: { color: COLORS.primary, fontWeight: "600" },
 
-  statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14 },
+  statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14, justifyContent: 'space-between' },
   statCard: {
-    width: "47%", borderRadius: 16, padding: 14,
-    borderWidth: 1, elevation: 2,
+    flexBasis: "48%",
+    maxWidth: "48%",
+    minWidth: 150,
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    elevation: 2,
   },
   statIconWrap: {
     width: 36, height: 36, borderRadius: 10,
@@ -505,6 +569,10 @@ const styles = StyleSheet.create({
   },
   pendenciaTitulo: { fontWeight: "700" },
   pendenciaSub: { marginTop: 2 },
+  projetoImagem: {
+    width: 36, height: 36, borderRadius: 10,
+    resizeMode: "cover",
+  },
   pendenciaBadge: {
     backgroundColor: "#EDE9FE", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4,
     marginRight: 6,
@@ -512,8 +580,13 @@ const styles = StyleSheet.create({
   pendenciaBadgeText: { color: "#7C3AED", fontWeight: "bold" },
 
   turmaCard: {
-    width: 170, borderRadius: 16, padding: 14,
-    borderWidth: 1, elevation: 2,
+    width: 180,
+    flexGrow: 0,
+    flexShrink: 0,
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    elevation: 2,
   },
   turmaIconWrap: {
     width: 38, height: 38, borderRadius: 10, backgroundColor: COLORS.primary,
@@ -526,7 +599,8 @@ const styles = StyleSheet.create({
   turmaStatText: { fontWeight: "600" },
   acessarBtn: {
     marginTop: 12, backgroundColor: "#EEF2FF", borderRadius: 10,
-    paddingVertical: 8, alignItems: "center",
+    minHeight: 40, paddingHorizontal: 10, paddingVertical: 8,
+    width: "100%", alignItems: "center", justifyContent: "center",
   },
   acessarBtnText: { color: COLORS.primary, fontWeight: "700" },
 

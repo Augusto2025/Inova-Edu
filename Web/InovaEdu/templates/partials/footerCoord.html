@@ -1,0 +1,40 @@
+{% load static %}
+
+<style>
+    /* Faz a página ocupar toda a altura da tela */
+    html,
+    body {
+        min-height: 100%;
+        margin: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Footer */
+    footer {
+        text-align: center;
+        padding: 20px;
+
+        color: var(--branco-Senac);
+        background-color: var(--azul-Senac);
+
+        width: 100%;
+        box-sizing: border-box;
+
+        margin-top: auto;
+
+        flex-shrink: 0;
+    }
+
+    footer p {
+        margin: 0;
+    }
+</style>
+
+<footer>
+    <p>&copy; 2025 Desenvolvido pela Tríade Tech</p>
+</footer>

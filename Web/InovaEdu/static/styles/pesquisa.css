@@ -102,7 +102,9 @@
     text-decoration: underline;
 }
 
-
+.rota strong{
+  color: var(--laranja-Senac);
+}
 
 
 

@@ -60,7 +60,7 @@ class RepositorioDashboard(ctk.CTkFrame):
         header = HeaderPadrao(self, titulo=f"Repositório: {self.nome_projeto}", comando_voltar=self.voltar_projeto)
 
         # Botão de Download Geral mantido no canto superior direito
-        btn_zip = ctk.CTkButton(header, text="📦 Baixar Tudo (.zip)", fg_color="#10b981", 
+        btn_zip = ctk.CTkButton(header, text="📦 Baixar Repositório (.zip)", fg_color="#10b981", 
                                text_color=Branco, width=160, height=35, 
                                font=ctk.CTkFont(weight="bold"),
                                command=self.baixar_tudo_zip)

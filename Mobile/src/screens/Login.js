@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
@@ -17,7 +17,18 @@ export default function LoginScreen({ navigation }) {
     const [carregandoTransicao, setCarregandoTransicao] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState(null);
     const [lembrarDeMim, setLembrarDeMim] = useState(false);
+    const [mostrarSenha, setMostrarSenha] = useState(false);
 
+  const { width, height } = useWindowDimensions();
+
+const logoSize = Math.min(120, Math.max(80, width * 0.28));
+
+const headerPaddingTop = Math.max(35, Math.min(60, height * 0.06));
+
+const containerPaddingHorizontal = Math.max(
+    18,
+    Math.min(32, width * 0.07)
+);
     const Logo = require('../../assets/LOGOBRANCO.png');
 
     useEffect(() => {
@@ -90,6 +101,7 @@ export default function LoginScreen({ navigation }) {
             if (dados.sucesso) {
                 await AsyncStorage.setItem('idUsuario', dados.usuario.id.toString());
                 await AsyncStorage.setItem('tipo', dados.usuario.tipo);
+                await AsyncStorage.setItem('senha_sessao', senha);
                 
                 setCarregandoTransicao(true);
 
@@ -146,14 +158,38 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <View style={{ flex: 1 }}>
-            <KeyboardAwareScrollView style={styles.tela} contentContainerStyle={styles.scrollContent} enableOnAndroid={true} extraScrollHeight={40}>
+            <KeyboardAwareScrollView
+                style={styles.tela}
+                contentContainerStyle={styles.scrollContent}
+                enableOnAndroid={true}
+                extraScrollHeight={80}
+                keyboardOpeningTime={0}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.containerTotal}>
-                    <View style={styles.header}>
-                        <Image source={Logo} style={styles.Logo} />
-                        <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>Bem-Vindo ao Inova Edu</Text>
+                    <View
+    style={[
+        styles.header,
+        {
+            paddingTop: headerPaddingTop,
+            paddingBottom: 45,
+        },
+    ]}
+>
+                        <Image source={Logo} style={[styles.Logo, { width: logoSize, height: logoSize }]} />
+                        <Text style={[styles.headerText, { fontSize: Math.max(18, Math.min(24, width * 0.055)) }]}>Bem-Vindo ao Inova Edu</Text>
                     </View>
                     
-                    <View style={styles.containerCenter}>
+                    <View
+    style={[
+        styles.containerCenter,
+        {
+            paddingTop: 35,
+            paddingHorizontal: containerPaddingHorizontal,
+            paddingBottom: 50,
+        },
+    ]}
+>
                         <Text style={styles.titulo}>Login</Text>
 
                         <Text style={styles.labelTipo}>Você é:</Text>
@@ -201,14 +237,31 @@ export default function LoginScreen({ navigation }) {
                             onChangeText={setEmail}
                             autoCapitalize="none"
                             keyboardType="email-address"
+                            placeholderTextColor="#64748B"
                         />
                         
-                        <CustomInput
-                            placeholder="Senha"
-                            value={senha}
-                            onChangeText={setSenha}
-                            secureTextEntry
-                        />
+                        <View style={styles.passwordInputWrap}>
+                            <CustomInput
+                                placeholder="Senha"
+                                value={senha}
+                                onChangeText={setSenha}
+                                secureTextEntry={!mostrarSenha}
+                                placeholderTextColor="#64748B"
+                                style={styles.passwordInput}
+                            />
+                            <TouchableOpacity
+                                style={styles.passwordEyeButton}
+                                onPress={() => setMostrarSenha((visivel) => !visivel)}
+                                accessibilityRole="button"
+                                accessibilityLabel={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                            >
+                                <Ionicons
+                                    name={mostrarSenha ? 'eye-off' : 'eye'}
+                                    size={21}
+                                    color="#1E293B"
+                                />
+                            </TouchableOpacity>
+                        </View>
 
                         <TouchableOpacity 
                             style={styles.lembrarContainer} 
@@ -227,7 +280,7 @@ export default function LoginScreen({ navigation }) {
                             <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                         </TouchableOpacity>
 
-                        <CustomButton title="Entrar" onPress={handleLogin}/>
+                        <CustomButton title="Entrar" onPress={handleLogin} style={styles.loginButton} />
                     </View>
                 </View>
             </KeyboardAwareScrollView>
@@ -237,27 +290,30 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
-const paddingHeader = 90;
 const borderRadius = 40;
 
 const styles = StyleSheet.create({
     Logo: {
-        width: 150,
-        height: 150,
+        resizeMode: 'contain',
+    },
+    headerText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 12,
     },
     tela: {
         backgroundColor: '#1459b3',
     },
     scrollContent: {
-        flexGrow: 1,
+    flexGrow: 1,
+    paddingBottom: 20,
     },
     containerTotal: {
-        flexGrow: 1,
-    },
+    flexGrow: 1,
+},
     header: {
         width: '100%',
-        paddingBottom: paddingHeader,
-        paddingTop: paddingHeader,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -267,8 +323,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fafafa',
         width: '100%',
         flexGrow: 1,
-        paddingTop: '12%',
-        paddingHorizontal: '8%',
         alignItems: 'center',
     },
     titulo: {
@@ -330,5 +384,26 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 16,
         alignSelf: 'center',
+    },
+    passwordInputWrap: {
+        width: '100%',
+        position: 'relative',
+    },
+    passwordInput: {
+        marginTop: 15,
+        paddingRight: 52,
+    },
+    passwordEyeButton: {
+        position: 'absolute',
+        right: 8,
+        top: 15,
+        height: 50,
+        width: 42,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loginButton: {
+        width: '100%',
+        maxWidth: 420,
     },
 });

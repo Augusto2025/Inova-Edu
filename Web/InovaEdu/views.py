@@ -21,17 +21,57 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache
+from django_ratelimit.decorators import ratelimit
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
-
+from django.urls import reverse
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
+# Configurar logger
+logger = logging.getLogger(__name__)
 
+
+def safe_redirect(request, fallback_url_name):
+    """
+    Safely redirect to HTTP_REFERER if it's on the same domain, otherwise fallback.
+    Prevents open redirect vulnerabilities (CWE-601).
+    """
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        try:
+            parsed_referer = urlparse(referer)
+            parsed_current = urlparse(request.build_absolute_uri('/'))
+            # Only allow redirect if same domain
+            if parsed_referer.netloc == parsed_current.netloc:
+                return redirect(referer)
+        except Exception:
+            pass
+    return redirect(fallback_url_name)
+
+
+def csrf_failure(request, reason=""):
+    """
+    View customizada para falha de CSRF.
+    Loga a tentativa e retorna erro 403 amigável.
+    """
+    logger.warning(f"CSRF failure: {reason} - IP: {request.META.get('REMOTE_ADDR')} - Path: {request.path}")
+    return render(request, '403.html', {'reason': reason}, status=403)
+
+
+def homePage(request):
+    cursos = Curso.objects.all().order_by('-idcurso')[:3]
+    return render(request, "homePage.html", {"cursos": cursos})
+
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
+@never_cache
 def login(request):
     # ele pega o que tem dentro do form
     if request.method == "GET":
@@ -41,13 +81,17 @@ def login(request):
     Email = request.POST.get("email")
     Senha = request.POST.get("senha")
 
-    # utiliza do usuário somente o email e a senha
-    usuario = Usuario.objects.filter(email=Email, senha=Senha).first()
+   # Busca o usuário ignorando maiúsculas/minúsculas no e-mail
+    usuario = Usuario.objects.filter(email__iexact=Email).first()
 
     # verificar se o usuario é professor aluno ou coordenador
-    if usuario:
+    if usuario and usuario.check_password(Senha):
+        # Regenera a sessão para prevenir session fixation
+        request.session.cycle_key()
         # pegando pelo email
         request.session["usuario_email"] = usuario.email
+        request.session["usuario_id"] = usuario.idusuario
+        request.session["usuario_tipo"] = usuario.tipo
         if usuario.tipo == "Coordenador":
             return redirect("HomeCoord")
         elif usuario.tipo == "Aluno" or usuario.tipo == "Professor":
@@ -95,62 +139,75 @@ def HomeAlunoProfessor(request):
     )
 
 
-# redefinir senha 
-def pedir_email(request):
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        sobrenome = request.POST.get("sobrenome")
-        usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
-
-        if usuario and usuario.email:
-            # Gera o token manual
-            token = token_generator.make_token(usuario)
-            uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
-            
-            link = f"https://inova-edu.onrender.com/redefinir-senha/{uid}/{token}/"
-
-            # Envio via Resend (mantenha sua configuração)
-            resend.api_key = "re_Dn9Qt4mm_6cxkqsovJ3uhe3rWSX79rY9w"
-            resend.Emails.send({
-                "from": "Inova Edu <onboarding@resend.dev>",
-                "to": usuario.email,
-                "subject": "Redefinição de Senha",
-                "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
-            })
-            return render(request, "pedir_email.html", {"sucesso": True})
-            
-    return render(request, "pedir_email.html")
-
-def redefinir_senha(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        usuario = Usuario.objects.get(idusuario=uid)
-        print(f"Usuário encontrado: {usuario.nome}") # Debug
-    except Exception as e:
-        print(f"Erro ao buscar usuário: {e}") # Debug
-        usuario = None
-
-    valido = token_generator.check_token(usuario, token)
-    print(f"Token é válido? {valido}") # Debug
-
-    # O check_token agora é a nossa função manual do arquivo tokens.py
-    if usuario and token_generator.check_token(usuario, token):
-        if request.method == 'POST':
-            nova = request.POST.get('nova_senha')
-            confirma = request.POST.get('confirmar_senha')
-
-            if nova == confirma:
-                usuario.senha = nova
-                usuario.save()
-                # Importante: após o save, o token antigo deixará de funcionar 
-                # porque a senha mudou!
-                return redirect('login')
-            else:
-                return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
-
-        return render(request, 'redefinir_senha.html')
-    else:
-        return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
+# =========================================================================
+# PASSWORD RESET FUNCTIONALITY - COMMENTED OUT PER USER REQUEST
+# Não quero o redefinir senha, deixe somente comentado para que não atrapalhe
+# o deploy ou o sistema.
+# =========================================================================
+#
+# # redefinir senha
+# @ratelimit(key='ip', rate='3/h', method='POST', block=True)
+# @never_cache
+# def pedir_email(request):
+#     if request.method == "POST":
+#         nome = request.POST.get("nome")
+#         sobrenome = request.POST.get("sobrenome")
+#         usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
+#
+#         if usuario and usuario.email:
+#             # Gera o token usando Django's default_token_generator (HMAC + timestamp)
+#             token = token_generator.make_token(usuario)
+#             uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
+#
+#             # Use environment variable for API key
+#             resend_api_key = os.environ.get('RESEND_API_KEY')
+#             if resend_api_key:
+#                 resend.api_key = resend_api_key
+#                 resend.Emails.send({
+#                     "from": "Inova Edu <onboarding@resend.dev>",
+#                     "to": usuario.email,
+#                     "subject": "Redefinição de Senha",
+#                     "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
+#                 })
+#             else:
+#                 # Fallback: log the link for development (remove in production)
+#                 logger.warning(f"[DEV] Password reset link for {usuario.email}: {link}")
+#
+#             return render(request, "pedir_email.html", {"sucesso": True})
+#
+#     return render(request, "pedir_email.html")
+#
+# @ratelimit(key='ip', rate='5/h', method='POST', block=True)
+# @never_cache
+# def redefinir_senha(request, uidb64, token):
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         usuario = Usuario.objects.get(idusuario=uid)
+#     except Exception:
+#         usuario = None
+#
+#     # O check_token usa Django's default_token_generator (HMAC + timestamp)
+#     if usuario and token_generator.check_token(usuario, token):
+#         if request.method == 'POST':
+#             nova = request.POST.get('nova_senha')
+#             confirma = request.POST.get('confirmar_senha')
+#
+#             if nova == confirma:
+#                 usuario.set_password(nova)
+#                 usuario.save()
+#                 # Após o save, o token antigo deixará de funcionar
+#                 # porque o hash da senha mudou!
+#                 return redirect('login')
+#             else:
+#                 return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
+#
+#         return render(request, 'redefinir_senha.html')
+#     else:
+#         return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
+#
+# =========================================================================
+# END PASSWORD RESET FUNCTIONALITY
+# =========================================================================
 
 
 # --------------- Telas aluno e professor ---------------
@@ -247,9 +304,13 @@ def atualizar_perfil_ajax(request):
 
         usuario.descricao = bio
 
-        # 4. Alteração de Senha (salvando em texto puro)
+        # 4. Alteração de Senha (usando hash seguro)
         if nova_senha:
-            usuario.senha = nova_senha
+            if not usuario.check_password(senha_atual):
+                msg = "Senha atual incorreta."
+                messages.error(request, msg)
+                return JsonResponse({"message": msg}, status=400)
+            usuario.set_password(nova_senha)
 
         # 5. Trata a Foto de Perfil
         foto_attr = 'imagem' if hasattr(usuario, 'imagem') else 'foto'
@@ -262,7 +323,7 @@ def atualizar_perfil_ajax(request):
                 if hasattr(foto_obj, 'public_id') and foto_obj.public_id:
                     cloudinary.uploader.destroy(foto_obj.public_id)
             except Exception as e:
-                print(f"Aviso: Não foi possível deletar a imagem antiga no Cloudinary: {e}")
+                logger.warning(f"Não foi possível deletar a imagem antiga no Cloudinary: {e}")
 
         if remover_foto:
             setattr(usuario, foto_attr, None)
@@ -437,17 +498,16 @@ def salvar_certificado(request):
 
 
 def turmas(request, curso_id):
+    # O Django busca o curso no banco pelo ID
     curso = get_object_or_404(Curso, idcurso=curso_id)
 
     query = request.GET.get("q", "").strip()
-
     turmas = Turma.objects.filter(curso=curso)
 
     if query:
         turmas = turmas.filter(codigo_turma__icontains=query)
 
     total_turmas = turmas.count()
-
     turmas = turmas.order_by("ano")
 
     turmas_por_ano = {}
@@ -458,7 +518,7 @@ def turmas(request, curso_id):
         request,
         "AlunoProfessor/turmas.html",
         {
-            "curso": curso,
+            "curso": curso,  # O objeto 'curso' vai para o HTML com o nome dentro dele
             "turmas_por_ano": turmas_por_ano,
             "query": query,
             "total_turmas": total_turmas,
@@ -738,8 +798,67 @@ def projetos_da_turma(request, turma_id):
 
 
 # ---------- Funções Auxiliares Cloudinary e Zip ----------
+# Extensões de arquivo permitidas para upload
+ALLOWED_FILE_EXTENSIONS = {
+    # Documentos
+    '.pdf', '.doc', '.docx', '.txt', '.rtf', '.odt',
+    # Planilhas
+    '.xls', '.xlsx', '.csv', '.ods',
+    # Apresentações
+    '.ppt', '.pptx', '.odp',
+    # Imagens
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg',
+    # Código/Desenvolvimento
+    '.py', '.js', '.ts', '.html', '.css', '.json', '.xml', '.yaml', '.yml',
+    '.java', '.cpp', '.c', '.h', '.cs', '.php', '.rb', '.go', '.rs',
+    # Arquivos compactados
+    '.zip', '.rar', '.7z', '.tar', '.gz',
+    # Outros
+    '.md', '.log', '.sql'
+}
+
+# Tamanho máximo de arquivo (10MB)
+MAX_FILE_SIZE = 10 * 1024 * 1024
+
+# MIME types perigosos que devem ser bloqueados
+BLOCKED_MIME_TYPES = {
+    'application/x-msdownload',  # .exe
+    'application/x-msdos-program',  # .com
+    'application/x-sh',  # .sh
+    'application/x-python-code',  # .pyc
+    'application/x-php',  # .php
+    'text/x-php',  # .php
+    'application/javascript',  # .js (pode ser perigoso se executado no servidor)
+}
+
 def sanitize_filename(filename):
     return re.sub(r"[^A-Za-z0-9._-]", "_", filename)
+
+
+def validate_file_upload(arquivo_file):
+    """
+    Valida o arquivo enviado: extensão, tamanho e MIME type.
+    Retorna (is_valid, error_message).
+    """
+    if not arquivo_file:
+        return False, "Nenhum arquivo foi enviado."
+
+    # Verificar tamanho
+    if arquivo_file.size > MAX_FILE_SIZE:
+        return False, f"Arquivo muito grande. Tamanho máximo: {MAX_FILE_SIZE // (1024*1024)}MB."
+
+    # Verificar extensão
+    import os
+    _, ext = os.path.splitext(arquivo_file.name.lower())
+    if ext not in ALLOWED_FILE_EXTENSIONS:
+        return False, f"Extensão de arquivo não permitida: {ext}. Extensões permitidas: {', '.join(sorted(ALLOWED_FILE_EXTENSIONS))}"
+
+    # Verificar MIME type (content_type do arquivo)
+    content_type = getattr(arquivo_file, 'content_type', None)
+    if content_type and content_type in BLOCKED_MIME_TYPES:
+        return False, f"Tipo de arquivo não permitido: {content_type}"
+
+    return True, None
 
 
 def upload_para_cloudinary(arquivo_file, public_id):
@@ -849,6 +968,12 @@ def repositorio_projeto(request, projeto_id):
         elif action == "upload_arquivo":
             arquivo_file = request.FILES.get("arquivo")
             if arquivo_file:
+                # Validar arquivo
+                is_valid, error_msg = validate_file_upload(arquivo_file)
+                if not is_valid:
+                    messages.error(request, error_msg)
+                    return redirect("repositorio_projeto", projeto_id=projeto.idprojeto)
+
                 nome_arquivo = sanitize_filename(
                     request.POST.get("nome_arquivo") or arquivo_file.name
                 )
@@ -893,6 +1018,12 @@ def repositorio_projeto(request, projeto_id):
             arquivos = request.FILES.getlist("arquivos")
             enviados_count = 0
             for arquivo_file in arquivos:
+                # Validar cada arquivo
+                is_valid, error_msg = validate_file_upload(arquivo_file)
+                if not is_valid:
+                    messages.error(request, f"Arquivo '{arquivo_file.name}': {error_msg}")
+                    continue
+
                 caminho = getattr(arquivo_file, "webkitRelativePath", arquivo_file.name)
                 partes = caminho.split("/")
                 pasta_atual = None
@@ -1011,6 +1142,12 @@ def repositorio_pasta(request, pasta_id):
         elif action == "upload_arquivo":
             arquivo_file = request.FILES.get("arquivo")
             if arquivo_file:
+                # Validar arquivo
+                is_valid, error_msg = validate_file_upload(arquivo_file)
+                if not is_valid:
+                    messages.error(request, error_msg)
+                    return redirect("repositorio_pasta", pasta_id=pasta_atual.id)
+
                 nome_arquivo = sanitize_filename(
                     request.POST.get("nome_arquivo") or arquivo_file.name
                 )
@@ -1036,6 +1173,12 @@ def repositorio_pasta(request, pasta_id):
             arquivos = request.FILES.getlist("arquivos")
             enviados_count = 0
             for arquivo_file in arquivos:
+                # Validar cada arquivo
+                is_valid, error_msg = validate_file_upload(arquivo_file)
+                if not is_valid:
+                    messages.error(request, f"Arquivo '{arquivo_file.name}': {error_msg}")
+                    continue
+
                 caminho = getattr(arquivo_file, "webkitRelativePath", arquivo_file.name)
                 partes = caminho.split("/")
                 pasta_corrente = pasta_atual
@@ -1124,29 +1267,6 @@ def calendario(request):
     }
     return render(request, "AlunoProfessor/calendario.html", context)
 
-
-def criar_evento(request):
-    email = request.session.get('usuario_email')
-    usuario = Usuario.objects.get(email=email) # Simplificado para o exemplo
-
-    if request.method == 'POST':
-        data_str = request.POST.get('data')
-        data_do_evento = datetime.strptime(data_str, '%Y-%m-%d').date()
-
-        # 🔥 REGRA: Limite de 5 eventos por dia
-        eventos_hoje = Eventos.objects.filter(data_do_evento=data_do_evento).count()
-        if eventos_hoje >= 5:
-            messages.error(request, "Limite de 5 eventos para este dia atingido!")
-            return render(request, 'AlunoProfessor/criar_evento.html', {
-                'erro': 'Este dia já possui o limite máximo de 5 eventos.',
-                'usuario': usuario
-            })
-
-        # ... resto do seu código de criação ...
-        Eventos.objects.create(..., usuario=usuario)
-        return redirect('calendario')
-
-    return render(request, 'AlunoProfessor/criar_evento.html', {'usuario': usuario})
 
 def editar_evento(request, evento_id):
     email = request.session.get('usuario_email')
@@ -1503,27 +1623,48 @@ def excluir_mensagem(request, msg_id):
     msg = get_object_or_404(Mensagem, pk=msg_id, autor__email=request.session.get('usuario_email'))
     msg.excluida = True
     msg.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return safe_redirect(request, 'forum_blocos')
 
 def editar_mensagem(request, msg_id):
     if request.method == 'POST':
         msg = get_object_or_404(Mensagem, pk=msg_id, autor__email=request.session.get('usuario_email'))
-        
+
         # Lógica dos 30 minutos
         agora = timezone.now()
         prazo_limite = msg.criado_em + timedelta(minutes=30)
 
         if agora > prazo_limite:
             # Opcional: enviar uma mensagem de erro (messages.error)
-            return redirect(request.META.get('HTTP_REFERER'))
+            return safe_redirect(request, 'forum_blocos')
 
         novo_conteudo = request.POST.get('conteudo')
         if novo_conteudo:
             msg.conteudo = novo_conteudo
             msg.save()
-            
-    return redirect(request.META.get('HTTP_REFERER'))
 
+    return safe_redirect(request, 'forum_blocos')
+
+def buscar_novas_mensagens(request, topico_id):
+    # Pega o ID da última mensagem que o navegador já tem
+    ultimo_id = request.GET.get('ultimo_id', 0)
+    
+    # Busca mensagens criadas APÓS essa última
+    novas = Mensagem.objects.filter(
+        topico_id=topico_id, 
+        id__gt=ultimo_id
+    ).order_by('id')
+
+    dados = []
+    for msg in novas:
+        dados.append({
+            'id': msg.id,
+            'autor_nome': msg.autor.nome,
+            'autor_email': msg.autor.email,
+            'conteudo': 'Mensagem excluída' if msg.excluida else msg.conteudo,
+            'criado_em': msg.criado_em.strftime('%H:%M %d/%m/%Y'),
+        })
+
+    return JsonResponse({'mensagens': dados})
 
 # ================ TELAS COORDENAÇÃO ====================
 
@@ -1533,15 +1674,26 @@ def HomeCoord(request):
     total_cursos = Curso.objects.count()
     total_turmas = Turma.objects.count()
 
+    projetos = Projeto.objects.select_related(
+        "turma",
+        "turma__curso"
+    ).prefetch_related(
+        "alunos",
+        "alunos_edicao"
+    ).all().order_by("-data_de_criacao")
+
     context = {
         "total_usuarios": total_usuarios,
         "total_cursos": total_cursos,
         "total_turmas": total_turmas,
+        "projetos": projetos,
     }
 
-    return render(request, "Coordenacao/HomeCoord.html", context)
-
-
+    return render(
+        request,
+        "Coordenacao/HomeCoord.html",
+        context
+    )
 
 
 def UsuarioCoord(request):
@@ -1559,15 +1711,16 @@ def UsuarioCoord(request):
                 messages.error(request, "Este e-mail já está cadastrado!")
                 return redirect("UsuariosCoord")
 
-            Usuario.objects.create(
+            usuario = Usuario(
                 nome=request.POST.get("nome"),
                 sobrenome=request.POST.get("sobrenome"),
                 email=email,
-                senha=request.POST.get("senha"),
                 descricao=request.POST.get("descricao"),
                 tipo=request.POST.get("tipoCadastro"),
                 imagem=request.FILES.get("imagem"),
             )
+            usuario.set_password(request.POST.get("senha"))
+            usuario.save()
 
             messages.success(request, "Usuário cadastrado com sucesso!")
             return redirect("UsuariosCoord")
@@ -1594,7 +1747,7 @@ def UsuarioCoord(request):
         "filtro": filtro,
     }
 
-    return render(request, "Coordenacao/UsuariosCoord.html", context)
+    return render(request, "Coordenacao/UsuarioCoord.html", context)
 
 
 def listar_alunos(request):
@@ -1645,7 +1798,7 @@ def salvar_alunos_turma(request):
 
 def homePage(request):
     # Exemplo na sua view do Django:
-    cursos = Curso.objects.all().order_by('-idcurso')[:3]
+    cursos = Curso.objects.all().order_by('-idcurso')[:6]
     return render(request, "homePage.html", {"cursos": cursos})
 
 
@@ -1748,7 +1901,7 @@ def editar_curso(request):
             curso.imagem = request.FILES.get("imagem")
 
         curso.save()
-        print("SALVO COM SUCESSO")
+        logger.info("Curso atualizado com sucesso")
         messages.success(request, "Curso atualizado com sucesso!")
 
     # ✅ continua na mesma página
@@ -1760,16 +1913,11 @@ def excluir_curso(request, idcurso):
 
         curso.delete()
         messages.success(request, "Curso excluído com sucesso!")
-        
-    return redirect(request.META.get("HTTP_REFERER", "CursoCoord"))
+
+    return safe_redirect(request, 'CursoCoord')
 
 
 
-
-
-    
-    
-    
  
 def TurmaCoord(request):
     turmas = Turma.objects.select_related("curso", "professor").all()
@@ -1892,97 +2040,31 @@ def salvar_turma_usuario(request):
     })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def homePage(request):
-    return render(request, "homePage.html")
-
-
-# NOVO VISUAL DA COORDENAÇÃO=================
-
+def projetosCoord(request):
+
+    # Totais
+    total_usuarios = Usuario.objects.count()
+    total_cursos = Curso.objects.count()
+    total_turmas = Turma.objects.count()
+
+    # Todos os projetos
+    projetos = Projeto.objects.select_related(
+        "turma",
+        "turma__curso"
+    ).prefetch_related(
+        "alunos",
+        "alunos_edicao"
+    ).all().order_by("nome_projeto")
+
+    context = {
+        "total_usuarios": total_usuarios,
+        "total_cursos": total_cursos,
+        "total_turmas": total_turmas,
+        "projetos": projetos,
+    }
+
+    return render(
+        request,
+        "Coordenacao/projetosCoord.html",
+        context
+    )
