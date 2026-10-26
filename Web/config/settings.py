@@ -139,6 +139,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# --- Hashers de senha (PBKDF2-SHA256 com 1.2M iterações - Django 6.0 default) ---
+# Garante compatibilidade com Desktop/security/crypto.py
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
+
+# Iterações PBKDF2 (Django 6.0 default = 1.200.000)
+# O Desktop/security/crypto.py usa PBKDF2_ITERATIONS = 1_200_000
+
 # --- Internacionalização ---
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
