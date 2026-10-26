@@ -1,6 +1,7 @@
-from django.utils import timezone  
+from django.utils import timezone
 from datetime import timedelta
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 from cloudinary.models import CloudinaryField
 from cloudinary.utils import cloudinary_url
 
@@ -89,6 +90,23 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.nome} {self.sobrenome}"
+
+    def set_password(self, raw_password):
+        """Hash and set the user's password using Django's PBKDF2."""
+        self.senha = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        """Check the given raw password against the stored hash."""
+        return check_password(raw_password, self.senha)
+
+    @property
+    def is_authenticated(self):
+        """Required for Django auth compatibility."""
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
 
 
 class Curso(models.Model):

@@ -28,7 +28,10 @@ elif django_debug == "True" or django_debug is not None:
 else:
     DEBUG = True
 
-print(f"[DJANGO DEBUG] {DEBUG}")
+# Use logging instead of print in production
+import logging
+logger = logging.getLogger(__name__)
+logger.info(f"[DJANGO DEBUG] {DEBUG}")
 
 ALLOWED_HOSTS = ["inova-edu.onrender.com", "127.0.0.1", "localhost"]
 
@@ -58,12 +61,18 @@ MIDDLEWARE = [
     'csp.middleware.CSPMiddleware',
 ]
 
+# Rate limiting configuration
+RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_ENABLE = True
+
 # Regras de Política de Segurança de Conteúdo (CSP)
+# Usando nonces para scripts inline - remove 'unsafe-inline'
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com")
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
+CSP_SCRIPT_SRC = ("'self'",)
 CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com")
 CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com")
+CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src']
 
 # --- URLConf e Templates ---
 ROOT_URLCONF = 'config.urls'
@@ -97,7 +106,7 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-    print("[DJANGO DATABASE] Conectado ao PostgreSQL")
+    logger.info("[DJANGO DATABASE] Conectado ao PostgreSQL")
 else:
     DATABASES = {
         "default": {
@@ -112,7 +121,7 @@ else:
             },
         }
     }
-    print("[DJANGO DATABASE] Conectado ao MySQL Local")
+    logger.info("[DJANGO DATABASE] Conectado ao MySQL Local")
 
 # --- Email ---
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
@@ -181,3 +190,73 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 Ano
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# 4. Referrer Policy - Controla informações de referência enviadas
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# 5. Permissions Policy (Feature Policy) - Restringe APIs do navegador
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
+
+# 6. Configurações adicionais de sessão seguras
+SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_SAVE_EVERY_REQUEST = True  # Renova sessão a cada request
+SESSION_COOKIE_SAMESITE = 'Lax'  # Proteção CSRF adicional
+
+# 7. CSRF adicional
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_USE_SESSIONS = False  # Usar cookies para CSRF (mais performático)
+CSRF_FAILURE_VIEW = 'InovaEdu.views.csrf_failure'  # View customizada para falha CSRF
+
+# 8. X-Frame-Options já configurado via middleware (DENY)
+
+# 9. Configurações de cache para segurança
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# 10. Logging de segurança
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'security': {
+            'format': '[SECURITY] {asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'security_file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'security.log',
+            'formatter': 'security',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['console', 'security_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'security_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'InovaEdu': {
+            'handlers': ['console', 'security_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
