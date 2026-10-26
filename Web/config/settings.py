@@ -141,11 +141,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- Hashers de senha (Dual format: Django + Legacy) ---
 # Suporte a AMBOS formatos para compatibilidade com hashes legados no banco
-# 1. DualFormatPBKDF2PasswordHasher - verifica Django E legacy (recomendado)
-# 2. PBKDF2PasswordHasher - fallback padrão Django
+# DualFormatPBKDF2PasswordHasher substitui o PBKDF2PasswordHasher padrão
+# (ambos usam algorithm="pbkdf2_sha256" - o último na lista sobrescreveria o primeiro)
 PASSWORD_HASHERS = [
-    'InovaEdu.hashers.DualFormatPBKDF2PasswordHasher',  # Custom: suporta ambos formatos
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'InovaEdu.hashers.DualFormatPBKDF2PasswordHasher',  # Custom: suporta Django + legacy
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
