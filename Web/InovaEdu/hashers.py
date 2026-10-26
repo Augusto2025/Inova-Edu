@@ -36,16 +36,22 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
         Returns:
             bool: True if password matches
         """
+        import logging
+        logger = logging.getLogger('InovaEdu.hashers')
+
         if not password or not encoded:
+            logger.debug(f"[HASHER] Empty password or encoded: password={bool(password)}, encoded={bool(encoded)}")
             return False
 
         if not encoded.startswith(self.algorithm):
+            logger.debug(f"[HASHER] Algorithm mismatch: expected {self.algorithm}, got {encoded[:20]}...")
             return False
 
         try:
             # Parse: algorithm$iterations$salt$hash
             parts = encoded.split('$', 3)
             if len(parts) != 4:
+                logger.debug(f"[HASHER] Invalid hash format (parts != 4): {parts}")
                 return False
 
             _, iterations_str, salt_b64, hash_b64 = parts
@@ -56,6 +62,8 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
 
             password_bytes = force_bytes(password)
 
+            logger.debug(f"[HASHER] Verifying: iterations={iterations}, salt_b64={salt_b64}, hash_len={len(expected_hash)}")
+
             # METHOD 1: Django format - base64 salt STRING as UTF-8 bytes
             salt_django = force_bytes(salt_b64)
             computed = hashlib.pbkdf2_hmac(
@@ -65,7 +73,9 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
                 iterations,
                 dklen=len(expected_hash)
             )
-            if hmac.compare_digest(computed, expected_hash):
+            match1 = hmac.compare_digest(computed, expected_hash)
+            logger.debug(f"[HASHER] Method 1 (Django format): match={match1}, salt_bytes_len={len(salt_django)}")
+            if match1:
                 return True
 
             # METHOD 2: Legacy format - DECODED salt bytes
@@ -78,14 +88,18 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
                     iterations,
                     dklen=len(expected_hash)
                 )
-                if hmac.compare_digest(computed_legacy, expected_hash):
+                match2 = hmac.compare_digest(computed_legacy, expected_hash)
+                logger.debug(f"[HASHER] Method 2 (Legacy format): match={match2}, salt_legacy_len={len(salt_legacy)}")
+                if match2:
                     return True
-            except (binascii.Error, ValueError):
-                pass
+            except (binascii.Error, ValueError) as e:
+                logger.debug(f"[HASHER] Legacy decode error: {e}")
 
+            logger.debug(f"[HASHER] Both methods failed for hash: {encoded[:50]}...")
             return False
 
-        except (ValueError, IndexError, TypeError):
+        except (ValueError, IndexError, TypeError) as e:
+            logger.debug(f"[HASHER] Parse error: {e}")
             return False
 
     def _decode_base64(self, data):
@@ -100,6 +114,9 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
         - Raw bytes (when creating new hash)
         - Base64 string (when called from verify() for comparison)
         """
+        import logging
+        logger = logging.getLogger('InovaEdu.hashers')
+
         iterations = iterations or self.iterations
 
         # Check if salt is already a base64 string (from verify())
@@ -113,18 +130,22 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
                     # It's already a base64 salt string - use as-is
                     salt_for_pbkdf2 = force_bytes(salt)
                     salt_b64 = salt
+                    logger.debug(f"[HASHER] encode: salt is base64 string (len={len(salt)}), using as-is")
                 else:
                     # It's a regular string - encode to bytes
                     salt_for_pbkdf2 = force_bytes(salt)
                     salt_b64 = base64.b64encode(salt_for_pbkdf2).decode('ascii').rstrip('=')
+                    logger.debug(f"[HASHER] encode: salt is regular string, encoded to base64")
             except (binascii.Error, ValueError):
                 # Not valid base64 - treat as string
                 salt_for_pbkdf2 = force_bytes(salt)
                 salt_b64 = base64.b64encode(salt_for_pbkdf2).decode('ascii').rstrip('=')
+                logger.debug(f"[HASHER] encode: salt not valid base64, treated as string")
         else:
             # It's bytes - base64 encode for storage
             salt_for_pbkdf2 = salt
             salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+            logger.debug(f"[HASHER] encode: salt is bytes (len={len(salt)}), base64 encoded")
 
         hash_bytes = hashlib.pbkdf2_hmac(
             'sha256',
@@ -134,7 +155,9 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
             dklen=32
         )
         hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
-        return f"{self.algorithm}${iterations}${salt_b64}${hash_b64}"
+        result = f"{self.algorithm}${iterations}${salt_b64}${hash_b64}"
+        logger.debug(f"[HASHER] encode result: {result[:60]}...")
+        return result
 
     def safe_summary(self, encoded):
         """Return a safe summary of the hash for logging."""
