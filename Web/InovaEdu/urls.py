@@ -10,8 +10,9 @@ urlpatterns = [
     path('homePage/', views.homePage, name='homePage'),
     path('login/', views.login, name='login'),
     path('home/', views.HomeAlunoProfessor, name='home'),
-    path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
-    path("pedir_email/", views.pedir_email, name="pedir_email"),
+    # Password reset - COMENTADO PER USER REQUEST
+    # path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),
+    # path("pedir_email/", views.pedir_email, name="pedir_email"),
     # Aluno e Professor
     path('cursos/', views.cursos, name='cursos'),
     path("forum_blocos/", views.forum_blocos, name="forum_blocos"),

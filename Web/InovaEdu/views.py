@@ -139,65 +139,75 @@ def HomeAlunoProfessor(request):
     )
 
 
-# redefinir senha
-@ratelimit(key='ip', rate='3/h', method='POST', block=True)
-@never_cache
-def pedir_email(request):
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        sobrenome = request.POST.get("sobrenome")
-        usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
-
-        if usuario and usuario.email:
-            # Gera o token usando Django's default_token_generator (HMAC + timestamp)
-            token = token_generator.make_token(usuario)
-            uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
-
-            # Use environment variable for API key
-            resend_api_key = os.environ.get('RESEND_API_KEY')
-            if resend_api_key:
-                resend.api_key = resend_api_key
-                resend.Emails.send({
-                    "from": "Inova Edu <onboarding@resend.dev>",
-                    "to": usuario.email,
-                    "subject": "Redefinição de Senha",
-                    "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
-                })
-            else:
-                # Fallback: log the link for development (remove in production)
-                logger.warning(f"[DEV] Password reset link for {usuario.email}: {link}")
-
-            return render(request, "pedir_email.html", {"sucesso": True})
-
-    return render(request, "pedir_email.html")
-
-@ratelimit(key='ip', rate='5/h', method='POST', block=True)
-@never_cache
-def redefinir_senha(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        usuario = Usuario.objects.get(idusuario=uid)
-    except Exception:
-        usuario = None
-
-    # O check_token usa Django's default_token_generator (HMAC + timestamp)
-    if usuario and token_generator.check_token(usuario, token):
-        if request.method == 'POST':
-            nova = request.POST.get('nova_senha')
-            confirma = request.POST.get('confirmar_senha')
-
-            if nova == confirma:
-                usuario.set_password(nova)
-                usuario.save()
-                # Após o save, o token antigo deixará de funcionar
-                # porque o hash da senha mudou!
-                return redirect('login')
-            else:
-                return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
-
-        return render(request, 'redefinir_senha.html')
-    else:
-        return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
+# =========================================================================
+# PASSWORD RESET FUNCTIONALITY - COMMENTED OUT PER USER REQUEST
+# Não quero o redefinir senha, deixe somente comentado para que não atrapalhe
+# o deploy ou o sistema.
+# =========================================================================
+#
+# # redefinir senha
+# @ratelimit(key='ip', rate='3/h', method='POST', block=True)
+# @never_cache
+# def pedir_email(request):
+#     if request.method == "POST":
+#         nome = request.POST.get("nome")
+#         sobrenome = request.POST.get("sobrenome")
+#         usuario = Usuario.objects.filter(nome=nome, sobrenome=sobrenome).first()
+#
+#         if usuario and usuario.email:
+#             # Gera o token usando Django's default_token_generator (HMAC + timestamp)
+#             token = token_generator.make_token(usuario)
+#             uid = urlsafe_base64_encode(force_bytes(usuario.idusuario))
+#
+#             # Use environment variable for API key
+#             resend_api_key = os.environ.get('RESEND_API_KEY')
+#             if resend_api_key:
+#                 resend.api_key = resend_api_key
+#                 resend.Emails.send({
+#                     "from": "Inova Edu <onboarding@resend.dev>",
+#                     "to": usuario.email,
+#                     "subject": "Redefinição de Senha",
+#                     "html": f"<p>Link: <a href='{link}'>{link}</a></p>"
+#                 })
+#             else:
+#                 # Fallback: log the link for development (remove in production)
+#                 logger.warning(f"[DEV] Password reset link for {usuario.email}: {link}")
+#
+#             return render(request, "pedir_email.html", {"sucesso": True})
+#
+#     return render(request, "pedir_email.html")
+#
+# @ratelimit(key='ip', rate='5/h', method='POST', block=True)
+# @never_cache
+# def redefinir_senha(request, uidb64, token):
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         usuario = Usuario.objects.get(idusuario=uid)
+#     except Exception:
+#         usuario = None
+#
+#     # O check_token usa Django's default_token_generator (HMAC + timestamp)
+#     if usuario and token_generator.check_token(usuario, token):
+#         if request.method == 'POST':
+#             nova = request.POST.get('nova_senha')
+#             confirma = request.POST.get('confirmar_senha')
+#
+#             if nova == confirma:
+#                 usuario.set_password(nova)
+#                 usuario.save()
+#                 # Após o save, o token antigo deixará de funcionar
+#                 # porque o hash da senha mudou!
+#                 return redirect('login')
+#             else:
+#                 return render(request, 'redefinir_senha.html', {'erro': 'Senhas não conferem'})
+#
+#         return render(request, 'redefinir_senha.html')
+#     else:
+#         return render(request, 'redefinir_senha.html', {'erro': 'Link inválido ou já utilizado.'})
+#
+# =========================================================================
+# END PASSWORD RESET FUNCTIONALITY
+# =========================================================================
 
 
 # --------------- Telas aluno e professor ---------------

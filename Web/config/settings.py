@@ -218,6 +218,19 @@ CACHES = {
 }
 
 # 10. Logging de segurança
+# Em produção (Render), o filesystem é efêmero, então usamos apenas console
+# Em desenvolvimento, também logamos em arquivo se o diretório existir
+import os
+LOG_DIR = BASE_DIR / 'logs'
+LOG_FILE = LOG_DIR / 'security.log'
+
+# Criar diretório de logs se não existir (apenas em dev/local)
+if not LOG_DIR.exists():
+    try:
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -236,27 +249,39 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'security_file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'security.log',
-            'formatter': 'security',
-        },
     },
     'loggers': {
         'django.security': {
-            'handlers': ['console', 'security_file'],
+            'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
         },
         'django.request': {
-            'handlers': ['console', 'security_file'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': False,
         },
         'InovaEdu': {
-            'handlers': ['console', 'security_file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+# Adicionar file handler apenas se o arquivo puder ser criado (desenvolvimento)
+if LOG_FILE.parent.exists() or not DEBUG:
+    try:
+        # Testar se podemos escrever no arquivo
+        with open(LOG_FILE, 'a') as f:
+            pass
+        LOGGING['handlers']['security_file'] = {
+            'class': 'logging.FileHandler',
+            'filename': str(LOG_FILE),
+            'formatter': 'security',
+        }
+        for logger_name in LOGGING['loggers']:
+            LOGGING['loggers'][logger_name]['handlers'].append('security_file')
+    except Exception:
+        # Se falhar, usa apenas console
+        pass
