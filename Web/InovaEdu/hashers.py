@@ -95,18 +95,44 @@ class DualFormatPBKDF2PasswordHasher(PBKDF2PasswordHasher):
 
     def encode(self, password, salt, iterations=None):
         """
-        Encode password using Django standard format (base64 salt string as UTF-8 bytes).
-        This ensures NEW hashes are created in Django format.
+        Encode password using Django standard format.
+        The salt parameter can be either:
+        - Raw bytes (when creating new hash)
+        - Base64 string (when called from verify() for comparison)
         """
         iterations = iterations or self.iterations
+
+        # Check if salt is already a base64 string (from verify())
+        # Django's verify() passes the base64 salt string from the hash
+        if isinstance(salt, str):
+            # Try to decode as base64 to see if it's already base64
+            try:
+                # If it decodes to 12 or 16 bytes, it's likely a base64 salt
+                decoded = base64.b64decode(salt + '=' * (-len(salt) % 4))
+                if len(decoded) in (12, 16):
+                    # It's already a base64 salt string - use as-is
+                    salt_for_pbkdf2 = force_bytes(salt)
+                    salt_b64 = salt
+                else:
+                    # It's a regular string - encode to bytes
+                    salt_for_pbkdf2 = force_bytes(salt)
+                    salt_b64 = base64.b64encode(salt_for_pbkdf2).decode('ascii').rstrip('=')
+            except (binascii.Error, ValueError):
+                # Not valid base64 - treat as string
+                salt_for_pbkdf2 = force_bytes(salt)
+                salt_b64 = base64.b64encode(salt_for_pbkdf2).decode('ascii').rstrip('=')
+        else:
+            # It's bytes - base64 encode for storage
+            salt_for_pbkdf2 = salt
+            salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+
         hash_bytes = hashlib.pbkdf2_hmac(
             'sha256',
             force_bytes(password),
-            force_bytes(salt),  # Django uses base64 salt STRING as UTF-8 bytes
+            salt_for_pbkdf2,
             iterations,
             dklen=32
         )
-        salt_b64 = base64.b64encode(force_bytes(salt)).decode('ascii').rstrip('=')
         hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
         return f"{self.algorithm}${iterations}${salt_b64}${hash_b64}"
 
