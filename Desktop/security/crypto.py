@@ -76,10 +76,9 @@ def _decode_hash_part(part: str) -> bytes:
 def verify_password(password: str, hashed: str) -> bool:
     """
     Verify a password against a stored hash.
-    Fully compatible with Django 6.0 PBKDF2PasswordHasher.
-
-    Django's PBKDF2PasswordHasher uses the BASE64 SALT STRING (UTF-8 bytes)
-    as the salt for PBKDF2, not the decoded bytes.
+    Supports BOTH formats for compatibility:
+    1. Django 6.0 format: base64 salt string used as UTF-8 bytes for PBKDF2 (NEW)
+    2. Legacy format: decoded salt bytes used for PBKDF2 (OLD hashes in database)
     """
     if not password or not hashed:
         return False
@@ -97,23 +96,38 @@ def verify_password(password: str, hashed: str) -> bool:
         _, iterations_str, salt_b64, hash_b64 = parts
         iterations = int(iterations_str)
 
-        # CRITICAL: Django uses the BASE64 SALT STRING (UTF-8 bytes) as the salt for PBKDF2!
-        # NOT the decoded bytes. This matches Django's PBKDF2PasswordHasher exactly.
-        salt = salt_b64.encode('utf-8')
-
         # Decode expected hash (base64)
         expected_hash = _decode_hash_part(hash_b64)
 
-        # Compute hash with provided password using base64 salt string as salt
+        # METHOD 1: Django 6.0 style - base64 salt STRING as UTF-8 bytes
+        # This matches Django's PBKDF2PasswordHasher exactly
+        salt_django = salt_b64.encode('utf-8')
         computed_hash = hashlib.pbkdf2_hmac(
             HASH_ALGORITHM,
             password.encode('utf-8'),
-            salt,
+            salt_django,
             iterations
         )
+        if hmac.compare_digest(computed_hash, expected_hash):
+            return True
 
-        # Constant-time comparison to prevent timing attacks
-        return hmac.compare_digest(computed_hash, expected_hash)
+        # METHOD 2: Legacy format - DECODED salt bytes (for old hashes in DB)
+        # Try decoding the salt from base64 and using the raw bytes
+        try:
+            salt_legacy = _decode_hash_part(salt_b64)  # This decodes base64
+            computed_hash_legacy = hashlib.pbkdf2_hmac(
+                HASH_ALGORITHM,
+                password.encode('utf-8'),
+                salt_legacy,
+                iterations
+            )
+            if hmac.compare_digest(computed_hash_legacy, expected_hash):
+                return True
+        except Exception:
+            pass
+
+        # Neither method worked
+        return False
 
     except (ValueError, IndexError, TypeError):
         return False
