@@ -101,14 +101,19 @@ class Sidebar(ctk.CTkFrame):
 
     def _criar_botao_sair(self, parent):
         # Estilo "Danger" moderno (Soft Red)
+        def sair_com_cache():
+            from cache.warmup import clear_all_cache
+            clear_all_cache()
+            self.master.quit
+
         ctk.CTkButton(
-            parent, 
-            text="Sair do Sistema", 
-            command=self.master.quit,
-            height=52, 
+            parent,
+            text="Sair do Sistema",
+            command=sair_com_cache,
+            height=52,
             fg_color="#ef4444", # Vermelho vibrante moderno
             hover_color="#b91c1c",
-            text_color="#ffffff", 
+            text_color="#ffffff",
             font=self.fonte_bold,
             corner_radius=15 # Bem arredondado para destacar como ação final
         ).pack(side="bottom", fill="x")

@@ -181,12 +181,16 @@ class tela_login(ctk.CTkFrame):
             self.botao_entrar.configure(state="normal", text="Acessar Sistema")
             if isinstance(result, tuple) and len(result) >= 2 and result[1]:
                 tipo = result[0]
-                
+
                 # --- PASSO IMPORTANTE: SALVAR NA SESSÃO ANTES DE DESTRUIR ---
                 sessao = UsuarioSessao()
                 sessao.email = usuario  # Use "usuario" aqui, que é o que vem do parâmetro
                 print(f"SESSÃO INICIADA PARA: {sessao.email}")
-                
+
+                # --- CACHE WARMUP: Pré-carrega dados em background ---
+                from cache.warmup import cache_warmup
+                cache_warmup(usuario_id=True)  # Passa usuario_id=True para indicar que há usuário logado
+
                 self.destroy()
 
                 if tipo in ["Aluno", "Professor"]:

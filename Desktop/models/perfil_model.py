@@ -3,12 +3,25 @@ from psycopg2 import extras
 from security.crypto import hash_password
 from security.validators import validate_password
 from security.logger import get_logger
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from cache import cache, invalidate_on_write, CacheTags
 
 logger = get_logger(__name__)
 
 
 class PerfilModel:
     def obter_dados_perfil(self, email):
+        """Obtém dados completos do perfil (cache 5 min)"""
+        cache_key = f"perfil:dados:{email.lower()}"
+        cached_value = cache.get(cache_key)
+        if cached_value is not None:
+            logger.debug(f"Cache HIT - perfil {email}")
+            return cached_value
+
+        logger.debug(f"Cache MISS - buscando perfil {email} do banco")
         cursor = None
         conexao = None
         try:
@@ -25,7 +38,7 @@ class PerfilModel:
             # O ID do usuário vindo da tabela usuario
             id_usuario = usuario.get('idusuario') or usuario.get('idUsuario')
 
-            # 2. Dados da Turma (Conforme sua primeira print)
+            # 2. Dados da Turma
             query_turma = """
                 SELECT t."Codigo_Turma"
                 FROM usuario_da_turma ut
@@ -35,16 +48,19 @@ class PerfilModel:
             cursor.execute(query_turma, (id_usuario,))
             turma = cursor.fetchone()
 
-            # 3. Certificados (Conforme sua segunda print)
-            # Aqui é minúsculo: usuario_id
+            # 3. Certificados
             cursor.execute('SELECT * FROM certificado WHERE usuario_id = %s', (id_usuario,))
             certificados = cursor.fetchall()
 
-            return {
+            result = {
                 "usuario": usuario,
                 "turma": turma['Codigo_Turma'] if turma else "Sem Turma",
                 "certificados": certificados
             }
+
+            # Cache por 5 minutos
+            cache.set(cache_key, result, ttl=300, tags=[CacheTags.PERFIL, CacheTags.usuario_especifico(id_usuario)])
+            return result
         except Exception as e:
             logger.error(f"Erro ao consultar banco (Postgres): {e}")
             return None
@@ -52,6 +68,7 @@ class PerfilModel:
             if cursor: cursor.close()
             if conexao: conexao.close()
 
+    @invalidate_on_write(tags=[CacheTags.PERFIL, CacheTags.USUARIO])
     def salvar_usuario(self, email, nome, sobrenome, bio, senha):
         """
         Atualiza dados do usuário.
@@ -72,6 +89,11 @@ class PerfilModel:
         conexao = conectar()
         cursor = conexao.cursor()
         try:
+            # Obtém ID do usuário antes de atualizar para invalidação precisa
+            cursor.execute('SELECT "idUsuario" FROM usuario WHERE "Email" = %s', (email,))
+            row = cursor.fetchone()
+            user_id = row[0] if row else 0
+
             if senha_hash:
                 sql = """
                     UPDATE usuario
@@ -89,6 +111,9 @@ class PerfilModel:
             cursor.execute(sql, params)
             conexao.commit()
             logger.info(f"Perfil atualizado para: {email}")
+
+            # Invalida cache específico do usuário
+            cache.invalidate_keys([f"perfil:dados:{email.lower()}", f"login:usuario:{email.lower()}"])
             return True, None
         except Exception as e:
             logger.error(f"Erro ao atualizar perfil: {e}")
@@ -97,6 +122,7 @@ class PerfilModel:
             cursor.close()
             conexao.close()
 
+    @invalidate_on_write(tags=[CacheTags.PERFIL])
     def salvar_certificado(self, nome, descricao, data_inicio, data_final, usuario_id):
         conexao = None
         cursor = None
@@ -123,6 +149,12 @@ class PerfilModel:
             if conexao: conexao.close()
 
     def listar_projetos_do_usuario(self, id_usuario):
+        """Lista projetos do usuário (cache 5 min)"""
+        cache_key = f"perfil:projetos:{id_usuario}"
+        cached_value = cache.get(cache_key)
+        if cached_value is not None:
+            return cached_value
+
         conexao = None
         cursor = None
         try:
@@ -147,6 +179,7 @@ class PerfilModel:
                 else:
                     p['data'] = "Sem data"
 
+            cache.set(cache_key, projetos, ttl=300, tags=[CacheTags.PERFIL, CacheTags.usuario_especifico(id_usuario)])
             return projetos
         except Exception as e:
             logger.error(f"Falha ao listar projetos: {e}")
@@ -155,6 +188,7 @@ class PerfilModel:
             if cursor: cursor.close()
             if conexao: conexao.close()
 
+    @invalidate_on_write(tags=[CacheTags.PERFIL])
     def excluir_certificado(self, id_certificado, id_usuario=None):
         """Exclui o certificado do banco de dados respeitando o nome exato da coluna idCertificado."""
         conn = None
