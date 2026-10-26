@@ -104,7 +104,8 @@ class Sidebar(ctk.CTkFrame):
         def sair_com_cache():
             from cache.warmup import clear_all_cache
             clear_all_cache()
-            self.master.quit
+            # Usa destroy() para fechar a janela corretamente
+            self.master.destroy()
 
         ctk.CTkButton(
             parent,
