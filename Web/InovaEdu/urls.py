@@ -9,6 +9,7 @@ urlpatterns = [
     path('', views.homePage, name='homePage'),
     path('homePage/', views.homePage, name='homePage_alt'),
     path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('home/', views.HomeAlunoProfessor, name='home'),
     # Password reset - COMENTADO PER USER REQUEST
     # path('redefinir-senha/<uidb64>/<token>/', views.redefinir_senha, name='redefinir_senha'),

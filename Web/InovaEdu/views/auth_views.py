@@ -82,6 +82,26 @@ def csrf_failure(request, reason=""):
 
 
 # =========================================================================
+# LOGOUT
+# =========================================================================
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+def logout(request):
+    """
+    Realiza logout do usuário limpando a sessão e redireciona para login.
+    """
+    usuario_email = request.session.get('usuario_email')
+    if usuario_email:
+        logger.info(f"Logout: {usuario_email}")
+
+    # Limpa toda a sessão
+    request.session.flush()
+
+    return redirect('login')
+
+
+# =========================================================================
 # PASSWORD RESET - COMMENTED OUT PER USER REQUEST
 # =========================================================================
 #

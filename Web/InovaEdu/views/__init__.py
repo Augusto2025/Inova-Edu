@@ -6,6 +6,7 @@ Organized by functional area for maintainability.
 # Authentication
 from .auth_views import (
     login,
+    logout,
     csrf_failure,
 )
 
@@ -95,6 +96,7 @@ from .utils import (
 __all__ = [
     # Auth
     'login',
+    'logout',
     'csrf_failure',
     # Aluno/Professor
     'HomeAlunoProfessor',
