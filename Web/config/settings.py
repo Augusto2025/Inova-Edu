@@ -139,9 +139,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# --- Hashers de senha (PBKDF2-SHA256 com 1.2M iterações - Django 6.0 default) ---
-# Garante compatibilidade com Desktop/security/crypto.py
+# --- Hashers de senha (Dual format: Django + Legacy) ---
+# Suporte a AMBOS formatos para compatibilidade com hashes legados no banco
+# 1. DualFormatPBKDF2PasswordHasher - verifica Django E legacy (recomendado)
+# 2. PBKDF2PasswordHasher - fallback padrão Django
 PASSWORD_HASHERS = [
+    'InovaEdu.hashers.DualFormatPBKDF2PasswordHasher',  # Custom: suporta ambos formatos
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
